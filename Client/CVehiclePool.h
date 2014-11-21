@@ -1,5 +1,15 @@
-#ifndef VEHICLEPOOL_H
-#define	VEHICLEPOOL_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: vehicle pool (array)
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code
+*/
+
+#ifndef __VEHICLEPOOL_H
+#define	__VEHICLEPOOL_H
 #include "../shared/limits.h"
 #include "CVehicle.h"
 

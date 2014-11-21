@@ -1,5 +1,15 @@
-#ifndef CINGAMEMENU_H
-#define CINGAMEMENU_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: ingame menu (after ESC) with news from our web site
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code / check news width before render
+*/
+
+#ifndef __CINGAMEMENU_H
+#define __CINGAMEMENU_H
 
 #include <d3d8.h>
 #include <d3dx8.h>

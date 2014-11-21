@@ -139,6 +139,8 @@ void CVehicle::Interpolate()
 		if (hasDriver == false)
 		{
 			//g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
+			//if (*(byte*)(entity + 0x2100) == 15)
+			//{
 			if ((*(float*)(entity + 0x40C) - this->playerPos.x) > 0.3 || (*(float*)(entity + 0x410) - this->playerPos.y) > 0.3 || (*(float*)(entity + 0x414) - this->playerPos.z) > 0.3)
 			{
 				//g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
@@ -153,61 +155,65 @@ void CVehicle::Interpolate()
 				*(float*)(entity + 0xD40) = this->secondRot.x;
 				*(float*)(entity + 0xD44) = this->secondRot.y;
 				*(float*)(entity + 0xD48) = this->secondRot.z;
+			}
 
-				// takmer dokonale
-				/*_asm
-				{
+					// takmer dokonale
+					/*_asm
+					{
 
 					//MOV EAX, 0x0
 					MOV EAX, 0x3DA9FBE8
-						PUSH EAX; / Arg3 = 00000000
-						PUSH EAX; | Arg2	0
-						//MOV EAX, 0x3DA9FBE8
-						PUSH EAX; | Arg1   	0x3DA9FBE8
+					PUSH EAX; / Arg3 = 00000000
+					PUSH EAX; | Arg2	0
+					//MOV EAX, 0x3DA9FBE8
+					PUSH EAX; | Arg1   	0x3DA9FBE8
+					MOV ESI, entity
+					ADD ESI, 0x70
+					MOV ECX, ESI; | base + 0x70
+					MOV EAX, 0x0052E6D0
+					CALL EAX; game.0052E6D0; \game.0052E6D0
+					}*/
+					/*_asm {
 						MOV ESI, entity
-						ADD ESI, 0x70
-						MOV ECX, ESI; | base + 0x70
-						MOV EAX, 0x0052E6D0
-						CALL EAX; game.0052E6D0; \game.0052E6D0
-				}*/
-				/*_asm {
-					MOV ESI, entity
-					PUSH 0x10; / Arg1 = 00000010
-					LEA ECX, DWORD PTR DS : [ESI + 0x70]; |
-					MOV EAX, 0x0052C3B0
-					CALL EAX; Game.0052C3B0; \Game.0052C3B0
+						PUSH 0x10; / Arg1 = 00000010
+						LEA ECX, DWORD PTR DS : [ESI + 0x70]; |
+						MOV EAX, 0x0052C3B0
+						CALL EAX; Game.0052C3B0; \Game.0052C3B0
 
 
-					}*/
-				/*_asm {
-					MOV ESI, entity
-					MOV ECX, ESI
-					MOV EAX, DWORD PTR DS : [ESI]
-					PUSH 0x31
-					CALL DWORD PTR DS : [EAX + 0x34]
+						}*/
+					/*_asm {
+						MOV ESI, entity
+						MOV ECX, ESI
+						MOV EAX, DWORD PTR DS : [ESI]
+						PUSH 0x31
+						CALL DWORD PTR DS : [EAX + 0x34]
 
 
-					}*/
+						}*/
+					//}
+					// car_calm func
+					/*_asm
+					{
+						PUSH 0x1
+							MOV ECX, entity
+							MOV EAX, 0x00470D30
+							CALL EAX; Game.00470D30
+							TEST AL, AL
+							JE end
+							PUSH 0x14; / Arg1 = 00000014
+							MOV ECX, entity
+							ADD ECX, 0x70; |
+							MOV EAX, 0x0051A920
+							CALL EAX; Game.0051A920; \Game.0051A920
+						end:
+
+
+					}
+					*/
+					//g_CCore->GetGame()->LockCarDoor(entity, 1, true);
 				//}
-				// car_calm func
-				_asm
-				{
-					PUSH 0x1
-						MOV ECX, entity
-						MOV EAX, 0x00470D30
-						CALL EAX; Game.00470D30
-						TEST AL, AL
-						JE end
-						PUSH 0x14; / Arg1 = 00000014
-						MOV ECX, entity
-						ADD ECX, 0x70; |
-						MOV EAX, 0x0051A920
-						CALL EAX; Game.0051A920; \Game.0051A920
-					end:
-
-
-				}
-			}
+			//}
 		
 		}
 		else

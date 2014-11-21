@@ -1,5 +1,14 @@
-#ifndef ENGINESTACK_H
-#define ENGINESTACK_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: a FIFO message buffer used instead of MafiaScript
+
+	@author Romop5
+	@version 1.0 1/9/14
+*/
+
+#ifndef __ENGINESTACK_H
+#define __ENGINESTACK_H
 struct EngineStackMessage
 {
 	unsigned int		messageId;

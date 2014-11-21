@@ -23,18 +23,12 @@ CChat::CChat()
 	IsRendering				=	false;
 	bIsTyping				=	false;
 	m_bBackground			=	false;
-	isCamOn					=	false;
-
-	camDegree				=	0.0f;
 	chatTexture				=	NULL;
 
 	shouldReRender			=	true;
-
 	animation				=	0;
-	camSpeed				=   1.0f;
-
+	
 	this->ChatPoolStart = NULL;
-	//this->ChatPoolEnd = NULL;
 	this->elementCount = 0;
 }
 CChat::~CChat()
@@ -63,7 +57,6 @@ void CChat::Render(IDirect3DDevice8* pInterface,LPD3DXFONT font)
 		
 		return;
 	}
-	//this->DoRendering();
 }
 
 void CChat::AddMessage(std::string message)
@@ -92,13 +85,6 @@ void CChat::AddMessage(std::string message)
 				return;
 			}
 			else {
-				/*CColoredStruct* newStruct = new CColoredStruct();
-				newStruct->color = 0xFFFFFFFF;
-				newStruct->width = 50;
-				char* text = new char[100];
-				sprintf(text, "ahoj");
-				newStruct->text = text;
-				nextText->PushBlock(newStruct);*/
 				nextText->ReCalculate();
 				newStack = new CChatStack();
 				newStack->text = nextText;
@@ -111,16 +97,6 @@ void CChat::AddMessage(std::string message)
 	}
 }
 
-void CChat::Init(IDirect3DDevice8* g_D3DDevice)
-{
-	//LPD3DXFONT	*test = NULL;
-	//if(D3DXCreateFont(g_D3DDevice,CreateFont(18,0,0,0,0,0,0,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,0,TEXT("Arial")),test) == S_OK)
-	//	MessageBox(NULL,"font Ideme","nie",MB_OK);
-		//IsRendering	= true;
-	//m_font = *test;
-}
-
-
 void CChat::DoneMessage()
 {
 	if(ChatMessage != "")
@@ -131,9 +107,7 @@ void CChat::DoneMessage()
 			{
 				char buff[1024];
 				sprintf(buff,"%s",ChatMessage.c_str());
-				//g_CCore->GetChat()->AddMessage(buff);
 				DoCommand(buff);
-				//g_CCore->GetChat()->AddMessage("prikaz");
 			}
 		} else
 		{
@@ -144,7 +118,6 @@ void CChat::DoneMessage()
 			bsOut.Write((RakNet::MessageID)LHMP_PLAYER_CHAT_MESSAGE);
 			bsOut.Write(buffer);
 			g_CCore->GetNetwork()->SendServerMessage(&bsOut,HIGH_PRIORITY,RELIABLE_ORDERED);
-			//g_CCore->GetChat()->AddMessage(ChatMessage);
 		}
 		ChatMessage	= "";
 	}
@@ -183,10 +156,7 @@ void CChat::DoCommand(char str[])
 		if (strlen(varlist) > 0)
 		{
 			int newwidth = atoi(varlist);
-			if (newwidth > 200)
-			{
-				CHAT_WIDTH = newwidth;
-			}
+			CHAT_WIDTH = Tools::Clamp(newwidth, 200, 500);
 		}
 	}
 	else if (strcmp(command, "splittext") == 0)
@@ -204,19 +174,6 @@ void CChat::DoCommand(char str[])
 			}
 		}
 	}
-	else if(strcmp(command,"cam") == 0)
-	{
-		this->isCamOn = !isCamOn;
-		if(isCamOn == 0)
-		{
-			g_CCore->GetGame()->CameraUnlock();
-		} else
-		{
-			camPos = g_CCore->GetLocalPlayer()->GetLocalPos();
-			camR1 = 1; camR2 = 0, camR3 = 1;
-			g_CCore->GetGame()->SetCameraPos(camPos,camR1,camR2,camR3);
-		}
-	}
 
 	else if (strcmp(command, "debug") == 0)
 	{
@@ -226,15 +183,9 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->GetGame()->KillPed(g_CCore->GetLocalPlayer()->GetBase());
 	}
-	else if(strcmp(command,"getcampos") == 0)
-	{
-		char buff[255];
-		sprintf(buff,"Pos:%f %f %f Rot: %f %f %f",camPos.x,camPos.y,camPos.z,camR1,camR2,camR3);
-		g_CCore->GetChat()->AddMessage(buff);
-	}
 	else if(strcmp(command,"bg") == 0)
 	{
-		g_CCore->GetChat()->SetBackground(!this->GetBackground());
+		g_CCore->GetChat()->SetBackground(!this->IsBackgroundActive());
 	}
 	else if (strcmp(command, "getpos") == 0)
 	{
@@ -289,6 +240,11 @@ void CChat::DoCommand(char str[])
 	{
 		//g_CCore->GetNetwork()->httpRequest(NULL, "lh-mp.eu/lastnews.php", Request);
 	}
+	else if (strcmp(command, "obor") == 0)
+	{
+		DWORD frame = *(DWORD*) (g_CCore->GetLocalPlayer()->GetEntity()+0x68);
+		g_CCore->GetGame()->SetFrameScale(frame,2.0,2.0,2.0);
+	}
 	else if (strcmp(command, "turbo") == 0)
 	{
 		if (g_CCore->GetLocalPlayer()->IDinCar != -1)
@@ -304,7 +260,169 @@ void CChat::DoCommand(char str[])
 				veh->SetSpeed(speed);
 			} 
 		}
+	} else if (strcmp(command, "chcek") == 0)
+	{
+		char * pEnd;
+		long int vstup;
+		vstup = strtol(varlist, &pEnd, 16);
+
+		if (vstup != NULL)
+		{
+			int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vstup);
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+			if (veh)
+			{
+				g_CCore->GetGame()->CarUpdate(veh->GetEntity(), veh->GetPosition(), veh->GetRotation());
+				g_CCore->GetChat()->AddMessage("Done");
+			}
+		}
+			
 	}
+	else if (strcmp(command, "move") == 0)
+	{
+		char * pEnd;
+		long int vstup;
+		vstup = strtol(varlist, &pEnd, 16);
+
+		if (vstup != NULL)
+		{
+			int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vstup);
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+			if (veh)
+			{
+
+				g_CCore->GetChat()->AddMessage("Done");
+				g_CCore->GetGame()->CarUpdate(veh->GetEntity(), veh->GetPosition(), veh->GetRotation());
+			}
+		}
+	}
+	else if (strcmp(command, "cpkar") == 0)
+	{
+		char * pEnd;
+		long int vstup;
+		vstup = strtol(varlist, &pEnd, 16);
+
+		if (vstup != NULL)
+		{
+			int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vstup);
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+			if (veh)
+			{
+
+				g_CCore->GetChat()->AddMessage("Done");
+				DWORD entity = veh->GetEntity();
+
+				//*(float*)(*(DWORD*)(entity + 0x438) + 0x40) += 10.0f;	// pos
+				//*(float*)(*(DWORD*)(entity + 0x438) + 0x9C) += 0.1f;	// rot
+
+				_asm {
+					MOV EDI, entity
+					MOV ECX, EDI;  EDI == actorBase
+						MOV EAX, 0x00469DD0
+						CALL EAx; Game.00469DD0
+				}
+			}
+		}
+	}
+	else if (strcmp(command, "fas") == 0)
+	{
+		char * pEnd;
+		long int vstup;
+		vstup = strtol(varlist, &pEnd, 16);
+
+		if (vstup != NULL)
+		{
+			int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vstup);
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+			if (veh)
+			{
+		
+				g_CCore->GetChat()->AddMessage("Done");
+				Vector3D move;
+				move.x = 3000.0f;
+				move.y = 0.0f;
+				move.z = 0.0f;
+				//Vector3D position = veh->GetPosition();
+				//position.x += 10.0f;
+				//veh->SetPosition(position);
+
+				DWORD entity = veh->GetEntity();
+				/*_asm {
+					MOV ESI,entity
+						MOV ECX, DWORD PTR DS : [ESI + 0x2198]
+						PUSH 0; / Arg1 = 00000000
+						OR ECX, 1; |
+						MOV DWORD PTR DS : [ESI + 0x2198], ECX; |
+						MOV ECX, ESI; |
+						MOV EAX, 0x0044C750;
+					CALL EAX; Game.0044C750; \triggers car activate
+				}
+					
+				_asm {
+					mov ECX, 0x44924000
+					PUSH ECX; / 44924000
+					MOV EDX, 0x00656330
+					PUSH EDX; | 00656330
+					lea ECX, move
+					lea EDX, position
+					PUSH ECX; | vector of movement
+					PUSH EDX; | position vector ?
+					PUSH 0x3F99999A; | Arg2 = 3F99999A
+					MOV EAX, entity
+					MOV ESI, EAX
+					PUSH EAX; | actor(vehicle)
+					LEA ECX, DWORD PTR DS : [ESI + 0x70]; | ESI = again some actor(vehicle)
+					MOV EAX, 0x005180A0
+					CALL EAX; Game.005180A0; \Game.005180A0
+					}*/
+				/*_asm {
+					MOV ESI, entity
+					PUSH 0; / Arg1
+					MOV ECX, ESI; |
+					MOV EAX, 0x0044C750
+					CALL EAX; Game.0044C750; \Game.0044C750 // trigger type 2
+					MOV BYTE PTR DS : [ESI + 0x78], 1
+				}*/
+
+
+
+				//position.x += 10.0f;
+				*(float*)(entity + 0x40C) += 10.0f;
+				//*(float*)(entity + 0x410) = this->playerPos.y;
+				//*(float*)(entity + 0x414) = this->playerPos.z;
+
+				Vector3D normal;
+				normal.x = normal.z = 1.0f;
+				normal.y = 0.0f;
+
+				Vector3D position;
+				position.x = *(float*)(entity + 0x40C);
+				position.y = *(float*)(entity + 0x410);
+				position.z = *(float*)(entity + 0x414);
+
+				_asm {
+					MOV EBP, entity
+					LEA ECX, DWORD PTR SS : [EBP + 0x70]; 
+					lea EDX, normal
+					PUSH EDX; / Arg4 normal vector ? or what
+					PUSH 1; | Arg3 = 00000001
+					LEA EAX, position
+					PUSH EAX; | Arg2 position
+					lea EDX, move
+					PUSH EDX; | Arg1 strength vector
+					mov eax, 0x00517B10
+					CALL EAX;  Game.00517B10; \Game.00517B10
+
+
+				}
+			}
+		}
+
+	}
+
+	
+
+
 	/*else if (strcmp(command, "getframe") == 0)
 	{
 		CVehicle* veh = g_CCore->GetVehiclePool()->Return(g_CCore->GetLocalPlayer()->IDinCar);
@@ -585,7 +703,7 @@ void CChat::SetBackground(bool bg)
 	m_bBackground = bg;
 }
 
-bool CChat::GetBackground()
+bool CChat::IsBackgroundActive()
 {
 	return m_bBackground;
 }
@@ -624,7 +742,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 
 	device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 255, 255), 1.0f, 0);
 	
-	if (this->GetBackground() == 1)
+	if (this->IsBackgroundActive() == 1)
 	{
 		int howMany = elementCount;
 		if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
@@ -643,7 +761,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 	{
 		int line_y = (20 * (howMany-i));
 		//g_CCore->GetGraphics()->DrawTextA(stack, 20, line_y, 0xffffffff, true, true);
-		g_CCore->GetGraphics()->DrawColoredText(stackPointer->text, 20, line_y, true);
+		g_CCore->GetGraphics()->GetFont()->DrawColoredText(stackPointer->text, 20, line_y, true);
 		stackPointer = stackPointer->next;
 	}
 	iRendered = howMany;
@@ -655,11 +773,12 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 		iRendered = 0;
 		if (ChatMessage == "")
 		{
-			if (this->GetBackground() == true)
+			if (this->IsBackgroundActive() == true)
 				g_CCore->GetGraphics()->Clear(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
 				//g_CCore->GetGraphics()->FillARGB(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
 			//return;
-			g_CCore->GetGraphics()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+			g_CCore->GetGraphics()->GetFont()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+			//g_CCore->GetGraphics()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
 		}
 		else
 		{
@@ -674,10 +793,9 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 				char buf[255];
 				sprintf(buf, "%s%s", farba.c_str(), ChatMessage.substr(index, howMuchWeNeed).c_str());
 				int line_y = base_y + (30 * iRendered);
-				if (this->GetBackground() == true)
+				if (this->IsBackgroundActive() == true)
 					g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				//g_CCore->GetGraphics()->FillARGB(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				g_CCore->GetGraphics()->DrawTextA(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+				g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
 				index += howMuchWeNeed;
 				iRendered++;
 			}
@@ -694,7 +812,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 
 void	CChat::DoRendering()
 {
-	if (this->GetBackground() == 1)
+	if (this->IsBackgroundActive() == 1)
 	{
 		int howMany = elementCount;
 		if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
@@ -712,8 +830,7 @@ void	CChat::DoRendering()
 	for (int i = 0; i < howMany; i++)
 	{
 		int line_y = (20 * (howMany - i));
-		//g_CCore->GetGraphics()->DrawTextA(stack, 20, line_y, 0xffffffff, true, true);
-		g_CCore->GetGraphics()->DrawColoredText(stackPointer->text, 20, line_y, true);
+		g_CCore->GetGraphics()->GetFont()->DrawColoredText(stackPointer->text, 20, line_y, true);
 		stackPointer = stackPointer->next;
 	}
 	iRendered = howMany;
@@ -725,11 +842,10 @@ void	CChat::DoRendering()
 		iRendered = 0;
 		if (ChatMessage == "")
 		{
-			if (this->GetBackground() == true)
+			if (this->IsBackgroundActive() == true)
 				g_CCore->GetGraphics()->Clear(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-			//g_CCore->GetGraphics()->FillARGB(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
 			//return;
-			g_CCore->GetGraphics()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+			g_CCore->GetGraphics()->GetFont()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
 		}
 		else
 		{
@@ -744,10 +860,10 @@ void	CChat::DoRendering()
 				char buf[255];
 				sprintf(buf, "%s%s", farba.c_str(), ChatMessage.substr(index, howMuchWeNeed).c_str());
 				int line_y = base_y + (30 * iRendered);
-				if (this->GetBackground() == true)
+				if (this->IsBackgroundActive() == true)
 					g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				//g_CCore->GetGraphics()->FillARGB(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				g_CCore->GetGraphics()->DrawTextA(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+
+				g_CCore->GetGraphics()->DrawText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true,true);
 				index += howMuchWeNeed;
 				iRendered++;
 			}
@@ -768,4 +884,14 @@ void	CChat::OnResetDevice()
 {
 	chatTexture = false;
 	shouldReRender = true;
+}
+
+
+bool	CChat::shouldWeRerender()
+{
+	return this->shouldReRender;
+}
+void	CChat::SetRerenderState(bool state)
+{
+	this->shouldReRender = state;
 }

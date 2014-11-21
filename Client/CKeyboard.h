@@ -1,12 +1,17 @@
-#ifndef C_KEYBOARD
-#define C_KEYBOARD
+/**
+	Lost Heaven Multiplayer
 
-//#include "Windows.h"
-/*#ifndef CALLBACK
-#define CALLBACK _stdcall
-#endif
+	Purpose: proccess all input from keyboard
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code, ged rid of DirectInput
 */
 
+#ifndef __C_KEYBOARD
+#define __C_KEYBOARD
+
+#include <Windows.h>
 
 class CKeyboard
 {
@@ -24,7 +29,6 @@ public:
 
 	void				ApplyHook();
 	void*				oldProc;
-	//static  LRESULT CALLBACK ProcessMessage(HWND, UINT, WPARAM, LPARAM);
 	unsigned int		lastBACKSPACE;
 
 	int					GetScriptKey(unsigned char);
@@ -33,6 +37,12 @@ public:
 	bool				isCapsLockPressed();
 	bool				isShiftPressed();
 	void				OnASCIIKeyDown(char);
+
+	// Raw input
+	
+	void				ProccessMessage(LPMSG message);
+	// Returns NULL when conversion is invalid, otherwise a ASCII char
+	char				ConvertToASCII(unsigned short VK);
 };
 
 #endif

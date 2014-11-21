@@ -1,11 +1,17 @@
-#ifndef LOCALPLAYER_H
-#define LOCALPLAYER_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: used for ineteraction with local player
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code
+*/
+
+#ifndef __LOCALPLAYER_H
+#define __LOCALPLAYER_H
 
 #include "../shared/structures.h"
-
-extern _Player sPedPlayer[16];
-extern _Player sTempPlayer;
-extern _Server svr;
 
 class CLocalPlayer
 {

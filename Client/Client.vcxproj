@@ -101,6 +101,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\sdks\cd3dfont\d3dfont.cpp" />
+    <ClCompile Include="..\sdks\cd3dfont\d3dutil.cpp" />
+    <ClCompile Include="..\sdks\cd3dfont\dxutil.cpp" />
     <ClCompile Include="..\sdks\RakNet\Base64Encoder.cpp" />
     <ClCompile Include="..\sdks\RakNet\BitStream.cpp" />
     <ClCompile Include="..\sdks\RakNet\CCRakNetSlidingWindow.cpp" />
@@ -217,6 +220,7 @@
     <ClCompile Include="CCrashHandler.cpp" />
     <ClCompile Include="CEngineStack.cpp" />
     <ClCompile Include="CEntity.cpp" />
+    <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGame.cpp" />
     <ClCompile Include="CGraphics.cpp" />
     <ClCompile Include="CHooks.cpp" />
@@ -226,6 +230,8 @@
     <ClCompile Include="CLog.cpp" />
     <ClCompile Include="CPed.cpp" />
     <ClCompile Include="CPedPool.cpp" />
+    <ClCompile Include="CPickup.cpp" />
+    <ClCompile Include="CPickupPool.cpp" />
     <ClCompile Include="CVehicle.cpp" />
     <ClCompile Include="CVehiclePool.cpp" />
     <ClCompile Include="CLocalPlayer.cpp" />
@@ -233,6 +239,9 @@
     <ClCompile Include="CNetwork.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\sdks\cd3dfont\d3dfont.h" />
+    <ClInclude Include="..\sdks\cd3dfont\d3dutil.h" />
+    <ClInclude Include="..\sdks\cd3dfont\dxutil.h" />
     <ClInclude Include="..\sdks\RakNet\AutopatcherPatchContext.h" />
     <ClInclude Include="..\sdks\RakNet\AutopatcherRepositoryInterface.h" />
     <ClInclude Include="..\sdks\RakNet\Base64Encoder.h" />
@@ -388,6 +397,7 @@
     <ClInclude Include="..\sdks\RakNet\XBox360Includes.h" />
     <ClInclude Include="..\sdks\RakNet\_FindFirst.h" />
     <ClInclude Include="..\shared\gamestructures.h" />
+    <ClInclude Include="..\shared\limits.h" />
     <ClInclude Include="..\shared\structures.h" />
     <ClInclude Include="..\shared\tools.h" />
     <ClInclude Include="..\shared\version.h" />
@@ -402,6 +412,7 @@
     <ClInclude Include="CEngineStack.h" />
     <ClInclude Include="CEntity.h" />
     <ClInclude Include="CFileTransfer.h" />
+    <ClInclude Include="CFont.h" />
     <ClInclude Include="CGame.h" />
     <ClInclude Include="CGraphics.h" />
     <ClInclude Include="CHooks.h" />
@@ -411,14 +422,14 @@
     <ClInclude Include="CLog.h" />
     <ClInclude Include="CPed.h" />
     <ClInclude Include="CPedPool.h" />
-    <ClInclude Include="CPlayerSync.h" />
+    <ClInclude Include="CPickup.h" />
+    <ClInclude Include="CPickupPool.h" />
+    <ClInclude Include="CPool.h" />
     <ClInclude Include="CVehicle.h" />
     <ClInclude Include="CVehiclePool.h" />
     <ClInclude Include="directx8hook.h" />
     <ClInclude Include="CLocalPlayer.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="CNetwork.h" />
-    <ClInclude Include="networkdef.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

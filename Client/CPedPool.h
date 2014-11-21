@@ -1,5 +1,15 @@
-#ifndef PEDPOOL_H
-#define	PEDPOOL_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: PED pool (array)
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code
+*/
+
+#ifndef __PEDPOOL_H
+#define	__PEDPOOL_H
 #include "CPed.h"
 
 class CPedPool

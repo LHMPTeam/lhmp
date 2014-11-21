@@ -291,7 +291,7 @@ void CEngineStack::DoMessage()
 		case CLIENT_ENGINESTACK::ES_CAMERASETPOS:
 		{
 			ENGINE_STACK::CAMERA_SET* pw = (ENGINE_STACK::CAMERA_SET*) start->data;
-			g_CCore->GetGame()->SetCameraPos(pw->pos, pw->rot.x, pw->rot.y, pw->rot.z);
+			g_CCore->GetGame()->SetCameraPos(pw->pos, pw->rot.x, pw->rot.y, pw->rot.z,0);
 		}
 			break;
 		case CLIENT_ENGINESTACK::ES_CAMERAUNLOCK:
@@ -573,6 +573,87 @@ void CEngineStack::DoMessage()
 					}
 					//g_CCore->GetGame()->ChangeSkin(veh->GetEntity(), veh->GetSkin());
 
+				}
+			}
+		}
+			break;
+
+		case CLIENT_ENGINESTACK::ES_CREATEPICKUP:
+		{
+			int ID = start->data;
+			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+			if (pickup)
+			{
+
+				if(pickup->IsVisible())
+				{
+
+					pickup->SetEntity(g_CCore->GetGame()->CreateFrame(pickup->GetModel()));
+					g_CCore->GetGame()->SetFrameScale(pickup->GetEntity(), pickup->GetSize(), pickup->GetSize(), pickup->GetSize());
+					g_CCore->GetGame()->SetFramePos(pickup->GetEntity(), pickup->GetPosition().x, pickup->GetPosition().y, pickup->GetPosition().z);
+					
+					//g_CCore->GetGame()->SetFrameRot(pickup->GetEntity(),0,0,0,0);
+
+					//char buff[200];
+					//sprintf(buff, "pice %f", pickup->GetSize());
+					//g_CCore->GetChat()->AddMessage(buff);
+				}
+			}
+		}
+			break;
+		case CLIENT_ENGINESTACK::ES_DELETEPICKUP:
+		{
+			int ID = start->data;
+			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+			if (pickup)
+			{
+				DWORD entity = pickup->GetEntity();
+				if (entity)
+				{
+					_asm
+					{
+						mov eax, entity
+							push eax
+							mov ecx, [eax]
+							call dword ptr ds : [ecx]
+					}
+					pickup->SetEntity(NULL);
+				}
+			}
+		}
+			break;
+		case CLIENT_ENGINESTACK::ES_SETPICKUPVISIBLE:
+		{
+			int ID = start->data;
+			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+			if (pickup)
+			{
+				if (!pickup->IsVisible())
+				{
+					DWORD entity = pickup->GetEntity();
+					if (entity)
+					{
+						_asm
+						{
+							mov eax, entity
+								push eax
+								mov ecx, [eax]
+								call dword ptr ds : [ecx]
+						}
+						pickup->SetEntity(NULL);
+					}
+
+					//g_CCore->GetChat()->AddMessage("pickup hide");
+				}
+				else {
+					if (!pickup->GetEntity())
+					{
+						pickup->SetEntity(g_CCore->GetGame()->CreateFrame(pickup->GetModel()));
+						g_CCore->GetGame()->SetFrameScale(pickup->GetEntity(), pickup->GetSize(), pickup->GetSize(), pickup->GetSize());
+						g_CCore->GetGame()->SetFramePos(pickup->GetEntity(), pickup->GetPosition().x, pickup->GetPosition().y, pickup->GetPosition().z);
+
+						//g_CCore->GetChat()->AddMessage("pickup visible");
+					}
 				}
 			}
 		}

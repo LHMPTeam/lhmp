@@ -1,5 +1,15 @@
-#ifndef CCOLOREDTEXT_H
-#define CCOLOREDTEXT_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: a class used in chat to precalculate colored
+	* text and thus save performace during its render 
+
+	@author Romop5
+	@version 1.0 1/9/14
+*/
+
+#ifndef __CCOLOREDTEXT_H
+#define __CCOLOREDTEXT_H
 
 struct CColoredStruct
 {
@@ -37,8 +47,13 @@ public:
 	CColoredText(char* input);
 	~CColoredText();
 
-	// it will split text to fit width and return the rest in new CColoredText instance
-	// returns NULL if text width equals or is smaller than desired width
+	/**
+		Splits the text into a line with desired width
+
+		@param width the desired line width
+		@param wordWrap whether it should wrap words split by character length
+		@return a new CColoredText holding the rest of text or NULL
+	*/
 	CColoredText* SplitText(unsigned int width, bool wordWrap);
 
 	void	PushBlock(CColoredStruct* block);

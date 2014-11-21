@@ -1,5 +1,15 @@
-#ifndef NETWORK_H
-#define NETWORK_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: handles all network communication
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code
+*/
+
+#ifndef __NETWORK_H
+#define __NETWORK_H
 
 #include <stdio.h>
 #include <string.h>

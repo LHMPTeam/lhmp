@@ -1,12 +1,10 @@
 #include "CCrashHandler.h"
-//#include "Windows.h"
 #include "CCore.h"
 #include <psapi.h>
 #include <Windows.h>
 #include "../shared/version.h"
 #include <fstream>
 #include <iostream>
-//#include <DbgHelp.h>
 
 extern CCore* g_CCore;
 void GetAdressAsModule(DWORD addr, char* outbuffer)
@@ -41,6 +39,12 @@ void GetAdressAsModule(DWORD addr, char* outbuffer)
 		}
 	}
 }
+/**
+	Handles exception call.
+	
+	Saves register information on disk and run CrashHandler.exe,
+	* which sends crash report to our server
+*/
 LONG	HandleIt(struct _EXCEPTION_POINTERS * ExceptionInfo)
 {
 	char buff[500];
@@ -58,8 +62,6 @@ LONG	HandleIt(struct _EXCEPTION_POINTERS * ExceptionInfo)
 		ExceptionInfo->ContextRecord->Esp, ExceptionInfo->ContextRecord->Ebp, ExceptionInfo->ContextRecord->Esi,
 		ExceptionInfo->ContextRecord->Edi,address);
 	g_CCore->GetCrashHandler()->SaveDumpOnDisk(buff);
-	//g_CCore->GetCrashHandler()->SendReport(buff);
-	//MessageBox(NULL, buff, "Crash occured", MB_OK);
 
 	STARTUPINFOA siStartupInfo;
 	PROCESS_INFORMATION piProcessInfo;
@@ -67,7 +69,6 @@ LONG	HandleIt(struct _EXCEPTION_POINTERS * ExceptionInfo)
 	memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 	siStartupInfo.cb = sizeof(siStartupInfo);
 
-	//char buff[300];
 	sprintf(buff, "CrashHandler.exe %p|%p@%p@%p@%p@%p@%p@%p@%p|%s|%s",
 		ExceptionInfo->ExceptionRecord->ExceptionAddress,
 		ExceptionInfo->ContextRecord->Eax,

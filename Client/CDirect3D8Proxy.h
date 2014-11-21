@@ -1,3 +1,12 @@
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: DirectX 8.1 proxy class used for DX hook
+
+	@author internet, Romop5
+	@version 1.0 1/9/14
+*/
+
 #include "d3d8.h"
 #include "CDirect3DDevice8Proxy.h"
 
@@ -8,25 +17,21 @@ private:
 public:
 	CDirect3D8Proxy(IDirect3D8* object) : p_obj(object)
 	{
-		//MessageBox(NULL,"Proxy start","Ahoj",MB_OK);
 	}
 
 	/*** IUnknown methods ***/
 	STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj)
 	{
-		//ATLTRACE(TEXT("MyDirectDevice::QueryInterface"));
 		return p_obj->QueryInterface(riid, ppvObj);
 	}
 
 	STDMETHOD_(ULONG,AddRef)()
 	{
-		//ATLTRACE(TEXT("MyDirectDevice::AddRef"));
 		return p_obj->AddRef();
 	}
 
 	STDMETHOD_(ULONG,Release)()
 	{
-		//ATLTRACE(TEXT("MyDirectDevice::Release"));
 		ULONG count = p_obj->Release();
 		if(0 == count)
 			delete this;

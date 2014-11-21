@@ -1,5 +1,15 @@
-#ifndef VEHICLE_H
-#define	VEHICLE_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: vehicle base class
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code
+*/
+
+#ifndef __VEHICLE_H
+#define	__VEHICLE_H
 #include "CEntity.h"
 #include "../shared/structures.h"
 class CVehicle : public CEntity

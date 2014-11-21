@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Shared\Source">
       <UniqueIdentifier>{2a1136cd-9e29-49b7-836a-40599578ae83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\CD3DFont">
+      <UniqueIdentifier>{cb356a35-bb42-4266-b13c-473d86fd5418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CD3DFont">
+      <UniqueIdentifier>{e77b31c8-2e69-4efd-937d-90f906775734}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -417,16 +423,28 @@
     <ClCompile Include="CColoredText.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CPickupPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CPickup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdks\cd3dfont\d3dfont.cpp">
+      <Filter>Source Files\CD3DFont</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdks\cd3dfont\d3dutil.cpp">
+      <Filter>Source Files\CD3DFont</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdks\cd3dfont\dxutil.cpp">
+      <Filter>Source Files\CD3DFont</Filter>
+    </ClCompile>
+    <ClCompile Include="CFont.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="directx8hook.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="networkdef.h">
-      <Filter>Header Files\Shared</Filter>
     </ClInclude>
     <ClInclude Include="CChat.h">
       <Filter>Header Files</Filter>
@@ -456,9 +474,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CGraphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CPlayerSync.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CEngineStack.h">
@@ -975,6 +990,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CFileTransfer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickupPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\limits.h">
+      <Filter>Header Files\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\cd3dfont\d3dfont.h">
+      <Filter>Header Files\CD3DFont</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\cd3dfont\d3dutil.h">
+      <Filter>Header Files\CD3DFont</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\cd3dfont\dxutil.h">
+      <Filter>Header Files\CD3DFont</Filter>
+    </ClInclude>
+    <ClInclude Include="CFont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

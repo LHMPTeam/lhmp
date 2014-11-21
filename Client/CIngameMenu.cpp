@@ -10,7 +10,6 @@ CIngameMenu::CIngameMenu()
 	itemSelect = 0;
 	this->m_bIsActive = false;
 	sprintf(newsBuff, "");
-	//this->setActive(false);
 }
 
 void Request(char* data)
@@ -25,9 +24,6 @@ void CIngameMenu::Init()
 	D3DXCreateFont(g_CCore->GetGraphics()->GetDevice(), CreateFont(80, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, 0, TEXT("arialbold")), &ahojmoj);
 	D3DXCreateFont(g_CCore->GetGraphics()->GetDevice(), CreateFont(40, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, 0, TEXT("Arial")), &menuitem);
 	D3DXCreateFont(g_CCore->GetGraphics()->GetDevice(), CreateFont(25, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, 0, TEXT("Arial")), &clock);
-
-	//BYTE Menu[] = { 0x85,0x50,0x4e,0x47,0x47};
-	//D3DXCreateTextureFromFileInMemory(g_CCore->GetGraphics()->GetDevice(), &Menu, sizeof(Menu), &MenuTexture);
 }
 bool CIngameMenu::isActive()
 {
@@ -50,7 +46,7 @@ void CIngameMenu::Tick()
 void CIngameMenu::Render()
 {
 	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
-	g_CCore->GetGraphics()->FillARGB(0, 0, screen.x, screen.y, D3DCOLOR_ARGB(140,0,0,0));
+	g_CCore->GetGraphics()->FillARGB(0, 0, screen.x, screen.y, D3DCOLOR_ARGB(200, 0, 0, 0));
 	//g_CCore->GetGraphics()->Clear(0, 0, screen.x, screen.y, D3DCOLOR_ARGB(200, 0, 0, 0));
 	g_CCore->GetGraphics()->DrawTextA("LH", 50, screen.y - 260, 0xffffffff, false, ahojmoj);
 	g_CCore->GetGraphics()->DrawTextA("MP", 140, screen.y - 260, 0xffff0000, false, ahojmoj);
@@ -117,6 +113,8 @@ void CIngameMenu::Render()
 			break;
 		}
 	}
+
+	//g_CCore->GetGraphics()->D3DDrawText("Ahoj moj", 50, 100, 0xFF00adef, true);
 }
 
 

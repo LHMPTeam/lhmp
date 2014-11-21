@@ -1,5 +1,16 @@
-#ifndef _CDIRECT_INPUT_PROXY_H
-#define _CDIRECT_INPUT_PROXY_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: DirectInput Device proxy class used for keyboard/mouse hook
+
+	@author internet, Romop5
+	@version 1.0 1/9/14
+	@todo probably no longer needed as we use Windows Messages & RAW Input
+	* to get keyboard/mouse messages
+*/
+
+#ifndef __CDIRECT_INPUT_PROXY_H
+#define __CDIRECT_INPUT_PROXY_H
 
 #define DIRECTINPUT_VERSION 0x0800
 #include "CDirectInput8DeviceProxy.h"
@@ -20,7 +31,6 @@ class MyDirectInput : public IDirectInput8
 		}
 		~MyDirectInput ( )
 		{
-			//WriteDebugEvent ( SString( "~MyDirectInput %08x", this ) );
 		}
 
 		/*** IUnknown methods ***/
@@ -36,7 +46,6 @@ class MyDirectInput : public IDirectInput8
 
 		ULONG STDMETHODCALLTYPE Release ( VOID )
 		{
-			// Call original function
 			ULONG ulRefCount = p_DI->Release ();
 			if ( ulRefCount == 0 )
 			{
@@ -47,9 +56,6 @@ class MyDirectInput : public IDirectInput8
 
 		HRESULT STDMETHODCALLTYPE EnumDevices ( DWORD a, LPDIENUMDEVICESCALLBACK b, LPVOID c, DWORD d )
 		{
-			//char buffer[255];
-			//sprintf(buffer,"EnumDevices, type: %X",a);
-			//MessageBoxA(NULL,buffer,"EnumDevices",MB_OK);
 			return p_DI->EnumDevices ( a, b, c, d );
 		}
 
@@ -90,34 +96,13 @@ class MyDirectInput : public IDirectInput8
 				{
 					isKB		= true;
 				}
-				//char buffer[255];
-				//if(rguid == GUID_SysKeyboard)
-				//	sprintf(buffer,"CreateDevice, type: sys keyboard");
-				//else
-				//	sprintf(buffer,"CreateDevice, type: %X",rguid);
-				//MessageBoxA(NULL,buffer,"CD",MB_OK);
-                //ATLTRACE(TEXT("MyDirectInput8::CreateDevice %x %x %x"), rguid.Data1, rguid.Data2, rguid.Data3);
-				//bool IsKeyboard = ( (DWORD)&rguid % 2);
-				//sprintf(buffer,"CreateDevice, type: %X IsKeyboard: %d",&rguid,IsKeyboard);
-				//MessageBoxA(NULL,buffer,"CD",MB_OK);
+				
                 HRESULT hr = p_DI->CreateDevice(rguid, b, unknown);
                 if(SUCCEEDED(hr)/* && rguid == GUID_SysKeyboard*/)
                 {
                         // Return our own keyboard device that checks for injected keypresses
                         MyDirectDevice* MDD = new MyDirectDevice(*b,isKB);
 						*b = MDD;
-						if(isKB)
-						{
-							//g_CCore;
-							//*g_CCore->
-							//CCore *cCore = CCore::GetSingletonPtr();
-							//cCore->m_K = MDD;
-						//= MDD;
-						}
-							//CCore::getInstance()->m_K = MDD;
-//							CCore::getInstance()->m_K = MDD;
-							//g_Keyboard	= MDD;
-                        //::CreateDevice(*device, rguid == GUID_SysKeyboard);
                 }
 
                 return hr;

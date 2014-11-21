@@ -1,5 +1,15 @@
-#ifndef C_INTERPOLATION
-#define C_INTERPOLATION
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: used for entity's movement interpolation
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code, add lag compensation, key sync
+*/
+
+#ifndef __C_INTERPOLATION
+#define __C_INTERPOLATION
 #include "../shared/structures.h"
 class CInterpolation
 {

@@ -171,10 +171,10 @@ void CCore::Run()
 	VirtualProtect((void*)0x005C0F72, sizeof(disableMissionObj), lpflOldProtect, &lpflOldProtect);
 
 	// fix car change position (on position / rot change)
-	VirtualProtect((void*)0x0052CD5A, sizeof(carChangePosFix), PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+	/*VirtualProtect((void*)0x0052CD5A, sizeof(carChangePosFix), PAGE_EXECUTE_READWRITE, &lpflOldProtect);
 	memcpy((void*)0x0052CD5A, (void*)carChangePosFix, sizeof(carChangePosFix));
 	VirtualProtect((void*)0x0052CD5A, sizeof(carChangePosFix), lpflOldProtect, &lpflOldProtect);
-
+	*/
 	// disable cheats (boxer,municak)
 	VirtualProtect((void*)0x005F964F, sizeof(disableCheats), PAGE_EXECUTE_READWRITE, &lpflOldProtect);
 	memcpy((void*)0x005F964F, (void*)disableCheats, sizeof(disableCheats));
@@ -237,6 +237,10 @@ void CCore::Pulse()
 		m_cLocalPlayer.Pulse();
 	}
 	m_cNetwork.Pulse();
+	
+}
+void CCore::PulseAfterSec()
+{
 	
 }
 bool CCore::IsRunning()
@@ -338,4 +342,9 @@ CKeyboard*	CCore::GetKeyboard()
 CIngameMenu* CCore::GetIngameMenu()
 {
 	return &this->m_cIngameMenu;
+}
+
+CPickupPool*	CCore::GetPickupPool()
+{
+	return &m_cPickuppool;
 }

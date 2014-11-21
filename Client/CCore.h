@@ -1,5 +1,14 @@
-#ifndef CORE_H
-#define CORE_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: global core class
+
+	@author Romop5, DavoSK, Zaklaus
+	@version 1.0 1/9/14
+*/
+
+#ifndef __CORE_H
+#define __CORE_H
 
 #include <stdio.h>
 #include "CNetwork.h"
@@ -8,7 +17,6 @@
 #include "CChat.h"
 #include "CGame.h"
 #include "CGraphics.h"
-//#include "CPlayerSync.h"
 #include "CEngineStack.h"
 #include "CPedPool.h"
 #include "CVehiclePool.h"
@@ -17,6 +25,7 @@
 #include "CKeyboard.h"
 #include "CIngameMenu.h"
 #include "CColoredText.h"
+#include "CPickupPool.h"
 #include <time.h>
 
 #include "../shared/tools.h"
@@ -32,7 +41,6 @@ private:
 	CChat					m_cChat;
 	CGame					m_cGame;
 	CGraphics				m_cGraphics;
-	//CPlayerSync				m_cPlayerSync;
 	CEngineStack			m_cEngineStack;
 	CPedPool				m_cPedPool;
 	CVehiclePool			m_cVehPool;
@@ -40,6 +48,7 @@ private:
 	CCrashHandler			m_crashhandler;
 	CKeyboard				m_cKeyboard;
 	CIngameMenu				m_cIngameMenu;
+	CPickupPool				m_cPickuppool;
 
 
 public:
@@ -48,6 +57,7 @@ public:
 	void					Run();
 	void					Start();
 	void					Pulse();
+	void					PulseAfterSec();
 	bool					IsRunning();
 	void					SetRunning(bool);
 	bool					IsLoaded();
@@ -68,6 +78,7 @@ public:
 	CCrashHandler*			GetCrashHandler();
 	CKeyboard*				GetKeyboard();
 	CIngameMenu*			GetIngameMenu();
+	CPickupPool*			GetPickupPool();
 
 	bool					m_bIsGameLoaded;
 	bool					m_bIsRespawning;         

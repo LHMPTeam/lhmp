@@ -1,13 +1,21 @@
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: chat system (message adding & rendering)
+
+	@author Romop5
+	@version 1.0 1/9/14
+	@todo clean code / make it more formal
+*/
 #pragma once
-#ifndef CHAT_H
-#define CHAT_H
+#ifndef __CHAT_H
+#define __CHAT_H
 	#include <Windows.h>
 	#include <d3d8.h>
 	#include <d3dx8.h>
 	#include <iostream>
 	#include <stdio.h>
 	#include "string.h"
-	//#include "directx8hook.h"
 	#define CMD_MAX_ARGS 64
 #include "CColoredText.h"
 
@@ -27,39 +35,41 @@ private:
 	int CHAT_LINES_PER_RENDER;
 	int CHAT_POINTER;
 	int CHAT_STARTX;
-	CChatStack*					ChatPoolStart;
-	//CChatStack*					ChatPoolEnd;
-	unsigned int				elementCount;
+	CChatStack*				ChatPoolStart;
+	unsigned int			elementCount;
 
-	LPDIRECT3DTEXTURE8			chatTexture;
-	int							animation;
+	LPDIRECT3DTEXTURE8		chatTexture;
+	int						animation;
+
+	bool					shouldReRender;
 public:
-	std::string					ChatMessage;
-	std::string					LastInput;
+	std::string				ChatMessage;
+	std::string				LastInput;
 public:
 	CChat();
 	~CChat();
-	void						Render(IDirect3DDevice8*,LPD3DXFONT);
-	void						AddMessage(std::string);
-	void						Init(IDirect3DDevice8*);
-	void						DoneMessage();
-	bool						IsTyping();
-	void						SetTyping(bool);
-	void						ProceedKeyboard(LPVOID);
-	void						DoCommand(char []);
-	void						SetBackground(bool);
-	bool						GetBackground();
-	void						RenderTexture(IDirect3DDevice8*);
-	void						OnLostDevice();
-	void						OnResetDevice();
-	void						DoRendering();
+	// Dx callbacks
+	void					OnLostDevice();
+	void					OnResetDevice();
+	void					Render(IDirect3DDevice8*,LPD3DXFONT);
 
-	// heh, for fun
-	bool		isCamOn;
-	Vector3D	camPos;
-	float		camR1,camR2,camR3;
-	float		camDegree;
-	float		camSpeed;
-	bool		shouldReRender;
+	void					AddMessage(std::string);
+	void					DoneMessage();
+	void					DoCommand(char[]);
+
+	bool					IsTyping();
+	void					SetTyping(bool);
+	void					ProceedKeyboard(LPVOID);
+	void					SetBackground(bool);
+	bool					IsBackgroundActive();
+
+	// chat rendering
+	void					RenderTexture(IDirect3DDevice8*);
+	void					DoRendering();
+
+	bool					shouldWeRerender();
+	void					SetRerenderState(bool);
+
+	
 };
 #endif

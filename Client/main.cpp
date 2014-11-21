@@ -4,6 +4,7 @@
 #include "CDirect3D8Proxy.h"
 #include "CHooks.h"
 #include <Psapi.h>
+#include <Windows.h>
 #pragma comment( lib, "psapi.lib" )
 
 CCore		*g_CCore = NULL;
@@ -13,7 +14,19 @@ typedef HRESULT (WINAPI *DirectInput8Create_t)(HINSTANCE hinst, DWORD dwVersion,
 
 HRESULT WINAPI MyDirectInput8Create(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID * ppvOut,
                                                                         LPUNKNOWN punkOuter);
+
+typedef BOOL (WINAPI *PeekMessageW_hook) (
+__out LPMSG lpMsg,
+__in_opt HWND hWnd,
+__in UINT wMsgFilterMin,
+__in UINT wMsgFilterMax,
+__in UINT wRemoveMsg);
+
+
+PeekMessageW_hook orig_PeekMessage;
 DirectInput8Create_t orig_DirectInput8Create;
+
+
 void MainThread(void);
 
 int count = 0;
@@ -57,7 +70,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 			SetHooks();
 			WaitTillD3D8IsLoaded();	// DxHook
 			CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&MainThread, 0, 0, 0);	// hlavne vlakno
-			CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&TestKB, 0, 0, 0);	// testovacia klavesnica
+			//CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&TestKB, 0, 0, 0);	// testovacia klavesnica
 			
 			break;
 	case DLL_PROCESS_DETACH:
@@ -94,7 +107,7 @@ void MainThread(void)
 		RakSleep(30);
 
 		
-		int c2 = GetProcessCount();
+		/*int c2 = GetProcessCount();
 		if (c2 != count)
 		{
 			if (c2 > count)
@@ -103,10 +116,27 @@ void MainThread(void)
 				//CheckProccesses();
 			}
 			count = c2;
-		}
+		}*/
 	}
 }
 
+BOOL WINAPI hookPeekMessageW(
+	__out LPMSG lpMsg,
+	__in_opt HWND hWnd,
+	__in UINT wMsgFilterMin,
+	__in UINT wMsgFilterMax,
+	__in UINT wRemoveMsg)
+{
+	bool result = orig_PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg) == 1;
+	if (result)
+	{
+		if (lpMsg->message == WM_INPUT)
+		{
+			g_CCore->GetKeyboard()->ProccessMessage(lpMsg);
+		}
+	}
+	return result;
+}
 
 void WaitTillD3D8IsLoaded()
 {
@@ -116,6 +146,10 @@ void WaitTillD3D8IsLoaded()
 	}
 	HMODULE hM = GetModuleHandleA("d3d8.dll");
 	pDirect3DCreate8 = (PBYTE)GetProcAddress(hM, "Direct3DCreate8");
+
+	hM = GetModuleHandleA("user32.dll");
+	PBYTE peekMessageAdd = (PBYTE)GetProcAddress(hM, "PeekMessageW");
+	orig_PeekMessage = (PeekMessageW_hook)DetourFunction(peekMessageAdd, (PBYTE)hookPeekMessageW);
 	HookAPI();
 }
 

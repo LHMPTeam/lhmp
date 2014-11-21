@@ -1,15 +1,13 @@
-#include "CKeyboard.h"
 #include "CCore.h"
+#include "CKeyboard.h"
 
 #define	DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
-//#include "Windows.h"
 
 extern CCore* g_CCore;
 
 CKeyboard::CKeyboard()
 {
-	//firstBACKSPACE = NULL;
 	lastBACKSPACE = NULL;
 	ignore = false;
 }
@@ -24,7 +22,7 @@ void CKeyboard::ProceedKeyboard(void *data)
 			if (g_CCore->GetChat()->IsTyping())
 			{
 				
-				if (i == DIK_BACKSPACE)
+				/*if (i == DIK_BACKSPACE)
 				{
 					if (lastBACKSPACE + 100 < time)
 					{
@@ -34,7 +32,7 @@ void CKeyboard::ProceedKeyboard(void *data)
 						lastBACKSPACE = time;
 						g_CCore->GetChat()->shouldReRender = true;
 					}
-				}
+				}*/
 			}
 			if (g_CCore->GetGraphics()->renderMap)
 			{
@@ -70,128 +68,11 @@ void CKeyboard::ProceedKeyboard(void *data)
 			{
 				g_CCore->GetGraphics()->TakeScreenshot();
 			}
-			else if (i == DIK_F10)
-			{
-				g_CCore->GetChat()->camSpeed *= 0.9f;
-				//g_CCore->GetGraphics()->ToggleInGameHud(true);
-			}
-			else if (i == DIK_F11)
-			{
-				g_CCore->GetChat()->camSpeed *= 1.1f;
-				//g_CCore->GetGraphics()->TakeScreenshot();
-			}
-			if (g_CCore->GetChat()->isCamOn)
-			{
-				float rate = 1;
-				rate *= g_CCore->GetChat()->camSpeed;
-				if (((BYTE*)data)[DIK_LSHIFT] != 0 || ((BYTE*)data)[DIK_RSHIFT] != 0)
-					rate = 10;
-				if (i == DIK_NUMPAD8 || i == DIK_W)
-				{
-					g_CCore->GetChat()->camPos.x += (float) 0.16*rate*g_CCore->GetChat()->camR1;
-					g_CCore->GetChat()->camPos.z += (float) 0.16*rate*g_CCore->GetChat()->camR3;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPAD2 || i == DIK_S)
-				{
-					//camPos.x -= 0.16*rate;
-					g_CCore->GetChat()->camPos.x -= (float) 0.16*rate*g_CCore->GetChat()->camR1;
-					g_CCore->GetChat()->camPos.z -= (float) 0.16*rate*g_CCore->GetChat()->camR3;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPAD4 || i == DIK_A)
-				{
-					//camPos.z += 0.16*rate;
-					g_CCore->GetChat()->camPos.x += (float) 0.16*rate*(-1)*g_CCore->GetChat()->camR3;
-					g_CCore->GetChat()->camPos.z += (float) 0.16*rate*g_CCore->GetChat()->camR1;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPAD6 || i == DIK_D)
-				{
-					//camPos.z -= 0.16*rate;
-					g_CCore->GetChat()->camPos.x -= (float) 0.16*rate*(-1)*g_CCore->GetChat()->camR3;
-					g_CCore->GetChat()->camPos.z -= (float) 0.16*rate*g_CCore->GetChat()->camR1;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPADPLUS)
-				{
-					g_CCore->GetChat()->camPos.y += (float) 0.16*rate;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPADMINUS)
-				{
-					g_CCore->GetChat()->camPos.y -= (float) 0.16*rate;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2,g_CCore->GetChat()->camR3);
-				}
-				/*if(i == DIK_NUMPAD7)
-				{
-				camR1 += 0.16;
-				if(camR1 > 1.0f) camR1 = 1.0f;
-				g_CCore->GetGame()->SetCameraPos(camPos,camR1,camR2,camR3);
-				}
-				if(i == DIK_NUMPAD9)
-				{
-				camR1 -= 0.16;
-				if(camR1 < -1.0f) camR1 = -1.0f;
-				g_CCore->GetGame()->SetCameraPos(camPos,camR1,camR2,camR3);
-				}*/
-				if (i == DIK_NUMPAD7)
-				{
-					g_CCore->GetChat()->camR2 += 0.16f;
-					if (g_CCore->GetChat()->camR2 > 1.0f) g_CCore->GetChat()->camR2 = 1.0f;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPAD9)
-				{
-					g_CCore->GetChat()->camR2 -= 0.16f;
-					if (g_CCore->GetChat()->camR2 < -1.0f) g_CCore->GetChat()->camR2 = -1.0f;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPAD1)
-				{
-					g_CCore->GetChat()->camDegree++;
-					if (g_CCore->GetChat()->camDegree > 180) g_CCore->GetChat()->camDegree = -180;
-					Vector3D angle = Tools::ComputeOffsetDegrees(g_CCore->GetChat()->camDegree);
-					g_CCore->GetChat()->camR1 = angle.x;
-					g_CCore->GetChat()->camR3 = angle.z;
-
-					//camR3 += 0.16;
-					//if(camR3 > 1.0f) camR3 = 1.0f;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-				if (i == DIK_NUMPAD3)
-				{
-					/*camR3 -= 0.16;
-					if(camR3 < -1.0f) camR3 = -1.0f;
-					*/
-					g_CCore->GetChat()->camDegree--;
-					if (g_CCore->GetChat()->camDegree < -180)g_CCore->GetChat()->camDegree = 180;
-					Vector3D angle = Tools::ComputeOffsetDegrees(g_CCore->GetChat()->camDegree);
-					g_CCore->GetChat()->camR1 = angle.x;
-					g_CCore->GetChat()->camR3 = angle.z;
-					g_CCore->GetGame()->SetCameraPos(g_CCore->GetChat()->camPos, g_CCore->GetChat()->camR1,
-						g_CCore->GetChat()->camR2, g_CCore->GetChat()->camR3);
-				}
-			}
+			
 		}
 		if (((BYTE*)data)[i] != keys[i] && ((BYTE*)data)[i] != 0)	// pressed
 		{
 			this->OnKeyDown(i);
-			/*if (i == DIK_ESCAPE)
-			{
-
-				//TerminateProcess(GetCurrentProcess(), 0);
-			}*/
-
 		}
 	}
 	memcpy(keys, data, 256);		// save actual status for next proceed
@@ -202,153 +83,13 @@ void	CKeyboard::OnKeyDown(unsigned char i)
 {
 	if (g_CCore->GetChat()->IsTyping())
 	{
-		g_CCore->GetChat()->shouldReRender = true;
-		// key IDs for debug
-		//char buff[20];
-		//sprintf(buff,"%d",i);
-		//AddMessage(buff);
-		/*char pismeno = 0x00;
-		if (i == DIK_0 && this->isShiftPressed())
-			pismeno = ')';
-		else if (i == DIK_0 || i == DIK_NUMPAD0)
-			pismeno = '0';
-		else if (i == DIK_1 || i == DIK_NUMPAD1)
-			pismeno = '1';
-		else if (i == DIK_2 || i == DIK_NUMPAD2)
-			pismeno = '2';
-		else if (i == DIK_3 && this->isShiftPressed())
-			pismeno = '#';
-		else if (i == DIK_3 || i == DIK_NUMPAD3)
-			pismeno = '3';
-		else if (i == DIK_4 || i == DIK_NUMPAD4)
-			pismeno = '4';
-		else if (i == DIK_5 || i == DIK_NUMPAD5)
-			pismeno = '5';
-		else if (i == DIK_6 || i == DIK_NUMPAD6)
-			pismeno = '6';
-		else if (i == DIK_7 || i == DIK_NUMPAD7)
-			pismeno = '7';
-		else if (i == DIK_8 || i == DIK_NUMPAD8)
-			pismeno = '8';
-		else if (i == DIK_9 && this->isShiftPressed())
-			pismeno = '(';
-		else if (i == DIK_9 || i == DIK_NUMPAD9)
-			pismeno = '9';
-		else if (i == DIK_A)
-			pismeno = 'a';
-		else if (i == DIK_B)
-			pismeno = 'b';
-		else if (i == DIK_C)
-			pismeno = 'c';
-		else if (i == DIK_D)
-			pismeno = 'd';
-		else if (i == DIK_E)
-			pismeno = 'e';
-		else if (i == DIK_F)
-			pismeno = 'f';
-		else if (i == DIK_G)
-			pismeno = 'g';
-		else if (i == DIK_H)
-			pismeno = 'h';
-		else if (i == DIK_I)
-			pismeno = 'i';
-		else if (i == DIK_J)
-			pismeno = 'j';
-		else if (i == DIK_K)
-			pismeno = 'k';
-		else if (i == DIK_L)
-			pismeno = 'l';
-		else if (i == DIK_M)
-			pismeno = 'm';
-		else if (i == DIK_N)
-			pismeno = 'n';
-		else if (i == DIK_O)
-			pismeno = 'o';
-		else if (i == DIK_P)
-			pismeno = 'p';
-		else if (i == DIK_Q)
-			pismeno = 'q';
-		else if (i == DIK_R)
-			pismeno = 'r';
-		else if (i == DIK_S)
-			pismeno = 's';
-		else if (i == DIK_T)
-			pismeno = 't';
-		else if (i == DIK_U)
-			pismeno = 'u';
-		else if (i == DIK_V)
-			pismeno = 'v';
-		else if (i == DIK_W)
-			pismeno = 'w';
-		else if (i == DIK_X)
-			pismeno = 'x';
-		else if (i == DIK_Y)
-			pismeno = 'y';
-		else if (i == DIK_Z)
-			pismeno = 'z';
-		else if (i == DIK_PERIOD && this->isShiftPressed())
-			pismeno = '>';
-		else if (i == DIK_PERIOD)
-			pismeno = '.';
-		else if (i == DIK_COMMA && this->isShiftPressed())
-			pismeno = '<';
-		else if (i == DIK_COMMA)
-			pismeno = ',';
-		else if (i == DIK_DIVIDE)
-			pismeno = '/';
-		else if (i == DIK_MULTIPLY)
-			pismeno = '*';
-		else if (i == DIK_SUBTRACT)
-			pismeno = '-';
-		else if (i == DIK_ADD)
-			pismeno = '+';
-		else if (i == DIK_OEM_102 && this->isShiftPressed())
-			pismeno = '|';
-		else if (i == DIK_OEM_102)
-			pismeno = '\\';
-		else if (i == DIK_SEMICOLON && this->isShiftPressed())
-			pismeno = ':';
-		else if (i == DIK_SEMICOLON)
-			pismeno = ';';
-		else if (i == DIK_APOSTROPHE && this->isShiftPressed())
-			pismeno = '"';
-		else if (i == DIK_APOSTROPHE)
-			pismeno = '\'';
-		else if (i == DIK_EQUALS && this->isShiftPressed())
-			pismeno = '+';
-		else if (i == DIK_EQUALS)
-			pismeno = '=';
-		else if (i == DIK_SLASH && this->isShiftPressed())
-			pismeno = '?';
-		else if (i == DIK_SLASH)
-			pismeno = '/';
-		else if (i == DIK_LBRACKET && this->isShiftPressed())
-			pismeno = '{';
-		else if (i == DIK_LBRACKET)
-			pismeno = '[';
-		else if (i == DIK_RBRACKET && this->isShiftPressed())
-			pismeno = '}';
-		else if (i == DIK_RBRACKET)
-			pismeno = ']';*/
+		g_CCore->GetChat()->SetRerenderState(true);
+		
 		if (i == DIK_UPARROW)
 		{
 			g_CCore->GetChat()->ChatMessage = g_CCore->GetChat()->LastInput;
 		}
 
-		//if (this->isShiftPressed() || this->isCapsLockPressed())		// makes text uppercase if SHIFT is pressed
-		//	pismeno = toupper(pismeno);
-
-		/*if (pismeno != 0x00)
-		{
-			if (g_CCore->GetChat()->ChatMessage.length() < MAX_CHAT_MESSAGE_LENGTH - 10)
-				g_CCore->GetChat()->ChatMessage += pismeno;
-		}*/
-
-		/*if (i == DIK_BACKSPACE)
-		{
-		if (g_CCore->GetChat()->ChatMessage.size() > 0)
-		g_CCore->GetChat()->ChatMessage.resize(g_CCore->GetChat()->ChatMessage.size() - 1);
-		}*/
 		else if (i == DIK_NUMPADENTER || i == 28)	// if ENTER
 		{
 			if (g_CCore->GetChat()->ChatMessage != "")
@@ -363,11 +104,6 @@ void	CKeyboard::OnKeyDown(unsigned char i)
 	}
 	else	// no typing
 	{
-		/*if (i == DIK_T)
-		{
-			g_CCore->GetChat()->shouldReRender = true;
-			g_CCore->GetChat()->SetTyping(true);
-		}*/
 		if (i == DIK_ESCAPE)
 		{
 			g_CCore->GetIngameMenu()->setActive(!g_CCore->GetIngameMenu()->isActive());
@@ -508,129 +244,14 @@ bool	CKeyboard::isShiftPressed()
 	return this->shiftPressed;
 }
 
-LRESULT CALLBACK ProcessMessage(HWND hwnd,
-	UINT uMsg,
-	WPARAM wParam,
-	LPARAM lParam)
-{
-	//MessageBox(NULL, "wtf", "wtf", MB_OK);
-	//g_CCore->GetChat()->AddMessage("ProccessMessage");
-	/*switch (uMsg)
-	{
-	case WM_CHAR:
-		char buff[50];
-		sprintf(buff,"Char: %c",wParam);
-		g_CCore->GetChat()->AddMessage(buff);
-		return 0;
-	}
-	*/
-	/*char buff[255];
-	sprintf(buff, "WM message ID: %u", uMsg);
-	g_CCore->GetLog()->AddLog(buff);
-	*/
-	//return CallWindowProc((WNDPROC)g_CCore->GetKeyboard()->oldProc, hwnd, uMsg, wParam, lParam);
-	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
-}
-
-HHOOK _hook;
-KBDLLHOOKSTRUCT kbdStruct;
-LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
-{
-	char buff[255];
-	sprintf(buff, "WM message ID: %d", nCode);
-	g_CCore->GetLog()->AddLog(buff);
-
-	/*//g_CCore->GetChat()->AddMessage("HookCallback");
-	if (nCode >= 0)
-	{
-		// the action is valid: HC_ACTION.
-		if (wParam == WM_KEYDOWN)
-		{
-			// lParam is the pointer to the struct containing the data needed, so cast and assign it to kdbStruct.
-			kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
-			// a key (non-system) is pressed.
-			if (kbdStruct.vkCode == VK_F1)
-			{
-				// F1 is pressed!
-				MessageBox(NULL, "F1 is pressed!", "key pressed", MB_ICONINFORMATION);
-			}
-		}
-	}*/
-
-	// call the next hook in the hook chain. This is nessecary or your hook chain will break and the hook stops
-	return CallNextHookEx(_hook, nCode, wParam, lParam);
-}
-
-LRESULT CALLBACK keyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam) {
-	PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT)(lParam);
-
-	g_CCore->GetChat()->AddMessage("keyboard");
-	// If key is being pressed
-	//if (wParam == WM_KEYDOWN) {
-	/*	switch (p->vkCode) {
-			// Invisible keys
-		case VK_CAPITAL:	out << "<CAPLOCK>";		break;
-		case VK_SHIFT:		out << "<SHIFT>";		break;
-		case VK_LCONTROL:	out << "<LCTRL>";		break;
-		case VK_RCONTROL:	out << "<RCTRL>";		break;
-		case VK_INSERT:		out << "<INSERT>";		break;
-		case VK_END:		out << "<END>";			break;
-		case VK_PRINT:		out << "<PRINT>";		break;
-		case VK_DELETE:		out << "<DEL>";			break;
-		case VK_BACK:		out << "<BK>";			break;
-		case VK_LEFT:		out << "<LEFT>";		break;
-		case VK_RIGHT:		out << "<RIGHT>";		break;
-		case VK_UP:			out << "<UP>";			break;
-		case VK_DOWN:		out << "<DOWN>";		break;
-			// Visible keys
-		default:
-			out << char(tolower(p->vkCode));
-		}
-	}*/
-	return CallNextHookEx(NULL, nCode, wParam, lParam);
-}
-
-void	CKeyboard::ApplyHook()
-{
-	/*if (!(_hook = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, NULL, 0)))
-	{
-		MessageBox(NULL, "Failed to install hook!", "Error", MB_ICONERROR);
-	}*/
-	/*WNDPROC OldWndProc = (WNDPROC)SetWindowLongPtr(g_CCore->GetGraphics()->hwnAppWindow,
-		GWLP_WNDPROC, (LONG_PTR)ProcessMessage);
-	oldProc = OldWndProc;
-	if (OldWndProc == NULL)
-	{*/
-/*		char buff[50];
-		sprintf(buff, "#ff0000Err: 0x % x",GetLastError());
-		g_CCore->GetChat()->AddMessage(buff);
-*/		//MessageBox(NULL, "sex", "sex", MB_OK);
-	//}
-	//SetFocus(g_CCore->GetGraphics()->hwnAppWindow);
-
-	//SetWindowLongW(g_CCore->GetGraphics()->hwnAppWindow, GWL_WNDPROC, GetWindowLong(g_CCore->GetGraphics()->hwnAppWindow, GWL_WNDPROC));
-	//MessageBox(NULL, "wtf", "wtf", MB_OK);
-	//SetWindowText(g_CCore->GetGraphics()->hwnAppWindow, "Vesmir je cesta");
-	/*HHOOK keyboardHook = SetWindowsHookEx(
-		WH_KEYBOARD_LL,
-		keyboardHookProc,
-		GetModuleHandle(NULL),
-		0);*/
-}
-
-
 void	CKeyboard::OnASCIIKeyDown(char key)
 {
 	this->ignore = !ignore;
 	if (ignore == false)
 	{
-		/*char buff[20];
-		sprintf(buff, "key: %c", key);
-		g_CCore->GetChat()->AddMessage(buff);*/
 		if (g_CCore->GetChat()->IsTyping())
 		{
-			//g_CCore->GetChat()->AddMessage("we are typing");
-			g_CCore->GetChat()->shouldReRender = true;
+			g_CCore->GetChat()->SetRerenderState(true);
 			if (g_CCore->GetChat()->ChatMessage.length() < MAX_CHAT_MESSAGE_LENGTH - 10)
 			{
 				g_CCore->GetChat()->ChatMessage += key;
@@ -641,9 +262,91 @@ void	CKeyboard::OnASCIIKeyDown(char key)
 			if (key == 't' || key == 'T')
 			{
 				g_CCore->GetChat()->SetTyping(true);
-				g_CCore->GetChat()->shouldReRender = true;
+				g_CCore->GetChat()->SetRerenderState(true);
 			}
 		}
 	}
 }
 
+
+void	CKeyboard::ProccessMessage(LPMSG lpMsg)
+{
+	UINT dwSize;
+
+	GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &dwSize,
+		sizeof(RAWINPUTHEADER));
+	LPBYTE lpb = new BYTE[dwSize];
+	if (lpb == NULL)
+	{
+		return;
+	}
+
+	if (GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &dwSize,
+		sizeof(RAWINPUTHEADER)) != dwSize)
+		g_CCore->GetChat()->AddMessage("raw input error");
+
+	RAWINPUT* raw = (RAWINPUT*)lpb;
+
+	if (raw->header.dwType == RIM_TYPEKEYBOARD)
+	{
+		if (!(raw->data.keyboard.Flags & RI_KEY_BREAK))
+		{
+			switch (raw->data.keyboard.VKey)
+			{
+				case VK_BACK:
+					if (g_CCore->GetChat()->ChatMessage.size() > 0)
+						g_CCore->GetChat()->ChatMessage.resize(g_CCore->GetChat()->ChatMessage.size() - 1);
+					g_CCore->GetChat()->SetRerenderState(true);
+					break;
+				case VK_RETURN:
+				case VK_SHIFT:
+				case VK_RSHIFT:
+				case VK_LSHIFT:
+				case VK_TAB:
+				case VK_SPACE:
+					break;
+
+				default:
+					char key = this->ConvertToASCII(raw->data.keyboard.VKey);
+					if (key != NULL)
+					{
+						if (g_CCore->GetChat()->IsTyping())
+						{
+							g_CCore->GetChat()->SetRerenderState(true);
+							if (g_CCore->GetChat()->ChatMessage.length() < MAX_CHAT_MESSAGE_LENGTH - 10)
+							{
+								g_CCore->GetChat()->ChatMessage += key;
+							}
+						}
+						else
+						{
+							if (key == 't' || key == 'T')
+							{
+								g_CCore->GetChat()->SetTyping(true);
+								g_CCore->GetChat()->SetRerenderState(true);
+							}
+						}
+					}
+				
+
+			}
+		}
+
+	}
+
+	delete[] lpb;
+}
+
+
+char	CKeyboard::ConvertToASCII(unsigned short VK)
+{
+	byte kbs[256];
+	GetKeyboardState(kbs);
+	char buff[4];
+	int rre = ToAsciiEx(VK, MapVirtualKey(VK, MAPVK_VK_TO_VSC), kbs, (LPWORD)&buff, 0, GetKeyboardLayout(0));
+	if (rre == 1)
+	{
+			return buff[0];
+	}
+	return NULL;
+}

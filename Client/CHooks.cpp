@@ -1303,10 +1303,7 @@ void	LastASCIIPressedKey(char key)
 	//{
 		if (key >= '!' && key <= '~')
 		{
-			/*char buff[200];
-			sprintf(buff, "Key pressed: %c", key);
-			g_CCore->GetChat()->AddMessage(buff);*/
-			g_CCore->GetKeyboard()->OnASCIIKeyDown(key);
+			//g_CCore->GetKeyboard()->OnASCIIKeyDown(key);
 		}
 	//}
 }
@@ -1345,13 +1342,113 @@ _declspec(naked) void Hook_DoorUnlock()
 	}
 }
 
+void NewMessage(MSG message)
+{
+	_asm pushad;
+	//g_CCore->GetChat()->AddMessage("message arrived");
+	char buff[250];
+	sprintf(buff,"ID: %u", message.message);
+	if (message.message > 0)
+	{
+		g_CCore->GetChat()->AddMessage(buff);
+	}
+	_asm popad;
+}
+_declspec(naked) void Hook_PeekMessage()
+{
+	_asm
+	{
+		PUSH 1
+		PUSH EDI
+		PUSH EDI
+		PUSH EDI
+		LEA EAX, DWORD PTR SS : [EBP - 0x1C]
+		PUSH EAX
+		CALL DWORD PTR DS : [0x71CAF190]; USER32.PeekMessageW
+		TEST EAX, EAX;
+		JZ end
+		LEA EAX, DWORD PTR SS : [ESP + 0xC]
+		push EAX
+		call NewMessage
+		add ESP, 0x4
+		mov EAX, 0x1
+		end :
+		//return back
+		PUSH 0x71C8C399
+		retn;
+
+	}
+
+
+}
+void	OnPhysicsTick(int deltatime)
+{
+	for (int i = 0; i < 100; i++)
+	{
+		CVehicle* veh = g_CCore->GetVehiclePool()->Return(i);
+		if (veh)
+		{
+			if (veh->GetEntity())
+			{
+				DWORD entity = veh->GetEntity();
+				_asm{
+					mov ECX, entity
+						push deltatime
+						mov EAX, 0x0044BEA0
+						call EAX
+				}
+			}
+		}
+	}
+}
+
+_declspec(naked) void Hook_GamePhysics()
+{
+	_asm
+	{
+		XOR ESI, ESI
+			start:
+			MOV ECX, DWORD PTR SS : [EBP + 0xF0]
+			TEST ECX, ECX
+			JE SHORT end
+			MOV EAX, DWORD PTR SS : [EBP + 0xF4]
+			SUB EAX, ECX
+			SAR EAX, 2
+			CMP ESI, EAX
+			JNB SHORT end
+			MOV ECX, DWORD PTR DS : [ECX + ESI * 0x4]
+			cmp DWORD PTR DS : [ECX + 0x10],0x4
+			JE next	// jmp if object is a car
+			PUSH EBX
+			MOV EAX, 0x0044BEA0
+			CALL EAX
+			next:
+			INC ESI
+			JMP SHORT start
+			end:
+			push EBX
+			call OnPhysicsTick
+			add ESP, 0x4
+
+			PUSH 0x005E1050
+			retn;
+	}
+
+
+}
 void SetHooks()
 {
+	// 005E1029
+
+	//Tools::InstallJmpHook(0x005E1029, (DWORD)&Hook_GamePhysics);
+
 	//Tools::Nop(0x005DC6DD, 11);
 	//Tools::InstallJmpHook(0x005FFF30, (DWORD)&Hook_Loadingmap);
 
 
 	//Tools::InstallJmpHook(0x00603FF3, (DWORD)&Hook_DoorUnlock);		- WORKING, but some doors are fake, therefore it's disabled
+
+	//Tools::InstallJmpHook(0x71C8C38A, (DWORD)&Hook_PeekMessage);
 
 	Tools::InstallJmpHook(0x1006DEDB, (DWORD)&Hook_LastASCIIPressedKey);
 	Tools::InstallCallHook(0x005FB203, (DWORD)&Hook_EngineLoad);

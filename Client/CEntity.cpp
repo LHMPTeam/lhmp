@@ -20,8 +20,8 @@ CEntity::CEntity()
 	//interpolationCache = {0,0,0};
 	shouldUpdate = 1;
 
-	bIsTempInterpolationRunning = true;
-	bIsInterpolationRunning		= true;
+	//bIsTempInterpolationRunning = true;
+	//bIsInterpolationRunning		= true;
 }
 void CEntity::SetActive(bool b)
 {

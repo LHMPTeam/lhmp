@@ -1,9 +1,17 @@
-#ifndef CGAME_H
-#define CGAME_H
+/**
+	Lost Heaven Multiplayer
+
+	Purpose: class which handles all engine functions and callbacks
+
+	@author Romop5, DavoSK, ZaKlaus
+	@version 1.0 1/9/14
+*/
+
+#ifndef __CGAME_H
+#define __CGAME_H
 
 #include <stdio.h>
 #include <string.h>
-//#include <Windows.h>
 typedef unsigned long DWORD;
 #include "../shared/structures.h"
 
@@ -15,8 +23,8 @@ private:
 	bool ShouldStop;
 	DWORD gameStart;
 	byte MusicState;
-	//char daco[100];
-	//static bool reachedGame;
+
+
 public:
 	CGame();
 	~CGame();
@@ -39,7 +47,7 @@ public:
 	static void SetCarPosition(DWORD, Vector3D);
 	static void SetCarRotation(DWORD, Vector3D);
 	static void CarUpdate(DWORD, Vector3D,Vector3D);
-	static void CarRepair(DWORD);
+	static void	CarRepair(DWORD);
 	static void CarLock(DWORD, BYTE);
 	static void GivePlayerToCarFast(DWORD, int, int);
 	static void GivePlayerToCar(DWORD, int, int);
@@ -47,6 +55,7 @@ public:
 	static void KickPlayerFromCarFast(DWORD);
 	static void CarJack(DWORD, DWORD, int);
 	static void ExplodeCar(DWORD);
+	static void LockCarDoor(DWORD, int, bool);
 	// else
 	static void PlayGameSound(char[]);
 	static void ToggleCityMusic(byte);
@@ -86,7 +95,6 @@ public:
 	static void SetOn(DWORD,bool);
 
 	// frames
-	
 	static void SetFrameModel(DWORD, char*);
 	static void SetFramePos(DWORD,float,float,float);
 
@@ -105,8 +113,9 @@ public:
 	static DWORD CreateParticle(DWORD, int);
 	static void RemoveParticle(DWORD);
 
+
 	// camera
-	static void SetCameraPos(Vector3D,float,float,float);
+	static void SetCameraPos(Vector3D,float,float,float,float);
 	static void CameraUnlock();
 	static void	Camera_lock(DWORD);
 	static void CameraSetSwing(byte, float);
@@ -144,6 +153,15 @@ public:
 	char mapName[200];
 
 	float loadingStatus;
+
+	// objects
+	static DWORD CreateFrame(char*);
+	static void SetFrameRot(DWORD, float, float, float, float);
+	static void SetFrameScale(DWORD, float, float, float);
+
+	void PickupsTick();
+
+	float pickupsAngle;
 };
 
 #endif

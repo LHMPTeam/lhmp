@@ -119,10 +119,6 @@ void CNetworkManager::Pulse()
 				sprintf(this->m_pServerName, "%s", svr.server_name);
 				g_CCore->GetLocalPlayer()->SetID(svr.playerid);
 
-				
-
-				
-
 			}
 			break;
 		case ID_GAME_BAD_VERSION:
@@ -145,19 +141,41 @@ void CNetworkManager::Pulse()
 				ConnectServer();
 				break;
 		case ID_GAME_ALIVE:
-			{
-
-			}
-			break;
 		case ID_GAME_SYNC:
-			{
-				break;
-			}
 			break;
 		case ID_GAME_LHMP_PACKET:
 			{
 				ProceedLHMP(packet,TS);
 			}
+			break;
+		case ID_FILETRANSFER_INIT:
+		{
+			RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
+			int ID;
+			bsIn.Read(ID);
+			BitStream bsOut;
+			bsOut.Write((MessageID)ID_FILETRANSFER_INIT);
+			bsOut.Write(ID);
+			this->peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, false);
+			g_CCore->GetChat()->AddMessage("FILE Transfer Init");
+		}
+			break;
+		case ID_FILETRANSFER_SENDFILE:
+		{
+			RakNet::BitStream bsIn(packet->data+ 1, packet->length - 1, false);
+			int ID;
+			bsIn.Read(ID);
+			BitStream bsOut;
+			bsOut.Write((MessageID)ID_FILETRANSFER_INIT);
+			bsOut.Write(ID);
+			this->peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, false);
+
+			g_CCore->GetChat()->AddMessage("FILE Transfer Send file");
+		}
+			break;
+		case ID_FILETRANSFER_TRANSFERDONE:
+
+			g_CCore->GetChat()->AddMessage("FILE Transfer Done");
 			break;
 		default:
 			char buffer[255];
@@ -1202,7 +1220,59 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 
 		}
 			break;
+
+		case LHMP_PICKUP_CREATE:
+		{
+
+								   //g_CCore->GetChat()->AddMessage("pickup lol");
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID;
+			char model[250];
+			bool isVisible;
+			Vector3D position;
+			float size;
+			bsIn.Read(ID);
+			bsIn.Read(model);
+			bsIn.Read(position);
+			bsIn.Read(size);
+			bsIn.Read(isVisible);
+			g_CCore->GetPickupPool()->New(ID, model, position, size, isVisible);
+			g_CCore->GetEngineStack()->AddMessage(ES_CREATEPICKUP, (DWORD)ID);
 			
+
+		}
+			break;
+		case LHMP_PICKUP_DELETE:
+		{
+			//g_CCore->GetChat()->AddMessage("pickup lol");
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID;
+			bsIn.Read(ID);
+			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+			if (pickup)
+			{
+				g_CCore->GetEngineStack()->AddMessage(ES_DELETEPICKUP, (DWORD)ID);
+			}
+		}
+			break;
+		case LHMP_PICKUP_SETVISIBLE:
+		{
+			//g_CCore->GetChat()->AddMessage("pickup lol");
+			//g_CCore->GetChat()->AddMessage("pickup visible network");
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID;
+			bool shouldBeVisible;
+			bsIn.Read(ID);
+			bsIn.Read(shouldBeVisible);
+			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+			if (pickup)
+			{
+				pickup->SetVisible(shouldBeVisible);
+				g_CCore->GetEngineStack()->AddMessage(ES_SETPICKUPVISIBLE, (DWORD)ID);
+				
+			}
+		}
+			break;
 	}
 }
 

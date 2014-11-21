@@ -10,13 +10,13 @@ extern CCore *g_CCore;
 
 CGame::CGame()
 {
-	//gameStart = timeGetTime();
 	ShouldStop = false;
 	IsStopped = false;
 	MusicState = false;
 	sprintf(mapName, "freeride");
 	loadingStatus = 0.0f;
 	bLockControls = false;
+	pickupsAngle = 0.0f;
 }
 CGame::~CGame()
 {
@@ -25,11 +25,9 @@ void CGame::UpdateCars()
 {
 	for (int i = 0; i < MAX_VEHICLES; i++)
 	{
-		//int* myarray = new int[1000];
 		CVehicle* veh = g_CCore->GetVehiclePool()->Return(i);
 		if (veh != NULL)
 		{
-			//veh->UpdateGameObject();
 			veh->Interpolate();
 		}
 	}
@@ -124,10 +122,13 @@ void CGame::Tick()
 				rot1 = 0.530041f, rot2 = -0.120000f, rot3 = 1.311128f;
 			break;
 			}
-			g_CCore->GetGame()->SetCameraPos(cam,rot1,rot2,rot3);
+			g_CCore->GetGame()->SetCameraPos(cam,rot1,rot2,rot3,0);
 		}
 	/*		}
 		}*/
+	}
+	else {
+		this->PickupsTick();
 	}
 	g_CCore->GetEngineStack()->DoMessage();
 
@@ -266,17 +267,17 @@ void CGame::Camera_lock(DWORD address)
 }
 void CGame::ChangeSkin(DWORD PED,int skinId)
 {
-	skinId = Tools::Clamp(skinId, 0, (int) (sizeof(skin) / 200));
+	skinId = Tools::Clamp(skinId, 0, (int) (sizeof(SKINS) / 200));
 	char * actualModel = (char*) (*(DWORD*)(*(DWORD*)(PED+0x68)+0x154)+0x0);
 	char isExact[255];
-	sprintf(isExact,"Models\\%s.i3d",skin[skinId]);
+	sprintf(isExact,"Models\\%s.i3d",SKINS[skinId]);
 	if(strcmp(isExact,actualModel) == 0)
 	{
 		//g_CCore->GetChat()->AddMessage("Skins are same");
 		return;
 	}
 	char buffer[255];
-	sprintf(buffer,"%s.i3d",skin[skinId]);
+	sprintf(buffer,"%s.i3d",SKINS[skinId]);
 	DWORD funcAdress	= 0x004A7700;
 	_asm
 	{
@@ -292,12 +293,12 @@ void CGame::ChangeSkin(DWORD PED,int skinId)
 }
 DWORD CGame::CreateCar(int skin)
 {
-	skin = Tools::Clamp(skin, 0, (int)(sizeof(car)/200));
+	skin = Tools::Clamp(skin, 0, (int)(sizeof(CAR_SKINS)/200));
 	DWORD caraddr = NULL;
 	DWORD addr = NULL;
 	char str1[255] = "lhmp_01";
 	char str2[255]; // = "arrow00.i3d";
-	sprintf(str2, "%s.i3d", car[skin]);
+	sprintf(str2, "%s.i3d", CAR_SKINS[skin]);
 	_asm
 	{
 		pushad
@@ -305,15 +306,15 @@ DWORD CGame::CreateCar(int skin)
 		PUSH 9
 		PUSH EAX
 		MOV ECX,DWORD PTR DS:[EAX]
-		CALL DWORD PTR DS:[ECX+0x4C]
+		CALL DWORD PTR DS:[ECX+0x4C]				// CreateFrame
 		mov addr,eax
-		MOV ESI,EAX
+		MOV ESI,EAX									// esi stores frame
 		TEST ESI,ESI
 		JE badresult_dest
 		MOV EDX,DWORD PTR DS:[ESI]
 		PUSH 0x0064FF98                       ;  ASCII "cheat_car"
 		PUSH ESI
-		CALL DWORD PTR DS:[EDX+0x28]
+		CALL DWORD PTR DS:[EDX+0x28]				// frame->SetUnicateName
 		PUSH 0                                   ; /Arg6 = 00000000
 		PUSH 0                                   ; |Arg5 = 00000000
 		PUSH 0                                   ; |Arg4 = 00000000
@@ -324,10 +325,11 @@ DWORD CGame::CreateCar(int skin)
 		MOV ECX,0x006F9418						 ; |
 		mov eax,0x00448940
 		CALL eax								; \Game.00448940
+		// Load graphic model into frame
 		// funkcia vytvorí 3D objekt v nami vyzvorenom I3D_Frame, objekt je ale nefyzický (nemá kolízie ani ïalšie veci)
 		TEST EAX,EAX
 		JNZ divnyjump_dest
-		PUSH 0x21F4
+		PUSH 0x21F4								// creates object (It allocates memory in Heap for object)
 		mov eax,0x00624934
 		CALL eax
 		ADD ESP,4
@@ -338,7 +340,7 @@ DWORD CGame::CreateCar(int skin)
 		JE SHORT zlyjump_dest
 		MOV ECX,EAX
 		mov eax,0x00462AF0
-		CALL eax
+		CALL eax								// fills CAR game object (with defaults - you will find 0x4 there, so it is ONLY for cars)
 		MOV EDI,EAX
 		JMP SHORT dobryjump_dest
 	zlyjump_dest:
@@ -349,43 +351,43 @@ DWORD CGame::CreateCar(int skin)
 		JE divnyjump_dest
 		LEA EAX,DWORD PTR SS:[ESP+0x94]
 		LEA ECX,DWORD PTR SS:[ESP+0x84]
-		PUSH EAX
+		PUSH EAX								// coord z
 		LEA EDX,DWORD PTR SS:[ESP+0x94]
-		PUSH ECX
-		PUSH EDX
-		MOV ECX,ESI
+		PUSH ECX								// coord y
+		PUSH EDX								// now it stores pointer to vector - coord x
+		MOV ECX,ESI								// object (frame)
 		MOV DWORD PTR SS:[ESP+0x9C],0xc4f7a000	// coordinates x
 		MOV DWORD PTR SS:[ESP+0x90],0xc09ccccd	// y
 		MOV DWORD PTR SS:[ESP+0xA0],0x41bb3333	// z
 		mov eax,0x005C82B0
-		CALL eax
-		MOV EBX,DWORD PTR DS:[ESI]
+		CALL eax								// Change object's position
+		MOV EBX,DWORD PTR DS:[ESI]				// get frame's vtable
 		PUSH 0
 		PUSH 0
 		PUSH 0
 		PUSH 0x3f800000
 		LEA ECX,DWORD PTR SS:[ESP+0x494]
 		mov eax,0x004026C0
-		CALL eax
-		PUSH EAX
-		PUSH ESI
-		CALL DWORD PTR DS:[EBX+0xC]
+		CALL eax								// makes a 3D vector
+		PUSH EAX								// 3d vector
+		PUSH ESI								// frame 
+		CALL DWORD PTR DS:[EBX+0xC]				// setframesize ?
 		MOV EAX,DWORD PTR DS:[ESI]
-		PUSH ESI
+		PUSH ESI								// frame
 		CALL DWORD PTR DS:[EAX+0x18]
 		MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440
-		PUSH ESI
-		mov eax,0x004253A0
+		PUSH ESI								// frame
+		mov eax,0x004253A0						// get some pointer from ECX, maybe some global class ?
 		CALL eax
 		MOV ECX,EAX
 		mov eax,0x005C8600
 		CALL eax
-		MOV EDX,DWORD PTR DS:[EDI]
-		PUSH ESI
-		MOV ECX,EDI
+		MOV EDX,DWORD PTR DS:[EDI]				// edi should be game object
+		PUSH ESI								// ESI = frame
+		MOV ECX,EDI								// game object
 		CALL DWORD PTR DS:[EDX+0x48]
 		TEST AL,AL
-		JE SHORT divnyjump_dest
+		JE SHORT divnyjump_dest					// if FAILED
 		MOV EAX,DWORD PTR DS:[EDI]
 		MOV ECX,EDI
 		CALL DWORD PTR DS:[EAX+0x64]
@@ -396,19 +398,20 @@ DWORD CGame::CreateCar(int skin)
 		MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440
 		PUSH EDI
 		mov eax,0x00425390
-		CALL eax
-		MOV ECX,EAX
+		CALL eax								// again, get some global class
+		MOV ECX,EAX								// and save it as ECX
 		mov eax,0x005E35D0
 		CALL eax
 		PUSH 64                                  ; /Arg1 = 00000064
 		LEA ECX,DWORD PTR DS:[EDI+0x70]            ; |
 		mov eax,0x0051A920
-		CALL eax                       ; \Game.0051A920
+		CALL eax                       ; \Game.0051A920		// this func calls getTime, strange
 		PUSH 1
 		MOV ECX,EDI
 		mov eax,0x005C8740
-		CALL eax
+		CALL eax								// set something in object on, god know what it is, well, this has just one call overall, strange
 	divnyjump_dest:
+		// the following code destroys frame
 		MOV ECX,DWORD PTR DS:[ESI]
 		PUSH ESI
 		CALL DWORD PTR DS:[ECX]
@@ -649,7 +652,7 @@ void CGame::PlayAnim(DWORD PED,int animId)
 		return;
 	
 	char anim[255];
-	sprintf(anim,"%s.i3d",Anims[animId]);
+	sprintf(anim,"%s.i3d",ANIMS[animId]);
 	_asm {
 		PUSH 0					// bohvie co, mozno kontrolna premenna
 		PUSH 0					// 0
@@ -1705,7 +1708,7 @@ DWORD CGame::FindActor(char* frame)
 	return res;
 }
 
-void CGame::SetCameraPos(Vector3D pos,float r1,float r2,float r3)
+void CGame::SetCameraPos(Vector3D pos,float r1,float r2,float r3,float r4)
 {
 	_asm
 	{
@@ -1717,6 +1720,8 @@ void CGame::SetCameraPos(Vector3D pos,float r1,float r2,float r3)
 		MOV DWORD PTR SS : [ECX + 0x4], EAX
 		mov EAX, r3
 		MOV DWORD PTR SS : [ECX + 0x8], EAX
+		mov EAX, r4
+		MOV DWORD PTR SS : [ECX + 0xC], EAX
 		PUSH ECX
 		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
 		lea EAX, pos
@@ -2192,14 +2197,14 @@ void CGame::CarRepair(DWORD vehicle)
 	__asm
 	{
 		MOV ECX, vehicle
-		MOV EAX, 0x04253A0
-		CALL EAX
-		CMP EAX, 4
-		JNZ skip_function
-		PUSH 1
-		MOV ECX, vehicle
-		MOV EAX, 0x00465760
-		CALL EAX
+			MOV EAX, 0x04253A0
+			CALL EAX
+			CMP EAX, 4
+			JNZ skip_function
+			PUSH 1
+			MOV ECX, vehicle
+			MOV EAX, 0x00465760
+			CALL EAX
 		skip_function :
 	}
 }
@@ -2209,11 +2214,12 @@ void CGame::CarLock(DWORD vehicle, BYTE locked)
 	__asm
 	{
 		MOV ECX, vehicle
-		PUSH locked
-		MOV EAX, 0x00470A60
-		CALL EAX
+			PUSH locked
+			MOV EAX, 0x00470A60
+			CALL EAX
 	}
 }
+
 
 void CGame::KickPlayerFromCar(DWORD ped, int vehId)
 {
@@ -2327,9 +2333,9 @@ void CGame::OnCarShot()
 
 void CGame::DisableBridges()
 {
-	for (int i = 0; i < sizeof(ForbiddenBridges) / sizeof(ForbiddenBridges[0]); i++)
+	for (int i = 0; i < sizeof(FORBIDDEN_BRIDGES) / sizeof(FORBIDDEN_BRIDGES[0]); i++)
 	{
-		DWORD bridge = g_CCore->GetGame()->FindActor(ForbiddenBridges[i]);
+		DWORD bridge = g_CCore->GetGame()->FindActor((char*) FORBIDDEN_BRIDGES[i]);
 		if (bridge != NULL)
 		{
 			__asm
@@ -2718,7 +2724,6 @@ void CGame::PoliceManager()
 	}
 }
 
-
 DWORD CGame::CreateParticle(DWORD frame, int particle_id)
 {
 	DWORD particle_addr = NULL;
@@ -2780,13 +2785,13 @@ DWORD CGame::CreateEmptyFrame()
 	_asm
 	{
 		pushad
-		MOV EAX, DWORD PTR DS : [0x6F9520];  Case 185 of switch 005BB320
-		PUSH 9
-		PUSH EAX
-		MOV ECX, DWORD PTR DS : [EAX]
-		CALL DWORD PTR DS : [ECX + 0x4C]
-		mov frame, eax
-		popad
+			MOV EAX, DWORD PTR DS : [0x6F9520];  Case 185 of switch 005BB320
+			PUSH 9
+			PUSH EAX
+			MOV ECX, DWORD PTR DS : [EAX]
+			CALL DWORD PTR DS : [ECX + 0x4C]
+			mov frame, eax
+			popad
 	}
 	return frame;
 }
@@ -2799,23 +2804,23 @@ void CGame::SetFrameModel(DWORD frame, char* modelname)
 	__asm
 	{
 		MOV EAX, frame
-		MOV ESI, EAX
-		TEST ESI, ESI
-		JE badresult_dest
-		MOV EDX, DWORD PTR DS : [ESI]
-		PUSH 0x0064FF98
-		PUSH ESI
-		CALL DWORD PTR DS : [EDX + 0x28]
-		PUSH 0
-		PUSH 0
-		PUSH 0
-		PUSH 0
-		lea eax, texture
-		PUSH EAX
-		PUSH ESI
-		MOV ECX, 0x006F9418
-		mov eax, 0x00448940
-		CALL eax
+			MOV ESI, EAX
+			TEST ESI, ESI
+			JE badresult_dest
+			MOV EDX, DWORD PTR DS : [ESI]
+			PUSH 0x0064FF98
+			PUSH ESI
+			CALL DWORD PTR DS : [EDX + 0x28]
+			PUSH 0
+			PUSH 0
+			PUSH 0
+			PUSH 0
+			lea eax, texture
+			PUSH EAX
+			PUSH ESI
+			MOV ECX, 0x006F9418
+			mov eax, 0x00448940
+			CALL eax
 		badresult_dest :
 	}
 }
@@ -2825,15 +2830,17 @@ void CGame::RemoveParticle(DWORD particle)
 	__asm
 	{
 		MOV EAX, particle
-		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-		PUSH EAX
-		MOV EAX, 0x005C8650
-		CALL EAX
-		MOV ECX, EAX
-		MOV EAX, 0x005A4C60
-		CALL EAX
+			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			PUSH EAX
+			MOV EAX, 0x005C8650
+			CALL EAX
+			MOV ECX, EAX
+			MOV EAX, 0x005A4C60
+			CALL EAX
 	}
 }
+
+
 
 void CGame::CameraSetSwing(byte enable, float rotation)
 {
@@ -2936,9 +2943,9 @@ void CGame::TimerOff()
 	__asm
 	{
 		PUSH 8
-		MOV ECX, 0x00658330
-		MOV EAX, 0x005C7DB0
-		CALL EAX
+			MOV ECX, 0x00658330
+			MOV EAX, 0x005C7DB0
+			CALL EAX
 	}
 }
 
@@ -3178,8 +3185,7 @@ DWORD CGame::CreateSoundFrame(DWORD frame, char* filename, float volume, float r
 {
 	DWORD sound_id = NULL;
 
-	__asm
-	{
+	__asm {
 		sub ESP, 0x500
 			MOV ESI, filename
 			MOV EDI, frame
@@ -3218,61 +3224,145 @@ DWORD CGame::CreateSoundFrame(DWORD frame, char* filename, float volume, float r
 			CALL EAX
 			MOV ECX, EAX
 			MOV EAX, 0x005E8600;
-			CALL EAX
+		CALL EAX
 			MOV sound_id, EAX
-		add ESP, 0x500
-	}
-
-	return sound_id;
-
-}
-
-void CGame::RemoveSoundFrame(DWORD sound_id)
-{
-	__asm
-	{
-		PUSH 0x3A83126F
-		PUSH 0
-		MOV EAX, sound_id
-		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-		PUSH EAX
-		MOV EAX, 0x00425390
-		CALL EAX
-		MOV ECX, EAX
-		MOV EAX, 0x005E8790
-		CALL EAX
+			add ESP, 0x500
 	}
 }
 
-void CGame::CreateBoxCollision(DWORD frame)
+void CGame::LockCarDoor(DWORD car, int seat, bool status)
 {
-	__asm
+	if (car != NULL)
 	{
+		DWORD logic = (status == 1);
+		_asm
+		{
+				MOV EDI, seat
+				MOV EBX, car
+				LEA ECX, DWORD PTR DS : [EBX + 0x70]
+				MOV EAX, 0x00425460
+				CALL EAX; Game.00425460
+				CMP EAX, EDI
+				JLE end
+				TEST EDI, EDI
+				JL end
+				MOV EDX, logic
+				MOV ECX, EBX
+				TEST EDX, EDX
+				SETNE DL
+				PUSH EDX
+				PUSH EDI
+				MOV EAX, 0x00470C50
+				CALL EAX; Game.00470C50
+			end:
+
+		}
+	}
+}
+
+void CGame::SetFrameRot(DWORD frame, float w, float x, float y, float z)
+{
+	Vector4D rot;
+	rot.x = w;
+	rot.y = x;
+	rot.z = y;
+	rot.w = z;
+
+	__asm {
 		MOV EAX, frame
-		PUSH 0
-		MOV ECX, DWORD PTR DS : [0x65115C]
-		PUSH EAX
-		MOV EAX, 0x00425390
-		CALL EAX
-		MOV ECX, EAX
-		MOV EAX, 0x005EE690
-		CALL EAX
+			LEA EDX, rot;  toto by mohol byt vektor
+			MOV ECX, EAX;  EAX = frame
+			PUSH EDX;  vector
+			MOV EAX, 0x0045F040
+			CALL EAX
+
+			MOV EAX, frame
+			PUSH EAX
+			MOV EDX, DWORD PTR DS : [EAX]
+			CALL DWORD PTR DS : [EDX + 0x18]
+	}
+
+}
+
+void CGame::SetFrameScale(DWORD frame, float x, float y, float z)
+{
+	Vector3D scale;
+	scale.x = x;
+	scale.y = y;
+	scale.z = z;
+	__asm {
+
+		MOV EAX, frame
+			LEA ECX, scale
+			PUSH ECX
+			MOV ECX, EAX
+			MOV EAX, 0x005C8300
+			CALL EAX
+			MOV EAX, frame
+			PUSH EAX
+			MOV ECX, DWORD PTR DS : [EAX]
+			CALL DWORD PTR DS : [ECX + 0x18]
 	}
 }
 
-void CGame::RemoveBoxCollision(DWORD frame)
+DWORD CGame::CreateFrame(char* str)
 {
-	__asm
+	DWORD addr = NULL;
+	char model[255] = "";
+	sprintf_s(model, "%s", str);
+
+	_asm
 	{
-		MOV ECX, frame
-		MOV EDX, DWORD PTR DS : [0x65115C]
-		PUSH ECX
-		MOV ECX, DWORD PTR DS : [EDX + 0x24]
-		MOV EAX, 0x005EEB70
-		CALL EAX
-		MOV EAX, DWORD PTR DS : [0x65115C]
-		MOV ECX, DWORD PTR DS : [EAX + 0x24]
-		MOV EAX, 0x005EEC50
-		CALL EAX
+		pushad
+			MOV EAX, DWORD PTR DS : [0x6F9520]
+			PUSH 9
+			PUSH EAX
+			MOV ECX, DWORD PTR DS : [EAX]
+			CALL DWORD PTR DS : [ECX + 0x4C]
+			MOV addr, EAX; Save Frame Addres into DWORD var
+			MOV ESI, EAX
+			TEST ESI, ESI
+			JE badresult_dest
+			MOV EDX, DWORD PTR DS : [ESI]
+			PUSH 0x0064FF98
+			PUSH ESI
+			CALL DWORD PTR DS : [EDX + 0x28]
+			PUSH 0;
+		PUSH 0;
+		PUSH 0;
+		PUSH 0;
+		LEA EAX, model
+			PUSH EAX
+			PUSH ESI
+			MOV ECX, 0x006F9418
+			mov EAX, 0x00448940
+			CALL EAX
+		badresult_dest :
+		popad
+	}
+	return addr;
+}
+
+void CGame::PickupsTick()
+{
+	//DWORD tickCount = (timeGetTime()/30)%360;
+	pickupsAngle += 0.1f;
+	float rw = cos(pickupsAngle / (180.0f / 3.14f));
+	float ry = sin(pickupsAngle / (180.0f / 3.14f));
+	
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
+		if (pickup)
+		{
+			if (pickup->GetEntity())
+			{
+				SetFrameRot(pickup->GetEntity(),rw, 0.0, ry,0.0);
+				
+				//sprintf(buff, "%f %f", rw, ry);
+				//g_CCore->GetChat()->AddMessage(buff);
+			}
+
+		}
 	}
 }

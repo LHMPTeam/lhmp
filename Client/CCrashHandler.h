@@ -1,7 +1,15 @@
-#ifndef CCRASH_HANDLER
-#define CCRASH_HANDLER
+/**
+	Lost Heaven Multiplayer
 
-//RakNet
+	Purpose: a class which handle crash reports
+
+	@author Romop5, ZaKlaus
+	@version 1.0 1/9/14
+*/
+
+#ifndef __CCRASH_HANDLER
+#define __CCRASH_HANDLER
+
 #include "RakPeerInterface.h"
 #include "MessageIdentifiers.h"
 #include "BitStream.h"
@@ -14,7 +22,6 @@ class CCrashHandler
 {
 public:
 	void	Prepare();
-	//LONG	HandleIt(_EXCEPTION_POINTERS * ExceptionInfo);
 
 	void	SaveDumpOnDisk(char*);
 	void	SendReport(char*);

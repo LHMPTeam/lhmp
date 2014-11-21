@@ -53,13 +53,33 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 	g_CCore->GetIngameMenu()->Init();
 
 	textiq = new CColoredText("#ff0000aha, toto je #adefmarha#ccccccS#909090U#508090V#10EEBBE #ff00002#ff00ff0#ff0a0b1#ff90904 ");
-	//textiqSecond = textiq->SplitText(200,false);
+
+	m_cFont = new CFont("tahoma", 12);
+
+	m_d3dFont = new CD3DFont("arialbold", 18);
+	m_d3dFont->InitDeviceObjects(this->GetDevice());
+	m_d3dFont->RestoreDeviceObjects();
+
+
+	HRESULT hr = this->GetDevice()->CreateVertexBuffer(6 * sizeof(my_vertex), //Size of memory to be allocated
+		//Number of vertices * size of a vertex
+		D3DUSAGE_WRITEONLY,  //We never need to read from it so
+		//we specify write only, it's faster
+		D3D8T_CUSTOMVERTEX,  //Our custom vertex specifier (coordinates & a colour)
+		D3DPOOL_MANAGED,     //Tell DirectX to manage the memory of this resource
+		&this->m_vb);              //Pointer to our Vertex Buffer, after this call
+	//It will point to a valid vertex buffer
+	/*if (FAILED(hr)){
+		FatalError("Error creating vertex buffer");
+	}*/
+
 }
 
 void CGraphics::Render()
 {
+	//return;
 	g_CCore->GetGame()->UpdatePeds();
-	g_CCore->GetGame()->UpdateCars();
+	//g_CCore->GetGame()->UpdateCars();
 	if (bShowHud == true && g_CCore->GetIngameMenu()->isActive() == false)
 	{
 		if (g_CCore->GetLocalPlayer()->GetEntity() != NULL)
@@ -101,6 +121,8 @@ void CGraphics::Render()
 	}*/
 	/*sprintf(buff, "Status: %f", g_CCore->GetGame()->loadingStatus);
 	this->DrawTextA(buff, 700, 200, 0xffffffff, true);*/
+
+	this->FillARGB(100, 100,0.5f, 50, 50, 0xFF00adef);
 }
 
 void CGraphics::RenderLoadingScreen()
@@ -123,11 +145,12 @@ void CGraphics::RenderLoadingScreen()
 	m_sprite->End();
 
 	//FillARGB(resolution.x*0.10, resolution.y*0.90, resolution.x*0.8*g_CCore->GetGame()->loadingStatus, 20, D3DCOLOR_XRGB(255,255,255));
-	this->Clear(0, resolution.y*0.90, resolution.x*((int)g_CCore->GetGame()->loadingStatus), 1, D3DCOLOR_XRGB(200, 200, 200));
+	FillARGB(0, resolution.y*0.90, resolution.x*((int)(g_CCore->GetGame()->loadingStatus)), 1, D3DCOLOR_XRGB(200, 200, 200));
+	//this->Clear(0, resolution.y*0.90, resolution.x*((int)(g_CCore->GetGame()->loadingStatus)), 1, D3DCOLOR_XRGB(200, 200, 200));
 
 	char buff[10];
 	sprintf(buff, "%.0f%%", g_CCore->GetGame()->loadingStatus * 100);
-	this->DrawTextA(buff, resolution.x / 2, resolution.y*0.90 - 40, 0xffffffff, false);
+	g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, resolution.x / 2, (int)(resolution.y*0.90f) - 40, 0xffffffff, false);
 
 }
 
@@ -177,8 +200,8 @@ void CGraphics::RenderNametags()
 				int size = GetFontWidth(buff);
 				SetRect(&rect, (int)ceil(screen.x) - (size / 2), (int)ceil(screen.y), (int)ceil(screen.x) + 100, (int)ceil(screen.y) + 100);
 
-				m_chatfont->DrawTextA(buff, strlen(buff), &rect, DT_SINGLELINE, D3DCOLOR_XRGB(255, 255, 255));
-
+				//m_chatfont->DrawTextA(buff, strlen(buff), &rect, DT_SINGLELINE, D3DCOLOR_XRGB(255, 255, 255));
+				g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, rect.left,rect.top, D3DCOLOR_XRGB(255, 255, 255));
 				D3DCOLOR farba;
 				if ((ped->GetHealth() / 200) > 0.5)
 				{
@@ -239,25 +262,7 @@ Vector2D CGraphics::GetResolution()
 	screen.y = viewport.Height;
 	return screen;
 }
-void CGraphics::Test()
-{
-	D3DVIEWPORT8 viewport;
-	m_DirectDevice->GetViewport(&viewport);
-	char buff[255];
-	sprintf(buff,"%i %i - %i %i",viewport.Width,viewport.Height,viewport.X,viewport.Y);
-	g_CCore->GetChat()->AddMessage(buff);
-	/*POINT point;
-	point.x = 0;
-	point.y = 0;
-	ScreenToClient(hwnAppWindow,&point);
-	/*RECT rScreen;
-	GetClientRect(hwnAppWindow,&rScreen);
-	*/////char buff[255];
-	//sprintf(buff,"%d %d",point.x,point.y);
-	//sprintf(buff,"%d %d %d %d",rScreen.left,rScreen.right,rScreen.top,rScreen.bottom);
-	//g_CCore->GetChat()->AddMessage(buff);
-	
-}
+
 void CGraphics::TakeScreenshot()
 {
 	D3DDISPLAYMODE mode;
@@ -432,7 +437,7 @@ int		CGraphics::GetStrlenForWidth(int width, char* text)
 }
 int	CGraphics::GetColoredTextWidth(char text[])
 {
-	if (Tools::IsEmptyString(text) == true)
+	/*if (Tools::IsEmptyString(text) == true)
 		return -1;
 		char* akt;
 		char* pch = strchr(text, '#');
@@ -496,6 +501,32 @@ int	CGraphics::GetColoredTextWidth(char text[])
 
 		}
 	
+	return size;*/
+	int size = 0;
+	if (Tools::IsEmptyString(text) != NULL)
+	{
+		int start;
+		char* pointer = text;
+		while (1 == 1)
+		{
+			start = Tools::getFirstColorStamp(text);
+			if (start == -1)
+			{
+				size += GetFontWidth(pointer);
+				break;
+			}
+			else if (start == 0)
+			{
+				pointer = pointer + 7;
+			}
+			else {
+				pointer[start] = 0x0;
+				size += GetFontWidth(pointer);
+				pointer[start] = '#';
+				pointer = pointer + start + 7;
+			}
+		}
+	}
 	return size;
 }
 void	CGraphics::DrawText(char text[],int x,int y,D3DCOLOR color,bool ifShadow,bool colored,LPD3DXFONT font)
@@ -594,39 +625,11 @@ void	CGraphics::DrawText(char text[],int x,int y,D3DCOLOR color,bool ifShadow,bo
 	DrawText(text,x,y,color,ifShadow,colored,m_chatfont);
 }
 
-void CGraphics::FillARGB( int x, int y, int w, int h, D3DCOLOR color) 
+void CGraphics::FillARGB(int x, int y, int w, int h, D3DCOLOR color)
 {
-  //const DWORD D3D_FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-
-  struct QuadVertex {
-        float x,y,z,rhw;
-        DWORD dwColor;
-    };
-    QuadVertex qV[4];
-
-    qV[0].dwColor = qV[1].dwColor = qV[2].dwColor = qV[3].dwColor = color;
-    qV[0].z   = qV[1].z   = qV[2].z   = qV[3].z   = 0.0f;
-    qV[0].rhw = qV[1].rhw = qV[2].rhw = qV[3].rhw = 0.0f;
-
-    qV[0].x = (float)x;
-    qV[0].y = (float)(y + h);
-    qV[1].x = (float)x;
-    qV[1].y = (float)y;
-    qV[2].x = (float)(x + w);
-    qV[2].y = (float)(y + h);
-    qV[3].x = (float)(x + w);
-    qV[3].y = (float)y;
-	
-    /*m_DirectDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,true );
-	m_DirectDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
-	m_DirectDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-	m_DirectDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );*/
-
-	
-    m_DirectDevice->SetTexture(0, NULL);
+	this->GetDevice()->SetTexture(0, NULL);
 
 	m_DirectDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-
 	m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -654,9 +657,86 @@ void CGraphics::FillARGB( int x, int y, int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	
 
-    m_DirectDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,2,qV,sizeof(QuadVertex));
+	my_vertex g_square_vertices[] = {
+		{ x, y + h, 0.0f, 0.0f, color }, // x, y, z, rhw, color
+		{ x, y, 0.0f, 0.0f, color },
+		{ x + w, y + h, 0.0f, 0.0f, color },
+		{ x + w, y, 0.0f, 0.0f, color }
+	};
+
+	unsigned char*	buffer;
+	m_vb->Lock(0, 0, &buffer, 0);
+	memcpy(buffer, g_square_vertices, sizeof(g_square_vertices));
+	m_vb->Unlock();
+
+
+	this->GetDevice()->SetPixelShader(NULL);
+	this->GetDevice()->SetVertexShader(D3D8T_CUSTOMVERTEX);
+
+	this->GetDevice()->SetStreamSource(0, m_vb, sizeof(my_vertex));
+
+	//Now we're drawing a Triangle Strip, 4 vertices to draw 2 triangles.
+	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
+
+}
+
+void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
+{
+	this->GetDevice()->SetTexture(0, NULL);
+
+	m_DirectDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHAREF, 0x08);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+	m_DirectDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	m_DirectDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	m_DirectDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
+	m_DirectDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_COLORWRITEENABLE,
+		D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN |
+		D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+
+	my_vertex g_square_vertices[] = {
+		{ x, y + h, 0.0f, z, color }, // x, y, z, rhw, color
+		{ x, y, 0.0f, z, color },
+		{ x + w, y + h, 0.0f, z, color },
+		{ x + w, y, 0.0f, z, color }
+	};
+
+	unsigned char*	buffer;
+	m_vb->Lock(0, 0, &buffer, 0);
+	memcpy(buffer, g_square_vertices, sizeof(g_square_vertices));
+	m_vb->Unlock();
+
+
+	this->GetDevice()->SetPixelShader(NULL);
+	this->GetDevice()->SetVertexShader(D3D8T_CUSTOMVERTEX);
+
+	this->GetDevice()->SetStreamSource(0, m_vb, sizeof(my_vertex));
+
+	//Now we're drawing a Triangle Strip, 4 vertices to draw 2 triangles.
+	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
+
 }
 void CGraphics::Clear(int x, int y, int w, int h, D3DCOLOR color)
 {
@@ -805,7 +885,8 @@ void CGraphics::RenderScoreboard()
 	int numLines = 2;
 	// Render title
 	FillARGB(x,y-25,width,25,0xffcc0000);
-	DrawText(g_CCore->GetNetwork()->GetServerName(),x+10,y-23,0xffffffff,true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetServerName(), x + 10, y - 23, 0xffffffff, true);
+	//DrawText(g_CCore->GetNetwork()->GetServerName(),x+10,y-23,0xffffffff,true);
 	// Render content
 	for(int ID = 0; ID < MAX_PLAYERS;ID++)
 	{
@@ -816,15 +897,15 @@ void CGraphics::RenderScoreboard()
 	}
 	FillARGB(x,y,width,20+(20*numLines),0xff000000);
 	// Render navigation
-	DrawText("ID",x+10,y+10,0xffffffff,true);
-	DrawText("Nickname",x+30,y+10,0xffffffff,true);
-	DrawText("Ping",x+150,y+10,0xffffffff,true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("ID", x + 10, y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Nickname", x + 30, y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Ping", x + 150, y + 10, 0xffffffff, true);
 	// Render local player
 	sprintf(buff,"%i",g_CCore->GetLocalPlayer()->GetOurID());
-	DrawText(buff,x+10,20+y+10,0xffffffff,true);
-	DrawText(g_CCore->GetNetwork()->GetNick(),x+30,20+y+10,0xffffffff,true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, 20 + y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetNick(), x + 30, 20 + y + 10, 0xffffffff, true);
 	sprintf(buff,"%i",g_CCore->GetLocalPlayer()->GetPing());
-	DrawText(buff,x+150,20+y+10,0xffffffff,true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 150, 20 + y + 10, 0xffffffff, true);
 
 	//y = screen.y*0.4;
 	for(int ID = 0; ID < MAX_PLAYERS;ID++)
@@ -834,10 +915,10 @@ void CGraphics::RenderScoreboard()
 		if(ped->IsActive() == 1)
 		{
 			sprintf(buff,"%i",ID);
-			DrawText(buff,x+10,20+y+30+(numRendered*20),0xffffffff,true);
-			DrawText(ped->GetName(),x+30,20+y+30+(numRendered*20),0xffffffff,true);
+			g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
+			g_CCore->GetGraphics()->GetFont()->DrawText(ped->GetName(), x + 30, 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
 			sprintf(buff,"%i",ped->GetPing());
-			DrawText(buff,x+150,20+y+30+(numRendered*20),0xffffffff,true);
+			g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 150, 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
 			numRendered++;
 		}
 	}
@@ -868,23 +949,30 @@ void CGraphics::RenderStatistics()
 	int x = (screen.x - width) / 2, y = screen.y / 2;
 	// Title
 	FillARGB(x, y - 25, width, 25, 0xffcc0000);
-	DrawText("Statistics:", x + 10, y - 23, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Statistics:", x + 10, y - 23, 0xffffffff, true);
 
 	FillARGB(x, y, width, 160, 0x50000000);
 	sprintf(buff, "Bytes Per Second Received: %.2f%sB", Tools::GetMetricUnitNum((float)uBytesPerSecondReceived), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)uBytesPerSecondReceived)]);
-	this->DrawTextA(buff,x+10,y+10,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+10,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 10, D3DCOLOR_XRGB(255, 255, 255), true);
 	sprintf(buff, "Bytes Per Second Sent: %.2f%sB", Tools::GetMetricUnitNum((float)uBytesPerSecondSent), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)uBytesPerSecondSent)]);
-	this->DrawTextA(buff,x+10,y+30,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+30,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 30, D3DCOLOR_XRGB(255, 255, 255), true);
 	sprintf(buff, "Total Bytes Received: %.2f%sB", Tools::GetMetricUnitNum((float)uTotalBytesReceived), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)uTotalBytesReceived)]);
-	this->DrawTextA(buff,x+10,y+50,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+50,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 50, D3DCOLOR_XRGB(255, 255, 255), true);
 	sprintf(buff, "Total Bytes Sent: %.2f%sB", Tools::GetMetricUnitNum((float)uTotalBytesSent), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)uTotalBytesSent)]);
-	this->DrawTextA(buff,x+10,y+70,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+70,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 70, D3DCOLOR_XRGB(255, 255, 255), true);
 	sprintf(buff,"Current Packet Loss: %.02f",fCurrentPacketLoss);
-	this->DrawTextA(buff,x+10,y+90,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+90,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 90, D3DCOLOR_XRGB(255, 255, 255), true);
 	sprintf(buff,"Average Packet Loss: %.02f",fAveragePacketLoss);
-	this->DrawTextA(buff,x+10,y+110,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+110,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 110, D3DCOLOR_XRGB(255, 255, 255), true);
 	sprintf(buff,"Connection Time: %ds",uConnectionTime);
-	this->DrawTextA(buff,x+10,y+130,D3DCOLOR_XRGB(255,255,255),true);
+	//this->DrawTextA(buff,x+10,y+130,D3DCOLOR_XRGB(255,255,255),true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 130, D3DCOLOR_XRGB(255, 255, 255), true);
 
     /*sprintf(szDispBuf,"--- Network Stats ---\n" \
                                         "\n" \
@@ -938,6 +1026,9 @@ __declspec(noinline) void CGraphics::OnLostDevice()
 		m_mapGUI = NULL;
 	}
 	g_CCore->GetChat()->OnLostDevice();
+
+	this->m_d3dFont->InvalidateDeviceObjects();
+	this->m_cFont->OnDeviceLost();
 }
 void CGraphics::OnResetDevice()
 {
@@ -963,6 +1054,10 @@ void CGraphics::OnResetDevice()
 		D3DX_FILTER_LINEAR, 0xff8aff00,
 		NULL, NULL, &m_mapGUI);
 	g_CCore->GetChat()->OnResetDevice();
+
+
+	this->m_d3dFont->RestoreDeviceObjects();
+	this->m_cFont->OnReset();
 }
 
 
@@ -994,4 +1089,23 @@ void	CGraphics::DrawColoredText(CColoredText* text, int x, int y, bool ifShadow)
 		this->DrawTextA(strr->text, x+drawn,y, strr->color, true);
 		drawn += strr->width;
 	}
+}
+
+
+int		CGraphics::GetD3DSize(char text[])
+{
+	SIZE textSize;
+	m_d3dFont->GetTextExtent(text, &textSize);
+	return textSize.cx;
+}
+void	CGraphics::D3DDrawText(char text[], int x, int y , D3DCOLOR color, bool shadow)
+{
+	//m_d3dFont->
+	m_d3dFont->DrawTextA((float)x, (float)y, color, text);
+}
+
+
+CFont*	CGraphics::GetFont()
+{
+	return this->m_cFont;
 }
