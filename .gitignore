@@ -1,0 +1,4 @@
+*.obj
+*.tlog
+Client/Release/
+Client/Debug/
