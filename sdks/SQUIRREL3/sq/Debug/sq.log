@@ -1,0 +1,16 @@
+﻿Build started 8.2.2014 22:29:36.
+     1>Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\sq\sq.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1186,5): warning MSB8012: TargetPath(D:\Projects\Tesla-work\sdks\SQUIRREL3\sq\.\Debug\sq.exe) does not match the Linker's OutputFile property value (D:\Projects\Tesla-work\sdks\SQUIRREL3\bin\sq.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     1>Link:
+         D:\Programy\VS\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"../bin/sq.exe" /INCREMENTAL /NOLOGO /LIBPATH:../lib squirrel.lib sqstdlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:".\Debug\sq.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\sq.lib" /MACHINE:X86 /SAFESEH .\Debug\sq.obj
+         "D:\Projects\Tesla-work\sdks\SQUIRREL3\lib\sqstdlib.lib"
+         "D:\Projects\Tesla-work\sdks\SQUIRREL3\lib\squirrel.lib"
+     1>sq.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+     1>sq.obj : error LNK2019: unresolved external symbol __CrtSetAllocHook referenced in function _main
+     1>sq.obj : error LNK2019: unresolved external symbol __CrtMemDumpAllObjectsSince referenced in function _main
+     1>../bin/sq.exe : fatal error LNK1120: 2 unresolved externals
+     1>Done Building Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\sq\sq.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.55

@@ -1,0 +1,11 @@
+; LHMP SERVER CONFIG
+; Everything after ";" is comment
+; use only alphabet characters or numbers
+; multiple TABs and spaces are ignored
+; --------------------------------------------
+			
+ servername		[Dev] We are testing,so don't connect !	; komentaris
+ maxplayers		5
+ server_port		27015
+ gamemode		default
+

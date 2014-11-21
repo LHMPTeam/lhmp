@@ -1,0 +1,28 @@
+﻿Build started 26. 7. 2013 21:31:10.
+     1>Project "D:\Projects\DirectXhook\DirectXhook\DirectXhook.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\DirectXhook.lastbuildstate".
+       InitializeBuildStatus:
+         Touching "Debug\DirectXhook.unsuccessfulbuild".
+       ClCompile:
+         D:\Programy\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ID:\Projects\DirectXhook\DirectXhook\ /ID:\Projects\detours\include /I"C:\Program Files (x86)\Microsoft DirectX SDK (August 2007)\Include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D DIRECTXHOOK_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Debug\DirectXhook.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         D:\Programy\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ID:\Projects\DirectXhook\DirectXhook\ /ID:\Projects\detours\include /I"C:\Program Files (x86)\Microsoft DirectX SDK (August 2007)\Include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D DIRECTXHOOK_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\DirectXhook.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt DirectXhook.cpp
+         DirectXhook.cpp
+         D:\Programy\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ID:\Projects\DirectXhook\DirectXhook\ /ID:\Projects\detours\include /I"C:\Program Files (x86)\Microsoft DirectX SDK (August 2007)\Include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D DIRECTXHOOK_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt dllmain.cpp
+         dllmain.cpp
+     1>d:\projects\directxhook\directxhook\dllmain.cpp(45): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\programy\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+       ManifestResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\DirectXhook.dll.embed.manifest.res" Debug\DirectXhook_manifest.rc 
+       Link:
+         D:\Programy\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Projects\DirectXhook\Debug\DirectXhook.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files (x86)\Microsoft DirectX SDK (August 2007)\Lib" /LIBPATH:D:\Projects\detours\lib /LIBPATH:D:\temp\DXF\DXSDK\lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libci.lib /MANIFEST /ManifestFile:"Debug\DirectXhook.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Projects\DirectXhook\Debug\DirectXhook.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Projects\DirectXhook\Debug\DirectXhook.lib" /MACHINE:X86 /DLL Debug\DirectXhook.dll.embed.manifest.res
+         Debug\DirectXhook.obj
+         Debug\dllmain.obj
+         Debug\stdafx.obj
+     1>LINK : fatal error LNK1123: failure during conversion to COFF: file invalid or corrupt
+     1>Done Building Project "D:\Projects\DirectXhook\DirectXhook\DirectXhook.vcxproj" (rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.26

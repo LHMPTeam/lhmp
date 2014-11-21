@@ -1,0 +1,10 @@
+; LHMP SERVER CONFIG
+; Everything after ";" is comment
+; use only alphabet characters or numbers
+; multiple TABs and spaces are ignored
+; --------------------------------------------
+			
+ servername		Default LHMP server name	; test comment
+ maxplayers		50
+ server_port		27015
+ gamemode		default

@@ -1,0 +1,11 @@
+-	PROJECT TODO		-
+---------------------------------
+
+Client
+	- sync optimalization
+	- improve a bit interpolation - !!!
+	- reverse car position changing while it's abandoned, again
+
+Server
+	- optimalization ?
+	- SQlite support & maybe MySQL

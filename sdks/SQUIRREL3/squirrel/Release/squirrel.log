@@ -1,0 +1,55 @@
+﻿Build started 8.2.2014 22:33:32.
+     1>Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\squirrel.vcxproj" on node 3 (Build target(s)).
+     1>ClCompile:
+         D:\Programy\VS\VC\bin\CL.exe /c /I..\include /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _LIB /D GARBAGE_COLLECTOR /D _VC80_UPGRADE=0x0600 /D _MBCS /GF /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Release\\" /Fd".\Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt sqapi.cpp sqbaselib.cpp sqcompiler.cpp sqdebug.cpp sqfuncstate.cpp sqlexer.cpp sqmem.cpp sqobject.cpp sqstate.cpp sqtable.cpp sqclass.cpp sqvm.cpp
+         sqapi.cpp
+     1>sqapi.cpp(37): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+         sqbaselib.cpp
+         sqcompiler.cpp
+     1>sqcompiler.cpp(92): warning C4996: 'vsprintf': This function or variable may be unsafe. Consider using vsprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'vsprintf'
+         sqdebug.cpp
+     1>sqdebug.cpp(62): warning C4996: 'vsprintf': This function or variable may be unsafe. Consider using vsprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'vsprintf'
+     1>sqdebug.cpp(77): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqdebug.cpp(81): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+         sqfuncstate.cpp
+         sqlexer.cpp
+         sqmem.cpp
+         sqobject.cpp
+         sqstate.cpp
+         sqtable.cpp
+         sqclass.cpp
+         sqvm.cpp
+     1>sqvm.cpp(285): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqvm.cpp(288): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqvm.cpp(291): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqvm.cpp(310): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+         Generating Code...
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1354,5): warning MSB8012: TargetPath(D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\.\Release\squirrel.lib) does not match the Library's OutputFile property value (D:\Projects\Tesla-work\sdks\SQUIRREL3\lib\squirrel.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         D:\Programy\VS\VC\bin\Lib.exe /OUT:"..\lib\squirrel.lib" /NOLOGO .\Release\sqapi.obj
+         .\Release\sqbaselib.obj
+         .\Release\sqcompiler.obj
+         .\Release\sqdebug.obj
+         .\Release\sqfuncstate.obj
+         .\Release\sqlexer.obj
+         .\Release\sqmem.obj
+         .\Release\sqobject.obj
+         .\Release\sqstate.obj
+         .\Release\sqtable.obj
+         .\Release\sqclass.obj
+         .\Release\sqvm.obj
+         squirrel.vcxproj -> D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\.\Release\squirrel.lib
+     1>Done Building Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\squirrel.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.66

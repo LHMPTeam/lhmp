@@ -1,0 +1,9 @@
+- HOW TO COMPILE SERVER UNDER LINUX
+--------------------------------------------
+
+- download CodeBlocks IDE, use Tesla.cbp in /Tesla/ directory, 
+  add there latest headers | source files and COMPILE IT
+- if you need to compile it on another machine, use "cbp2mak" application to generate makefile,
+  copy directories: Tesla, shared, sdks(Squirrel,RakNet) and makefile on another PC and use make in /Tesla/
+- watch out for x86-64 machines
+- "cbp2make -in Tesla.cbp -out makefile -unix" - in Tesla directory to generate makefile

@@ -1,0 +1,10 @@
+﻿Build started 8.2.2014 22:29:35.
+     1>Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\squirrel.vcxproj" on node 3 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1354,5): warning MSB8012: TargetPath(D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\.\Debug\squirrel.lib) does not match the Library's OutputFile property value (D:\Projects\Tesla-work\sdks\SQUIRREL3\lib\squirrel.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+     1>Lib:
+         squirrel.vcxproj -> D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\.\Debug\squirrel.lib
+     1>Done Building Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\squirrel\squirrel.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.05

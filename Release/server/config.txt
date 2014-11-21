@@ -1,0 +1,9 @@
+; LHMP SERVER CONFIG
+; Everything after ";" is comment
+; use only alphabet characters or numbers
+; multiple TABs and spaces are ignored
+; --------------------------------------------
+			
+ servername		Romco Snapbackis serveris testis	; komentaris
+ maxplayers		50
+ server_port		27015

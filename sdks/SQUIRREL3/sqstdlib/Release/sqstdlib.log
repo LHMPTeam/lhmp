@@ -1,0 +1,47 @@
+﻿Build started 8.2.2014 22:33:32.
+     1>Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\sqstdlib\sqstdlib.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         D:\Programy\VS\VC\bin\CL.exe /c /I..\include /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _LIB /D _VC80_UPGRADE=0x0600 /D _MBCS /GF /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Release\\" /Fd".\Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt sqstdblob.cpp sqstdio.cpp sqstdmath.cpp sqstdrex.cpp sqstdstream.cpp sqstdstring.cpp sqstdaux.cpp sqstdsystem.cpp
+         sqstdblob.cpp
+         sqstdio.cpp
+     1>sqstdio.cpp(13): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(211) : see declaration of 'fopen'
+         sqstdmath.cpp
+         sqstdrex.cpp
+         sqstdstream.cpp
+         sqstdstring.cpp
+     1>sqstdstring.cpp(138): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqstdstring.cpp(139): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqstdstring.cpp(140): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdio.h(356) : see declaration of 'sprintf'
+     1>sqstdstring.cpp(219): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\string.h(204) : see declaration of 'strtok'
+     1>sqstdstring.cpp(224): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\string.h(204) : see declaration of 'strtok'
+         sqstdaux.cpp
+         sqstdsystem.cpp
+     1>sqstdsystem.cpp(27): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\stdlib.h(462) : see declaration of 'getenv'
+     1>sqstdsystem.cpp(102): warning C4996: 'gmtime': This function or variable may be unsafe. Consider using gmtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\time.inl(99) : see declaration of 'gmtime'
+     1>sqstdsystem.cpp(104): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Programy\VS\VC\include\time.inl(112) : see declaration of 'localtime'
+         Generating Code...
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1354,5): warning MSB8012: TargetPath(D:\Projects\Tesla-work\sdks\SQUIRREL3\sqstdlib\.\Release\sqstdlib.lib) does not match the Library's OutputFile property value (D:\Projects\Tesla-work\sdks\SQUIRREL3\lib\sqstdlib.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         D:\Programy\VS\VC\bin\Lib.exe /OUT:"..\lib\sqstdlib.lib" /NOLOGO .\Release\sqstdblob.obj
+         .\Release\sqstdio.obj
+         .\Release\sqstdmath.obj
+         .\Release\sqstdrex.obj
+         .\Release\sqstdstream.obj
+         .\Release\sqstdstring.obj
+         .\Release\sqstdaux.obj
+         .\Release\sqstdsystem.obj
+         sqstdlib.vcxproj -> D:\Projects\Tesla-work\sdks\SQUIRREL3\sqstdlib\.\Release\sqstdlib.lib
+     1>Done Building Project "D:\Projects\Tesla-work\sdks\SQUIRREL3\sqstdlib\sqstdlib.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.78

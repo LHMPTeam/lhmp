@@ -1,0 +1,27 @@
+﻿Build started 27. 7. 2013 13:04:23.
+     1>Project "D:\Projects\DirectXhook\Injector\Injector.vcxproj" on node 3 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Release\Injector.lastbuildstate".
+       InitializeBuildStatus:
+         Creating "Release\Injector.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         D:\Programy\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt inject.cpp main.cpp
+         inject.cpp
+         main.cpp
+     1>main.cpp(22): warning C4018: '<' : signed/unsigned mismatch
+       Link:
+         D:\Programy\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Projects\DirectXhook\Release\Injector.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\Injector.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Projects\DirectXhook\Release\Injector.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Projects\DirectXhook\Release\Injector.lib" /MACHINE:X86 Release\inject.obj
+         Release\main.obj
+         Generating code
+         Finished generating code
+         Injector.vcxproj -> D:\Projects\DirectXhook\Release\Injector.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"D:\Projects\DirectXhook\Release\Injector.exe;#1" /manifest Release\Injector.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Release\Injector.unsuccessfulbuild".
+         Touching "Release\Injector.lastbuildstate".
+     1>Done Building Project "D:\Projects\DirectXhook\Injector\Injector.vcxproj" (rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:04.24
