@@ -739,3 +739,41 @@ void CScripts::onPlayerHit(int ID,int attackerID)
 		}
 	}
 }
+
+void CScripts::onPickupTaken(int pickupID, int playerID)
+{
+	for (int i = 0; i < MAX_SCRIPTS; i++) {
+		if (m_pScripts[i]) {
+			// get the script vm pointer
+			SQVM * pVM = m_pScripts[i]->GetVM();
+
+			// Get the stack top
+			int iTop = sq_gettop(pVM);
+
+			// Push the root table onto the stack
+			sq_pushroottable(pVM);
+
+			// Push the function name onto the stack
+			sq_pushstring(pVM, "onPickupTaken", -1);
+
+			// Get the closure for the function
+			if (SQ_SUCCEEDED(sq_get(pVM, -2))) {
+				// Push the root table onto the stack
+				sq_pushroottable(pVM);
+
+				// Push the player id onto the stack
+
+				sq_pushinteger(pVM, pickupID);
+				sq_pushinteger(pVM, playerID);
+
+				// Call the function
+				if (!SQ_FAILED(sq_call(pVM, 3, false, true)))
+				{
+				}
+			}
+
+			// Restore the stack top
+			sq_settop(pVM, iTop);
+		}
+	}
+}

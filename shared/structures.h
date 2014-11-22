@@ -1,5 +1,10 @@
-#ifndef STRUCTURES_H
-#define	STRUCTURES_H
+/**
+	Lost Heaven Multiplayer - shared
+	structures.h
+	Purpose: often used structures (e.g. vectors)
+*/
+#ifndef __STRUCTURES_H
+#define	__STRUCTURES_H
 
 #include <iostream>
 #include "stdio.h"
@@ -30,6 +35,20 @@ struct Vector3D{
 		x = 0.0f;
 		y = 0.0f;
 		z = 0.0f;
+	}
+};
+
+struct Vector4D{
+	float x;
+	float y;
+	float z;
+	float w;
+	Vector4D()
+	{
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
+		w = 0.0f;
 	}
 };
 
@@ -66,7 +85,11 @@ enum GameMessages
 	ID_GAME_IP = ID_USER_PACKET_ENUM+5,
 	ID_GAME_ALIVE = ID_USER_PACKET_ENUM+6,
 	ID_GAME_LHMP_PACKET,
-	ID_GAME_BAD_VERSION
+	ID_GAME_BAD_VERSION,
+	ID_FILETRANSFER_INIT,
+	ID_FILETRANSFER_SENDFILE,
+	ID_FILETRANSFER_TRANSFERDONE,
+
 };
 
 enum LHMPNetMessages
@@ -133,7 +156,11 @@ enum LHMPNetMessages
 	//script
 	LHMP_SCRIPT_ON_KEY_PRESSED,
 	LHMP_SCRIPT_CHANGE_MAP,
-	LHMP_FILE_SEND
+	LHMP_FILE_SEND,
+	// pickup
+	LHMP_PICKUP_CREATE,
+	LHMP_PICKUP_DELETE,
+	LHMP_PICKUP_SETVISIBLE
 };
 
 
@@ -260,7 +287,11 @@ enum CLIENT_ENGINESTACK
 	ES_CARRESPAWN,
 	//door
 	ES_DOOR_SET_STATE,
-	ES_CHANGEMAP
+	ES_CHANGEMAP,
+	//pickup
+	ES_CREATEPICKUP,
+	ES_DELETEPICKUP,
+	ES_SETPICKUPVISIBLE
 };
 namespace ENGINE_STACK
 {

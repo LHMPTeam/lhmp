@@ -1,25 +1,23 @@
-#ifndef GAMESTRUCTURES_H
-#define GAMESTRUCTURES_H
+/**
+	Lost Heaven Multiplayer - shared
+	gamestructures.h
+	Purpose: server-client shared definitions
+	@author	Romop5, DavoSK, ZaKlaus
+	@version 1.0 1/09/14
+*/
+
+#ifndef __GAMESTRUCTURES_H
+#define __GAMESTRUCTURES_H
+
 #include <iostream>
 #include "stdio.h"
-static char	nadavky[][50] = 
-{
-	"paulie",
-	"kurv",
-	"pic",
-	"jeb"
-};
-static char zvuky[][50] =
-{
-	"test"
-};
 
-static char ForbiddenBridges[][100] = {
+const static char FORBIDDEN_BRIDGES[][100] = {
 	"LLsklap01",
 	"sklapx01"
 };
 
-static char skin[][200] = {
+const static char SKINS[][200] = {
 	"Tommy",
 	"TommyBOXER",
 	"TommyCOAT",
@@ -328,7 +326,7 @@ static char skin[][200] = {
 	"invisible"
 };
 
-static char Anims[][100] = 
+const static char ANIMS[][100] = 
 {
 	"Nuda01",
 	"Mise03a Paulie poskrabani",
@@ -338,11 +336,11 @@ static char Anims[][100] =
 	"ChcaniVyndani",
 	"ChcaniZandani"
 };
-static char ForbiddenObjects[][100] = {
+const static char FORBIDDEN_OBJECTS[][100] = {
 	"salina",
 	"semafor"
 };
-static char car[][200] = {
+const static char CAR_SKINS[][200] = {
 	"fordtTud00",
 	"fordtTud01",
 	"fordtTud02",

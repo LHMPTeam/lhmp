@@ -6,6 +6,7 @@
 extern CCore *g_CCore;
 bool CGameMode::LoadGameMode(char* name)
 {
+	SetName("default");
 	char resource[255];
 	sprintf(resource, "gamemodes/%s/resources.txt",name);
 	if (Tools::fileExists(resource))
@@ -44,6 +45,7 @@ bool CGameMode::LoadGameMode(char* name)
 		g_CCore->GetLog()->AddNormalLog("[!] Gamemode has failed to load.");
 		return false;
 	}
+	SetName(name);
 	g_CCore->GetLog()->AddNormalLog("Gamemode's been successfully loaded.");
 	return true;
 }
@@ -90,4 +92,13 @@ bool CGameMode::UnloadGameMode(char* name)
 	}
 	g_CCore->GetLog()->AddNormalLog("Gamemode's been successfully unloaded.");
 	return true;
+}
+
+void	CGameMode::SetName(char* name)
+{
+	sprintf(this->pGamemodeName, "%s", name);
+}
+char*	CGameMode::GetName()
+{
+	return this->pGamemodeName;
 }

@@ -306,7 +306,7 @@ void CNetworkManager::Pulse()
 					}
 					break;
 				case ID_GAME_MESSAGE_1: // inak by nemal odozvu // pozri sa na to toto dobre
-					{
+				{
 
 					int ID = GetIDFromSystemAddress(packet->systemAddress);
 
@@ -376,6 +376,7 @@ void CNetworkManager::Pulse()
 					SendHimOthers(ID);
 					SendHimCars(ID);
 					SendHimDoors(ID);
+					SendHimPickups(ID);
 					char buff[255];
 					sprintf(buff, "Player %s[%i]'s connected server.", player->GetNickname(), ID);
 					this->SendMessageToAll(buff);
@@ -403,7 +404,22 @@ void CNetworkManager::Pulse()
 					fileOut.Write((MessageID)LHMP_FILE_SEND);
 					list->Serialize(&fileOut);
 					g_CCore->GetNetworkManager()->GetPeer()->Send(&fileOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, false);*/
+
+					int uID = g_CCore->GetFileTransfer()->NewTransfer(packet->systemAddress, 0);
+					CFileTransfer* tf = g_CCore->GetFileTransfer()->GetID(uID);
+					if (tf != NULL)
+					{
+
+						//tf->AddFile("lol", "ada");
+						//tf->AddFile("ls", "adda");
+						//tf->AddFile("loddl", "aasdada");
+						tf->AddFile("gamemodes/default/resources.txt", "resources.txt");
+
+						printf("lol");
+						tf->StartTransfer();
 					}
+
+				}
 				break;
 				case ID_GAME_LHMP_PACKET:
 				{
@@ -416,6 +432,32 @@ void CNetworkManager::Pulse()
 					LHMPPacket(packet,TS);
 				}
 				break;
+				case ID_FILETRANSFER_INIT:
+				{
+					RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
+					int ID;
+					bsIn.Read(ID);
+					CFileTransfer* tf = g_CCore->GetFileTransfer()->GetID(ID);
+					if (tf != NULL)
+					{
+						tf->SendFile();
+					}
+				
+				
+				}
+					break;
+				case ID_FILETRANSFER_SENDFILE:
+				{
+					RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
+					int ID;
+					bsIn.Read(ID);
+					CFileTransfer* tf = g_CCore->GetFileTransfer()->GetID(ID);
+					if (tf != NULL)
+					{
+						tf->SendFile();
+					}
+				}
+					break;
 				default:
 					g_CCore->GetLog()->AddNormalLog("Message with identifier %i has arrived.", packet->data[0]);
 					break;
@@ -498,7 +540,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				player->SetIsAim(syncData.isAim);
 				player->SetTimeStamp(timestamp);*/
 
-				player->OnSync(syncData);
+				player->OnSync(syncData,timestamp);
 			}
 		}
 		break;
@@ -531,7 +573,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				bsIn.Read(pID);
 				bsIn.Read(skin);
 
-				if (skin > 302)
+				/*if (skin > 302)
 					return;
 				player->SetSkin(skin);
 
@@ -540,31 +582,12 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				bsOut.Write((MessageID)LHMP_PLAYER_CHANGESKIN);
 				bsOut.Write(pID);
 				bsOut.Write(skin);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);*/
 				//player->SetTimeStamp(timestamp);
 				//bsIn.Read(g_CCore->GetPlayers()[ID].skinID);
 				//std::cout << g_CCore->GetPlayers()[ID].skinID << std::endl;
+				player->OnChangeSkin(skin);
 			}
-		}
-		break;
-		case LHMP_PLAYER_PLAYANIM:
-		{
-			int ID,type;
-			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			bsIn.Read(ID);
-			bsIn.Read(type);
-			BitStream bsOut;
-			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-			bsOut.Write((MessageID)LHMP_PLAYER_PLAYANIM);
-			bsOut.Write(ID);
-			bsOut.Write(type);
-			peer->Send(&bsOut,MEDIUM_PRIORITY,RELIABLE,0,UNASSIGNED_SYSTEM_ADDRESS,true);
-			//std::cout << "PlayAnim" << std::endl;
-			/*bsIn.IgnoreBytes(sizeof(MessageID));
-			bsIn.IgnoreBytes(sizeof(MessageID));
-			bsIn.Read(ID);
-			bsIn.Read(g_CCore->GetPlayers()[ID].skinID);*/
-			//std::cout << g_CCore->GetPlayers()[ID].skinID << std::endl;
 		}
 		break;
 		case LHMP_PLAYER_RESPAWN:
@@ -576,7 +599,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				player->ResetWeapons();
+				/*player->ResetWeapons();
 				if (player->InCar != -1)
 				{
 					g_CCore->GetVehiclePool()->Return(player->InCar)->PlayerExit(ID);
@@ -588,7 +611,8 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				bsOut.Write((MessageID)LHMP_PLAYER_RESPAWN);
 				bsOut.Write(ID);
 				peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
-				g_CCore->GetScripts()->onPlayerSpawn(ID);
+				g_CCore->GetScripts()->onPlayerSpawn(ID);*/
+				player->OnRespawn();
 			}
 		}
 		break;
@@ -610,7 +634,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				player->AddWeapon(wepID, wepLoaded, wepHidden);
+				/*player->AddWeapon(wepID, wepLoaded, wepHidden);
 
 				BitStream bsOut;
 				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
@@ -619,7 +643,8 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				bsOut.Write(wepID);
 				bsOut.Write(wepLoaded);
 				bsOut.Write(wepHidden);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
+				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
+				player->OnAddWeapon(wepID, wepLoaded, wepHidden);
 			}
 		}
 		break;
@@ -627,10 +652,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		{
 			int wepID;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//peer->Send(&bsIn,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
-
-			//bsIn.IgnoreBytes(sizeof(MessageID));
-			//bsIn.IgnoreBytes(sizeof(MessageID));
 			bsIn.IgnoreBytes(sizeof(int));
 			bsIn.Read(wepID);
 			int ID = GetIDFromSystemAddress(packet->systemAddress);
@@ -638,14 +659,15 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				player->DeleteWeapon(wepID);
+				/*player->DeleteWeapon(wepID);
 
 				BitStream bsOut;
 				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 				bsOut.Write((MessageID)LHMP_PLAYER_DELETEWEAPON);
 				bsOut.Write(ID);
 				bsOut.Write(wepID);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
+				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
+				player->OnDeleteWeapon(wepID);
 			}
 		}
 		break;
@@ -653,10 +675,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		{
 			int wepID;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//peer->Send(&bsIn,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
 
-			//bsIn.IgnoreBytes(sizeof(MessageID));
-			//bsIn.IgnoreBytes(sizeof(MessageID));
 			bsIn.IgnoreBytes(sizeof(int));
 			bsIn.Read(wepID);
 			int ID = GetIDFromSystemAddress(packet->systemAddress);
@@ -664,14 +683,15 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				player->SwitchWeapon(wepID);
+				/*player->SwitchWeapon(wepID);
 
 				BitStream bsOut;
 				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 				bsOut.Write((MessageID)LHMP_PLAYER_SWITCHWEAPON);
 				bsOut.Write(ID);
 				bsOut.Write(wepID);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
+				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
+				player->OnSwitchWeapon(wepID);
 			}
 		}
 		break;
@@ -684,14 +704,13 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			bsIn.Read(x);
 			bsIn.Read(y);
 			bsIn.Read(z);
-			//peer->Send(&bsIn,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
 
 			ID = GetIDFromSystemAddress(packet->systemAddress);
 			if(ID == -1) return;
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				player->OnShoot();
+				/*player->OnShoot();
 				BitStream bsOut;
 				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 				bsOut.Write((MessageID)LHMP_PLAYER_SHOOT);
@@ -699,8 +718,9 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				bsOut.Write(x);
 				bsOut.Write(y);
 				bsOut.Write(z);
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
-				g_CCore->GetScripts()->onPlayerShoot(ID, player->GetCurrentWeapon());
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
+				//g_CCore->GetScripts()->onPlayerShoot(ID, player->GetCurrentWeapon());
+				player->OnPlayerShoot(x, y, z);
 			}
 
 		}
@@ -712,18 +732,14 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			bsIn.Read(position);
 
-			BitStream bsOut;
-			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-			bsOut.Write((MessageID)LHMP_PLAYER_THROWGRANADE);
-			bsOut.Write(ID);
-			bsOut.Write(position);
-			peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
-
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
+				/*
 				player->OnThrowGranade();
 				g_CCore->GetScripts()->onPlayerShoot(ID, player->GetCurrentWeapon());
+				*/
+				player->OnPlayerThrowGranade(position);
 			}
 
 		}
@@ -1244,4 +1260,16 @@ void CNetworkManager::SendHimCars(int ID)
 RakNet::RakPeerInterface*	CNetworkManager::GetPeer()
 {
 	return this->peer;
+}
+
+void	CNetworkManager::SendHimPickups(int ID)
+{
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
+		if (pickup)
+		{
+			pickup->SendIt(ID);
+		}
+	}
 }

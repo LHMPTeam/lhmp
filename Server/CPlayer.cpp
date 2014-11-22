@@ -1,5 +1,9 @@
+#include "CCore.h"
+
 #include "CPlayer.h"
 #include "../shared/tools.h"
+
+extern CCore *g_CCore;
 
 CPlayer::CPlayer()
 {
@@ -34,7 +38,6 @@ SWeapon* CPlayer::GetWeapon(int index)
 {
 	return &weapon[index];
 }
-
 
 bool CPlayer::IsAim()
 {
@@ -217,7 +220,7 @@ void	CPlayer::SetLocked(bool status)
 //------------ Network
 
 
-void	CPlayer::OnSync(SYNC::ON_FOOT_SYNC syncData)
+void	CPlayer::OnSync(SYNC::ON_FOOT_SYNC syncData, RakNet::TimeMS time)
 {
 	this->SetPosition(syncData.position);
 	Vector3D rot;
@@ -228,7 +231,9 @@ void	CPlayer::OnSync(SYNC::ON_FOOT_SYNC syncData)
 	this->SetHealth(syncData.health);
 	this->SetIsDucking(syncData.isDucking);
 	this->SetIsAim(syncData.isAim);
-	this->SetTimeStamp(timestamp);
+	this->SetTimeStamp(time);
+
+	g_CCore->GetPickupPool()->TestPlayer(g_CCore->GetPlayerPool()->GetID(this));
 }
 
 
@@ -237,4 +242,125 @@ void	CPlayer::OnCarUpdate(SYNC::IN_CAR syncData)
 	this->SetHealth(syncData.health);
 	this->SetIsAim(syncData.isAiming);
 	this->SetCarAim(syncData.aim);
+	g_CCore->GetPickupPool()->TestPlayer(g_CCore->GetPlayerPool()->GetID(this));
+}
+
+void	CPlayer::OnChangeSkin(int skin)
+{
+	if (skin > 302)
+		return;
+	this->SetSkin(skin);
+
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_CHANGESKIN);
+	bsOut.Write(g_CCore->GetPlayerPool()->GetID(this));
+	bsOut.Write(skin);
+	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+void	CPlayer::OnRespawn()
+{
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+	this->ResetWeapons();
+	if (this->InCar != -1)
+	{
+		g_CCore->GetVehiclePool()->Return(this->InCar)->PlayerExit(ID);
+	}
+
+	g_CCore->GetNetworkManager()->SendHimDoors(ID);
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_RESPAWN);
+	bsOut.Write(ID);
+	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);
+	g_CCore->GetScripts()->onPlayerSpawn(ID);
+}
+
+
+void	CPlayer::OnAddWeapon(int wepID, int ammoA, int ammoB, bool shouldSendHim)
+{
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+	this->AddWeapon(wepID,ammoA,ammoB);
+
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_ADDWEAPON);
+	bsOut.Write(ID);
+	bsOut.Write(wepID);
+	bsOut.Write(ammoA);
+	bsOut.Write(ammoB);
+	if (shouldSendHim)
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS,true);	// send this message everybody including this player - when using Squirrel
+	else 
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
+}
+
+void	CPlayer::OnDeleteWeapon(int wepID, bool shouldSendHim)
+{
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+	this->DeleteWeapon(wepID);
+
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_DELETEWEAPON);
+	bsOut.Write(ID);
+	bsOut.Write(wepID);
+	if (shouldSendHim)
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);	// send this message everybody including this player - when using Squirrel
+	else
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
+}
+
+void	CPlayer::OnSwitchWeapon(int wepID, bool shouldSendHim)
+{
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+	this->SwitchWeapon(wepID);
+
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_SWITCHWEAPON);
+	bsOut.Write(ID);
+	bsOut.Write(wepID);
+	if (shouldSendHim)
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);	// send this message everybody including this player - when using Squirrel
+	else
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
+}
+
+void	CPlayer::OnPlayerShoot(float x,float y,float z, bool shouldSendHim)
+{
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+	this->OnShoot();
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_SHOOT);
+	bsOut.Write(ID);
+	bsOut.Write(x);
+	bsOut.Write(y);
+	bsOut.Write(z);
+	if (shouldSendHim)
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);	// send this message everybody including this player - when using Squirrel
+	else
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
+	g_CCore->GetScripts()->onPlayerShoot(ID, this->GetCurrentWeapon());
+}
+
+void	CPlayer::OnPlayerThrowGranade(Vector3D position, bool shouldSendHim)
+{
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+
+
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_THROWGRANADE);
+	bsOut.Write(ID);
+	bsOut.Write(position);
+	if (shouldSendHim)
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);	// send this message everybody including this player - when using Squirrel
+	else
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
+	
+	this->OnThrowGranade();
+	g_CCore->GetScripts()->onPlayerShoot(ID, this->GetCurrentWeapon());
 }

@@ -26,6 +26,7 @@ void CCore::Pulse()
 void CCore::OnSecondElapsed()
 {
 	m_cNetworkManager.SendPingUpdate();
+	m_cPickupPool.Tick();
 }
 bool CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible)
 {
@@ -79,6 +80,11 @@ CDoorPool*			CCore::GetDoorPool()
 	return &m_cDoorPool;
 }
 
+CPickupPool*			CCore::GetPickupPool()
+{
+	return &m_cPickupPool;
+}
+
 void	CCore::SetDefaultMap(char* map)
 {
 	sprintf(m_cMapName, map);
@@ -91,4 +97,10 @@ char*	CCore::GetDefaultMap()
 CLog* CCore::GetLog()
 {
 	return &this->m_cLog;
+}
+
+
+CFileTransferPool*	CCore::GetFileTransfer()
+{
+	return &this->m_cFileTransferPool;
 }

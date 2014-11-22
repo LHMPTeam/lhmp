@@ -83,6 +83,8 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "timerCreate", (SQFUNCTION)sq_timerCreate, 4, ".snn");
 	RegisterFunction(vM, "timerDelete", (SQFUNCTION)sq_timerDelete, 2, ".n");
 
+	RegisterFunction(vM, "pickupCreate", (SQFUNCTION)sq_pickupCreate, 7, ".snffff");
+
 	RegisterVariable(vM, "KEY_A", 0); 
 	RegisterVariable(vM, "KEY_B", 1);
 	RegisterVariable(vM, "KEY_C", 2);

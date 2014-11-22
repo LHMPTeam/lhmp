@@ -59,6 +59,7 @@ public:
 
 	void onPlayerShoot(int, int);
 	void onPlayerHit(int,int);
+	void onPickupTaken(int, int);
 	//void onPlayerTh(int);
 
 };

@@ -1,3 +1,5 @@
+#ifndef CPLAYER_H
+#define CPLAYER_H
 #include "../shared/structures.h"
 #include "CEntity.h"
 class CPlayer: public CEntity
@@ -58,7 +60,15 @@ public:
 	void	SetLocked(bool);
 
 	//------ Network functions
-	void	OnSync(SYNC::ON_FOOT_SYNC);
+	void	OnSync(SYNC::ON_FOOT_SYNC,RakNet::TimeMS);
 	void	OnCarUpdate(SYNC::IN_CAR);
-	void	OnChangeSkin(int );
+	void	OnChangeSkin(int);
+	void	OnRespawn();
+	void	OnAddWeapon(int,int,int,bool = false);
+	void	OnDeleteWeapon(int, bool = false);
+	void	OnSwitchWeapon(int, bool = false);
+	void	OnPlayerShoot(float, float, float, bool = false);
+	void	OnPlayerThrowGranade(Vector3D, bool = false);
 };
+
+#endif

@@ -76,3 +76,7 @@ SQInteger sq_serverSetDefaultMap(SQVM *vm);
 
 SQInteger sq_timerCreate(SQVM *vm);
 SQInteger sq_timerDelete(SQVM *vm);
+
+
+SQInteger sq_pickupCreate(SQVM *vm);
+SQInteger sq_pickupDelete(SQVM *vm);

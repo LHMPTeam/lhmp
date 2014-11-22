@@ -326,14 +326,15 @@ SQInteger sq_playerChangeSkin(SQVM *vm)
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 	if (player != NULL)
 	{
-		player->SetSkin(skinID);
+		/*player->SetSkin(skinID);
 		//	BitStream bsOut;
 		BitStream bsOut;
 		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((MessageID)LHMP_PLAYER_CHANGESKIN);
 		bsOut.Write(ID);
 		bsOut.Write(skinID);
-		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);*/
+		player->OnChangeSkin(skinID);
 	}
 	return 1;
 }
@@ -1224,10 +1225,33 @@ SQInteger sq_timerCreate(SQVM *vm)
 	g_CCore->GetTimerPool()->New(vm, (char*)name, interval, repeat);
 	return 1;
 }
+
 SQInteger sq_timerDelete(SQVM *vm)
 {
 	SQInteger ID;
 	sq_getinteger(vm, -1, &ID);
 	g_CCore->GetTimerPool()->Delete(ID);
+	return 1;
+}
+
+SQInteger sq_pickupCreate(SQVM *vm)
+{
+	SQInteger interval;
+	SQFloat	x, y, z,size;
+	const SQChar* name;
+
+	sq_getstring(vm, -6, &name);
+	sq_getinteger(vm, -5, &interval);
+	sq_getfloat(vm, -4, &x);
+	sq_getfloat(vm, -3, &y);
+	sq_getfloat(vm, -2, &z);
+	sq_getfloat(vm, -1, &size);
+	
+	int ID = g_CCore->GetPickupPool()->New((char*)name,interval,x,y,z,size);
+	CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+	if (pickup != NULL)
+	{
+		pickup->SendIt(-1);	// send it everybody
+	}
 	return 1;
 }

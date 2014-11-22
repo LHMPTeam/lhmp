@@ -423,6 +423,15 @@
     <ClCompile Include="CLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CPickup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CPickupPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CFileTransfer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNetworkManager.h">
@@ -969,6 +978,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickupPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CFileTransfer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CFileTransferPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

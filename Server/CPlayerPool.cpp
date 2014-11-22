@@ -36,3 +36,15 @@ void CPlayerPool::Delete(int index)
 	delete playerpool[index];
 	playerpool[index] = NULL;
 }
+
+int CPlayerPool::GetID(CPlayer* base)
+{
+	for (int i = 0; i < maxPlayers; i++)
+	{
+		if (playerpool[i] == base)
+		{
+			return i;
+		}
+	}
+	return -1;
+}

@@ -15,6 +15,8 @@ typedef unsigned char byte;
 #include "CTimerPool.h"
 #include "CDoorPool.h"
 #include "CLog.h"
+#include "CPickupPool.h"
+#include "CFileTransferPool.h"
 
 class CCore
 {
@@ -29,7 +31,9 @@ private:
 	CGameMode			m_cGameMode;
 	CTimerPool			m_cTimerPool;
 	CDoorPool			m_cDoorPool;
+	CPickupPool			m_cPickupPool;
 	CLog				m_cLog;
+	CFileTransferPool	m_cFileTransferPool;
 	char				m_cMapName[200];
 	//strPlayer*			m_pPlayers;
 
@@ -50,7 +54,9 @@ public:
 	CGameMode*			GetGameMode();
 	CTimerPool*			GetTimerPool();
 	CDoorPool*			GetDoorPool();
+	CPickupPool*		GetPickupPool();
 	CLog*				GetLog();
+	CFileTransferPool*	GetFileTransfer();
 
 	void				SetDefaultMap(char*);
 	char*				GetDefaultMap();

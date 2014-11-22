@@ -11,4 +11,5 @@ public:
 	void New(int);
 	void Delete(int);
 	CPlayer* Return(int);
+	int GetID(CPlayer*);
 };

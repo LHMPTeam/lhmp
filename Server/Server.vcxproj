@@ -216,9 +216,12 @@
     <ClCompile Include="CCore.cpp" />
     <ClCompile Include="CDoorPool.cpp" />
     <ClCompile Include="CEntity.cpp" />
+    <ClCompile Include="CFileTransfer.cpp" />
     <ClCompile Include="CGameMode.cpp" />
     <ClCompile Include="CLog.cpp" />
     <ClCompile Include="CNetworkManager.cpp" />
+    <ClCompile Include="CPickup.cpp" />
+    <ClCompile Include="CPickupPool.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CPlayerPool.cpp" />
     <ClCompile Include="CScript.cpp" />
@@ -400,8 +403,12 @@
     <ClInclude Include="CCore.h" />
     <ClInclude Include="CDoorPool.h" />
     <ClInclude Include="CEntity.h" />
+    <ClInclude Include="CFileTransfer.h" />
+    <ClInclude Include="CFileTransferPool.h" />
     <ClInclude Include="CGameMode.h" />
     <ClInclude Include="CLog.h" />
+    <ClInclude Include="CPickup.h" />
+    <ClInclude Include="CPickupPool.h" />
     <ClInclude Include="CScript.h" />
     <ClInclude Include="CScripts.h" />
     <ClInclude Include="CNetworkManager.h" />

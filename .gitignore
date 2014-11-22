@@ -2,3 +2,5 @@
 *.tlog
 Client/Release/
 Client/Debug/
+*.o
+Release/

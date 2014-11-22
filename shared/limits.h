@@ -1,7 +1,12 @@
-// LHMP Limits
+/**
+	Lost Heaven Multiplayer - shared
+	limits.h
+	Purpose: shared server-client limits
+*/
 
 #define MAX_PLAYERS				100
 #define MAX_VEHICLES			100
+#define MAX_PICKUPS				100
 
 #define MAX_TIMERS				50
 

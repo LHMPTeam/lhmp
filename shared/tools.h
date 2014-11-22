@@ -1,5 +1,12 @@
-//#ifndef SHARED_TOOLS
-//#define SHARED_TOOLS
+/**
+	Lost Heaven Multiplayer - shared
+	tools.h
+	Purpose: namespace containing miscellaneous functions
+	* for direct memory writing or working with colors
+
+	@author Romop5
+	@version 1.0 1/9/14
+*/
 #pragma once
 #include <stdio.h>
 #include <iostream>
@@ -107,8 +114,10 @@ namespace Tools
 	static Vector3D ComputeOffsetDegrees(float degree)
 	{
 		Vector3D ang;
-		ang.x = (float) (cos(degree*3.14/180)-sin(degree*3.14/180));
-		ang.z = (float) (sin(degree*3.14/180)+cos(degree*3.14/180));
+		//ang.x = (float) (cos(degree*3.14/180)-sin(degree*3.14/180));
+		//ang.z = (float) (sin(degree*3.14/180)+cos(degree*3.14/180));
+		ang.x = (float)(cos(degree*3.14 / 180));
+		ang.z = (float)(sin(degree*3.14 / 180));
 		//x' = x*cos b - y*sin b
 		//y' = x*sin b + y*cos b
 		return ang;
@@ -296,5 +305,23 @@ namespace Tools
 
 		}
 		return true;
+	}
+
+	// return ID of first color stamp start, return 0 if the first letter matches and -1 if there isn't any stamp
+	static int getFirstColorStamp(char* input)
+	{
+		int inputLen = strlen(input);
+		inputLen -= 7;
+		for (int i = 0; i < inputLen; i++)
+		{
+			if (input[i] == '#')
+			{
+				if (isHEXStamp(input + i))
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 }

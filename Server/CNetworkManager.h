@@ -40,6 +40,7 @@ public:
 	void						SendHimOthers(int);
 	void						SendHimCars(int);
 	void						SendHimDoors(int);
+	void						SendHimPickups(int);
 	void						PostMasterlist(bool);
 	void						UpdateMasterlist();
 	std::string					m_pSvrName;
