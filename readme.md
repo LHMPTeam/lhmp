@@ -1,17 +1,17 @@
-# Lost Heaven Mutliplayer Project #
-## [lh-mp.eu](http://lh-mp.eu) page		    
+# Lost Heaven Mutliplayer Project - [http://lh-mp.eu](http://lh-mp.eu)
 
-Tree:
--> Client
--> Server
--> Loader
--> Debug
--> Release
--> Others
-	-> Browser
-	-> Client updater
-	-> AntiDec
-	-> patch1.0
+**Project tree**:
+
+1. Client
+2. Server
+3. Loader
+4. Debug
+5. Release
+6. Others
+	* Browser
+	* Client updater
+	* AntiDec
+	* patch1.0
 -> Development
 -> shared
 -> sdks
