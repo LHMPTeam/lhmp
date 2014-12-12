@@ -19,21 +19,6 @@ void CKeyboard::ProceedKeyboard(void *data)
 	{
 		if (((BYTE*)data)[i] == keys[i] && ((BYTE*)data)[i] != 0)	// holding
 		{
-			if (g_CCore->GetChat()->IsTyping())
-			{
-				
-				/*if (i == DIK_BACKSPACE)
-				{
-					if (lastBACKSPACE + 100 < time)
-					{
-
-						if (g_CCore->GetChat()->ChatMessage.size() > 0)
-							g_CCore->GetChat()->ChatMessage.resize(g_CCore->GetChat()->ChatMessage.size() - 1);
-						lastBACKSPACE = time;
-						g_CCore->GetChat()->shouldReRender = true;
-					}
-				}*/
-			}
 			if (g_CCore->GetGraphics()->renderMap)
 			{
 				if (i == DIK_NUMPADPLUS)
@@ -45,6 +30,14 @@ void CKeyboard::ProceedKeyboard(void *data)
 			if (i == DIK_TAB)
 			{
 				g_CCore->GetGraphics()->renderMap = 1;
+			}
+			if (i == DIK_F1)
+			{
+				g_CCore->testStop = true;
+			}
+			if (i == DIK_F2)
+			{
+				g_CCore->testStop = false;
 			}
 			else if (i == DIK_F5)
 			{

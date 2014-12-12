@@ -101,6 +101,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\sdks\md5\md5.cpp" />
     <ClCompile Include="..\sdks\RakNet\Base64Encoder.cpp" />
     <ClCompile Include="..\sdks\RakNet\BitStream.cpp" />
     <ClCompile Include="..\sdks\RakNet\CCRakNetSlidingWindow.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="sq_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\sdks\md5\md5.h" />
     <ClInclude Include="..\sdks\RakNet\AutopatcherPatchContext.h" />
     <ClInclude Include="..\sdks\RakNet\AutopatcherRepositoryInterface.h" />
     <ClInclude Include="..\sdks\RakNet\Base64Encoder.h" />

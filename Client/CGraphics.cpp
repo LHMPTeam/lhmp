@@ -79,7 +79,7 @@ void CGraphics::Render()
 {
 	//return;
 	g_CCore->GetGame()->UpdatePeds();
-	//g_CCore->GetGame()->UpdateCars();
+	g_CCore->GetGame()->UpdateCars();
 	if (bShowHud == true && g_CCore->GetIngameMenu()->isActive() == false)
 	{
 		if (g_CCore->GetLocalPlayer()->GetEntity() != NULL)
@@ -107,7 +107,8 @@ void CGraphics::Render()
 			g_CCore->GetChat()->Render(m_DirectDevice, m_chatfont);
 
 		}
-	
+		
+		g_CCore->GetFileTransfer()->Render();
 	}
 
 	g_CCore->GetIngameMenu()->Tick();
@@ -122,7 +123,7 @@ void CGraphics::Render()
 	/*sprintf(buff, "Status: %f", g_CCore->GetGame()->loadingStatus);
 	this->DrawTextA(buff, 700, 200, 0xffffffff, true);*/
 
-	this->FillARGB(100, 100,0.5f, 50, 50, 0xFF00adef);
+	//this->FillARGB(100, 100,0.5f, 50, 50, 0xFF00adef);
 }
 
 void CGraphics::RenderLoadingScreen()
@@ -145,7 +146,7 @@ void CGraphics::RenderLoadingScreen()
 	m_sprite->End();
 
 	//FillARGB(resolution.x*0.10, resolution.y*0.90, resolution.x*0.8*g_CCore->GetGame()->loadingStatus, 20, D3DCOLOR_XRGB(255,255,255));
-	FillARGB(0, resolution.y*0.90, resolution.x*((int)(g_CCore->GetGame()->loadingStatus)), 1, D3DCOLOR_XRGB(200, 200, 200));
+	FillARGB(0, (int)(resolution.y*0.90f), (int)(resolution.x*g_CCore->GetGame()->loadingStatus), 1, D3DCOLOR_XRGB(200, 200, 200));
 	//this->Clear(0, resolution.y*0.90, resolution.x*((int)(g_CCore->GetGame()->loadingStatus)), 1, D3DCOLOR_XRGB(200, 200, 200));
 
 	char buff[10];
@@ -659,10 +660,10 @@ void CGraphics::FillARGB(int x, int y, int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 	my_vertex g_square_vertices[] = {
-		{ x, y + h, 0.0f, 0.0f, color }, // x, y, z, rhw, color
-		{ x, y, 0.0f, 0.0f, color },
-		{ x + w, y + h, 0.0f, 0.0f, color },
-		{ x + w, y, 0.0f, 0.0f, color }
+		{ (float)x, (float)(y + h), 0.0f, 0.0f, color }, // x, y, z, rhw, color
+		{ (float)x, (float)y, 0.0f, 0.0f, color },
+		{ (float)(x + w), (float)(y + h), 0.0f, 0.0f, color },
+		{ (float)(x + w), (float)y, 0.0f, 0.0f, color }
 	};
 
 	unsigned char*	buffer;
@@ -716,10 +717,10 @@ void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 	my_vertex g_square_vertices[] = {
-		{ x, y + h, 0.0f, z, color }, // x, y, z, rhw, color
-		{ x, y, 0.0f, z, color },
-		{ x + w, y + h, 0.0f, z, color },
-		{ x + w, y, 0.0f, z, color }
+		{ (float)x, (float)(y + h), 0.0f, 0.0f, color }, // x, y, z, rhw, color
+		{ (float)x, (float) y, 0.0f, 0.0f, color },
+		{ (float)(x + w), (float)(y + h), 0.0f, 0.0f, color },
+		{ (float)(x + w), (float)y, 0.0f, 0.0f, color }
 	};
 
 	unsigned char*	buffer;
@@ -1027,6 +1028,7 @@ __declspec(noinline) void CGraphics::OnLostDevice()
 	}
 	g_CCore->GetChat()->OnLostDevice();
 
+	g_CCore->GetIngameMenu()->OnLostDevice();
 	this->m_d3dFont->InvalidateDeviceObjects();
 	this->m_cFont->OnDeviceLost();
 }
@@ -1055,6 +1057,7 @@ void CGraphics::OnResetDevice()
 		NULL, NULL, &m_mapGUI);
 	g_CCore->GetChat()->OnResetDevice();
 
+	g_CCore->GetIngameMenu()->OnResetDevice();
 
 	this->m_d3dFont->RestoreDeviceObjects();
 	this->m_cFont->OnReset();

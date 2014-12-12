@@ -53,5 +53,12 @@ public:
 	RakNet::RakPeerInterface*	GetPeer();
 	int							GetPort();
 
+	//----------------------- Callbacks ---------------------------//
+
+	// called when client sends ID_LHMPINIT messages (containing game version etc.)
+	void	OnPlayerConnection(RakNet::Packet* packet);
+	void	OnPlayerFileTransferFinished(RakNet::SystemAddress);
+	void	OnPlayerDisconnect(RakNet::Packet* packet);
+
 };
 #endif

@@ -100,7 +100,7 @@ void	CPickup::SetVisible(bool should)
 
 bool	CPickup::IsTakingPickup(int ID)
 {
-	if (timeGetTime()-respawnTime > interval || interval == -1)
+	if ((int)(timeGetTime()-respawnTime) > interval || interval == -1)
 	{
 		Vector3D pos, playerpos = g_CCore->GetPlayerPool()->Return(ID)->GetPosition(), pickuppos = this->GetPosition();;
 		pos.x = abs(pickuppos.x - playerpos.x);
@@ -160,7 +160,7 @@ void CPickup::Tick()
 {
 	if (this->IsVisible() == false)
 	{
-		if (timeGetTime() - respawnTime > interval)
+		if ((int)(timeGetTime() - respawnTime) > interval)
 		{
 			this->SendVisible(-1, true);
 		}

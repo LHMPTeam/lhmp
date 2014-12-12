@@ -441,6 +441,12 @@
     <ClCompile Include="CFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\sdks\md5\md5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CFileTransfer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directx8hook.h">
@@ -1014,6 +1020,12 @@
       <Filter>Header Files\CD3DFont</Filter>
     </ClInclude>
     <ClInclude Include="CFont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\md5\md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CFileSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

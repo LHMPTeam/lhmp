@@ -50,6 +50,7 @@ void CEngineStack::DoMessage()
 					}
 					DWORD handle = g_CCore->GetGame()->CreatePED();
 					ped->SetEntity(handle);
+					
 					if (handle != NULL)
 					{
 						g_CCore->GetGame()->ChangeSkin(ped->GetEntity(),ped->GetSkin());
@@ -502,11 +503,11 @@ void CEngineStack::DoMessage()
 			/*if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
 				return;
 			*/
-			//g_CCore->GetGame()->ChangeMap((char*)start->data,""); 
-			if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
+			g_CCore->GetGame()->ChangeMap((char*)start->data,""); 
+			/*if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
 			{
 				g_CCore->GetChat()->AddMessage("este nenacital, pice !");
-			}
+			}*/
 		}
 			break;
 		case CLIENT_ENGINESTACK::ES_CAREXPLODE:

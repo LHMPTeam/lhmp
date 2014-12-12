@@ -29,8 +29,6 @@ int main()
 #ifdef _WIN32
 	SetConsoleTitle(server_name);
 #endif
-	//g_CCore->GetLog()->AddNormalLog("\t\t\t[LOST-HEAVEN-MP]==[Win32/Alpha]");
-	
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 	g_CCore->GetLog()->AddNormalLog(" _        _   _          _      _    _____			");
 	g_CCore->GetLog()->AddNormalLog("| |      | | | |    _   | |\\  /| |  |     \\				");
@@ -50,13 +48,29 @@ int main()
 	if (CCore.Init(server_port, max_players, startpos, server_name, mode, visible) == true)
 	{
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
-		g_CCore->GetLog()->AddNormalLog("Loading gamemode '%s'", gamemode);
+		if (gamemode)
+		{
+			//g_CCore->GetLog()->AddNormalLog("Loading gamemode '%s'", gamemode);
 
-		CCore.GetGameMode()->LoadGameMode(gamemode);
+			if (CCore.GetGameMode()->LoadGameMode(gamemode) == false)
+			{
+				g_CCore->GetLog()->AddNormalLog("Loading of '%s' has failed - no gamemode loaded !",gamemode);
+			}
+		}
+		else {
+			g_CCore->GetLog()->AddNormalLog("wtf");
+		}
 		CCore.GetScripts()->onServerInit();
 
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 		g_CCore->GetLog()->AddNormalLog("Server has started...");
+
+		/*FILE* file = fopen("lol.mp3", "rb");
+		if (file)
+		{
+			g_CCore->GetFileTransfer()->AddFile("lol.mp3", file);
+		}*/
+
 		while(CCore.IsRunning())
 		{
 			CCore.Pulse();

@@ -2011,6 +2011,59 @@ void CGame::SetCarRotation(DWORD carBase, Vector3D rotation)
 
 void CGame::CarUpdate(DWORD carBase, Vector3D position, Vector3D rotation)
 {
+	VEHICLE* veh = (VEHICLE*)carBase;
+	if (veh)
+	{
+		veh->position = position;
+		veh->rotation = rotation;
+		_asm
+		{
+			//MOV EAX, 0x0
+			MOV EAX, 0x3DA9FBE8
+				PUSH EAX; / Arg3 = 00000000
+				PUSH EAX; | Arg2	0
+				//MOV EAX, 0x3DA9FBE8
+				PUSH EAX; | Arg1   	0x3DA9FBE8
+				MOV ESI, carBase
+				ADD ESI, 0x70
+				MOV ECX, ESI; | base + 0x70
+				MOV EAX, 0x0052E6D0
+				CALL EAX; game.0052E6D0; \game.0052E6D0
+		}
+		_asm {
+			MOV ESI, carBase
+				MOV ECX, ESI
+				MOV EAX, DWORD PTR DS : [ESI]
+				PUSH 0x31
+				CALL DWORD PTR DS : [EAX + 0x34]
+
+
+		}
+	}
+}
+
+/*void CGame::CarUpdate(DWORD carBase, Vector3D position, Vector3D rotation)
+{
+	//*(float*)(*(DWORD*)(entity + 0x438) + 0x40) += 10.0f;	// pos
+	//*(float*)(*(DWORD*)(entity + 0x438) + 0x9C) += 0.1f;	// rot
+
+	//0050F245   8D46 50          LEA EAX, DWORD PTR DS : [ESI + 50]; 50
+
+
+
+	*(Vector3D*)(*(DWORD*)(carBase + 0x438) + 0x40) = position;
+	*(Vector3D*)(*(DWORD*)(carBase + 0x438) + 0x50) = rotation;
+
+	_asm {
+		MOV EDI, carBase
+			MOV ECX, EDI;  EDI == actorBase
+			MOV EAX, 0x00469DD0
+			CALL EAx; Game.00469DD0
+	}
+}*/
+
+/*void CGame::CarUpdate(DWORD carBase, Vector3D position, Vector3D rotation)
+{
 	if (carBase == NULL)
 	{
 		g_CCore->GetLog()->AddLog("UpdateCar - car doesnt exist");
@@ -2146,6 +2199,7 @@ void CGame::CarUpdate(DWORD carBase, Vector3D position, Vector3D rotation)
 			add ESP, 0x1000
 	}
 }
+*/
 void CGame::GivePlayerToCarFast(DWORD ped, int vehId, int seatId)
 {
 	if (ped == NULL)
@@ -2211,10 +2265,11 @@ void CGame::CarRepair(DWORD vehicle)
 
 void CGame::CarLock(DWORD vehicle, BYTE locked)
 {
+	DWORD dwLocked = locked;
 	__asm
 	{
 		MOV ECX, vehicle
-			PUSH locked
+			PUSH dwLocked
 			MOV EAX, 0x00470A60
 			CALL EAX
 	}
@@ -3365,4 +3420,17 @@ void CGame::PickupsTick()
 
 		}
 	}
+}
+
+
+int CGame::GetGameVersion()
+{
+	// 180 - 385 - 1.00
+	if (*(DWORD*)0x005F99FE == 0x180)
+		return 384;
+	// 18B - 395 - 1.02
+	if (*(DWORD*)0x005BEC2E == 0x18B)
+		return 395;
+	// if we haven't detected any version
+	return 0;
 }

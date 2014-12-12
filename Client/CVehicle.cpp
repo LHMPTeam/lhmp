@@ -141,21 +141,21 @@ void CVehicle::Interpolate()
 			//g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
 			//if (*(byte*)(entity + 0x2100) == 15)
 			//{
-			if ((*(float*)(entity + 0x40C) - this->playerPos.x) > 0.3 || (*(float*)(entity + 0x410) - this->playerPos.y) > 0.3 || (*(float*)(entity + 0x414) - this->playerPos.z) > 0.3)
-			{
-				//g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
-				*(float*)(entity + 0x40C) = this->playerPos.x;
+			//if ((*(float*)(entity + 0x40C) - this->playerPos.x) > 0.3 || (*(float*)(entity + 0x410) - this->playerPos.y) > 0.3 || (*(float*)(entity + 0x414) - this->playerPos.z) > 0.3)
+		//	{
+				g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
+				/*(float*)(entity + 0x40C) = this->playerPos.x;
 				*(float*)(entity + 0x410) = this->playerPos.y;
 				*(float*)(entity + 0x414) = this->playerPos.z;
 
 				*(float*)(entity + 0xD28) = this->rotation.x;
 				*(float*)(entity + 0xD2C) = this->rotation.y;
 				*(float*)(entity + 0xD30) = this->rotation.z;
-
+				*/
 				*(float*)(entity + 0xD40) = this->secondRot.x;
 				*(float*)(entity + 0xD44) = this->secondRot.y;
 				*(float*)(entity + 0xD48) = this->secondRot.z;
-			}
+			//}
 
 					// takmer dokonale
 					/*_asm
@@ -248,27 +248,34 @@ void CVehicle::SendSync()
 	if (Seat[0] == g_CCore->GetLocalPlayer()->GetOurID() && this->GetEntity())	
 	// we are allow to stream only vehicle which is driven by us
 	{
+		VEHICLE* veh = (VEHICLE*) this->GetEntity();
 		Vector3D pos, rot, speed;
-		pos.x = *(float*)(this->GetEntity() + 0x40C);
+		pos = veh->position;
+		/*pos.x = *(float*)(this->GetEntity() + 0x40C);
 		pos.y = *(float*)(this->GetEntity() + 0x410);
 		pos.z = *(float*)(this->GetEntity() + 0x414);
-
-		rot.x = *(float*)(this->GetEntity() + 0x30);
+		*/
+		rot = veh->rotation;
+		/*rot.x = *(float*)(this->GetEntity() + 0x30);
 		rot.y = *(float*)(this->GetEntity() + 0x34);
 		rot.z = *(float*)(this->GetEntity() + 0x38);
+		*/
 
-		secondRot.x = *(float*)(this->GetEntity() + 0xD40);
+		secondRot = veh->rotationSecond;
+		/*secondRot.x = *(float*)(this->GetEntity() + 0xD40);
 		secondRot.y = *(float*)(this->GetEntity() + 0xD44);
-		secondRot.z = *(float*)(this->GetEntity() + 0xD48);
-		//char buff[255];
-		//sprintf(buff, "Rot %f %f %f", rot.x, rot.y, rot.z);
-		//g_CCore->GetLog()->AddLog(buff);
-		speed.x = *(float*)(this->GetEntity() + 0x1F7C);
-		speed.y = *(float*)(this->GetEntity() + 0x1F80);
-		speed.z = *(float*)(this->GetEntity() + 0x1F84);
+		secondRot.z = *(float*)(this->GetEntity() + 0xD48);*/
 
-		this->wheels  = *(float*)(this->GetEntity() + 0x710);
-		this->onGas = (*(float*)(this->GetEntity() + 0x490) == 1.0f);
+		speed = veh->speed;
+		/*speed.x = *(float*)(this->GetEntity() + 0x1F7C);
+		speed.y = *(float*)(this->GetEntity() + 0x1F80);
+		speed.z = *(float*)(this->GetEntity() + 0x1F84);*/
+
+		wheels = veh->wheelRotation;
+		//this->wheels  = *(float*)(this->GetEntity() + 0x710);
+		
+		onGas = (veh->gasState == 1.0f);
+		//this->onGas = (*(float*)(this->GetEntity() + 0x490) == 1.0f);
 
 		this->SetRotation(rot);
 		this->previous = pos;
@@ -287,7 +294,8 @@ void CVehicle::SendSync()
 		syncData.speed = speed;
 		syncData.wheels = wheels;
 		syncData.gasOn = this->onGas;
-		syncData.horn = (*(byte*)(this->GetEntity() + 0x51C) == 1);
+		syncData.horn = veh->hornState;
+		//syncData.horn = (*(byte*)(this->GetEntity() + 0x51C) == 1);
 		RakNet::BitStream bsOut;
 		bsOut.Write((RakNet::MessageID)ID_TIMESTAMP);
 		bsOut.Write(RakNet::GetTimeMS());

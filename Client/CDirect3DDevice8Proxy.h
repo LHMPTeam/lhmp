@@ -189,7 +189,8 @@ public:
 	}
 	STDMETHOD(EndScene)()
 	{
-		g_CCore->GetGraphics()->Render();
+		if (g_CCore)
+			g_CCore->GetGraphics()->Render();
 		return p_Dev->EndScene();
 
 	}

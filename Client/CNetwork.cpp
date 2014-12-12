@@ -54,6 +54,17 @@ bool CNetworkManager::ConnectServer()
 	g_CCore->GetChat()->AddMessage(buffer);	
 	return true;
 }
+
+void CNetworkManager::OnConnectionAccepted(RakNet::Packet* packet)
+{
+	g_CCore->GetChat()->AddMessage("Connection accepted.");
+	RakNet::BitStream bsOut;
+	bsOut.Write((RakNet::MessageID)ID_INITLHMP);
+	//bsOut.Write(NickName);
+	//bsOut.Write(g_CCore->GetGame()->CameraGetFov());
+	bsOut.Write(LHMP_VERSION_TEST_HASH);
+	peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+}
 void CNetworkManager::Pulse()
 {
 	for (packet=peer->Receive(); packet; peer->DeallocatePacket(packet), packet=peer->Receive())
@@ -72,31 +83,11 @@ void CNetworkManager::Pulse()
 		{
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
-				isConnected = true;
-				g_CCore->GetEngineStack()->AddMessage(ES_CAMERAUNLOCK,0);
-				g_CCore->GetChat()->AddMessage("Connection accepted.");
-				//printf("Our connection request has been accepted.\n");
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-				bsOut.Write(NickName);
-				bsOut.Write(g_CCore->GetGame()->CameraGetFov());
-				bsOut.Write(LHMP_VERSION_TEST_HASH);
-				peer->Send(&bsOut,HIGH_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,false);
-
-				/*transferPlugin = new RakNet::FileListTransfer();
-				this->GetPeer()->AttachPlugin(transferPlugin);
-				//FileListTransferCBInterface *callback = new RakNet::FileListTransferCBInterface();
-				CFileTransfer* transfer = new CFileTransfer();
-				unsigned short setupID = transferPlugin->SetupReceive(transfer, true, packet->systemAddress);
-
-				char aha[200];
-				sprintf(aha, "FileTransferID %d", setupID);
-				g_CCore->GetChat()->AddMessage(aha);*/
+				this->OnConnectionAccepted(packet);
 			}
 			break;
-
-			case ID_GAME_SKUSKA:
-			{
+		case ID_CONNECTION_FINISHED:
+		{
 				g_CCore->GetChat()->AddMessage("Lost Heaven Multiplayer started.");
 				char version[255];
 #if LHMP_VERSION_TYPE == 1
@@ -118,6 +109,28 @@ void CNetworkManager::Pulse()
 				bsIn.Read(svr);
 				sprintf(this->m_pServerName, "%s", svr.server_name);
 				g_CCore->GetLocalPlayer()->SetID(svr.playerid);
+
+				char mapName[255];
+				bsIn.Read(mapName);
+
+				// TODO - change map if it differs
+
+				isConnected = true;
+				g_CCore->GetEngineStack()->AddMessage(ES_CAMERAUNLOCK, 0);
+
+				int len = strlen(mapName);
+				char* vstup = new char[len + 1];
+				strcpy(vstup, mapName);
+
+				g_CCore->GetEngineStack()->AddMessage(ES_CHANGEMAP, (DWORD)vstup);
+
+				// send him CONNECTION FINAL
+
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID) ID_CONNECTION_FINISHED);
+				bsOut.Write(NickName);
+				bsOut.Write(g_CCore->GetGame()->CameraGetFov());
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 			}
 			break;
@@ -148,40 +161,34 @@ void CNetworkManager::Pulse()
 				ProceedLHMP(packet,TS);
 			}
 			break;
-		case ID_FILETRANSFER_INIT:
+		case ID_FILETRANSFER:
 		{
-			RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
-			int ID;
-			bsIn.Read(ID);
-			BitStream bsOut;
-			bsOut.Write((MessageID)ID_FILETRANSFER_INIT);
-			bsOut.Write(ID);
-			this->peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, false);
-			g_CCore->GetChat()->AddMessage("FILE Transfer Init");
+			/*char buff[200];
+			char foo[3];
+			for (int i = 0; i < packet->length; i++)
+			{
+				sprintf(foo, "%2X", packet->data[i]);
+				if (foo[1] == '0')
+					foo[0] = '0';
+				buff[i * 2] = foo[0];
+				buff[1+i * 2] = foo[1];
+			}
+			buff[packet->length * 2] = 0x0;
+
+			g_CCore->GetChat()->AddMessage(buff);
+			*/
+
+								if (packet->length > 2)
+								{
+									RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
+									g_CCore->GetFileTransfer()->HandlePacket(&bsIn);
+								}
+								else {
+									g_CCore->GetChat()->AddMessage("Fuck");
+								}
 		}
 			break;
-		case ID_FILETRANSFER_SENDFILE:
-		{
-			RakNet::BitStream bsIn(packet->data+ 1, packet->length - 1, false);
-			int ID;
-			bsIn.Read(ID);
-			BitStream bsOut;
-			bsOut.Write((MessageID)ID_FILETRANSFER_INIT);
-			bsOut.Write(ID);
-			this->peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, false);
-
-			g_CCore->GetChat()->AddMessage("FILE Transfer Send file");
-		}
-			break;
-		case ID_FILETRANSFER_TRANSFERDONE:
-
-			g_CCore->GetChat()->AddMessage("FILE Transfer Done");
-			break;
-		default:
-			char buffer[255];
-			sprintf(buffer,"Unknown message with ID: 0x%x",packet->data[0]);
-			g_CCore->GetChat()->AddMessage(buffer);	
-			break;
+		
 		}
 	}
 }

@@ -65,7 +65,17 @@ int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 					exename, 0, 0, false,
 					CREATE_SUSPENDED, 0, 0,
 			&siStartupInfo, &piProcessInfo)) {
-		MessageBoxA(NULL, exename, "Error", MB_OK); 
+		char buff[200];
+		DWORD errorID = GetLastError();
+		if (errorID == ERROR_ELEVATION_REQUIRED)
+		{
+			MessageBoxA(NULL, "Game process creation has failed. Please, run as an ADMINISTRATOR !", "Error", MB_OK | MB_ICONERROR);
+		}
+		else {
+			sprintf(buff, "CreateProcess failed. Error ID: 0x%x\n", errorID);
+			MessageBoxA(NULL, buff, "Error", MB_OK | MB_ICONERROR);
+		}
+		return 1;
 	}
 
 	// get the process id for injection
@@ -73,7 +83,7 @@ int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 	// Inject the dll
 	if (!InjectDLL(pId, dllname)) {
-		MessageBoxA(NULL, "Injection failed", "Error", MB_OK);		
+		MessageBoxA(NULL, "Injection failed", "Error", MB_OK | MB_ICONERROR);
 	}
 
 	ResumeThread(piProcessInfo.hThread);

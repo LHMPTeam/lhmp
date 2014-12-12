@@ -23,6 +23,12 @@ __in UINT wMsgFilterMax,
 __in UINT wRemoveMsg);
 
 
+typedef DWORD(_stdcall *DtaOpenPrototype) (
+	char* filename,
+	DWORD params
+	);
+
+DtaOpenPrototype orig_DtaOpen;
 PeekMessageW_hook orig_PeekMessage;
 DirectInput8Create_t orig_DirectInput8Create;
 
@@ -58,6 +64,19 @@ void TestKB()
 		Sleep(100);
 	}
 }
+
+int GetGameVersion()
+{
+	// 180 - 385 - 1.00
+	if (*(DWORD*)0x005F99FE == 0x180)
+		return 384;
+	// 18B - 395 - 1.02
+	if (*(DWORD*)0x005BEC2E == 0x18B)
+		return 395;
+	// if we haven't detected any version
+	return 0;
+}
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -67,11 +86,23 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 			DisableThreadLibraryCalls(hModule);
-			SetHooks();
-			WaitTillD3D8IsLoaded();	// DxHook
-			CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&MainThread, 0, 0, 0);	// hlavne vlakno
-			//CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&TestKB, 0, 0, 0);	// testovacia klavesnica
 			
+			if (GetGameVersion() == 384)
+			{
+				SetHooks();
+				WaitTillD3D8IsLoaded();	// DxHook
+				CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&MainThread, 0, 0, 0);	// hlavne vlakno
+				//CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&TestKB, 0, 0, 0);	// testovacia klavesnica
+			}
+			else {
+				char buff[255];
+				if (GetGameVersion() == 385)
+					sprintf(buff, "You are running bad game version. You are running version 1.2 (395). You need 1.0 (384)");
+				else
+					sprintf(buff, "You are running undetected game version. You need 1.0 (384)");
+				MessageBox(NULL, buff, "Error", MB_ICONERROR);
+				TerminateProcess(GetCurrentProcess(), 0);
+			}
 			break;
 	case DLL_PROCESS_DETACH:
 			if(g_CCore != NULL)
@@ -90,33 +121,20 @@ void MainThread(void)
 	// loads our hooks, make code patchs
 	CCore.Run();
 	g_CCore = &CCore;
-	while(g_CCore->IsLoaded() == false)		// we must wait till freeride (freeitaly) loads
+	while (g_CCore->IsLoaded() == false)		// we must wait till freeride (freeitaly) loads
 	{
 		Sleep(100);
 	}
-	while (g_CCore->testStop == false)		// we must wait till freeride (freeitaly) loads
+	/*while (g_CCore->testStop == false)		// we must wait till freeride (freeitaly) loads
 	{
 		Sleep(100);
-	}
+	}*/
 	CCore.SetRunning(true);
 	CCore.Start();
-	while(CCore.IsRunning())
+	while (CCore.IsRunning())
 	{
-		//if(CCore.m_bIsRespawning == false)
-			CCore.Pulse();
+		CCore.Pulse();
 		RakSleep(30);
-
-		
-		/*int c2 = GetProcessCount();
-		if (c2 != count)
-		{
-			if (c2 > count)
-			{
-				//g_CCore->GetChat()->AddMessage("Process count's changed");
-				//CheckProccesses();
-			}
-			count = c2;
-		}*/
 	}
 }
 
@@ -130,12 +148,44 @@ BOOL WINAPI hookPeekMessageW(
 	bool result = orig_PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg) == 1;
 	if (result)
 	{
+		/*char buff[200];
+		sprintf(buff, "Message 0x%x", lpMsg->message);
+		g_CCore->GetChat()->AddMessage(buff);
+		*/
 		if (lpMsg->message == WM_INPUT)
 		{
 			g_CCore->GetKeyboard()->ProccessMessage(lpMsg);
 		}
+		/*else if (lpMsg->message == WM_KILLFOCUS || (lpMsg->message == WM_ACTIVATE && LOWORD(lpMsg->wParam) == WA_INACTIVE))
+		{
+			// prevent game focus lost
+			return true;
+		}*/
 	}
 	return result;
+}
+
+DWORD _stdcall DtaOpen(char* filename,DWORD params)
+{
+	HMODULE hM = GetModuleHandleA("rw_data.dll");
+	//00012C98
+	//DWORD dtaFirst = (DWORD)orig_DtaOpen + 0x000113F8;
+	DWORD dtaFirst = (DWORD)hM + 0x00012C98;
+	*(DWORD*)dtaFirst = 0x0;
+	char* moddedFile = g_CCore->GetFileSystem()->GetFileAliasFromName(filename);
+	if (moddedFile != NULL)
+	{
+
+		char vstup[512];
+		sprintf(vstup,"lhmp/files/%s", moddedFile);
+		DWORD result = orig_DtaOpen(vstup, params);
+		*(DWORD*)dtaFirst = 0x1;
+		return result;
+	}
+	else {
+		*(DWORD*)dtaFirst = 0x1;
+		return orig_DtaOpen(filename, params);
+	}
 }
 
 void WaitTillD3D8IsLoaded()
@@ -150,6 +200,10 @@ void WaitTillD3D8IsLoaded()
 	hM = GetModuleHandleA("user32.dll");
 	PBYTE peekMessageAdd = (PBYTE)GetProcAddress(hM, "PeekMessageW");
 	orig_PeekMessage = (PeekMessageW_hook)DetourFunction(peekMessageAdd, (PBYTE)hookPeekMessageW);
+
+	hM = GetModuleHandleA("rw_data.dll");
+	PBYTE dtaOpenAddress = (PBYTE)GetProcAddress(hM, "_dtaOpen@8");
+	orig_DtaOpen = (DtaOpenPrototype)DetourFunction(dtaOpenAddress, (PBYTE)DtaOpen);
 	HookAPI();
 }
 
@@ -179,4 +233,14 @@ HRESULT WINAPI MyDirectInput8Create(HINSTANCE hinst, DWORD dwVersion, REFIID rii
     *ppvOut = pProxyDirectInput8;
 	g_CCore->GetGraphics()->SetDirect3D((IDirect3D8*)pProxyDirectInput8);
 	return DI8Cresult;
+}
+
+void _stdcall MyLoadFunction(char * file, int type)
+{
+	HANDLE handleFile = CreateFile(file, 0x80000000, 1, 0, 3, 80, 0);
+	if (handleFile != INVALID_HANDLE_VALUE)	// if it isn't -1
+	{
+		// 2 = FILE_END ?
+		DWORD pointer = SetFilePointer(handleFile, 0, 0, 2);
+	}
 }

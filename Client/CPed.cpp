@@ -128,41 +128,39 @@ int CPed::GetPing()
 
 void CPed::UpdateGameObject()
 {
-	if(this->EntityBase == 0) return;
-	if(this->fHealth == 0) return;
-	DWORD car = *(DWORD*)(this->EntityBase + 0x98);
-	if (this->IsOnFoot() && car == NULL)
+	PED* ped = (PED*) this->GetEntity();
+
+	if (ped != NULL)
 	{
-		Vector3D rot = this->GetRotation();
-		/**(float*)(this->EntityBase + 0x24) = this->playerPos.x;
-		*(float*)(this->EntityBase + 0x28) = this->playerPos.y;
-		*(float*)(this->EntityBase + 0x2C) = this->playerPos.z;*/
-
-		*(float*)(this->EntityBase + 0x30) = rot.x;
-		*(float*)(this->EntityBase + 0x38) = rot.z;
-		//*(float*)(this->EntityBase + 0x238) = this->rotation3;
-
-		*(float*)(this->EntityBase + 0x644) = this->fHealth;
-		if (this->state != 163)
+		if (ped->health > 0.0f)
 		{
-			*(byte*)(this->EntityBase + 0x74) = this->state;
+			if (this->IsOnFoot() && ped->playersCar == NULL)
+			{
+				Vector3D rot = this->GetRotation();
+				ped->object.rotation = rot;
+				ped->health = this->fHealth;
+				if (this->state != 163)
+					ped->animState = this->state;
+				ped->isDucking = this->isDucking == 1;
+				if (currentWep != 0)
+					ped->isAiming = this->isAiming == 1;
+				else
+					ped->isAiming = 0;
+
+				/**(float*)(this->EntityBase + 0x644) = this->fHealth;
+				if (this->state != 163)
+				{
+					*(byte*)(this->EntityBase + 0x74) = this->state;
+				}
+				*(byte*)(this->EntityBase + 0x1E4) = this->isDucking;
+				if (currentWep != 0)
+					*(byte*)(this->EntityBase + 0x1E5) = this->isAiming;
+				else
+					*(byte*)(this->EntityBase + 0x1E5) = 0;*/
+
+			}
 		}
-		*(byte*)(this->EntityBase + 0x1E4) = this->isDucking;
-		if (currentWep != 0)
-			*(byte*)(this->EntityBase + 0x1E5) = this->isAiming;
-		else
-			*(byte*)(this->EntityBase + 0x1E5) = 0;
-
-	//	*(byte*)(this->EntityBase + 0x75) = 0;
-
-
 	}
-	
-	/*sLocalPlayer.rotation1 = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x30);
-	sLocalPlayer.rotation2 = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x38);
-
-	sLocalPlayer.state	= *(BYTE*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x70);
-	*/
 }
 
 void CPed::SetAnim(int id)
@@ -285,10 +283,13 @@ void CPed::Interpolate()
 			*(float*) (this->pedBase+0x28) = this->playerPos.y;
 			*(float*) (this->pedBase+0x2C) = this->playerPos.z;*/
 			//interpolationTick = actualtime;
+			PED* ped = (PED*) this->GetEntity();
 			this->playerPos = interpolation.Interpolate();
-			*(float*)(this->EntityBase + 0x24) = this->playerPos.x;
+			ped->object.position = this->playerPos;
+
+			/**(float*)(this->EntityBase + 0x24) = this->playerPos.x;
 			*(float*)(this->EntityBase + 0x28) = this->playerPos.y;
-			*(float*)(this->EntityBase + 0x2C) = this->playerPos.z;
+			*(float*)(this->EntityBase + 0x2C) = this->playerPos.z;*/
 		}
 	}
 }

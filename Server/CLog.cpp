@@ -26,7 +26,7 @@ CLog::CLog()
 
 void CLog::WriteToDisc(char* message, bool isDebug)
 {
-	if (isDebug && (this->uiLogMode & DEBUG_NORMAL == false))
+	if (isDebug && ((this->uiLogMode & DEBUG_NORMAL) == false))
 		return;
 #ifdef _WIN32
 	CreateDirectoryEx(".", "logs", NULL);
@@ -49,8 +49,11 @@ void CLog::WriteToDisc(char* message, bool isDebug)
 	//else
 	sprintf(filename, "logs/%s.txt", buffer);
 	writeBuff.open(filename, std::ios::app);
-	writeBuff << message << std::endl;
-	writeBuff.close();
+	if (writeBuff.is_open())
+	{
+		writeBuff << message << std::endl;
+		writeBuff.close();
+	}
 
 }
 

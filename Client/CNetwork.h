@@ -50,7 +50,15 @@ private:
 public:
 	CNetworkManager();
 	~CNetworkManager();
-	bool ConnectServer();
+
+	// Attemp to connect server
+	bool	ConnectServer();
+
+	// Called when server accept our connection
+	void	OnConnectionAccepted(RakNet::Packet* packet);
+
+
+
 	void GetConnectInfo();
 	void ProceedLHMP(RakNet::Packet* packet,RakNet::TimeMS timestamp = 0);
 	void ValidateIP();

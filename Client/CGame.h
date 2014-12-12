@@ -15,6 +15,85 @@
 typedef unsigned long DWORD;
 #include "../shared/structures.h"
 
+#define _pad(x,y) byte x[y]
+
+typedef struct _FRAME {
+	_pad(_unk1, 0x100);		// 000-100
+	char*	frameName;		// 100-104
+	_pad(_unk2, 0x50);
+	char*	frameModel;		// 154-158
+} FRAME;
+typedef struct _OBJECT {
+	DWORD		vtable;				//  0000-0004
+	_pad(__unk1,0xC);
+	DWORD		objectType;			//	0010-0014
+	_pad(__unk2, 0x10);
+	Vector3D	position;			//	0024-0030
+	Vector3D	rotation;			//	0030-003C
+	_pad(__unk3, 0x21);
+	bool		isActive;			//	005D-005E
+	_pad(__unk4, 0xA);
+	FRAME*		frame;				//	0068-006C
+} OBJECT;
+typedef struct _VEHICLE {
+	OBJECT		object;				//  0000-006C
+	_pad(__unk1, 0x238);
+	float		engineDamage;		//	02A4-02A8	(0-100f)
+	_pad(__unk2, 0x164);
+	Vector3D	position;			//	040C-0418
+	_pad(__unk3, 0x78);
+
+	float		gasState;			//	0490-0494	(0/1.0f)
+	_pad(__unk4, 0x88);
+	bool		hornState;			//	051C-051D
+	bool		sirenState;			//	051D-051E
+	_pad(__unk5, 0x12A);
+
+	int			speedGear;			//	0648-064C
+	_pad(__unk6, 0xC4);
+	float		wheelRotation;		//	0710-0714
+	_pad(__unk7, 0x608);
+	float		petrolLevel;		//	0D1C-0D20
+	_pad(__unk8, 0x8);
+	Vector3D	rotation;			//	0D28-0D34
+	_pad(__unk9, 0xC);
+	Vector3D	rotationSecond;		//	0D40-0D4C
+	_pad(__unk10, 0x1230);
+	Vector3D	speed;				//	1F7C-1F88
+	_pad(__unk11, 0x10C);
+	int			engineShotDamage;	//	2094-2098
+} VEHICLE;
+
+typedef struct _INVENTARY_SLOT {
+	DWORD		weaponType;
+	DWORD		ammoLoaded;
+	DWORD		ammo;
+	DWORD		__unk;		// maybe weaponObject
+} INVETARY_SLOT;
+
+typedef struct _INVENTARY {
+	_INVENTARY_SLOT slot[8];
+} INVENTARY;
+
+typedef struct _PED {
+	OBJECT		object;				//  0000-006C
+	_pad(_unk1, 0x8);
+	byte		animState;			//	0074-0075
+	_pad(_unk2, 0x23);
+	VEHICLE*	playersCar;			//	0098-009C
+	_pad(_unk3, 0x148);
+	bool		isDucking;			//	01E4
+	bool		isAiming;			//	01E5-01E6
+	_pad(_unk4, 0x16);
+	bool		isReloading;		//	01FC-01FD
+	_pad(_unk5, 0x2A3);
+	INVENTARY	inventary;			//	04A0-0520
+	_pad(_unk6, 0xD4);
+	float		inCarRotation;		//	05F4-05F8
+	_pad(_unk7, 0x4C);
+	float		health;				//	0644-0644
+} PED;
+
 class CGame
 {
 private:
@@ -162,6 +241,12 @@ public:
 	void PickupsTick();
 
 	float pickupsAngle;
+	
+	// Returns
+	// 384 - 1.0
+	// 395 - 1.02
+	// 0 - UNDETECTED
+	static int GetGameVersion();
 };
 
 #endif

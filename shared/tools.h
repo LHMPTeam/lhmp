@@ -36,6 +36,8 @@ namespace Tools
 		memcpy((void*)address, (void*)bytes, size);
 		VirtualProtect((void*)address, size, lpflOldProtect, &lpflOldProtect);
 	}
+#define PatchBytes(a,b) Tools::WriteBytes(a,b,sizeof(b));
+
 	static void SetString(DWORD address, char* string)
 	{
 		DWORD oldp;

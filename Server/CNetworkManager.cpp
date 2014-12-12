@@ -216,6 +216,105 @@ int	CNetworkManager::GetFirstFreeSlot()
 	return -1;
 }
 
+void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
+{
+	int offset = 0;
+	if (packet->data[0] == (MessageID)ID_TIMESTAMP)
+		offset = 1 + sizeof(RakNet::TimeMS);
+
+	//int ID = GetIDFromSystemAddress(packet->systemAddress);
+
+	//RakNet::RakString rs;
+	//float FOV;
+	BitStream bsIn(packet->data + offset, packet->length - offset, false);
+	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+	//bsIn.Read(rs);
+	//bsIn.Read(FOV);
+	char version[100];
+	bsIn.Read(version);
+	if (strcmp(version, LHMP_VERSION_TEST_HASH) != 0)
+	{
+		//slot[ID].isUsed = NULL;
+		//g_CCore->GetPlayerPool()->Delete(ID);
+		RakNet::BitStream errStr;
+		errStr.Write((RakNet::MessageID)ID_GAME_BAD_VERSION);
+		peer->Send(&errStr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+		peer->CloseConnection(packet->systemAddress, true);
+
+		printf("Bad connection attempt. Version hash dismatch.");
+		return;
+	}
+	// get network slot for him
+	int ID = GetFirstFreeSlot();
+	slot[ID].isUsed = true;
+	slot[ID].sa = packet->systemAddress;
+	// he has a good version
+	printf("A connection is incoming. ID: %d \n", ID);
+	// he has the right version, so let's send him files needed for game / scripts
+	g_CCore->GetFileTransfer()->SendFiles(packet->systemAddress);
+}
+
+void	CNetworkManager::OnPlayerFileTransferFinished(RakNet::SystemAddress)
+{
+	int ID = GetIDFromSystemAddress(packet->systemAddress);
+	_Server serInfo;
+	serInfo.max_players = this->m_pServerMaxPlayers;
+	serInfo.playerid = GetIDFromSystemAddress(packet->systemAddress);
+	sprintf(serInfo.server_name, "%s", this->m_pSvrName.c_str());
+	serInfo.server_port = this->m_pServerPort;
+	
+	RakNet::BitStream bsOutR;
+	bsOutR.Write((RakNet::MessageID)ID_CONNECTION_FINISHED);
+	bsOutR.Write(serInfo); // tu su data, struct
+	bsOutR.Write(g_CCore->GetDefaultMap());
+	peer->Send(&bsOutR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+	SendHimOthers(ID);
+	SendHimCars(ID);
+	SendHimDoors(ID);
+	SendHimPickups(ID);
+}
+
+
+void	CNetworkManager::OnPlayerDisconnect(RakNet::Packet* packet)
+{
+	int ID = GetIDFromSystemAddress(packet->systemAddress);
+	if (ID != -1)
+	{
+		g_CCore->GetScripts()->onPlayerDisconnect(ID);
+
+		CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+		if (player != NULL)
+		{
+			if (player->InCar != -1)
+			{
+				CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->InCar);
+				veh->PlayerDisconnect(ID);
+			}
+			char buff[255];
+			if (packet->data[0] == ID_CONNECTION_LOST)
+				sprintf(buff, "Player %s lost connection", player->GetNickname());
+			else
+				sprintf(buff, "Player %s disconnected", player->GetNickname());
+			SendMessageToAll(buff);
+
+			if (packet->data[0] == ID_CONNECTION_LOST)
+				printf("%s[%i] has lost his connection. \n", player->GetNickname(), ID);
+			else
+				printf("%s[%i] has disconnected.\n", player->GetNickname(), ID);
+
+			g_CCore->GetPlayerPool()->Delete(ID);
+
+			RakNet::BitStream bsOut;
+			bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+			bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DISCONNECT);
+			bsOut.Write(ID);
+			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+		}
+		slot[ID].isUsed = NULL;
+	}
+}
+
 void CNetworkManager::Pulse()
 {
 	for (packet=peer->Receive(); packet; peer->DeallocatePacket(packet), packet=peer->Receive())
@@ -235,80 +334,30 @@ void CNetworkManager::Pulse()
 				case ID_NEW_INCOMING_CONNECTION:
 					{
 						printf("Incoming connection \n");
-						int ID = GetFirstFreeSlot();
-
-						slot[ID].isUsed = true;
-						slot[ID].sa = packet->systemAddress; 
-						g_CCore->GetPlayerPool()->New(ID);
-					}
-					break;
-				case ID_GAME_SYNC:
-					{
-						//_Player structPlayer;
-						//RakString rs;
-						//BitStream bsIn(packet->data + offset, packet->length - offset, false);
-						//bsIn.IgnoreBytes(sizeof(MessageID));
-						//int ID = GetIDFromSystemAddress(packet->systemAddress);
-						//bsIn.Read(g_CCore->GetPlayers()[ID]);		// I bet it won't work :D
-						//bsIn.Read(structPlayer);
-						//BitStream bsOut;
-						//bsOut.Write((MessageID)ID_GAME_SYNC);
-						//bsOut.Write(structPlayer);
-						//peer->Send(&bsOut,LOW_PRIORITY,UNRELIABLE,0,packet->systemAddress,true);
-
 					}
 					break;
 				case ID_DISCONNECTION_NOTIFICATION:
 				case ID_CONNECTION_LOST:
-					{
-						int ID = GetIDFromSystemAddress(packet->systemAddress);
-						if (ID == -1)
-							return;
-						g_CCore->GetScripts()->onPlayerDisconnect(ID);
-
-						CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
-						if (player != NULL)
-						{
-							if (player->InCar != -1)
-							{
-								CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->InCar);
-								veh->PlayerDisconnect(ID);
-							}
-							//std::string buffer;
-							//buffer = "Player ";
-							//buffer += (g_CCore->GetPlayers()[ID].nickname);
-							//buffer += " has disconnect / lost connection.";
-							char buff[255];
-							if (packet->data[0] == ID_CONNECTION_LOST)
-								sprintf(buff, "Player %s lost connection", player->GetNickname());
-							//sprintf(buff,"Player %s lost connection",&g_CCore->GetPlayers()[ID].nickname);
-							else
-								sprintf(buff, "Player %s disconnected", player->GetNickname());
-							//sprintf(buff,"Player %s disconnected",&g_CCore->GetPlayers()[ID].nickname);
-							SendMessageToAll(buff);
-
-							if (packet->data[0] == ID_CONNECTION_LOST)
-								printf("%s[%i] has lost his connection. \n", player->GetNickname(), ID);
-							//printf("%s[%i] has lost his connection. \n",g_CCore->GetPlayers()[ID].nickname,ID);
-							else
-								printf("%s[%i] has disconnected.\n", player->GetNickname(), ID);
-							//printf("%s[%i] has disconnected.\n",g_CCore->GetPlayers()[ID].nickname,ID);
-							slot[ID].isUsed = NULL;
-							//g_CCore->GetPlayers()[ID].isSpawned = 0;
-							g_CCore->GetPlayerPool()->Delete(ID);
-						}
-						RakNet::BitStream bsOut;
-						bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-						bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DISCONNECT);
-						bsOut.Write(ID);
-						peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
-
-					}
-					break;
-				case ID_GAME_MESSAGE_1: // inak by nemal odozvu // pozri sa na to toto dobre
 				{
-
+									this->OnPlayerDisconnect(packet);
+				}
+					break;
+				// this message is sent by client after server accepts his connection attempt
+				case ID_INITLHMP:
+				{
+									// check client's game version hash
+									// if doesn't match, cause disconnect,
+									// if does, start file transfer
+									  this->OnPlayerConnection(packet);
+				}
+					break;
+				// when whole connection is done, just send him all players / send his to all players
+				case ID_CONNECTION_FINISHED:
+				{
 					int ID = GetIDFromSystemAddress(packet->systemAddress);
+					g_CCore->GetPlayerPool()->New(ID);
+
+					//TODO - process info from player
 
 					RakNet::RakString rs;
 					float FOV;
@@ -316,25 +365,8 @@ void CNetworkManager::Pulse()
 					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 					bsIn.Read(rs);
 					bsIn.Read(FOV);
-					char version[100];
-					bsIn.Read(version);
-					if (strcmp(version, LHMP_VERSION_TEST_HASH) != 0)
-					{
-						slot[ID].isUsed = NULL;
-						g_CCore->GetPlayerPool()->Delete(ID);
-						RakNet::BitStream errStr;
-						errStr.Write((RakNet::MessageID)ID_GAME_BAD_VERSION);
-						peer->Send(&errStr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-						peer->CloseConnection(packet->systemAddress, true);
 
-						printf("Bad connection attempt. Version hash dismatch.");
-						return;
-					}
-					// he has a good version
-					printf("A connection is incoming. ID: %d \n", ID);
-
-
-					
+					//------------------------------------------------------
 
 					CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 					player->SetNickname(rs.C_String());
@@ -343,29 +375,6 @@ void CNetworkManager::Pulse()
 					player->SetSkin(0);
 					player->SetFOV(FOV);
 
-
-					
-					RakNet::BitStream bsOutR;
-					bsOutR.Write((RakNet::MessageID)ID_GAME_SKUSKA);
-
-					
-					/*FileListTransfer* transfer = new FileListTransfer();
-					peer->AttachPlugin(transfer);
-					transfer->Send(list, peer, packet->systemAddress, 0, HIGH_PRIORITY,0);*/
-					
-
-					
-
-					_Server serInfo;
-					serInfo.max_players = this->m_pServerMaxPlayers;
-					serInfo.playerid = GetIDFromSystemAddress(packet->systemAddress);
-					sprintf(serInfo.server_name,"%s",this->m_pSvrName.c_str());
-					serInfo.server_port = this->m_pServerPort;
-
-
-					bsOutR.Write(serInfo); // tu su data, struct
-					peer->Send(&bsOutR,HIGH_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,false);
-
 					RakNet::BitStream bsOut;
 					bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 					bsOut.Write((RakNet::MessageID)LHMP_PLAYER_CONNECT);
@@ -373,91 +382,28 @@ void CNetworkManager::Pulse()
 					bsOut.Write(player->GetNickname());
 					bsOut.Write(player->GetSkin());
 					peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
-					SendHimOthers(ID);
-					SendHimCars(ID);
-					SendHimDoors(ID);
-					SendHimPickups(ID);
+					
 					char buff[255];
 					sprintf(buff, "Player %s[%i]'s connected server.", player->GetNickname(), ID);
 					this->SendMessageToAll(buff);
-					printf("Player %s[%i]'s connected server.\n", player->GetNickname(),serInfo.playerid);
+					printf("Player %s[%i]'s connected server.\n", player->GetNickname(),ID);
 
-
-					bsOut.Reset();
-					//BitStream bsOut;
-					bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-					bsOut.Write((MessageID)LHMP_SCRIPT_CHANGE_MAP);
-					bsOut.Write(g_CCore->GetDefaultMap());
-					g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 
 					g_CCore->GetScripts()->onPlayerConnect(ID);
 					g_CCore->GetScripts()->onPlayerSpawn(ID);
-
-
-					/*FileList* list = new FileList();
-					list->AddFile("svrs.zip", "svrs.zip", FileListNodeContext(0, 0, 0, 0));
-					list->AddFile("client.dll", "client.dll", FileListNodeContext(0, 0, 0, 0));
-					list->AddFile("lol.zip", "lol.zip", FileListNodeContext(0, 0, 0, 0));
-
-					BitStream fileOut;
-					fileOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-					fileOut.Write((MessageID)LHMP_FILE_SEND);
-					list->Serialize(&fileOut);
-					g_CCore->GetNetworkManager()->GetPeer()->Send(&fileOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, false);*/
-
-					int uID = g_CCore->GetFileTransfer()->NewTransfer(packet->systemAddress, 0);
-					CFileTransfer* tf = g_CCore->GetFileTransfer()->GetID(uID);
-					if (tf != NULL)
-					{
-
-						//tf->AddFile("lol", "ada");
-						//tf->AddFile("ls", "adda");
-						//tf->AddFile("loddl", "aasdada");
-						tf->AddFile("gamemodes/default/resources.txt", "resources.txt");
-
-						printf("lol");
-						tf->StartTransfer();
-					}
-
 				}
 				break;
 				case ID_GAME_LHMP_PACKET:
 				{
-					/*if (TS != NULL)
-					{
-						char buff[255];
-						sprintf(buff, "Timestamp: %u %d", TS, sizeof(RakNet::TimeMS));
-						std::cout << "Timestamp: " << TS << " " << sizeof(RakNet::TimeMS) << std::endl;
-					}*/
 					LHMPPacket(packet,TS);
 				}
 				break;
-				case ID_FILETRANSFER_INIT:
+				case ID_FILETRANSFER:
 				{
 					RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
-					int ID;
-					bsIn.Read(ID);
-					CFileTransfer* tf = g_CCore->GetFileTransfer()->GetID(ID);
-					if (tf != NULL)
-					{
-						tf->SendFile();
-					}
-				
-				
+					g_CCore->GetFileTransfer()->HandlePacket(&bsIn,packet->systemAddress);
 				}
-					break;
-				case ID_FILETRANSFER_SENDFILE:
-				{
-					RakNet::BitStream bsIn(packet->data + 1, packet->length - 1, false);
-					int ID;
-					bsIn.Read(ID);
-					CFileTransfer* tf = g_CCore->GetFileTransfer()->GetID(ID);
-					if (tf != NULL)
-					{
-						tf->SendFile();
-					}
-				}
-					break;
+				break;
 				default:
 					g_CCore->GetLog()->AddNormalLog("Message with identifier %i has arrived.", packet->data[0]);
 					break;

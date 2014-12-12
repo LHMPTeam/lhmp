@@ -104,6 +104,7 @@
     <ClCompile Include="..\sdks\cd3dfont\d3dfont.cpp" />
     <ClCompile Include="..\sdks\cd3dfont\d3dutil.cpp" />
     <ClCompile Include="..\sdks\cd3dfont\dxutil.cpp" />
+    <ClCompile Include="..\sdks\md5\md5.cpp" />
     <ClCompile Include="..\sdks\RakNet\Base64Encoder.cpp" />
     <ClCompile Include="..\sdks\RakNet\BitStream.cpp" />
     <ClCompile Include="..\sdks\RakNet\CCRakNetSlidingWindow.cpp" />
@@ -220,6 +221,7 @@
     <ClCompile Include="CCrashHandler.cpp" />
     <ClCompile Include="CEngineStack.cpp" />
     <ClCompile Include="CEntity.cpp" />
+    <ClCompile Include="CFileTransfer.cpp" />
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGame.cpp" />
     <ClCompile Include="CGraphics.cpp" />
@@ -242,6 +244,7 @@
     <ClInclude Include="..\sdks\cd3dfont\d3dfont.h" />
     <ClInclude Include="..\sdks\cd3dfont\d3dutil.h" />
     <ClInclude Include="..\sdks\cd3dfont\dxutil.h" />
+    <ClInclude Include="..\sdks\md5\md5.h" />
     <ClInclude Include="..\sdks\RakNet\AutopatcherPatchContext.h" />
     <ClInclude Include="..\sdks\RakNet\AutopatcherRepositoryInterface.h" />
     <ClInclude Include="..\sdks\RakNet\Base64Encoder.h" />
@@ -411,6 +414,7 @@
     <ClInclude Include="CDirectInput8Proxy.h" />
     <ClInclude Include="CEngineStack.h" />
     <ClInclude Include="CEntity.h" />
+    <ClInclude Include="CFileSystem.h" />
     <ClInclude Include="CFileTransfer.h" />
     <ClInclude Include="CFont.h" />
     <ClInclude Include="CGame.h" />

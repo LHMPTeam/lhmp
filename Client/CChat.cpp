@@ -296,6 +296,22 @@ void CChat::DoCommand(char str[])
 			}
 		}
 	}
+	else if (strcmp(command, "pedframe") == 0)
+	{
+		PED* ped = *(PED**)((*(DWORD*)0x6F9464) + 0xE4);
+		char buff[200];
+		sprintf(buff, "Pos: %f %f %f Current wepID: %d", ped->object.position.x, ped->object.position.y, ped->object.position.z,ped->inventary.slot[0].weaponType);
+		g_CCore->GetChat()->AddMessage(buff);
+
+		sprintf(buff, "Health: %f Skin: %s", ped->health,ped->object.frame->frameModel);
+		g_CCore->GetChat()->AddMessage(buff);
+
+		
+		sprintf(buff, "Pos: %f %f %f Gas: %f", ped->playersCar->position.x, ped->playersCar->position.y, ped->playersCar->position.z, ped->playersCar->gasState);
+		g_CCore->GetChat()->AddMessage(buff);
+
+
+	}
 	else if (strcmp(command, "cpkar") == 0)
 	{
 		char * pEnd;
@@ -310,7 +326,9 @@ void CChat::DoCommand(char str[])
 			{
 
 				g_CCore->GetChat()->AddMessage("Done");
-				DWORD entity = veh->GetEntity();
+
+				//------------ current CarUpdate
+				/*DWORD entity = veh->GetEntity();
 
 				//*(float*)(*(DWORD*)(entity + 0x438) + 0x40) += 10.0f;	// pos
 				//*(float*)(*(DWORD*)(entity + 0x438) + 0x9C) += 0.1f;	// rot
@@ -320,7 +338,66 @@ void CChat::DoCommand(char str[])
 					MOV ECX, EDI;  EDI == actorBase
 						MOV EAX, 0x00469DD0
 						CALL EAx; Game.00469DD0
+				}*/
+
+				//--------------
+
+				// takmer dokonale
+
+				DWORD entity = veh->GetEntity();
+				*(float*)(entity + 0x40C) += 0.1f;
+				/*_asm
+				{
+				//MOV EAX, 0x0
+				MOV EAX, 0x3DA9FBE8
+				PUSH EAX; / Arg3 = 00000000
+				PUSH EAX; | Arg2	0
+				//MOV EAX, 0x3DA9FBE8
+				PUSH EAX; | Arg1   	0x3DA9FBE8
+				MOV ESI, entity
+				ADD ESI, 0x70
+				MOV ECX, ESI; | base + 0x70
+				MOV EAX, 0x0052E6D0
+				CALL EAX; game.0052E6D0; \game.0052E6D0
+				}*/
+				_asm {
+				MOV ESI, entity
+				PUSH 0x10; / Arg1 = 00000010
+				LEA ECX, DWORD PTR DS : [ESI + 0x70]; |
+				MOV EAX, 0x0052C3B0
+				CALL EAX; Game.0052C3B0; \Game.0052C3B0
+
+
 				}
+				/*_asm {
+				MOV ESI, entity
+				MOV ECX, ESI
+				MOV EAX, DWORD PTR DS : [ESI]
+				PUSH 0x31
+				CALL DWORD PTR DS : [EAX + 0x34]
+
+
+				}*/
+				//}
+				// car_calm func
+				/*_asm
+				{
+				PUSH 0x1
+				MOV ECX, entity
+				MOV EAX, 0x00470D30
+				CALL EAX; Game.00470D30
+				TEST AL, AL
+				JE end
+				PUSH 0x14; / Arg1 = 00000014
+				MOV ECX, entity
+				ADD ECX, 0x70; |
+				MOV EAX, 0x0051A920
+				CALL EAX; Game.0051A920; \Game.0051A920
+				end:
+
+
+				}
+				*/
 			}
 		}
 	}
@@ -795,7 +872,8 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 				int line_y = base_y + (30 * iRendered);
 				if (this->IsBackgroundActive() == true)
 					g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+				//g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+				g_CCore->GetGraphics()->DrawTextA(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
 				index += howMuchWeNeed;
 				iRendered++;
 			}

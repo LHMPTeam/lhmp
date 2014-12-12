@@ -78,7 +78,8 @@ struct _Server{
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM+1,
+	// sends client after connection accept
+	ID_INITLHMP = ID_USER_PACKET_ENUM + 1,
 	ID_GAME_SKUSKA = ID_USER_PACKET_ENUM+2,
 	ID_GAME_SYNC = ID_USER_PACKET_ENUM+3,
 	ID_GAME_PID = ID_USER_PACKET_ENUM+4,
@@ -86,10 +87,17 @@ enum GameMessages
 	ID_GAME_ALIVE = ID_USER_PACKET_ENUM+6,
 	ID_GAME_LHMP_PACKET,
 	ID_GAME_BAD_VERSION,
-	ID_FILETRANSFER_INIT,
-	ID_FILETRANSFER_SENDFILE,
-	ID_FILETRANSFER_TRANSFERDONE,
+	// when whole server-client connecting is finished and client is finaly ready to play
+	ID_CONNECTION_FINISHED,
+	ID_FILETRANSFER
 
+};
+
+enum FileTransfer
+{
+	FILETRANSFER_INIT,
+	FILETRANSFER_SEND,
+	FILETRANSFER_FINISH
 };
 
 enum LHMPNetMessages

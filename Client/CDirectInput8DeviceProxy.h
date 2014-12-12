@@ -84,7 +84,7 @@ public:
 			{
 				g_CCore->GetKeyboard()->ProceedKeyboard(data);
 				((BYTE *) data)[DIK_TAB] = 0x00;  // TAB block (due to map render)   
-				((BYTE *) data)[DIK_ESCAPE] = 0x00;  // ESC block (due to menu activate)
+				//((BYTE *) data)[DIK_ESCAPE] = 0x00;  // ESC block (due to menu activate)
 			}
 		}
 		return hr;

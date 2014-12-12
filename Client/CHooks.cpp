@@ -633,7 +633,9 @@ _declspec(naked) void Hook_OnPlayerExitVehicle()
 {
 	_asm
 	{
-		MOV EBX, ECX
+			//MOV EBX, ECX
+			PUSH ECX	
+
 			PUSH EBX
 			PUSH EBX
 			PUSH 2
@@ -641,10 +643,11 @@ _declspec(naked) void Hook_OnPlayerExitVehicle()
 			MOV ECX, EDI
 			MOV EAX, 0x004A26D0
 			CALL EAX; game.004A26D0
+			POP ECX
 			cmp BYTE PTR SS : [EDI + 0x10], 0x2
 			jnz PEVped
 			pushad
-			PUSH EBX		// vehicle
+			PUSH ECX		// vehicle
 			MOV EAX, PlayerExitVehicle
 			call EAX
 			add ESP, 0x4
@@ -667,6 +670,8 @@ _declspec(naked) void Hook_OnPlayerExitVehicleFinish()
 	{
 	somethingElse:
 		popad
+			CMP ECX, EBX
+			MOV DWORD PTR DS : [ESI + 0x98], EBX
 			mov DWORD PTR DS : [ESP], 0x00491EEB // we need to return a byte fahrer
 			ret
 	}
@@ -1390,7 +1395,15 @@ void	OnPhysicsTick(int deltatime)
 		{
 			if (veh->GetEntity())
 			{
-				DWORD entity = veh->GetEntity();
+				VEHICLE* entity = (VEHICLE*)veh->GetEntity();
+				if (veh->GetSeat(0) != g_CCore->GetLocalPlayer()->GetOurID())
+				{
+					//*(INT16*)(veh->GetEntity() + 0x6A6) = 0;
+					entity->position = veh->GetPosition();
+					entity->rotation = veh->GetRotation();
+					//entity->rotationSecond = veh->GetSecondRot();
+					entity->speed = veh->GetSpeed();
+				}
 				_asm{
 					mov ECX, entity
 						push deltatime
@@ -1511,8 +1524,8 @@ void SetHooks()
 	Tools::InstallJmpHook(0x004CC6EF, (DWORD)&Hook_OnPlayerEnteredVehicle2);
 	Tools::InstallJmpHook(0x004CCA61, (DWORD)&Hook_OnPlayerExitVehicle);
 
-	Tools::InstallCallHook(0x00491EE5, (DWORD)&Hook_OnPlayerExitVehicleFinish);
-
+	Tools::InstallCallHook(0x00491EE5, (DWORD)&Hook_OnPlayerExitVehicleFinish);		// cause locked doors
+	
 	Tools::InstallJmpHook(0x004CC822, (DWORD)&Hook_OnCarJack);
 	Tools::InstallJmpHook(0x00604046, (DWORD)&Hook_PreventCarandPedsSpawn);
 

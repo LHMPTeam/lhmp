@@ -1,3 +1,4 @@
+/*
 #include "CFileTransfer.h"
 
 struct CFileTransfers
@@ -64,3 +65,4 @@ public:
 		return false;
 	}
 };
+*/

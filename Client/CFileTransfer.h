@@ -1,37 +1,53 @@
-#include "CCore.h"
-#include "FileListTransferCBInterface.h"
+#ifndef __FILETRANSFER_H
+#define __FILETRANSFER_H
+#include <vector>
+#include "../sdks/md5/md5.h"
+#include "BitStream.h"
 
-extern CCore* g_CCore;
 
-class CFileTransfer : public  RakNet::FileListTransferCBInterface
+enum FILETRANSFER_STATE
 {
-	bool OnFile(OnFileStruct *onFileStruct)
-	{
-		g_CCore->GetChat()->AddMessage("OnFile");
-		return true;
-	}
-	void OnFileProgress(FileProgressStruct *fps)
-	{
-
-		g_CCore->GetChat()->AddMessage("OnFileProgress");
-	}
-	bool 	Update(void)
-	{
-
-		//g_CCore->GetChat()->AddMessage("FT Update");
-		return true;
-	}
-	bool 	OnDownloadComplete(DownloadCompleteStruct *dcs)
-	{
-		char buff[255];
-		g_CCore->GetChat()->AddMessage("OnDownloadComplete");
-		sprintf(buff, "Files count: %u Whole length: %u", dcs->numberOfFilesInThisSet, dcs->byteLengthOfThisSet);
-		g_CCore->GetChat()->AddMessage(buff);
-		return true;
-	}
-	void 	OnDereference(void)
-	{
-
-	}
-
+	NO_TRANSFER,
+	CHECKING_INTEGRITY,
+	DOWNLOADING
 };
+class CFile
+{
+private:
+	unsigned int ID;
+	char name[255];
+	FILE* handle;
+	char checksum[33];
+	int size;
+	int alreadyWritten;
+public:
+	CFile(unsigned int _ID, FILE* _handle, char _name[], char _checksum[], int _size);
+	~CFile();
+	char*			GetName();
+	char*			GetCheckSum();
+	int				GetSize();
+	unsigned int	GetID();
+	FILE*			GetFileHandle();
+	void			WriteBytes(unsigned char data[], int len);
+	int				GetAlreadyWritten();
+
+	void CloseHandle();
+};
+
+class CFileTransfer
+{
+private:
+	int downloadingID;
+	int status;
+	std::vector <CFile*> fileList;
+
+	void InitTransfer(RakNet::BitStream* stream);
+public:
+	CFileTransfer();
+
+	void HandlePacket(RakNet::BitStream* stream);
+
+	void Render();
+};
+
+#endif

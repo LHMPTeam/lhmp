@@ -99,8 +99,7 @@ CLog* CCore::GetLog()
 	return &this->m_cLog;
 }
 
-
-CFileTransferPool*	CCore::GetFileTransfer()
+CFileTransfer*	CCore::GetFileTransfer()
 {
-	return &this->m_cFileTransferPool;
+	return &this->m_cFileTransfer;
 }

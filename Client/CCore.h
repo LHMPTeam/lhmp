@@ -26,6 +26,8 @@
 #include "CIngameMenu.h"
 #include "CColoredText.h"
 #include "CPickupPool.h"
+#include "CFileTransfer.h"
+#include "CFileSystem.h"
 #include <time.h>
 
 #include "../shared/tools.h"
@@ -36,6 +38,10 @@ class CCore
 private:
 	bool					pIsRunning;
 	bool					pIsGameLoaded;
+
+	CFileTransfer			m_cFileTransfer;
+	CFileSystem				m_cFileSystem;
+
 	CNetworkManager			m_cNetwork;
 	CLocalPlayer			m_cLocalPlayer;
 	CChat					m_cChat;
@@ -62,8 +68,6 @@ public:
 	void					SetRunning(bool);
 	bool					IsLoaded();
 	void					SetLoaded(bool);
-	void					Render(IDirect3DDevice8*,LPD3DXFONT);
-	void					D3DInit(IDirect3DDevice8*);
 	void					OnLostConnection();
 	CChat*					GetChat();
 	CNetworkManager*		GetNetwork();
@@ -79,6 +83,8 @@ public:
 	CKeyboard*				GetKeyboard();
 	CIngameMenu*			GetIngameMenu();
 	CPickupPool*			GetPickupPool();
+	CFileTransfer*			GetFileTransfer();
+	CFileSystem*			GetFileSystem();
 
 	bool					m_bIsGameLoaded;
 	bool					m_bIsRespawning;         
