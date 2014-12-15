@@ -25,3 +25,12 @@ I:\Programming\LHMP\LHMP-dev\Others\Autoupdater\obj\Release\lh_updater.Propertie
 I:\Programming\LHMP\LHMP-dev\Others\Autoupdater\obj\Release\Autoupdater.csproj.GenerateResource.Cache
 I:\Programming\LHMP\LHMP-dev\Others\Autoupdater\obj\Release\lh_updater.exe
 I:\Programming\LHMP\LHMP-dev\Others\Autoupdater\obj\Release\lh_updater.pdb
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Release\lh_updater.exe.config
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Release\lh_updater.exe
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Release\lh_updater.pdb
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Release\Autoupdater.csprojResolveAssemblyReference.cache
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Release\Autoupdater.Form1.resources
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Release\lh_updater.Properties.Resources.resources
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Release\Autoupdater.csproj.GenerateResource.Cache
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Release\lh_updater.exe
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Release\lh_updater.pdb

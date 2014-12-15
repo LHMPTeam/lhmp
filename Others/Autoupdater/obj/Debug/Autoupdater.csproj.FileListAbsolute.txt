@@ -1,0 +1,9 @@
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\bin\Debug\lh_updater.exe.config
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\bin\Debug\lh_updater.exe
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\bin\Debug\lh_updater.pdb
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Debug\Autoupdater.csprojResolveAssemblyReference.cache
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Debug\Autoupdater.Form1.resources
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Debug\lh_updater.Properties.Resources.resources
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Debug\Autoupdater.csproj.GenerateResource.Cache
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Debug\lh_updater.exe
+C:\Users\user\Documents\lost-heaven-mp-lhmp\Others\Autoupdater\obj\Debug\lh_updater.pdb

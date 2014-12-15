@@ -45,11 +45,14 @@ namespace Autoupdater
             }
            
         }
+
+        List<string> newdates = new List<string>();
+
         void Update(string mod="")
         {
 
             goto skok;
-            if(File.Exists("browser.exe"))
+            /*if(File.Exists("browser.exe"))
             {
                 WebClient requeste = new WebClient();
                 string r = "";
@@ -93,7 +96,7 @@ namespace Autoupdater
                 {
                     Process.Start("browser.exe");
                 }
-                }
+                }*/
 
 
 
@@ -141,10 +144,13 @@ namespace Autoupdater
                     }
                     //MessageBox.Show(remote.ToString()); !Ide
 
-                    var md5 = MD5.Create();
-                    var stream = File.OpenRead(file);
-                    local = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                    stream.Close();
+                    //var md5 = MD5.Create();
+                    //var stream = File.OpenRead(file);
+                    //local = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+                    local = File.GetCreationTime(file).ToString();
+                   // MessageBox.Show(local);
+                    
+                    //stream.Close();
                     if (local != remote)
                     {
                         // MessageBox.Show(file);
@@ -159,7 +165,7 @@ namespace Autoupdater
                                     {
                                         File.WriteAllText("lhmp\\update.tmp", "1");
                                     }
-                                    stream.Close();
+                                   // stream.Close();
                                     foreach (Process proc in Process.GetProcessesByName("lh_updater"))
                                     {
                                         proc.Kill();
@@ -172,7 +178,7 @@ namespace Autoupdater
                             }
                             toupdate = true;
                         }
-
+                        newdates.Add(file+"|"+remote);
                         // MessageBox.Show("LoL");
                         WebClient wb = new WebClient();
 
@@ -233,9 +239,19 @@ namespace Autoupdater
                 //Process up = Process.Start("update.exe");
                 //up.WaitForExit();
 
+                foreach (string txt in newdates)
+                {
+                    if (txt.StartsWith(filename))
+                    {
+                        File.SetCreationTime(filename, Convert.ToDateTime(txt.Split('|')[1]));
+                        //newdates.Remove(txt);
+                    }
+                }
+
                 //File.Delete("update.exe");
                 if (filec == files.Length) {  }
                 next = true;
+                
                 
             }
             else
