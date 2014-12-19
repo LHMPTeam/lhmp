@@ -311,7 +311,7 @@ void CEngineStack::DoMessage()
 			else
 			{
 				g_CCore->GetLog()->AddLog("ES CREATECAR");
-				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin());
+				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin(),veh->GetPosition(),veh->GetRotation());
 				veh->SetEntity(base);
 				for (int i = 0; i < 4; i++)
 				{
@@ -503,6 +503,16 @@ void CEngineStack::DoMessage()
 			/*if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
 				return;
 			*/
+
+			// Reload tables/predmety.def
+			_asm {
+				MOV ECX, 0x00658330; Game.00658330
+				MOV EAX, 0x00592080;
+				CALL EAX; Game.00592080;  loads predmety.def
+			}
+
+
+
 			g_CCore->GetGame()->ChangeMap((char*)start->data,""); 
 			/*if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
 			{

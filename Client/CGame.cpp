@@ -130,6 +130,7 @@ void CGame::Tick()
 	else {
 		this->PickupsTick();
 	}
+	
 	g_CCore->GetEngineStack()->DoMessage();
 
 	if (g_CCore->m_bIsRespawning == false)
@@ -291,6 +292,19 @@ void CGame::ChangeSkin(DWORD PED,int skinId)
 		popad
 	}
 }
+
+DWORD CGame::CreateCar(int skin, Vector3D position, Vector3D rotation)
+{
+	//CreateCar(skin);
+	DWORD entity = g_CCore->GetGame()->CreateCar(skin);
+	if (entity)
+	{
+		g_CCore->GetGame()->CarUpdate(entity, position , rotation);
+		return entity;
+	}
+	return NULL;
+}
+
 DWORD CGame::CreateCar(int skin)
 {
 	skin = Tools::Clamp(skin, 0, (int)(sizeof(CAR_SKINS)/200));
@@ -360,7 +374,7 @@ DWORD CGame::CreateCar(int skin)
 		MOV DWORD PTR SS:[ESP+0x90],0xc09ccccd	// y
 		MOV DWORD PTR SS:[ESP+0xA0],0x41bb3333	// z
 		mov eax,0x005C82B0
-		CALL eax								// Change object's position
+		CALL eax								// Change object's position (actually change frame's position)
 		MOV EBX,DWORD PTR DS:[ESI]				// get frame's vtable
 		PUSH 0
 		PUSH 0
@@ -393,7 +407,7 @@ DWORD CGame::CreateCar(int skin)
 		CALL DWORD PTR DS:[EAX+0x64]
 		PUSH 1
 		MOV ECX,EDI
-		mov eax,0x005C8A90
+		mov eax,0x005C8A90						// set byte 0x214C1 to 1
 		CALL eax
 		MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440
 		PUSH EDI
@@ -407,8 +421,8 @@ DWORD CGame::CreateCar(int skin)
 		mov eax,0x0051A920
 		CALL eax                       ; \Game.0051A920		// this func calls getTime, strange
 		PUSH 1
-		MOV ECX,EDI
-		mov eax,0x005C8740
+		MOV ECX,EDI			
+		mov eax,0x005C8740						// +0x65 offset = set byte to 1
 		CALL eax								// set something in object on, god know what it is, well, this has just one call overall, strange
 	divnyjump_dest:
 		// the following code destroys frame
@@ -788,7 +802,7 @@ void CGame::AfterRespawn()
 		{
 			if (veh->IsActive())
 			{
-				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin());
+				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin(),veh->GetPosition(),veh->GetRotation());
 				veh->SetEntity(base);
 				for (int i = 0; i < 4; i++)
 				{

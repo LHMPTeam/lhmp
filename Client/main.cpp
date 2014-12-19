@@ -134,7 +134,7 @@ void MainThread(void)
 	while (CCore.IsRunning())
 	{
 		CCore.Pulse();
-		RakSleep(30);
+		RakSleep(10);
 	}
 }
 
@@ -155,6 +155,11 @@ BOOL WINAPI hookPeekMessageW(
 		if (lpMsg->message == WM_INPUT)
 		{
 			g_CCore->GetKeyboard()->ProccessMessage(lpMsg);
+		}
+		else if (lpMsg->message == WM_QUIT || lpMsg->message == WM_CLOSE)
+		{
+			g_CCore->ShutdownClient();
+			return 0;
 		}
 		/*else if (lpMsg->message == WM_KILLFOCUS || (lpMsg->message == WM_ACTIVATE && LOWORD(lpMsg->wParam) == WA_INACTIVE))
 		{

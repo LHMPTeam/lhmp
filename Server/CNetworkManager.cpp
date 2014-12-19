@@ -268,11 +268,6 @@ void	CNetworkManager::OnPlayerFileTransferFinished(RakNet::SystemAddress)
 	bsOutR.Write(serInfo); // tu su data, struct
 	bsOutR.Write(g_CCore->GetDefaultMap());
 	peer->Send(&bsOutR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-
-	SendHimOthers(ID);
-	SendHimCars(ID);
-	SendHimDoors(ID);
-	SendHimPickups(ID);
 }
 
 
@@ -391,6 +386,11 @@ void CNetworkManager::Pulse()
 
 					g_CCore->GetScripts()->onPlayerConnect(ID);
 					g_CCore->GetScripts()->onPlayerSpawn(ID);
+
+					SendHimOthers(ID);
+					SendHimCars(ID);
+					SendHimDoors(ID);
+					SendHimPickups(ID);
 				}
 				break;
 				case ID_GAME_LHMP_PACKET:

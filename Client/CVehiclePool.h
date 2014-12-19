@@ -20,7 +20,8 @@ private:
 public:
 	CVehiclePool();
 	~CVehiclePool();
-	void	New(int,int,bool isSpawned = true);
+
+	void	New(int vehicleID, int skinID, Vector3D position, Vector3D rotation, bool isSpawned = true);
 	CVehicle*	Return(int);
 	int		GetVehicleIdByBase(DWORD);
 	void	Delete(int);

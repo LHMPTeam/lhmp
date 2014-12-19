@@ -25,6 +25,7 @@ CPickup* CPickupPool::Return(int slot)
 
 int CPickupPool::GetObjectIdByBase(DWORD base)
 {
+	return NULL;
 }
 
 void CPickupPool::Delete(int index)

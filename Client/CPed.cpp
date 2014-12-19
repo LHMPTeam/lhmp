@@ -147,6 +147,9 @@ void CPed::UpdateGameObject()
 				else
 					ped->isAiming = 0;
 
+				ped->isInAnimWithCar = 0;
+
+
 				/**(float*)(this->EntityBase + 0x644) = this->fHealth;
 				if (this->state != 163)
 				{

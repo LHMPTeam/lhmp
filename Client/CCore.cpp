@@ -140,6 +140,12 @@ void CCore::Run()
 
 }
 
+void CCore::ShutdownClient()
+{
+	this->GetNetwork()->GetPeer()->Shutdown(100, 0, IMMEDIATE_PRIORITY);
+	TerminateProcess(GetCurrentProcess(), 0);
+}
+
 void CCore::Start()
 {
 	m_cLocalPlayer.Init();
@@ -149,10 +155,6 @@ void CCore::Start()
 }
 void CCore::Pulse()
 {
-	if (m_bIsRespawning == false)
-	{
-		m_cLocalPlayer.Pulse();
-	}
 	m_cNetwork.Pulse();
 	
 }

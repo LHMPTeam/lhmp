@@ -12,27 +12,32 @@ CVehiclePool::~CVehiclePool()
 {
 	delete[] & vehiclepool;
 }
-void CVehiclePool::New(int index, int skinID, bool isSpawned)
+
+void	CVehiclePool::New(int vehicleID, int skinID, Vector3D position, Vector3D rotation,bool isSpawned)
 {
-	if (vehiclepool[index] == 0)
+	if (vehiclepool[vehicleID] == 0)
 	{
 		CVehicle* pointer = new CVehicle;
 		if (pointer != NULL)
 		{
-			vehiclepool[index] = pointer;
+			vehiclepool[vehicleID] = pointer;
 			pointer->SetSkinId(skinID);
+			pointer->SetPosition(position);
+			pointer->SetPosition(rotation);
 			if (isSpawned)
-				g_CCore->GetEngineStack()->AddMessage(ES_CREATECAR, index);
+				g_CCore->GetEngineStack()->AddMessage(ES_CREATECAR, vehicleID);
 		}
 	}
 	else
 	{
-		CVehicle *veh = vehiclepool[index];
+		CVehicle *veh = vehiclepool[vehicleID];
 		veh->SetSkinId(skinID);
+		veh->SetPosition(position);
+		veh->SetPosition(rotation);
 		if (veh->GetEntity() == 0)
 		{
 			if (isSpawned)
-				g_CCore->GetEngineStack()->AddMessage(ES_CREATECAR, index);
+				g_CCore->GetEngineStack()->AddMessage(ES_CREATECAR, vehicleID);
 		}
 		else
 		{

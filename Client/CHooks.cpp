@@ -940,7 +940,7 @@ void OnEngineLoad()
 			mov loadlib, eax
 	}
 
-	DetourFunction(loadlib, (PBYTE)NEWLoadLibrary);
+	//DetourFunction(loadlib, (PBYTE)NEWLoadLibrary);
 	//g_CCore->GetChat()->AddMessage("Hooked");
 }
 
@@ -1048,28 +1048,23 @@ __declspec(naked) void Hook_OnScriptLoad()
 }
 void OnChangemapRespawn()
 {
-/*	if (g_CCore->IsRunning())
-		g_CCore->GetGame()->Respawn();*/
-	g_CCore->GetGame()->AfterRespawn();
-	//g_CCore->GetChat()->AddMessage("Ahoj moj");
-	//g_CCore->GetGame()->Respawn();
-}
-/*_declspec(naked) void Hook_ChangemapRespawn()
-{
-	_asm
+	// finish connecting, otherwise tell classify it as respawn
+	if (g_CCore->GetNetwork()->IsConnected() == false)
 	{
-		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-		PUSH 0x00650A2C;  ASCII "GameInitEnd"
-		MOV EAX, 0x005FFAE0
-		CALL EAx; Game.005FFAE0
-		pushad
-		call OnChangemapRespawn
-		popad
-		push 0x005DF09F
-		retn
-	}
-}*/
+		g_CCore->GetGame()->SetTrafficVisible(false);
+		g_CCore->GetGame()->UpdateControls();
+		g_CCore->GetGame()->PoliceManager();
+		g_CCore->GetGame()->DisableBridges();
+		g_CCore->m_bIsRespawning = false;
 
+		g_CCore->GetNetwork()->OnConnectionIsAboutFinish();
+	}
+	else {
+		g_CCore->GetGame()->AfterRespawn();
+	}
+}
+
+// Hook_Respawn01 is called after map change (only when map is changed during playing another one)
 _declspec(naked) void Hook_Respawn01()
 {
 	_asm {
@@ -1449,11 +1444,36 @@ _declspec(naked) void Hook_GamePhysics()
 
 
 }
+
+void gameTick()
+{
+	if (g_CCore->m_bIsRespawning == false)
+	{
+		g_CCore->GetLocalPlayer()->Pulse();
+	}
+	//g_CCore->GetGame()->UpdateCars();
+}
+
+_declspec (naked) void Hook_gamePhysicsUpdate()
+{
+	_asm 
+	{	pushad
+		call gameTick
+		popad
+		MOV EAX, DWORD PTR SS : [EBP + 0x114]
+		PUSH 0x005E1056
+		retn
+		}
+
+
+}
 void SetHooks()
 {
 	// 005E1029
 
 	//Tools::InstallJmpHook(0x005E1029, (DWORD)&Hook_GamePhysics);
+
+	Tools::InstallJmpHook(0x005E1050, (DWORD)&Hook_gamePhysicsUpdate);
 
 	//Tools::Nop(0x005DC6DD, 11);
 	//Tools::InstallJmpHook(0x005FFF30, (DWORD)&Hook_Loadingmap);

@@ -79,7 +79,8 @@ typedef struct _PED {
 	OBJECT		object;				//  0000-006C
 	_pad(_unk1, 0x8);
 	byte		animState;			//	0074-0075
-	_pad(_unk2, 0x23);
+	byte		isInAnimWithCar;		//	0075-0076
+	_pad(_unk2, 0x22);
 	VEHICLE*	playersCar;			//	0098-009C
 	_pad(_unk3, 0x148);
 	bool		isDucking;			//	01E4
@@ -121,7 +122,10 @@ public:
 
 	static void ChangeSkin(DWORD,int);
 	// vehicles
-	static DWORD CreateCar(int);
+	static DWORD CreateCar(int skinID,Vector3D position,Vector3D rotation);
+	static DWORD CreateCar(int skinID);
+	//static DWORD CreateCar(int);
+
 	static void ToggleVehicleRoof(DWORD, BYTE);
 	static void SetCarPosition(DWORD, Vector3D);
 	static void SetCarRotation(DWORD, Vector3D);

@@ -138,6 +138,7 @@ void CVehicle::Interpolate()
 		
 		if (hasDriver == false)
 		{
+			return;
 			//g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
 			//if (*(byte*)(entity + 0x2100) == 15)
 			//{
