@@ -853,6 +853,8 @@ SQInteger sq_vehicleSpawn(SQVM *vm)
 		vehicle_data.damage = veh->GetDamage();
 		vehicle_data.shotdamage = veh->GetShotDamage();
 		vehicle_data.roofState = veh->GetRoofState();
+		vehicle_data.siren = veh->GetSirenState();
+
 		vehicle_data.ID = ID;
 		for (int i = 0; i < 4; i++)
 			vehicle_data.seat[i] = -1;
@@ -909,6 +911,50 @@ SQInteger sq_vehicleToggleRoof(SQVM *vm)
 		sq_pushbool(vm, true); return 1;
 	}
 	sq_pushbool(vm, false);
+	return 1;
+}
+
+SQInteger sq_vehicleToggleSiren(SQVM *vm)
+{
+	SQInteger ID;
+	SQInteger state;
+
+	sq_getinteger(vm, -2, &ID);
+	sq_getinteger(vm, -1, &state);
+
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+
+
+	if (veh != NULL)
+	{
+		veh->SetSirenState((bool)state);
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_VEHICLE_TOGGLE_SIREN);
+		bsOut.Write(ID);
+		bsOut.Write(state);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		sq_pushbool(vm, true); return 1;
+	}
+	sq_pushbool(vm, false);
+	return 1;
+}
+
+SQInteger sq_vehicleGetSirenState(SQVM *vm)
+{
+	SQInteger ID;
+	sq_getinteger(vm, -1, &ID);
+
+	CVehicle* vehicle = g_CCore->GetVehiclePool()->Return(ID);
+
+	if (vehicle != NULL)
+	{
+		bool state = vehicle->GetSirenState();
+
+		sq_pushbool(vm, state);
+		return 1;
+	}
+	sq_pushnull(vm);
 	return 1;
 }
 

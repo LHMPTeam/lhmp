@@ -412,28 +412,46 @@ void	OnPlayerHit(DWORD attacker)
 	bsOut.Write(g_CCore->GetPedPool()->GetPedIdByBase(attacker));
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 }
+
 _declspec(naked) void Hook_PreventHit()
 {
 	// ECX = attacker
 	// ESI = victim
-	_asm
+
+	if (g_CCore->GetGame()->ShouldKill)
 	{
-		cmp byte ptr[esi + 0x10], 0x1B
-			jz ped
+		_asm
+		{
 			fstp dword ptr[esi + 0x644]
-			pushad
-			push ECX
-			call OnPlayerHit
-			add ESP, 0x4
-			popad
-		ped:
+				pushad
+				push ECX
+				call OnPlayerHit
+				add ESP, 0x4
+				popad
+		}
+	}
+	else
+	{
+		_asm
+		{
+			cmp byte ptr[esi + 0x10], 0x1B
+				jz ped
+				fstp dword ptr[esi + 0x644]
+				pushad
+				push ECX
+				call OnPlayerHit
+				add ESP, 0x4
+				popad
+			ped :
 			ret
+		}
 	}
 	/*Tools::Nop(0x00497394,6);
 	Tools::Nop(0x00496BA9,6);
 	Tools::Nop(0x00497118,6); // molotov
 	Tools::Nop(0x00497024,6); // granade*/
 }
+
 void OnDeath(DWORD killerBase)
 {
 	int killerId = 0;

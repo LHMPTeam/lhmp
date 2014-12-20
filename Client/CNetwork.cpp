@@ -865,7 +865,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bsIn.Read(vehicle);
 			g_CCore->GetVehiclePool()->New(vehicle.ID, vehicle.skinID, vehicle.position,vehicle.rotation, vehicle.isSpawned);
 			char buff[255];
-			sprintf(buff, "LHMP_VEHICLE_CREATE %d %d %d %d %d", vehicle.ID, vehicle.seat[0], vehicle.seat[1], vehicle.seat[2], vehicle.seat[3]);
+			sprintf(buff, "LHMP_VEHICLE_CREATE %d %d %d %d %d %d", vehicle.ID, vehicle.seat[0], vehicle.seat[1], vehicle.seat[2], vehicle.seat[3], vehicle.siren);
 			g_CCore->GetLog()->AddLog(buff);
 			CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehicle.ID);
 			if (veh == NULL)
@@ -880,6 +880,8 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				veh->SetUpInterpolation();
 				veh->SetDamage(vehicle.damage);
 				veh->ToggleRoof(vehicle.roofState);
+				veh->SetSirenState(vehicle.siren);
+
 				for (int i = 0; i < 4; i++)
 					veh->SetSeat(i, vehicle.seat[i]);
 				g_CCore->GetLog()->AddLog("LHMP_VEHICLE_CREATE");
@@ -905,6 +907,26 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			}
 		}
 		break;
+		case LHMP_VEHICLE_TOGGLE_SIREN:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID;
+			int state;
+			bsIn.Read(ID);
+			bsIn.Read(state);
+
+			char buff[255];
+			sprintf(buff, "[Nm] TOGGLE SIREN %d STATE: %d", ID, state);
+			g_CCore->GetLog()->AddLog(buff);
+
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+			if (veh != NULL)
+			{
+				veh->SetSirenState((bool)state);
+			}
+		}
+		break;
+
 		case LHMP_PLAYER_ENTERED_VEHICLE:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);

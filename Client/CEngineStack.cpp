@@ -336,6 +336,7 @@ void CEngineStack::DoMessage()
 				veh->SetDamage(veh->GetDamage());
 				veh->SetShotDamage(veh->GetShotDamage());
 				veh->ToggleRoof(veh->GetRoofState());
+				veh->SetSirenState(veh->GetSirenState());
 				/*for (int i = 0; i < 4; i++)
 				{
 					if (veh->seea)
@@ -577,6 +578,7 @@ void CEngineStack::DoMessage()
 						veh->SetDamage(veh->GetDamage());
 						veh->SetShotDamage(veh->GetShotDamage());
 						veh->ToggleRoof(veh->GetRoofState());
+						veh->SetSirenState(veh->GetSirenState());
 					}
 					else {
 						veh->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());

@@ -157,6 +157,7 @@ enum LHMPNetMessages
 	LHMP_VEHICLE_SET_ROTATION,
 	LHMP_VEHICLE_SET_SPEED,
 	LHMP_VEHICLE_TOGGLE_ROOF,
+	LHMP_VEHICLE_TOGGLE_SIREN,
 	LHMP_VEHICLE_ON_EXPLODED,
 	LHMP_VEHICLE_RESPAWN, 
 	// door
@@ -246,6 +247,7 @@ namespace VEH
 		float		damage;
 		byte		shotdamage;
 		byte        roofState;
+		bool        siren;
 	};
 	struct SYNC
 	{

@@ -17,6 +17,7 @@ CGame::CGame()
 	loadingStatus = 0.0f;
 	bLockControls = false;
 	pickupsAngle = 0.0f;
+	ShouldKill = false;
 }
 CGame::~CGame()
 {
@@ -827,6 +828,7 @@ void CGame::AfterRespawn()
 				veh->SetDamage(veh->GetDamage());
 				veh->SetShotDamage(veh->GetShotDamage());
 				veh->ToggleRoof(veh->GetRoofState());
+				veh->SetSirenState(veh->GetSirenState());
 			}
 		}
 	}
@@ -1287,9 +1289,11 @@ void CGame::DeleteWeapon(DWORD PED,DWORD weaponID)
 
 void CGame::KillPed(DWORD PED)
 {
+	g_CCore->GetGame()->ShouldKill = true;
+
 	_asm
 	{
-		MOV ECX,PED								;  pedBase
+		/*MOV ECX,PED								;  pedBase
 		mov EAX, DWORD PTR DS : [ECX+0x5D]
 		cmp EAX,0x0
 		je end
@@ -1300,8 +1304,28 @@ void CGame::KillPed(DWORD PED)
 		MOV ECX,EAX                              ; |
 		MOV EAX,0x005F01E0
 		CALL EAX			                     ; \Game.005F01E0	
-		end:
+		end:*/
+		sub ESP, 0x500
+			MOV ESI, PED
+			MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
+			MOV EDX, DWORD PTR DS : [ESI]
+			PUSH 0
+			PUSH 5
+			PUSH 0
+			LEA EAX, DWORD PTR SS : [ESP + 0x100]
+			PUSH 0x41200000
+			PUSH EAX
+			LEA ECX, DWORD PTR SS : [ESP + 0xB0]
+			LEA EAX, DWORD PTR SS : [ESP + 0x1A8]
+			PUSH ECX
+			PUSH EAX
+			PUSH 6
+			MOV ECX, ESI
+			CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
+		add ESP, 0x500
 	}
+
+	g_CCore->GetGame()->ShouldKill = false;
 }
 
 void CGame::SetOn(DWORD PED,bool hide)

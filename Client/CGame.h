@@ -109,6 +109,7 @@ public:
 	CGame();
 	~CGame();
 
+	bool ShouldKill;
 	bool isControlLocked();
 	void SetLockControls(bool b);
 	void UpdateControls();

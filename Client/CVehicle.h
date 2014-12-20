@@ -33,6 +33,7 @@ private:
 
 	Vector3D		vehPos;
 	bool			horn;
+	bool			siren;
 	Vector3D		secondRot;
 
 	float			damage;
@@ -77,6 +78,9 @@ public:
 
 	void		SetHornState(bool);
 	bool		GetHornState();
+
+	void		SetSirenState(bool);
+	bool		GetSirenState();
 
 	void		SetSecondRot(Vector3D);
 	Vector3D	GetSecondRot();

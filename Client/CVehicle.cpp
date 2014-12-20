@@ -50,6 +50,7 @@ CVehicle::CVehicle()
 	for (int i = 0; i < 4; i++)
 		this->Seat[i] = -1;
 
+	siren = 0;
 	horn = 0;
 	roofState = 0;
 	damage = 100.0f;
@@ -392,6 +393,20 @@ void CVehicle::SetHornState(bool b)
 bool CVehicle::GetHornState()
 {
 	return this->horn;
+}
+
+void CVehicle::SetSirenState(bool b)
+{
+	if (this->GetEntity() != NULL)
+	{
+		*(byte*)(this->GetEntity() + 0x51D) = (byte)b;
+	}
+	this->siren = b;
+}
+
+bool CVehicle::GetSirenState()
+{
+	return this->siren;
 }
 
 void CVehicle::SetSecondRot(Vector3D rot)

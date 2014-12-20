@@ -760,10 +760,12 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			veh->SetRotation(vehicle_data.rotation);
 			veh->SetSkin(vehicle_data.skinID);
 			veh->ToggleRoof(vehicle_data.roofState);
+			veh->SetSirenState(vehicle_data.siren);
 
 			vehicle_data.damage = veh->GetDamage();
 			vehicle_data.shotdamage = veh->GetShotDamage();
 			vehicle_data.roofState = veh->GetRoofState();
+			vehicle_data.siren = veh->GetSirenState();
 			vehicle_data.ID = ID;
 			for (int i = 0; i < 4;i++)
 				vehicle_data.seat[i] = -1;
