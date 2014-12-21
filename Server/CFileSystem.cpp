@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <ios>
 
 extern CCore* g_CCore;
 
@@ -63,11 +64,12 @@ void CFileSystem::iniSetParam(const char* file, const char* param, const char* v
 	std::string line,buffer;
 	while (std::getline(fp, line))
 	{
-		buffer += line; // Populates my buffer with data from file.
+		buffer += line + '\n'; // Populates my buffer with data from file.
 	}
 	fp.close();
 
-	std::ofstream fo(filepath);
+	std::fstream fo;
+	fo.open(filepath, std::ios::out);
 	std::istringstream b(buffer);
 
 	while (std::getline(b, line))
@@ -81,20 +83,23 @@ void CFileSystem::iniSetParam(const char* file, const char* param, const char* v
 			if (!strcmp(cnull, param))
 			{
 				char out[256] = "";
-				sprintf(out, "%s %s\n", param, value);
-				fo << std::string(out);
+				sprintf(out, "%s %s", param, value);
+				fo << std::string(out) << std::endl;
+				fo.flush();
 				isAppend = false;
 				continue;
 			}
 		}
-		fo << line << '\n';
+		fo << line << std::endl;
+		fo.flush();
 	}
 
 	if (isAppend)
 	{
 		char out[256] = "";
-		sprintf(out, "%s %s\n", param, value);
-		fo << out;
+		sprintf(out, "%s %s", param, value);
+		fo << out << std::endl;
+		fo.flush();
 	}
 
 	return;
