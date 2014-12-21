@@ -1,4 +1,7 @@
 #include "CScripts.h"
+#include "CCore.h"
+
+extern CCore* g_CCore;
 
 CScripts::CScripts()
 {
@@ -108,6 +111,10 @@ void CScripts::Call(const char * szFunc, int iArgCount, SQObject * pArguments)
 
 void CScripts::onServerInit()
 {
+	char gmpath[256];
+	sprintf(gmpath, "gamemodes\\%s\\", g_CCore->GetGameMode()->GetName());
+	g_CCore->GetFileSystem()->Init(gmpath);
+
 	for (int i = 0; i < MAX_SCRIPTS; i++) {
 		if (m_pScripts[i]) {
 			// get the script vm pointer

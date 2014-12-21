@@ -82,3 +82,8 @@ SQInteger sq_timerDelete(SQVM *vm);
 
 SQInteger sq_pickupCreate(SQVM *vm);
 SQInteger sq_pickupDelete(SQVM *vm);
+
+SQInteger sq_iniGetParam(SQVM *vm);
+SQInteger sq_iniSetParam(SQVM *vm);
+SQInteger sq_iniRemoveFile(SQVM *vm);
+SQInteger sq_iniCreateFile(SQVM *vm);

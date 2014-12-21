@@ -99,6 +99,11 @@ CLog* CCore::GetLog()
 	return &this->m_cLog;
 }
 
+CFileSystem* CCore::GetFileSystem()
+{
+	return &this->m_cFileSystem;
+}
+
 CFileTransfer*	CCore::GetFileTransfer()
 {
 	return &this->m_cFileTransfer;

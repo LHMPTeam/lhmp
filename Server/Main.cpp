@@ -56,6 +56,7 @@ int main()
 			{
 				g_CCore->GetLog()->AddNormalLog("Loading of '%s' has failed - no gamemode loaded !",gamemode);
 			}
+			
 		}
 		else {
 			g_CCore->GetLog()->AddNormalLog("wtf");

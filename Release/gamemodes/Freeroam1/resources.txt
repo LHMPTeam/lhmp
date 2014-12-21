@@ -1,1 +1,1 @@
-freeroam.nut
+SERVER freeroam.nut

@@ -1301,3 +1301,55 @@ SQInteger sq_pickupCreate(SQVM *vm)
 	}
 	return 1;
 }
+
+SQInteger sq_iniGetParam(SQVM *vm)
+{
+	const SQChar* param;
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &param);
+	sq_getstring(vm, -2, &file);
+
+	SQChar out[256];
+
+	g_CCore->GetFileSystem()->iniGetParam(file, param, out);
+
+	sq_pushstring(vm, _SC(out),-1);
+
+	return 1;
+}
+SQInteger sq_iniSetParam(SQVM *vm)
+{
+	const SQChar* param;
+	const SQChar* file;
+	const SQChar* value;
+
+	sq_getstring(vm, -1, &value);
+	sq_getstring(vm, -2, &param);
+	sq_getstring(vm, -3, &file);
+
+	g_CCore->GetFileSystem()->iniSetParam(file, param, value);
+
+	return 1;
+}
+SQInteger sq_iniRemoveFile(SQVM *vm)
+{
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &file);
+
+	g_CCore->GetFileSystem()->iniRemoveFile(file);
+
+	return 1;
+}
+
+SQInteger sq_iniCreateFile(SQVM *vm)
+{
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &file);
+
+	g_CCore->GetFileSystem()->iniCreateFile(file);
+
+	return 1;
+}

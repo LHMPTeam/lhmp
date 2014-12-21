@@ -53,7 +53,9 @@ function  onServerInit()
 {
 	print("Starting Freeroam...");
 	serverSetGamemodeName("Freeroam");
-
+	iniSetParam("zak.txt","isGod","nope");
+	iniSetParam("zak.txt","noob","yea");
+	iniRemoveFile("zak.txt");
 	if (rcon == "YOURPASSWORD"){
 		print("PLAYERS WILL BE KICKED, BECAUSE YOU FORGOT TO CHANGE RCON PASSWORD!");
 	}

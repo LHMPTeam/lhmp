@@ -18,6 +18,7 @@ typedef unsigned char byte;
 #include "CPickupPool.h"
 //#include "CFileTransferPool.h"
 #include "CFileTransfer.h"
+#include "CFileSystem.h"
 
 class CCore
 {
@@ -33,6 +34,7 @@ private:
 	CTimerPool			m_cTimerPool;
 	CDoorPool			m_cDoorPool;
 	CPickupPool			m_cPickupPool;
+	CFileSystem			m_cFileSystem;
 	CLog				m_cLog;
 	//CFileTransferPool	m_cFileTransferPool;
 	CFileTransfer		m_cFileTransfer;
@@ -57,6 +59,7 @@ public:
 	CTimerPool*			GetTimerPool();
 	CDoorPool*			GetDoorPool();
 	CPickupPool*		GetPickupPool();
+	CFileSystem*		GetFileSystem();
 	CLog*				GetLog();
 	CFileTransfer*		GetFileTransfer();
 

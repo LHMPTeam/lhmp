@@ -87,6 +87,11 @@ int Init(SQVM* vM)
 
 	RegisterFunction(vM, "pickupCreate", (SQFUNCTION)sq_pickupCreate, 7, ".snffff");
 
+	RegisterFunction(vM, "iniGetParam", (SQFUNCTION)sq_iniGetParam, 3, ".ss");
+	RegisterFunction(vM, "iniSetParam", (SQFUNCTION)sq_iniSetParam, 4, ".sss");
+	RegisterFunction(vM, "iniRemoveFile", (SQFUNCTION)sq_iniRemoveFile, 2, ".s");
+	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s");
+
 	RegisterVariable(vM, "KEY_A", 0); 
 	RegisterVariable(vM, "KEY_B", 1);
 	RegisterVariable(vM, "KEY_C", 2);
