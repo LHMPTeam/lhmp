@@ -217,6 +217,7 @@
     <ClCompile Include="CCore.cpp" />
     <ClCompile Include="CDoorPool.cpp" />
     <ClCompile Include="CEntity.cpp" />
+    <ClCompile Include="CFileSystem.cpp" />
     <ClCompile Include="CFileTransfer.cpp" />
     <ClCompile Include="CGameMode.cpp" />
     <ClCompile Include="CLog.cpp" />
@@ -405,6 +406,7 @@
     <ClInclude Include="CCore.h" />
     <ClInclude Include="CDoorPool.h" />
     <ClInclude Include="CEntity.h" />
+    <ClInclude Include="CFileSystem.h" />
     <ClInclude Include="CFileTransfer.h" />
     <ClInclude Include="CFileTransferPool.h" />
     <ClInclude Include="CGameMode.h" />
