@@ -428,6 +428,7 @@ _declspec(naked) void Hook_PreventHit()
 				call OnPlayerHit
 				add ESP, 0x4
 				popad
+				ret
 		}
 	}
 	else
@@ -1485,8 +1486,53 @@ _declspec (naked) void Hook_gamePhysicsUpdate()
 
 
 }
+
+bool IsCarAbandoned(DWORD car)
+{
+	int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(car);
+	if (ID != -1)
+	{
+		CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+		if (veh)
+		{
+			if (veh->GetSeat(0) != -1)
+				return false;
+		}
+	}
+	return true;
+}
+
+_declspec (naked) void Hook_PreventCarMoveWhenAbandoned()
+{
+	_asm {
+		pushad
+			sub ESI, 0x70
+			push ESI
+			call IsCarAbandoned
+			add ESP, 0x4
+			cmp EAX, 1
+			popad
+			JE end
+
+			// entire move
+			PUSH ECX
+			PUSH EDX
+			PUSH EAX
+			MOV ECX, ESI
+			MOV EAX, 0x0052E6D0
+			CALL EAX; 0x0052E6D0
+
+	end:
+		PUSH 0x0052D311
+		ret
+	}
+}
 void SetHooks()
 {
+	// This should make car static
+	Tools::InstallJmpHook(0x0052D307, (DWORD)&Hook_PreventCarMoveWhenAbandoned);
+
+
 	// 005E1029
 
 	//Tools::InstallJmpHook(0x005E1029, (DWORD)&Hook_GamePhysics);

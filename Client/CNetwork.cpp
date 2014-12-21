@@ -1225,6 +1225,11 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			int ID;
 			bsIn.Read(ID);
+			Vector3D pos, rot;
+			bsIn.Read(pos);
+			bsIn.Read(rot);
+
+
 			char buff[255];
 			sprintf(buff, "[Nm] On Car Respawn %d", ID);
 			g_CCore->GetLog()->AddLog(buff);
@@ -1232,6 +1237,9 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
 			if (veh != NULL)
 			{
+				veh->SetPosition(pos);
+				veh->SetRotation(rot);
+
 				veh->SetDamage(100.0f);
 				veh->SetShotDamage(10);
 				veh->SetActive(true);

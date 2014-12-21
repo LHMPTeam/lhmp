@@ -621,6 +621,7 @@ void CEngineStack::DoMessage()
 						}
 						veh->SetEntity(NULL);
 						veh->SetExplodedCar(NULL);
+
 						veh->SetEntity(g_CCore->GetGame()->CreateCar(veh->GetSkin()));
 						veh->SetDamage(veh->GetDamage());
 						veh->SetShotDamage(veh->GetShotDamage());
@@ -629,6 +630,7 @@ void CEngineStack::DoMessage()
 					else {
 						veh->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());
 						g_CCore->GetLocalPlayer()->IDinCar = -1;
+						g_CCore->GetGame()->KickPlayerFromCarFast(veh->GetEntity());
 					}
 					//g_CCore->GetGame()->ChangeSkin(veh->GetEntity(), veh->GetSkin());
 

@@ -271,6 +271,8 @@ void	CVehicle::Respawn()
 	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_RESPAWN);
 	bsOut.Write(g_CCore->GetVehiclePool()->ReturnId(this));
+	bsOut.Write(this->position);
+	bsOut.Write(this->rotation);
 	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_RAKNET_GUID, true);
 
 	this->SetIsSpawned(true);

@@ -274,8 +274,8 @@ SQInteger sq_playerLockControls(SQVM *vm)
 		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((MessageID)LHMP_PLAYER_LOCK_CONTROLS);
 		bsOut.Write(shouldLock);
-		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID),  false);
-		player->SetLocked(shouldLock == 1);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), false);
+		player->SetLocked((shouldLock == 1));
 	}
 	return 1;
 }
@@ -289,6 +289,7 @@ SQInteger sq_playerIsLocked(SQVM *vm)
 	if (player != NULL)
 	{
 		sq_pushbool(vm, player->IsLocked());
+		return 1;
 	}
 	sq_pushbool(vm, false);
 	return 1;
