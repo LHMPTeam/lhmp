@@ -91,6 +91,8 @@ public:
 
 	bool					testStop;
 
+	void					ShutdownClient();
+
 };
 
 

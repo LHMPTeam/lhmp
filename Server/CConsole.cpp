@@ -77,6 +77,39 @@ void CConsole::Tick()
 			g_CCore->GetNetworkManager()->GetPeer()->CloseConnection(sa, true);
 		}
 	}
+	else if (strcmp(command, "msg") == 0)
+	{
+		if (strlen(varlist) == 0)
+		{
+			g_CCore->GetLog()->AddNormalLog("Usage: msg <some message to all players>");
+		}
+		else
+		{
+			//SystemAddress sa = g_CCore->GetNetworkManager()->GetSystemAddressFromID(atoi(varlist));
+			//g_CCore->GetNetworkManager()->GetPeer()->CloseConnection(sa, true);
+			char message[250];
+			sprintf(message, "#ff0000[Admin]#fffFFF%s", varlist);
+			g_CCore->GetNetworkManager()->SendMessageToAll(message);
+		}
+	}
+
+	else if (strcmp(command, "reload") == 0)
+	{
+		g_CCore->ReloadGamemode();
+	}
+
+	else if (strcmp(command, "load") == 0)
+	{
+		if (strlen(varlist) == 0)
+		{
+			g_CCore->GetLog()->AddNormalLog("Usage: load <gamemode>");
+		}
+		else
+		{
+			g_CCore->ChangeModeTo(varlist);
+		}
+	}
+
 	if (strcmp(command, "pl") == 0)
 	{
 		int pocet = 0;

@@ -206,6 +206,12 @@ SystemAddress CNetworkManager::GetSystemAddressFromID(int i)
 	return slot[i].sa;
 }
 
+
+Slot*		CNetworkManager::GetSlotID(int ID)
+{
+	return &this->slot[ID];
+}
+
 int	CNetworkManager::GetFirstFreeSlot()
 {
 	for(int i=0;i < m_pServerMaxPlayers;i++)
@@ -268,11 +274,6 @@ void	CNetworkManager::OnPlayerFileTransferFinished(RakNet::SystemAddress)
 	bsOutR.Write(serInfo); // tu su data, struct
 	bsOutR.Write(g_CCore->GetDefaultMap());
 	peer->Send(&bsOutR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-
-	SendHimOthers(ID);
-	SendHimCars(ID);
-	SendHimDoors(ID);
-	SendHimPickups(ID);
 }
 
 
@@ -391,6 +392,11 @@ void CNetworkManager::Pulse()
 
 					g_CCore->GetScripts()->onPlayerConnect(ID);
 					g_CCore->GetScripts()->onPlayerSpawn(ID);
+
+					SendHimOthers(ID);
+					SendHimCars(ID);
+					SendHimDoors(ID);
+					SendHimPickups(ID);
 				}
 				break;
 				case ID_GAME_LHMP_PACKET:
@@ -760,10 +766,12 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			veh->SetRotation(vehicle_data.rotation);
 			veh->SetSkin(vehicle_data.skinID);
 			veh->ToggleRoof(vehicle_data.roofState);
+			veh->SetSirenState(vehicle_data.siren);
 
 			vehicle_data.damage = veh->GetDamage();
 			vehicle_data.shotdamage = veh->GetShotDamage();
 			vehicle_data.roofState = veh->GetRoofState();
+			vehicle_data.siren = veh->GetSirenState();
 			vehicle_data.ID = ID;
 			for (int i = 0; i < 4;i++)
 				vehicle_data.seat[i] = -1;
@@ -1016,6 +1024,7 @@ void CNetworkManager::SendSYNC()
 					syncData.health				= player->GetHealth();
 					syncData.isDucking			= player->IsDucking();
 					syncData.isAim				= player->IsAim();
+					syncData.isCarAnim			= player->IsCarAnim();
 
 					BitStream bsOut;
 					bsOut.Write((MessageID)ID_TIMESTAMP);

@@ -99,6 +99,20 @@ public:
 		return NULL;
 	}
 
+	void	Delete()
+	{
+		int len = this->nextList.size();
+		for (int i = 0; i < len; i++)
+		{
+			this->nextList[i]->GetNext()->Delete();
+
+			delete this->nextList[i]->GetNext();
+			delete this->nextList[i];
+		}
+		this->nextList.clear();
+		delete[] this->aliasString;
+	}
+
 };
 
 class CFileSystem
@@ -118,6 +132,8 @@ public:
 			{
 				test[i] += 'a' - 'A';
 			}
+			if (test[i] == '\\')
+				test[i] = '/';
 		}
 		base.AddFile(test, alias);
 	}
@@ -134,7 +150,14 @@ public:
 			{
 				test[i] += 'a' - 'A';
 			}
+			if (test[i] == '\\')
+				test[i] = '/';
 		}
 		return base.GetFileAlias(test);
+	}
+
+	void Reset()
+	{
+		this->base.Delete();
 	}
 };

@@ -70,6 +70,18 @@ bool CScripts::UnloadScript(const char * szScriptName)
 	return false;
 }
 
+void CScripts::UnloadAll()
+{
+	for (int i = 0; i < MAX_SCRIPTS; i++) {
+		if (m_pScripts[i] != NULL)
+		{
+			delete m_pScripts[i];
+
+			m_pScripts[i] = NULL;
+		}
+	}
+}
+
 void CScripts::Call(const char * szFunc, int iArgCount, SQObject * pArguments)
 {
 	for (int i = 0; i < MAX_SCRIPTS; i++) {

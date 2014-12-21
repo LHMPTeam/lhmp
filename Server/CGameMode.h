@@ -20,6 +20,7 @@ public:
 	void	AddClientScript(char*);
 	bool LoadGameMode(char*);
 	bool UnloadGameMode(char*);
+	void ReloadGameMode();
 	// Returns  0 - OK
 	//			1 - failed to compile
 	//			2 - failed to safe file

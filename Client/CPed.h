@@ -20,6 +20,7 @@ private:
 	byte		isSpawned;
 	byte		isDucking;
 	byte		isAiming;
+	byte		isCarAnim;
 	int			animId;
 
 	int			ping;
@@ -40,6 +41,8 @@ public:
 	void		SetAiming(byte);
 	void		SetPing(int);
 	void		SetActive(bool);
+	void		SetCarAnim(bool);
+	bool		IsCarAnim();
 
 	bool		IsActive();
 	int			GetPing();

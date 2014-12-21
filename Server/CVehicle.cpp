@@ -19,6 +19,7 @@ CVehicle::CVehicle()
 	shotdamage = 10;
 	onGas = 0; 
 	roofState = 0;
+	siren = 0;
 	isExploded = false;
 }
 CVehicle::~CVehicle()
@@ -157,6 +158,16 @@ void CVehicle::SetHornState(bool b)
 bool CVehicle::GetHornState()
 {
 	return this->horn;
+}
+
+void CVehicle::SetSirenState(bool b)
+{
+	this->siren = b;
+}
+
+bool CVehicle::GetSirenState()
+{
+	return this->siren;
 }
 
 void CVehicle::SetSecondRot(Vector3D rot)

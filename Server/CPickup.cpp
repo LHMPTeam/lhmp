@@ -3,6 +3,19 @@
 
 extern CCore* g_CCore;
 
+#ifndef _WIN32
+#include <sys/time.h>
+extern unsigned long timeGetTime();
+/*unsigned long timeGetTime()
+{
+struct timeval now;
+gettimeofday(&now, NULL);
+return now.tv_usec/1000;
+}*/
+#define sprintf_s sprintf
+#define Sleep usleep
+#endif
+
 CPickup::CPickup()
 {
 	pSize = 1.0f;
@@ -135,7 +148,7 @@ void CPickup::SendVisible(int IDorOthers, bool visible)
 	bsOut.Write((MessageID)LHMP_PICKUP_SETVISIBLE);
 	bsOut.Write(this->GetID());
 	bsOut.Write(this->IsVisible());
-	
+
 	if (IDorOthers == -1)
 		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 	else

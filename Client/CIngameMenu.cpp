@@ -135,8 +135,9 @@ void	CIngameMenu::OnPressEnter()
 			this->setActive(false);
 		else
 		{
-			g_CCore->GetNetwork()->GetPeer()->Shutdown(100, 0, IMMEDIATE_PRIORITY);
-			TerminateProcess(GetCurrentProcess(), 0);
+			//g_CCore->GetNetwork()->GetPeer()->Shutdown(100, 0, IMMEDIATE_PRIORITY);
+			//TerminateProcess(GetCurrentProcess(), 0);
+			g_CCore->ShutdownClient();
 		}
 	}
 }

@@ -53,6 +53,11 @@ bool CPlayer::IsActive()
 	return this->isActive;
 }
 
+bool	 CPlayer::IsCarAnim()
+{
+	return this->isCarAnim;
+}
+
 void CPlayer::SetMoney(int money)
 {
 	this->money = money;
@@ -176,6 +181,12 @@ void CPlayer::SetFOV(float r)
 	this->fov = r;
 }
 
+
+void CPlayer::SetIsCarAnim(bool b)
+{
+	this->isCarAnim = b;
+}
+
 float CPlayer::GetFOV()
 {
 	return this->fov;
@@ -231,6 +242,7 @@ void	CPlayer::OnSync(SYNC::ON_FOOT_SYNC syncData, RakNet::TimeMS time)
 	this->SetHealth(syncData.health);
 	this->SetIsDucking(syncData.isDucking);
 	this->SetIsAim(syncData.isAim);
+	this->SetIsCarAnim(syncData.isCarAnim);
 	this->SetTimeStamp(time);
 
 	g_CCore->GetPickupPool()->TestPlayer(g_CCore->GetPlayerPool()->GetID(this));

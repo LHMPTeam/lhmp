@@ -32,6 +32,7 @@ public:
 	bool						Init(int port,int players, std::string,std::string);
 	int							GetIDFromSystemAddress(SystemAddress);
 	SystemAddress				GetSystemAddressFromID(int);
+	Slot*						GetSlotID(int ID);
 	int							GetFirstFreeSlot();
 	void						Pulse();
 	void						LHMPPacket(Packet*, RakNet::TimeMS timestamp = NULL);

@@ -56,6 +56,7 @@ public:
 
 	// Called when server accept our connection
 	void	OnConnectionAccepted(RakNet::Packet* packet);
+	void	OnConnectionIsAboutFinish();
 
 
 

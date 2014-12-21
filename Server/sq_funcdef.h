@@ -62,6 +62,8 @@ SQInteger sq_vehicleSetDamage(SQVM *vm);
 SQInteger sq_vehicleSetRotation(SQVM *vm);
 SQInteger sq_vehicleToggleRoof(SQVM *vm);
 SQInteger sq_vehicleGetRoofState(SQVM *vm);
+SQInteger sq_vehicleToggleSiren(SQVM *vm);
+SQInteger sq_vehicleGetSirenState(SQVM *vm);
 SQInteger sq_vehicleExplode(SQVM *vm);
 
 SQInteger sq_isAnyPlayerInVehicle(SQVM *vm);
@@ -80,3 +82,9 @@ SQInteger sq_timerDelete(SQVM *vm);
 
 SQInteger sq_pickupCreate(SQVM *vm);
 SQInteger sq_pickupDelete(SQVM *vm);
+
+SQInteger sq_iniGetParam(SQVM *vm);
+SQInteger sq_iniSetParam(SQVM *vm);
+SQInteger sq_iniRemoveFile(SQVM *vm);
+SQInteger sq_iniCreateFile(SQVM *vm);
+

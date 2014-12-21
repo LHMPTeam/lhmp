@@ -15,6 +15,7 @@ private:
 	int size;
 public:
 	CFile(unsigned int ID,FILE* handle, char name[]);
+	~CFile();
 	char*			GetName();
 	char*			GetCheckSum();
 	int				GetSize();
@@ -57,6 +58,8 @@ public:
 	void	SendFiles(RakNet::SystemAddress receiver);
 
 	void	DeleteTransfer(CTransmission* tf, bool deleteIt = true);
+
+	void	Reset();
 
 };
 #endif

@@ -46,7 +46,11 @@ public:
 	void	Pulse();
 	bool	IsRunning();
 	void	OnSecondElapsed();
-	//strPlayer* GetPlayers();
+
+	// Reloads actuall mode
+	void	ReloadGamemode();
+	void	ChangeModeTo(char* newmode);
+
 	CNetworkManager*	GetNetworkManager();
 	CTickManager*		GetTickManager();
 	CPlayerPool*		GetPlayerPool();

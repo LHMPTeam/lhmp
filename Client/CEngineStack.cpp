@@ -37,6 +37,51 @@ void CEngineStack::DoMessage()
 	{
 		switch(start->messageId)
 		{
+		case CLIENT_ENGINESTACK::ES_SERVERRELOAD:
+		{
+			// delete all cars
+			for (unsigned int i = 0; i < MAX_VEHICLES; i++)
+			{
+				CVehicle* veh = g_CCore->GetVehiclePool()->Return(i);
+				if (veh)
+				{
+					if (veh->GetEntity())
+					{
+						g_CCore->GetGame()->DeleteCar(veh->GetEntity());
+					}
+					g_CCore->GetVehiclePool()->Delete(i);
+				}
+			}
+
+			// delete all peds
+			for (unsigned int i = 0; i < MAX_PLAYERS; i++)
+			{
+				CPed* ped = g_CCore->GetPedPool()->Return(i);
+				if (ped)
+				{
+					if (ped->GetEntity())
+					{
+						g_CCore->GetGame()->DeletePed(ped->GetEntity());
+					}
+					g_CCore->GetPedPool()->Delete(i);
+				}
+			}
+
+			// delete pickups
+			for (unsigned int i = 0; i < MAX_PICKUPS; i++)
+			{
+				CPickup* pi = g_CCore->GetPickupPool()->Return(i);
+				if (pi)
+				{
+					if (pi->GetEntity())
+					{
+						//g_CCore->GetGame()->frame
+					}
+					g_CCore->GetPedPool()->Delete(i);
+				}
+			}
+		}
+		break;
 		case CLIENT_ENGINESTACK::ES_CREATEPLAYER:
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(start->data);
@@ -311,7 +356,7 @@ void CEngineStack::DoMessage()
 			else
 			{
 				g_CCore->GetLog()->AddLog("ES CREATECAR");
-				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin());
+				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin(),veh->GetPosition(),veh->GetRotation());
 				veh->SetEntity(base);
 				for (int i = 0; i < 4; i++)
 				{
@@ -336,6 +381,7 @@ void CEngineStack::DoMessage()
 				veh->SetDamage(veh->GetDamage());
 				veh->SetShotDamage(veh->GetShotDamage());
 				veh->ToggleRoof(veh->GetRoofState());
+				veh->SetSirenState(veh->GetSirenState());
 				/*for (int i = 0; i < 4; i++)
 				{
 					if (veh->seea)
@@ -503,7 +549,19 @@ void CEngineStack::DoMessage()
 			/*if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
 				return;
 			*/
-			g_CCore->GetGame()->ChangeMap((char*)start->data,""); 
+
+			// Reload tables/predmety.def
+			_asm {
+				MOV ECX, 0x00658330; Game.00658330
+				MOV EAX, 0x00592080;
+				CALL EAX; Game.00592080;  loads predmety.def
+			}
+
+
+
+			g_CCore->GetGame()->ChangeMap((char*)start->data,"");
+
+			strcpy(g_CCore->GetGame()->mapName, (char*)start->data);
 			/*if (*(DWORD*)((*(DWORD*)0x6F9464) + 0x24) == 0x0)
 			{
 				g_CCore->GetChat()->AddMessage("este nenacital, pice !");

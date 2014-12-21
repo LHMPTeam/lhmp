@@ -34,6 +34,7 @@ public:
 
 	bool LoadScript(const char * szScriptName);
 	bool UnloadScript(const char * szScriptName);
+	void UnloadAll();
 	//bool LoadFromConfig(CConfig * pConfig);
 
 	CScript * GetScript(int scriptID) {

@@ -108,6 +108,11 @@ bool CLocalPlayer::GetIsDucking()
 {
 	return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E4) == 1);
 }
+
+bool CLocalPlayer::GetIsCarAnim()
+{
+	return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x71) == 1);
+}
 bool CLocalPlayer::IsOnFoot()
 {
 		return bIsOnFoot;
@@ -155,6 +160,7 @@ void CLocalPlayer::Pulse()
 			syncData.health = this->GetHealth();
 			syncData.isDucking = this->GetIsDucking();
 			syncData.isAim = this->GetIsAiming();
+			syncData.isCarAnim = this->GetIsCarAnim();
 
 
 			RakNet::BitStream bsOut;

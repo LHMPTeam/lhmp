@@ -25,9 +25,9 @@ typedef struct _FRAME {
 } FRAME;
 typedef struct _OBJECT {
 	DWORD		vtable;				//  0000-0004
-	_pad(__unk1,0xC);
+	_pad(__unk1,0xC);				//	0004-0010
 	DWORD		objectType;			//	0010-0014
-	_pad(__unk2, 0x10);
+	_pad(__unk2, 0x10);				//	0014-0024
 	Vector3D	position;			//	0024-0030
 	Vector3D	rotation;			//	0030-003C
 	_pad(__unk3, 0x21);
@@ -77,12 +77,13 @@ typedef struct _INVENTARY {
 
 typedef struct _PED {
 	OBJECT		object;				//  0000-006C
-	_pad(_unk1, 0x8);
+	_pad(_unk1, 0x8);				//	006C-0074
 	byte		animState;			//	0074-0075
-	_pad(_unk2, 0x23);
+	byte		isInAnimWithCar;	//	0075-0076
+	_pad(_unk2, 0x22);
 	VEHICLE*	playersCar;			//	0098-009C
 	_pad(_unk3, 0x148);
-	bool		isDucking;			//	01E4
+	bool		isDucking;			//	01E4-01E5
 	bool		isAiming;			//	01E5-01E6
 	_pad(_unk4, 0x16);
 	bool		isReloading;		//	01FC-01FD
@@ -91,7 +92,7 @@ typedef struct _PED {
 	_pad(_unk6, 0xD4);
 	float		inCarRotation;		//	05F4-05F8
 	_pad(_unk7, 0x4C);
-	float		health;				//	0644-0644
+	float		health;				//	0644-0648
 } PED;
 
 class CGame
@@ -108,6 +109,7 @@ public:
 	CGame();
 	~CGame();
 
+	bool ShouldKill;
 	bool isControlLocked();
 	void SetLockControls(bool b);
 	void UpdateControls();
@@ -121,7 +123,10 @@ public:
 
 	static void ChangeSkin(DWORD,int);
 	// vehicles
-	static DWORD CreateCar(int);
+	static DWORD CreateCar(int skinID,Vector3D position,Vector3D rotation);
+	static DWORD CreateCar(int skinID);
+	//static DWORD CreateCar(int);
+
 	static void ToggleVehicleRoof(DWORD, BYTE);
 	static void SetCarPosition(DWORD, Vector3D);
 	static void SetCarRotation(DWORD, Vector3D);

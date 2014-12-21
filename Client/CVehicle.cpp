@@ -55,6 +55,7 @@ CVehicle::CVehicle()
 	damage = 100.0f;
 
 	explodedCar = NULL;
+	siren = 0;
 }
 CVehicle::~CVehicle()
 {
@@ -138,6 +139,7 @@ void CVehicle::Interpolate()
 		
 		if (hasDriver == false)
 		{
+			return;
 			//g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
 			//if (*(byte*)(entity + 0x2100) == 15)
 			//{
@@ -391,6 +393,20 @@ void CVehicle::SetHornState(bool b)
 bool CVehicle::GetHornState()
 {
 	return this->horn;
+}
+
+void CVehicle::SetSirenState(bool b)
+{
+	if (this->GetEntity() != NULL)
+	{
+		*(byte*)(this->GetEntity() + 0x51D) = (byte)b;
+	}
+	this->siren = b;
+}
+
+bool CVehicle::GetSirenState()
+{
+	return this->siren;
 }
 
 void CVehicle::SetSecondRot(Vector3D rot)

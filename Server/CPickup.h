@@ -10,7 +10,7 @@ private:
 	char		pModel[250];
 	int			interval;
 	bool		pIsVisible;
-	DWORD		respawnTime;
+	unsigned int	respawnTime;
 public:
 	CPickup();
 	~CPickup();

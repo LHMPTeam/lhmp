@@ -122,7 +122,8 @@ void CFileTransfer::InitTransfer(RakNet::BitStream* stream)
 		}
 		else
 		{
-			g_CCore->GetChat()->AddMessage("Open file failed, what now ? Fuck !");
+			g_CCore->GetFileSystem()->AddFile(name, checksum);
+			//g_CCore->GetChat()->AddMessage("Open file failed, what now ? Fuck !");
 		}
 	}
 

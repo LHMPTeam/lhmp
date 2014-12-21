@@ -146,10 +146,11 @@ void CChat::DoCommand(char str[])
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED);
 	
 
-	if(strcmp(command,"exit") == 0 || strcmp(command,"quit") == 0)
+	if (strcmp(command, "exit") == 0 || strcmp(command, "quit") == 0 || strcmp(command, "q") == 0)
 	{
-		g_CCore->GetNetwork()->GetPeer()->Shutdown(100,0,IMMEDIATE_PRIORITY);
-		TerminateProcess(GetCurrentProcess(), 0);
+		//g_CCore->GetNetwork()->GetPeer()->Shutdown(100,0,IMMEDIATE_PRIORITY);
+		//TerminateProcess(GetCurrentProcess(), 0);
+		g_CCore->ShutdownClient();
 	}
 	else if (strcmp(command, "setwidth") == 0)
 	{

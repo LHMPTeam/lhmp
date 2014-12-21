@@ -89,7 +89,8 @@ enum GameMessages
 	ID_GAME_BAD_VERSION,
 	// when whole server-client connecting is finished and client is finaly ready to play
 	ID_CONNECTION_FINISHED,
-	ID_FILETRANSFER
+	ID_FILETRANSFER,
+	ID_SERVERRELOAD
 
 };
 
@@ -157,6 +158,7 @@ enum LHMPNetMessages
 	LHMP_VEHICLE_SET_ROTATION,
 	LHMP_VEHICLE_SET_SPEED,
 	LHMP_VEHICLE_TOGGLE_ROOF,
+	LHMP_VEHICLE_TOGGLE_SIREN,
 	LHMP_VEHICLE_ON_EXPLODED,
 	LHMP_VEHICLE_RESPAWN, 
 	// door
@@ -213,6 +215,7 @@ namespace SYNC {
 		float			health;
 		bool			isDucking;
 		bool			isAim;
+		bool			isCarAnim;
 	};
 
 	struct ON_FOOT_SYNC_SMALL
@@ -246,6 +249,7 @@ namespace VEH
 		float		damage;
 		byte		shotdamage;
 		byte        roofState;
+		bool        siren;
 	};
 	struct SYNC
 	{
@@ -299,7 +303,9 @@ enum CLIENT_ENGINESTACK
 	//pickup
 	ES_CREATEPICKUP,
 	ES_DELETEPICKUP,
-	ES_SETPICKUPVISIBLE
+	ES_SETPICKUPVISIBLE,
+	// intern
+	ES_SERVERRELOAD
 };
 namespace ENGINE_STACK
 {

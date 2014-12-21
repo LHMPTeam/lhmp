@@ -1,5 +1,9 @@
 #include "sq_funcdef.h"
 #include "CCore.h"
+
+#include <fstream>
+#include <sstream>
+#include <ios>
 extern CCore* g_CCore;
 
 SQInteger sq_dopice(SQVM *squirrelVM)
@@ -853,6 +857,8 @@ SQInteger sq_vehicleSpawn(SQVM *vm)
 		vehicle_data.damage = veh->GetDamage();
 		vehicle_data.shotdamage = veh->GetShotDamage();
 		vehicle_data.roofState = veh->GetRoofState();
+		vehicle_data.siren = veh->GetSirenState();
+
 		vehicle_data.ID = ID;
 		for (int i = 0; i < 4; i++)
 			vehicle_data.seat[i] = -1;
@@ -909,6 +915,50 @@ SQInteger sq_vehicleToggleRoof(SQVM *vm)
 		sq_pushbool(vm, true); return 1;
 	}
 	sq_pushbool(vm, false);
+	return 1;
+}
+
+SQInteger sq_vehicleToggleSiren(SQVM *vm)
+{
+	SQInteger ID;
+	SQBool state;
+
+	sq_getinteger(vm, -2, &ID);
+	sq_getbool(vm, -1, &state);
+
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+
+
+	if (veh != NULL)
+	{
+		veh->SetSirenState((bool)state);
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_VEHICLE_TOGGLE_SIREN);
+		bsOut.Write(ID);
+		bsOut.Write(state);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		sq_pushbool(vm, true); return 1;
+	}
+	sq_pushbool(vm, false);
+	return 1;
+}
+
+SQInteger sq_vehicleGetSirenState(SQVM *vm)
+{
+	SQInteger ID;
+	sq_getinteger(vm, -1, &ID);
+
+	CVehicle* vehicle = g_CCore->GetVehiclePool()->Return(ID);
+
+	if (vehicle != NULL)
+	{
+		bool state = vehicle->GetSirenState();
+
+		sq_pushbool(vm, state);
+		return 1;
+	}
+	sq_pushnull(vm);
 	return 1;
 }
 
@@ -1255,3 +1305,163 @@ SQInteger sq_pickupCreate(SQVM *vm)
 	}
 	return 1;
 }
+
+// real inigetParam
+void iniGetParam(const char* file, const char* param, char* value)
+{
+	char filepath[256] = "";
+	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
+	std::ifstream fp(filepath);
+	std::string line;
+	while (std::getline(fp, line))
+	{
+		std::istringstream iss(line);
+		std::string null, tmp;
+
+		if ((iss >> null >> tmp))
+		{
+			char cnull[256] = "";
+			sprintf(cnull, "%s", null.c_str());
+			if (!strcmp(cnull, param))
+			{
+				char out[256] = "";
+				int offset = strlen(param) + 1;
+				for (int i = 0; i < (strlen(line.c_str()) - strlen(param) - 1); i++)
+				{
+					out[i] = line.c_str()[i + offset];
+				}
+				sprintf(value, "%s", out);
+				return;
+			}
+		}
+	}
+	sprintf(value, "");
+	return;
+}
+
+SQInteger sq_iniGetParam(SQVM *vm)
+{
+	const SQChar* param;
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &param);
+	sq_getstring(vm, -2, &file);
+
+	SQChar out[256];
+
+	//g_CCore->GetFileSystem()->iniGetParam(file, param, out);
+	iniGetParam(file, param, out);
+
+	sq_pushstring(vm, _SC(out), -1);
+
+	return 1;
+}
+
+// real iniSetParam
+void iniSetParam(const char* file, const char* param, const char* value)
+{
+	bool isAppend = true;
+	char filepath[256] = ""; 
+	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
+	std::ifstream fp(filepath);
+	std::string line, buffer;
+	while (std::getline(fp, line))
+	{
+		buffer += line + '\n'; // Populates my buffer with data from file.
+	}
+	fp.close();
+
+	std::fstream fo;
+	fo.open(filepath, std::ios::out);
+	std::istringstream b(buffer);
+
+	while (std::getline(b, line))
+	{
+		std::istringstream iss(line);
+		std::string null, tmp;
+		if ((iss >> null >> tmp))
+		{
+			char cnull[256] = "";
+			sprintf(cnull, "%s", null.c_str());
+			if (!strcmp(cnull, param))
+			{
+				char out[256] = "";
+				sprintf(out, "%s %s", param, value);
+				fo << std::string(out) << std::endl;
+				fo.flush();
+				isAppend = false;
+				continue;
+			}
+		}
+		fo << line << std::endl;
+		fo.flush();
+	}
+
+	if (isAppend)
+	{
+		char out[256] = "";
+		sprintf(out, "%s %s", param, value);
+		fo << out << std::endl;
+		fo.flush();
+	}
+
+	return;
+}
+
+SQInteger sq_iniSetParam(SQVM *vm)
+{
+	const SQChar* param;
+	const SQChar* file;
+	const SQChar* value;
+
+	sq_getstring(vm, -1, &value);
+	sq_getstring(vm, -2, &param);
+	sq_getstring(vm, -3, &file);
+
+	iniSetParam(file, param, value);
+
+	return 1;
+}
+
+// real iniRemoveFile
+void iniRemoveFile(const char* file)
+{
+	char path[256];
+	sprintf(path, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
+	int ret_code = std::remove(path);
+	if (ret_code != 0)
+	{
+		g_CCore->GetLog()->AddNormalLog("[FS] Can't remove file: %s (%d).", file, ret_code);
+	}
+}
+
+SQInteger sq_iniRemoveFile(SQVM *vm)
+{
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &file);
+
+	iniRemoveFile(file);
+
+	return 1;
+}
+
+
+void iniCreateFile(const char* file)
+{
+	std::ofstream of(file);
+	of << '\0';
+}
+
+SQInteger sq_iniCreateFile(SQVM *vm)
+{
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &file);
+
+	iniCreateFile(file);
+
+	return 1;
+}
+
+

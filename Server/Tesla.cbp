@@ -313,6 +313,8 @@
 		<Unit filename="../sdks/SQUIRREL3/include/sqstdstring.h" />
 		<Unit filename="../sdks/SQUIRREL3/include/sqstdsystem.h" />
 		<Unit filename="../sdks/SQUIRREL3/include/squirrel.h" />
+		<Unit filename="../sdks/md5/md5.cpp" />
+		<Unit filename="../sdks/md5/md5.h" />
 		<Unit filename="../shared/enums.h" />
 		<Unit filename="../shared/gamestructures.h" />
 		<Unit filename="../shared/limits.h" />
@@ -330,12 +332,19 @@
 		<Unit filename="CDoorPool.h" />
 		<Unit filename="CEntity.cpp" />
 		<Unit filename="CEntity.h" />
+		<Unit filename="CFileTransfer.cpp" />
+		<Unit filename="CFileTransfer.h" />
+		<Unit filename="CFileTransferPool.h" />
 		<Unit filename="CGameMode.cpp" />
 		<Unit filename="CGameMode.h" />
 		<Unit filename="CLog.cpp" />
 		<Unit filename="CLog.h" />
 		<Unit filename="CNetworkManager.cpp" />
 		<Unit filename="CNetworkManager.h" />
+		<Unit filename="CPickup.cpp" />
+		<Unit filename="CPickup.h" />
+		<Unit filename="CPickupPool.cpp" />
+		<Unit filename="CPickupPool.h" />
 		<Unit filename="CPlayer.cpp" />
 		<Unit filename="CPlayer.h" />
 		<Unit filename="CPlayerPool.cpp" />
@@ -357,15 +366,10 @@
 		<Unit filename="CVehiclePool.cpp" />
 		<Unit filename="CVehiclePool.h" />
 		<Unit filename="Main.cpp" />
-		<Unit filename="sq_SQlite.h" />
 		<Unit filename="sq_funcdef.cpp" />
-		<Unit filename="sq_funcdef.h" />
 		<Unit filename="sq_functions.cpp" />
-		<Unit filename="sq_functions.h" />
 		<Unit filename="sq_utils.cpp" />
-		<Unit filename="sq_utils.h" />
 		<Unit filename="squirrelheads.cpp" />
-		<Unit filename="squirrelheads.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

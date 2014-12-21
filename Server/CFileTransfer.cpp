@@ -22,6 +22,13 @@ CFile::CFile(unsigned int _ID,FILE* _handle, char _name[])
 
 	rewind(_handle);
 }
+
+CFile::~CFile()
+{
+	if (this->GetFileHandle())
+		fclose(this->GetFileHandle());
+}
+
 char* CFile::GetName()
 {
 	return this->name;
@@ -234,4 +241,23 @@ void	CFileTransfer::DeleteTransfer(CTransmission* tf, bool deleteIt)
 			this->clientList.erase(this->clientList.begin() + i);
 		}
 	}
+}
+
+
+void	CFileTransfer::Reset()
+{
+	for (unsigned int i = 0; i < this->clientList.size(); i++)
+	{
+		delete this->clientList[i];
+	}
+	
+	for (unsigned int i = 0; i < this->fileList.size(); i++)
+	{
+		delete this->fileList[i];
+	}
+
+	// final
+	this->clientList.clear();
+	this->fileList.clear();
+	this->ID = 0;
 }

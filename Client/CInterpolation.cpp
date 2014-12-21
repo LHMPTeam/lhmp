@@ -27,9 +27,19 @@ CInterpolation::CInterpolation()
 }
 void CInterpolation::SetUpInterpolation(Vector3D position)
 {
+	// Interpolation mechanizm - Romop5
+	// MoveVector = difference between last and current client update position, unit per ms (difference per time delta)
+	// MoveDelta = time difference between last and current update
+	// TransferDelta = time difference from the point when client sent data to the point when it arrived
+	// DesiredPosition = position where we want us to get => last update position + move vector * (30ms+TransferDelta)
+	// TempVector = temporary vector to get from our current pos ( which might be different from client update pos)
+
+	Vector3D DesiredPosition;
+
 	this->previous = this->actual;
 	this->actual = position;
 	this->timeDiff = (this->timestamp) - (this->timeLastMessage);
+	RakNet::TimeMS thisTime = (RakNet::GetTimeMS()) - (this->timestamp);
 
 	if (this->timeDiff > 0)
 	{
@@ -47,13 +57,27 @@ void CInterpolation::SetUpInterpolation(Vector3D position)
 		interpolationVector.z = 0;
 	}
 
+	// Now calculate DesiredPosition using interpolation vector and last client position
+
+	DesiredPosition.x = this->actual.x + (this->interpolationVector.x*(30.0f + thisTime));
+	DesiredPosition.y = this->actual.y + (this->interpolationVector.y*(30.0f + thisTime));
+	DesiredPosition.z = this->actual.z + (this->interpolationVector.z*(30.0f + thisTime));
+
+	// Calculate TempVector (for first 30ms)
+	tempVector.x = (DesiredPosition.x - this->InterPosition.x) / 30.0f;
+	tempVector.y = (DesiredPosition.y - this->InterPosition.y) / 30.0f;
+	tempVector.z = (DesiredPosition.z - this->InterPosition.z) / 30.0f;
+
+
 	this->timeLastMessage = this->timestamp;
 	interpolationTick = RakNet::GetTimeMS();
-	float defaultTickTime = 30.0f;
+
+	// interpolationGenerated is set only when this function is called, it serves to handle tempVector usage
+	this->interpolationGenerated = interpolationTick;
+	/*float defaultTickTime = 30.0f;
 
 	if (this->timeDiff > 0)
 	{
-		RakNet::TimeMS thisTime = (RakNet::GetTimeMS()) - (this->timestamp);
 		tempVector.x = (interpolationVector.x) + (((this->actual.x) - (this->InterPosition.x) + (interpolationVector.x*thisTime)) / (this->timeDiff));
 		tempVector.y = (interpolationVector.y) + (((this->actual.y) - (this->InterPosition.y) + (interpolationVector.y*thisTime)) / (this->timeDiff));
 		tempVector.z = (interpolationVector.z) + (((this->actual.z) - (this->InterPosition.z) + (interpolationVector.z*thisTime)) / (this->timeDiff));
@@ -63,8 +87,8 @@ void CInterpolation::SetUpInterpolation(Vector3D position)
 		tempVector.x = 0;
 		tempVector.y = 0;
 		tempVector.z = 0;
-	}
-	interpolationTick = RakNet::GetTimeMS();
+	}*/
+	//interpolationTick = RakNet::GetTimeMS();
 	bIsTempInterpolationRunning = true;
 	bIsInterpolationRunning = true;
 	dwMsTempRun = 0;
@@ -78,12 +102,15 @@ void CInterpolation::SetUpInterpolation(Vector3D position)
 
 Vector3D CInterpolation::Interpolate()
 {
+	RakNet::TimeMS actualtime = RakNet::GetTimeMS();
+	RakNet::TimeMS tickDiff = (actualtime - interpolationTick);	
+
+
+
 	// this func should be called in Endscene
 	// hardcoded by Romop5, 25.12 at 0:10 AM :D :D :D
-		RakNet::TimeMS actualtime = RakNet::GetTimeMS();
 		RakNet::TimeMS b = this->timestamp;
 		//RakNet::TimeMS c = this->timeDiff;
-		RakNet::TimeMS tickDiff = (actualtime - interpolationTick);
 
 		if (this->bIsTempInterpolationRunning == true)
 		{

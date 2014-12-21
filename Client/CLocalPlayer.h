@@ -56,6 +56,7 @@ public:
 	byte			GetStatus();
 	bool			GetIsAiming();
 	bool			GetIsDucking();
+	bool			GetIsCarAnim();
 	float			GetHealth();
 	float			GetCarAim();
 };

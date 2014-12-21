@@ -9,6 +9,7 @@ private:
 	
 	bool			isDucking;
 	bool			isAim;
+	bool			isCarAnim;
 
 	// Weapons
 	int				currentWep;
@@ -33,6 +34,7 @@ public:
 	void SetCarAim(float);
 	void SetMoney(int);
 	void SetFOV(float);
+	void SetIsCarAnim(bool);
 
 	// Weapon actions
 	void AddWeapon(int,int,int);
@@ -45,6 +47,7 @@ public:
 	bool	IsDucking();
 	bool	IsAim();
 	bool    IsActive();
+	bool	IsCarAnim();
 	int		GetCurrentWeapon();
 	SWeapon* GetWeapon(int);
 

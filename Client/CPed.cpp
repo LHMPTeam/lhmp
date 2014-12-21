@@ -36,6 +36,17 @@ void CPed::SetActive(bool b)
 {
 	isActive = b;
 }
+
+
+void CPed::SetCarAnim(bool b)
+{
+	this->isCarAnim = b;
+}
+bool CPed::IsCarAnim()
+{
+	return (this->isCarAnim == true);
+}
+
 void CPed::SetIsOnFoot(bool b)
 {
 	this->isOnFoot = b;
@@ -129,12 +140,12 @@ int CPed::GetPing()
 void CPed::UpdateGameObject()
 {
 	PED* ped = (PED*) this->GetEntity();
-
 	if (ped != NULL)
 	{
+		ped->isInAnimWithCar = this->IsCarAnim();
 		if (ped->health > 0.0f)
 		{
-			if (this->IsOnFoot() && ped->playersCar == NULL)
+			if (this->IsOnFoot() && ped->playersCar == NULL && (this->IsCarAnim() == false))
 			{
 				Vector3D rot = this->GetRotation();
 				ped->object.rotation = rot;

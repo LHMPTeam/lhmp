@@ -40,6 +40,86 @@ bool CCore::Init(int port,int players, std::string startpos, std::string svrname
 	return true;
 }
 
+void CCore::ReloadGamemode()
+{
+	// at first tell everybody, that we are reloading mode (make them stop everything)
+	RakNet::BitStream bsOutR;
+	bsOutR.Write((RakNet::MessageID)ID_SERVERRELOAD);
+	this->GetNetworkManager()->GetPeer()->Send(&bsOutR, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+	
+
+	char tempname[500];
+	strcpy(tempname, this->GetGameMode()->GetName());
+	// reload gamemode
+	this->GetGameMode()->UnloadGameMode(tempname);
+
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		this->GetPlayerPool()->Delete(i);
+	}
+
+	for (int i = 0; i < MAX_VEHICLES; i++)
+	{
+		this->GetVehiclePool()->Delete(i);
+	}
+
+	this->GetGameMode()->LoadGameMode(tempname);
+
+
+	this->GetScripts()->onServerInit();
+
+	// start
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		Slot* slot = this->GetNetworkManager()->GetSlotID(i);
+		if (slot->isUsed)
+		{
+			this->GetFileTransfer()->SendFiles(slot->sa);
+		}
+	}
+}
+
+
+void	CCore::ChangeModeTo(char* newmode)
+{
+	// at first tell everybody, that we are reloading mode (make them stop everything)
+	RakNet::BitStream bsOutR;
+	bsOutR.Write((RakNet::MessageID)ID_SERVERRELOAD);
+	this->GetNetworkManager()->GetPeer()->Send(&bsOutR, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+
+
+	char tempname[500];
+	strcpy(tempname, this->GetGameMode()->GetName());
+	// reload gamemode
+	this->GetGameMode()->UnloadGameMode(tempname);
+
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		this->GetPlayerPool()->Delete(i);
+	}
+
+	for (int i = 0; i < MAX_VEHICLES; i++)
+	{
+		this->GetVehiclePool()->Delete(i);
+	}
+
+	this->GetGameMode()->LoadGameMode(newmode);
+
+
+	this->GetScripts()->onServerInit();
+
+	// start
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		Slot* slot = this->GetNetworkManager()->GetSlotID(i);
+		if (slot->isUsed)
+		{
+			this->GetFileTransfer()->SendFiles(slot->sa);
+		}
+	}
+}
+
+
 CNetworkManager*	CCore::GetNetworkManager()
 {
 	return &m_cNetworkManager;
