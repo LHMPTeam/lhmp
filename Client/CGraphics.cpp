@@ -14,6 +14,7 @@ CGraphics::CGraphics()
 	m_mapGUI		= NULL;
 	mapScale		= 1.0f;
 	m_bShowNameTags = true;
+	m_bUserShowNameTags = true;
 }
 
 IDirect3DDevice8*	CGraphics::GetDevice()
@@ -75,9 +76,45 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 
 }
 
+void DebugWeapons()
+{
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		CPed* ped = g_CCore->GetPedPool()->Return(i);
+		if (ped)
+		{
+			if (ped->GetEntity())
+			{
+				PED* gamePED = (PED*)ped->GetEntity();
+				Vector3D screen;
+				g_CCore->GetGraphics()->CalcScreenPosition(gamePED->object.position, &screen);
+
+				g_CCore->GetGraphics()->DrawTextA("Weapon list (ID,ammo,ammo)", screen.x + 200, screen.y,0xffff0000, true);
+				for (int i = 0; i < 8; i++)
+				{
+					SWeapon *wep = ped->GetWeapon(i);
+					if (wep)
+					{
+						char buff[250];
+						sprintf(buff, "%d %d %d", wep->wepID, wep->wepLoaded, wep->wepHidden);
+						g_CCore->GetGraphics()->DrawTextA(buff, screen.x + 100, screen.y + 20 + (i * 20), 0xffffffff, true);
+					}
+				}
+
+				for (int i = 0; i < 8; i++)
+				{
+					char buff[250];
+					sprintf(buff, "%d %d %d", gamePED->inventary.slot[i].weaponType, gamePED->inventary.slot[i].ammoLoaded, gamePED->inventary.slot[i].ammo);
+					g_CCore->GetGraphics()->DrawTextA(buff, screen.x + 300, screen.y + 20 + (i * 20), 0xffffffff, true);
+					
+				}
+			}
+		}
+	}
+}
+
 void CGraphics::Render()
 {
-	//return;
 	g_CCore->GetGame()->UpdatePeds();
 	g_CCore->GetGame()->UpdateCars();
 	if (bShowHud == true && g_CCore->GetIngameMenu()->isActive() == false)
@@ -92,12 +129,6 @@ void CGraphics::Render()
 		if (this->renderNetStat == 1)
 			this->RenderStatistics();
 
-		if (g_CCore->GetLocalPlayer()->GetEntity() != NULL)
-		{
-			if (g_CCore->IsRunning() && g_CCore->m_bIsRespawning == false)
-				RenderNametags();
-		}
-
 		if(g_CCore->m_bIsGameLoaded == false || g_CCore->m_bIsRespawning == true)
 			RenderLoadingScreen();
 		
@@ -110,6 +141,16 @@ void CGraphics::Render()
 		
 		g_CCore->GetFileTransfer()->Render();
 	}
+
+	if (g_CCore->GetLocalPlayer()->GetEntity() != NULL)
+	{
+		if (g_CCore->IsRunning() && g_CCore->m_bIsRespawning == false)
+			RenderNametags();
+
+
+		//DebugWeapons();
+	}
+
 
 	g_CCore->GetIngameMenu()->Tick();
 
@@ -157,7 +198,7 @@ void CGraphics::RenderLoadingScreen()
 
 void CGraphics::RenderNametags()
 {
-	if (m_bShowNameTags == true)
+	if (m_bShowNameTags == true && m_bUserShowNameTags == true)
 	{
 		Vector3D screen;
 		char buff[100];

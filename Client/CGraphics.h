@@ -104,6 +104,9 @@ public:
 	void				D3DDrawText(char[], int, int, D3DCOLOR, bool shadow);
 
 	CFont*				GetFont();
+
+
+	bool				m_bUserShowNameTags;
 };
 
 #endif

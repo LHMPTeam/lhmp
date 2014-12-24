@@ -1513,6 +1513,12 @@ void CGame::DeletePed(DWORD PED)
 }
 void CGame::DeleteCar(DWORD PED)
 {
+	_PED *localis =(_PED*) g_CCore->GetLocalPlayer()->GetEntity();
+	if (localis->playersCar == (_VEHICLE*)PED)
+	{
+		g_CCore->GetGame()->KickPlayerFromCarFast((DWORD)localis);
+	}
+
 	_asm{
 		MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
 			PUSH PED

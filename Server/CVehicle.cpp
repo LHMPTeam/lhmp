@@ -89,7 +89,7 @@ void CVehicle::SendSync()
 	if (this->isExploded)
 	{
 		unsigned int elapsedTime = g_CCore->GetTickManager()->GetTime() - this->GetExplodeTime();
-		if (elapsedTime > 5000)
+		if (elapsedTime > 1000)
 		{
 			this->Respawn();
 		}

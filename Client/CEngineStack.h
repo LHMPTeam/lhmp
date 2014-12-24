@@ -28,5 +28,7 @@ public:
 	void				AddMessage(unsigned int,DWORD);
 	void				DoMessage();
 	unsigned int		GetCount();
+	void				Flush();
+
 };
 #endif

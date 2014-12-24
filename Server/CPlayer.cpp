@@ -351,6 +351,7 @@ void	CPlayer::OnPlayerShoot(float x,float y,float z, bool shouldSendHim)
 	bsOut.Write(x);
 	bsOut.Write(y);
 	bsOut.Write(z);
+	bsOut.Write(this->GetCurrentWeapon());
 	if (shouldSendHim)
 		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);	// send this message everybody including this player - when using Squirrel
 	else

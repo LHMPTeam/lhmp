@@ -284,6 +284,11 @@ void CEngineStack::DoMessage()
 					{
 						if (ped->GetEntity() != 0)
 						{
+							PED *thisPed =  (PED*)ped->GetEntity();
+							if (thisPed->inventary.slot[0].weaponType != ped->GetCurrentWeapon())
+							{
+								g_CCore->GetGame()->SwitchWeapon(ped->GetEntity(), ped->GetCurrentWeapon());
+							}
 							g_CCore->GetGame()->Shoot(ped->GetEntity(), pw->pos);
 						}
 					}
@@ -736,4 +741,19 @@ void CEngineStack::DoMessage()
 		}
 		delete[] handle;
 	}
+}
+
+
+void	CEngineStack::Flush()
+{
+	EngineStackMessage* pointer = this->start;
+	while (pointer != NULL)
+	{
+		EngineStackMessage* thisOne = pointer;
+		pointer = pointer->next;
+		delete thisOne;
+	}
+
+	this->start = NULL;
+	this->end = NULL;
 }

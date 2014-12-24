@@ -516,13 +516,18 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bsIn.Read(pw->pos.x);
 			bsIn.Read(pw->pos.y);
 			bsIn.Read(pw->pos.z);
+			int currentID;
+			bsIn.Read(currentID);
 			char buff[255];
 			sprintf(buff,"[NM] Shot %i %f %f %f",pw->ID,pw->pos.x,pw->pos.y, pw->pos.z);
 			if(g_CCore->GetLocalPlayer()->GetOurID() != pw->ID)
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
-				if(ped != NULL)
+				if (ped != NULL)
+				{
+					ped->SetCurrentWeapon(currentID);
 					ped->OnShoot();
+				}
 			}
 			g_CCore->GetLog()->AddLog(buff);
 			g_CCore->GetEngineStack()->AddMessage(ES_SHOOT,(DWORD)pw);

@@ -47,16 +47,6 @@ void CKeyboard::ProceedKeyboard(void *data)
 			{
 				g_CCore->GetGraphics()->renderNetStat = 1;
 			}
-			else if (i == DIK_F7)
-			{
-				g_CCore->GetGraphics()->bShowHud = false;
-				g_CCore->GetGraphics()->ToggleInGameHud(false);
-			}
-			else if (i == DIK_F8)
-			{
-				g_CCore->GetGraphics()->bShowHud = true;
-				g_CCore->GetGraphics()->ToggleInGameHud(true);
-			}
 			else if (i == DIK_F9)
 			{
 				g_CCore->GetGraphics()->TakeScreenshot();
@@ -290,6 +280,25 @@ void	CKeyboard::ProccessMessage(LPMSG lpMsg)
 					if (g_CCore->GetChat()->ChatMessage.size() > 0)
 						g_CCore->GetChat()->ChatMessage.resize(g_CCore->GetChat()->ChatMessage.size() - 1);
 					g_CCore->GetChat()->SetRerenderState(true);
+					break;
+
+				case VK_F11:
+				{
+					if (g_CCore->GetGraphics()->bShowHud)
+					{
+						g_CCore->GetGraphics()->bShowHud = false;
+						g_CCore->GetGraphics()->ToggleInGameHud(false);
+					}
+					else {
+						g_CCore->GetGraphics()->bShowHud = true;
+						g_CCore->GetGraphics()->ToggleInGameHud(true);
+					}
+				}
+					break;
+				case VK_F12:
+				{
+					g_CCore->GetGraphics()->m_bUserShowNameTags = !g_CCore->GetGraphics()->m_bUserShowNameTags;
+				}
 					break;
 				case VK_RETURN:
 				case VK_SHIFT:
