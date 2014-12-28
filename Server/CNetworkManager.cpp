@@ -247,7 +247,7 @@ void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 		peer->Send(&errStr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 		peer->CloseConnection(packet->systemAddress, true);
 
-		printf("Bad connection attempt. Version hash dismatch.");
+		printf("Bad connection attempt. Version hash dismatch. \n");
 		return;
 	}
 	// get network slot for him
@@ -651,11 +651,13 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		{
 			float x, y, z;
 			int ID;
+			int weapon;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			bsIn.Read(ID);
 			bsIn.Read(x);
 			bsIn.Read(y);
 			bsIn.Read(z);
+			bsIn.Read(weapon);
 
 			ID = GetIDFromSystemAddress(packet->systemAddress);
 			if(ID == -1) return;
@@ -672,6 +674,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				bsOut.Write(z);
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
 				//g_CCore->GetScripts()->onPlayerShoot(ID, player->GetCurrentWeapon());
+				player->SetCurrentWeapon(weapon);
 				player->OnPlayerShoot(x, y, z);
 			}
 
@@ -845,8 +848,9 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			bsOut.Write(GetIDFromSystemAddress(packet->systemAddress));
 			bsOut.Write(vehID);
 			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
-			//std::cout << "ExitVeh" << GetIDFromSystemAddress(packet->systemAddress) << " - " << vehID << std::endl;
+
 			g_CCore->GetScripts()->onPlayerExitVehicle(GetIDFromSystemAddress(packet->systemAddress), vehID);
+			//std::cout << "ExitVeh" << GetIDFromSystemAddress(packet->systemAddress) << " - " << vehID << std::endl;
 		}
 		break;
 		case LHMP_PLAYER_EXIT_VEHICLE_FINISH:
@@ -856,6 +860,8 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			bsOut.Write((MessageID)LHMP_PLAYER_EXIT_VEHICLE_FINISH);
 			bsOut.Write(GetIDFromSystemAddress(packet->systemAddress));
 			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+
+			g_CCore->GetScripts()->onPlayerExitVehicleFinish(GetIDFromSystemAddress(packet->systemAddress));
 			//std::cout << "ExitVehFinish" << GetIDFromSystemAddress(packet->systemAddress) << std::endl;
 		}
 			break;

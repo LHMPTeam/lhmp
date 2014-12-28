@@ -25,7 +25,6 @@ public:
 	~CLocalPlayer();
 	void			Init();
 	int				GetPing();
-	void			GetLocalStatus();
 	
 	Vector3D		GetLocalRot();
 	int				GetOurID();
@@ -59,5 +58,9 @@ public:
 	bool			GetIsCarAnim();
 	float			GetHealth();
 	float			GetCarAim();
+
+	// Server
+	void			ServerUpdateWeapon();
+
 };
 #endif

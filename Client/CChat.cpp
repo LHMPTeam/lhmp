@@ -203,6 +203,26 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->GetGame()->KickPlayerFromCarFast(g_CCore->GetLocalPlayer()->GetBase());
 	}
+	else if (strcmp(command, "carsirene") == 0)
+	{
+		//g_CCore->GetGame()->KickPlayerFromCarFast(g_CCore->GetLocalPlayer()->GetBase());
+
+		PED* local = (PED*) g_CCore->GetLocalPlayer()->GetBase();
+		
+		if (local)
+		{
+			if (local->playersCar)
+			{
+				DWORD frame = (DWORD) local->playersCar->object.frame;
+				_asm {
+					MOV ECX, frame
+						MOV EAX, 0x0044DDE0
+						CALL EAX;
+				}
+			}
+		}
+
+	}
 	else if (strcmp(command, "changemap") == 0)
 	{
 		g_CCore->GetGame()->ChangeMap("MISE13-ZRADCE","");  //MISE20-PAULI
@@ -233,9 +253,27 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->GetGame()->KickPlayerFromCarFast(g_CCore->GetLocalPlayer()->GetBase());
 	}
-	else if (strcmp(command, "hook") == 0)
+	else if (strcmp(command, "lang") == 0)
 	{
+		UINT uLayouts;
+		HKL  *lpList = NULL;
+		char szBuf[512]; 
 
+			uLayouts = GetKeyboardLayoutList(0, NULL);
+		lpList = (HKL*)LocalAlloc(LPTR, (uLayouts * sizeof(HKL)));
+		uLayouts = GetKeyboardLayoutList(uLayouts, lpList);
+
+		for (int i = 0; i < uLayouts; ++i)
+		{
+			GetLocaleInfo(MAKELCID(((UINT)lpList[i] & 0xffffffff),
+				SORT_DEFAULT), LOCALE_SLANGUAGE, szBuf, 512);
+			//wprintf(L"%s\n", szBuf);
+			g_CCore->GetChat()->AddMessage(szBuf);
+			memset(szBuf, 0, 512);
+		}
+
+		if (lpList)
+			LocalFree(lpList);
 	}
 	else if (strcmp(command, "request") == 0)
 	{

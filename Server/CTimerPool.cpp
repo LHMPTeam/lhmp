@@ -27,13 +27,13 @@ void CTimerPool::Tick()
 	}
 }
 
-int	CTimerPool::New(SQVM* script, char* function, int interval, int repeat)
+int	CTimerPool::New(SQVM* script, char* function, int interval, int repeat,int param)
 {
 	for (int i = 0; i < MAX_TIMERS; i++)
 	{
 		if (pool[i] == NULL)
 		{
-			pool[i] = new CTimer(script,function,interval,repeat);
+			pool[i] = new CTimer(script,function,interval,repeat,param);
 			return i;
 		}
 	}

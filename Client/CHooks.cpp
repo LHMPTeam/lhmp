@@ -354,6 +354,9 @@ void OnShoot(DWORD testPed, float x, float y, float z)
 		bsOut.Write(x);
 		bsOut.Write(y);
 		bsOut.Write(z);
+
+		PED* ped =(PED*) g_CCore->GetLocalPlayer()->GetBase();
+		bsOut.Write(ped->inventary.slot[0].weaponType);
 		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 	}
 }

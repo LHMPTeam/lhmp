@@ -67,6 +67,8 @@ public:
 	void OnThrowGranade();
 	void ClearWeapons();
 
+	void gCheckWeapons();
+
 	int			InCar;
 };
 #endif

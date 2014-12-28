@@ -544,6 +544,46 @@ void CScripts::onPlayerExitVehicle(int playerID, int vehID)
 	}
 }
 
+void CScripts::onPlayerExitVehicleFinish(int playerID)
+{
+	bool ret = true;
+	for (int i = 0; i < MAX_SCRIPTS; i++) {
+		if (m_pScripts[i]) {
+			// get the script vm pointer
+			SQVM * pVM = m_pScripts[i]->GetVM();
+
+			// Get the stack top
+			int iTop = sq_gettop(pVM);
+
+			// Push the root table onto the stack
+			sq_pushroottable(pVM);
+
+			// Push the function name onto the stack
+			sq_pushstring(pVM, "onPlayerExitVehicleFinish", -1);
+
+			// Get the closure for the function
+			if (SQ_SUCCEEDED(sq_get(pVM, -2))) {
+				// Push the root table onto the stack
+				sq_pushroottable(pVM);
+
+				// Push the player id onto the stack
+				sq_pushinteger(pVM, playerID);
+
+				// Call the function
+				if (!SQ_FAILED(sq_call(pVM, 3, false, true)))
+				{
+					/*SQBool result;
+					sq_getbool(pVM, sq_gettop(pVM), &result);
+					if (result == false) ret = false;*/
+				}
+			}
+
+			// Restore the stack top
+			sq_settop(pVM, iTop);
+		}
+	}
+}
+
 void CScripts::onPlayerSpawn(int playerID)
 {
 	bool ret = true;

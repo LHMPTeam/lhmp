@@ -99,12 +99,13 @@ void CEngineStack::DoMessage()
 					if (handle != NULL)
 					{
 						g_CCore->GetGame()->ChangeSkin(ped->GetEntity(),ped->GetSkin());
-						for (int i = 0; i < 8; i++)
+						/*for (int i = 0; i < 8; i++)
 						{
+							g_CCore->GetChat()->AddMessage("ES_CREATEPLAYER - adding weapon");
 							SWeapon* wep = ped->GetWeapon(i);
 							if (wep->wepID != NULL)
 								g_CCore->GetGame()->AddWeapon(ped->GetEntity(), wep->wepID, wep->wepLoaded, wep->wepHidden,0);
-						}
+						}*/
 					}
 					if (ped->InCar != -1)
 					{
@@ -217,6 +218,7 @@ void CEngineStack::DoMessage()
 					else {
 						g_CCore->GetGame()->AddWeapon(adr, pw->wepID, pw->wepLoaded, pw->wepHidden, 0);
 					}
+					g_CCore->GetLocalPlayer()->ServerUpdateWeapon();
 				} else
 				{	
 					CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -237,6 +239,7 @@ void CEngineStack::DoMessage()
 				{
 					DWORD adr = *(DWORD*) (*(DWORD*)(0x006F9464)+0xE4);
 					g_CCore->GetGame()->DeleteWeapon(adr,pw->wepID);
+					g_CCore->GetLocalPlayer()->ServerUpdateWeapon();
 				} else
 				{	
 					CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -257,6 +260,8 @@ void CEngineStack::DoMessage()
 				{
 					DWORD adr = *(DWORD*) (*(DWORD*)(0x006F9464)+0xE4);
 					g_CCore->GetGame()->SwitchWeapon(adr,pw->wepID);
+
+					g_CCore->GetLocalPlayer()->ServerUpdateWeapon();
 				} else
 				{	
 					CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -284,11 +289,12 @@ void CEngineStack::DoMessage()
 					{
 						if (ped->GetEntity() != 0)
 						{
-							PED *thisPed =  (PED*)ped->GetEntity();
+							/*PED *thisPed =  (PED*)ped->GetEntity();
 							if (thisPed->inventary.slot[0].weaponType != ped->GetCurrentWeapon())
 							{
 								g_CCore->GetGame()->SwitchWeapon(ped->GetEntity(), ped->GetCurrentWeapon());
-							}
+							}*/
+							ped->gCheckWeapons();
 							g_CCore->GetGame()->Shoot(ped->GetEntity(), pw->pos);
 						}
 					}
@@ -313,7 +319,7 @@ void CEngineStack::DoMessage()
 					{
 						g_CCore->GetLog()->AddLog("ThrowGranade PED");
 						g_CCore->GetGame()->ThrowGranade(ped->GetEntity(), pw->pos);
-						ped->OnThrowGranade();
+						//ped->OnThrowGranade();
 					}
 				}
 			}

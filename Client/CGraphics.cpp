@@ -90,7 +90,11 @@ void DebugWeapons()
 				g_CCore->GetGraphics()->CalcScreenPosition(gamePED->object.position, &screen);
 
 				g_CCore->GetGraphics()->DrawTextA("Weapon list (ID,ammo,ammo)", screen.x + 200, screen.y,0xffff0000, true);
-				for (int i = 0; i < 8; i++)
+
+				char aha[250];
+				sprintf(aha, "Current ID: %d",ped->GetCurrentWeapon());
+				g_CCore->GetGraphics()->DrawTextA(aha, screen.x + 100, screen.y + 40, 0xffffffff, true);
+				/*for (int i = 0; i < 8; i++)
 				{
 					SWeapon *wep = ped->GetWeapon(i);
 					if (wep)
@@ -99,7 +103,7 @@ void DebugWeapons()
 						sprintf(buff, "%d %d %d", wep->wepID, wep->wepLoaded, wep->wepHidden);
 						g_CCore->GetGraphics()->DrawTextA(buff, screen.x + 100, screen.y + 20 + (i * 20), 0xffffffff, true);
 					}
-				}
+				}*/
 
 				for (int i = 0; i < 8; i++)
 				{
@@ -148,7 +152,7 @@ void CGraphics::Render()
 			RenderNametags();
 
 
-		//DebugWeapons();
+		DebugWeapons();
 	}
 
 
@@ -882,7 +886,10 @@ void CGraphics::RenderMap()
 			else
 			{
 				CVehicle* veh = g_CCore->GetVehiclePool()->Return(ped->InCar);
-				playerRot = veh->GetRotation();
+				if (veh)
+				{
+					playerRot = veh->GetRotation();
+				}
 			}
 			double goalRot = acos(playerRot.z);
 			if (playerRot.x < 0)

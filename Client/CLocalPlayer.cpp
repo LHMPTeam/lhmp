@@ -61,57 +61,51 @@ void CLocalPlayer::SetLocalPos(Vector3D vector)
 {
 	if (this->GetEntity() != NULL)
 	{
-		*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x24) = vector.x;
+		PED* ped = g_CCore->GetGame()->GetLocalPED();
+		ped->object.position = vector;
+		/**(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x24) = vector.x;
 		*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x28) = vector.y;
-		*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x2C) = vector.z;
+		*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x2C) = vector.z;*/
 	}
 }
 
-void CLocalPlayer::GetLocalStatus()
-{
-	/*sLocalPlayer.playerPos.x = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x24);
-	sLocalPlayer.playerPos.y = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x28);
-	sLocalPlayer.playerPos.z = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x2C);
 
-	
-	sLocalPlayer.rotation1 = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x30);
-	sLocalPlayer.rotation2 = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x38);
-	sLocalPlayer.rotation3 = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x238);
-	
-	sLocalPlayer.fHealth = *(float*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x644);
-
-	sLocalPlayer.state		= *(BYTE*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x70);
-	sLocalPlayer.isDucking	= (*(BYTE*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x1E4) == 1);
-	sLocalPlayer.isAim		=  (*(BYTE*) ((*(DWORD*)((*(DWORD*)0x006F9464)+0xE4))+0x1E5) == 1);
-
-	carAim					= *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x5F4);*/
-	
-	//SetPedStatus();
-}
 float CLocalPlayer::GetCarAim()
 {
-	return *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x5F4);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	return ped->inCarRotation;
+	//return *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x5F4);
 }
 float CLocalPlayer::GetHealth()
 {
-	return *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x644);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	return ped->health;
+	//return *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x644);
 }
 byte CLocalPlayer::GetStatus()
 {
-	return	*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x70);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	return ped->animState;
+	//return	*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x70);
 }
 bool CLocalPlayer::GetIsAiming()
 {
-	return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E5) == 1);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	return ped->isAiming;
+	//return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E5) == 1);
 }
 bool CLocalPlayer::GetIsDucking()
 {
-	return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E4) == 1);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	return ped->isDucking;
+	//return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E4) == 1);
 }
 
 bool CLocalPlayer::GetIsCarAnim()
 {
-	return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x71) == 1);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	return ped->isInAnimWithCar;
+	//return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x71) == 1);
 }
 bool CLocalPlayer::IsOnFoot()
 {
@@ -126,30 +120,12 @@ void CLocalPlayer::SetIsOnFoot(bool b)
 		g_CCore->GetLog()->AddLog("setisonfoot 0");
 }
 
-void CLocalPlayer::SetPedStatus(int playerid)
-{
-	return;
-	/*DWORD ouroffset = 0x4*playerid;
-   *(float*) ((*(DWORD*)((*(DWORD*)0x006560C4)+ouroffset))+0x10) = sPedPlayer[playerid].playerPos.x;
-   *(float*) ((*(DWORD*)((*(DWORD*)0x006560C4)+ouroffset))+0x14) = sPedPlayer[playerid].playerPos.y;
-   *(float*) ((*(DWORD*)((*(DWORD*)0x006560C4)+ouroffset))+0x18) = sPedPlayer[playerid].playerPos.z;
-
-   *(float*) ((*(DWORD*)((*(DWORD*)0x006560C4)+ouroffset))+0x1C) = sPedPlayer[playerid].rotation1;
-   *(float*) ((*(DWORD*)((*(DWORD*)0x006560C4)+ouroffset))+0x24) = sPedPlayer[playerid].rotation2;
-
-   *(BYTE*) ((*(DWORD*)((*(DWORD*)0x006560C4)+ouroffset))+0x164) = sPedPlayer[playerid].state;*/
-	//((*(DWORD*) pedadress)+0x10 = sPlayer2.playerPos.x;
-}
-
 void CLocalPlayer::Pulse()
 {
 	if (this->GetEntity() != NULL)
 	{
 		if (this->IsOnFoot())
 		{
-			//return;
-			GetLocalStatus();
-
 			SYNC::ON_FOOT_SYNC syncData;
 			syncData.position = this->GetLocalPos();
 			Vector3D rot = this->GetLocalRot();
@@ -190,7 +166,6 @@ void CLocalPlayer::Pulse()
 			}
 			//g_CCore->GetLog()->AddLog("Auto");
 
-			GetLocalStatus();
 			SYNC::IN_CAR syncData;
 			syncData.ID = this->GetOurID();
 			syncData.health = this->GetHealth();
@@ -237,11 +212,12 @@ Vector3D CLocalPlayer::GetLocalPos()
 	{
 		if (this->GetEntity() != NULL)
 		{
-			
-			pos.x = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x24);
+			PED* ped = g_CCore->GetGame()->GetLocalPED();
+			return ped->object.position;
+			/*pos.x = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x24);
 			pos.y = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x28);
 			pos.z = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x2C);
-			return pos;
+			return pos;*/
 		}
 		else {
 			pos.x = 0.0f;
@@ -322,9 +298,11 @@ Vector3D	CLocalPlayer::GetLocalRot()
 	else
 	{
 		Vector3D rot;
-		rot.x = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x30);
+		PED* ped = g_CCore->GetGame()->GetLocalPED();
+		/*rot.x = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x30);
 		rot.y = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x34);
-		rot.z = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x38);
+		rot.z = *(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x38);*/
+		rot = ped->object.rotation;
 		return rot;
 	}
 }
@@ -332,36 +310,59 @@ Vector3D	CLocalPlayer::GetLocalRot()
 
 void	CLocalPlayer::SetLocalRot(Vector3D rot)
 {
-	*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x30) = rot.x;
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	ped->object.rotation = rot;
+	/**(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x30) = rot.x;
 	*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x34) = rot.y;
-	*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x38) = rot.z;
+	*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x38) = rot.z;*/
 }
 
 void	CLocalPlayer::SetHealth(float f)
 {
-	*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x644) = f;
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	ped->health = f;
+	//*(float*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x644) = f;
+
+	// ingame GUI change
 	(*(DWORD*)0x00661538)	= (unsigned int)(f/2);
 }
 
 
 bool	CLocalPlayer::HasWeapon(int wepID)
 {
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	for (int i = 0; i < 7; i++)
 	{
-		if (*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10)) == wepID)
+		//if (*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10)) == wepID)
+		if (ped->inventary.slot[i].weaponType == wepID)
 			return true;
 	}
 	return false;
 }
 void	CLocalPlayer::SetWeapon(int wepID, int ammo, int ammo2)
 {
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	for (int i = 0; i < 7; i++)
 	{
-		if (*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10)) == wepID)
+		//if (*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10)) == wepID)
+		if (ped->inventary.slot[i].weaponType == wepID)
 		{
 			//*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10) + 0x4) += ammo;
-			*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10) + 0x8) += ammo2;
+			//*(DWORD*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + (0x4A0 + i * 0x10) + 0x8) += ammo2;
+			ped->inventary.slot[i].ammo = ammo2;
 			return;
 		}
 	}
+}
+
+
+void	CLocalPlayer::ServerUpdateWeapon()
+{
+	PED* player = (PED*) this->GetEntity();
+	RakNet::BitStream bsOut;
+	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_SWITCHWEAPON);
+	bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
+	bsOut.Write(player->inventary.slot[0].weaponType);
+	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 }

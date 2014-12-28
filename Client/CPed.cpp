@@ -44,7 +44,7 @@ void CPed::SetCarAnim(bool b)
 }
 bool CPed::IsCarAnim()
 {
-	return (this->isCarAnim == true);
+	return (this->isCarAnim == 1);
 }
 
 void CPed::SetIsOnFoot(bool b)
@@ -437,5 +437,27 @@ void CPed::ClearWeapons()
 		this->weapon[i].wepID = 0;
 		this->weapon[i].wepLoaded = 0;
 		this->weapon[i].wepHidden = 0;
+	}
+}
+
+void CPed::gCheckWeapons()
+{
+	PED* ped = (PED*) this->GetEntity();
+	if (ped)
+	{
+		if (ped->inventary.slot[0].weaponType != this->currentWep)
+		{
+			if (ped->inventary.slot[0].weaponType == 0)
+			{
+				g_CCore->GetGame()->AddWeapon(this->GetEntity(), this->currentWep, 1000, 0, 0);
+			}
+			else {
+				g_CCore->GetGame()->DeleteWeapon(this->GetEntity(), ped->inventary.slot[0].weaponType);
+				g_CCore->GetGame()->AddWeapon(this->GetEntity(), this->currentWep, 1000, 0, 0);
+			}
+		}
+		else {
+			ped->inventary.slot[0].ammoLoaded = 1000;
+		}
 	}
 }

@@ -82,7 +82,8 @@ typedef struct _PED {
 	byte		isInAnimWithCar;	//	0075-0076
 	_pad(_unk2, 0x22);
 	VEHICLE*	playersCar;			//	0098-009C
-	_pad(_unk3, 0x148);
+	VEHICLE*	carLeavingOrEntering;//	009C-00A0
+	_pad(_unk3, 0x144);
 	bool		isDucking;			//	01E4-01E5
 	bool		isAiming;			//	01E5-01E6
 	_pad(_unk4, 0x16);
@@ -175,6 +176,7 @@ public:
 	static void ThrowGranade(DWORD,Vector3D);
 
 	// Human
+	static _PED*	GetLocalPED();
 	static void KillPed(DWORD);
 	static void SetOn(DWORD,bool);
 

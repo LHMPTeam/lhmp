@@ -8,8 +8,9 @@ private:
 	char			function[255];
 	unsigned int	lastRun;
 	int				interval;
+	int				param;
 public:
-	CTimer(SQVM*,char*,int,int);
+	CTimer(SQVM*,char*,int,int,int);
 	~CTimer();
 	bool Tick();
 };

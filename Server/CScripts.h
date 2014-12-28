@@ -52,6 +52,7 @@ public:
 	void onPlayerDisconnect(int);
 	void onPlayerEnterVehicle(int,int,int);
 	void onPlayerExitVehicle(int, int);
+	void onPlayerExitVehicleFinish(int);
 	void onPlayerSpawn(int);
 	void onPlayerIsKilled(int,int);
 	void onServerTick(int);

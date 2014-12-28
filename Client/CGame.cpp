@@ -70,6 +70,7 @@ void CGame::UpdatePeds()
 		if (ped != NULL)
 		{
 			ped->Interpolate();
+			ped->gCheckWeapons();
 		}
 	}
 }
@@ -137,7 +138,7 @@ void CGame::Tick()
 
 	if (g_CCore->m_bIsRespawning == false)
 	{
-		if (*(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4) != NULL)
+		if (this->GetLocalPED() != NULL)
 		{
 			if (strcmp(this->mapName, this->GetActualMapName()) != 0)
 			{
@@ -510,7 +511,8 @@ _asm
 DWORD CGame::CreatePED()
 {
 	DWORD pedaddr, frameaddr;
-	DWORD TommyEngineObj = ((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x68);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	DWORD TommyEngineObj = (DWORD) ped->object.frame;
 	char objectname[255] = "lhmp";
 	char PEDmodel[255] = "Tommy.i3d";
 	_asm
@@ -785,7 +787,7 @@ void CGame::AfterRespawn()
 			if (handle != NULL)
 			{
 				g_CCore->GetGame()->ChangeSkin(ped->GetEntity(), ped->GetSkin());
-				for(int e = 0; e < 8; e++)
+				/*for(int e = 0; e < 8; e++)
 				{
 					SWeapon* pw = ped->GetWeapon(e);
 					if(pw->wepID == NULL) continue;
@@ -793,6 +795,7 @@ void CGame::AfterRespawn()
 					g_CCore->GetLog()->AddLog("AfterRespawn AddWeapon");
 				}
 				g_CCore->GetGame()->SwitchWeapon(ped->GetEntity(), ped->GetCurrentWeapon());
+				*/
 			}
 		}
 	}
@@ -1102,7 +1105,11 @@ void CGame::Shoot(DWORD PED,Vector3D pos)
 }
 void CGame::ThrowGranade(DWORD PED,Vector3D way)
 {
+	_PED* character = (_PED*)PED;
 	g_CCore->GetLog()->AddLog("CGame:ThrowGranade");
+	char wtf[500];
+	sprintf(wtf, "Wep: %d", character->inventary.slot[0].weaponType);
+	g_CCore->GetLog()->AddLog(wtf);
 
 	_asm {
 		sub esp, 0x100
@@ -1289,6 +1296,17 @@ void CGame::DeleteWeapon(DWORD PED,DWORD weaponID)
 	}
 }
 
+_PED*	CGame::GetLocalPED()
+{
+	if ((*(DWORD*)0x006F9464) != NULL)
+	{
+		return *(_PED**)(*(DWORD*)(0x006F9464) + 0xE4);
+	}
+	else {
+		return NULL;
+	}
+}
+
 void CGame::KillPed(DWORD PED)
 {
 	g_CCore->GetGame()->ShouldKill = true;
@@ -1454,67 +1472,79 @@ void CGame::SetFramePos(DWORD frame,float f1,float f2,float f3)
 
 void CGame::DeletePed(DWORD PED)
 {
-	/*if (PED == NULL)
+	// Delete weapons
+	_PED* deletingPed = (_PED*)PED;
+	if (PED)
 	{
-		g_CCore->GetLog()->AddLog("CGame::DeletePed - ped doesnt exist");
-		return;
-	}*/
-	DWORD ped_frame = *(DWORD*)(PED+0x68);
-	_asm{
-		/*PUSH PED
-		MOV ECX,DWORD PTR DS:[0x65115C]				;  Game.006F9440
-		mov eax,0x00425390
-		CALL eax									; Game.00425390
-		MOV ECX,EAX									; |
-		mov eax,0x005E3400 
-		CALL eax									; \Game.005E3400
-		*/
 
-	/*	// destroy player structure
-		PUSH PED
-		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-		mov eax, 0x00425390
-		CALL eax; Game.00425390
-		MOV ECX, EAX; |
-		mov eax, 0x005E3400
-		CALL eax; \Game.005E3400
+		for (int i = 0; i < 8; i++)
+		{
+			if (deletingPed->inventary.slot[i].weaponType != 0)
+			{
+				g_CCore->GetGame()->DeleteWeapon(PED, deletingPed->inventary.slot[i].weaponType);
+			}
+		}
 
-		// now frame
-		mov eax, ped_frame
-		push eax
-		mov ecx, [eax]
-		call dword ptr ds : [ecx]*/
+		DWORD ped_frame = (DWORD)deletingPed->object.frame;
+		if (ped_frame)
+		{
+			_asm{
+				/*PUSH PED
+				MOV ECX,DWORD PTR DS:[0x65115C]				;  Game.006F9440
+				mov eax,0x00425390
+				CALL eax									; Game.00425390
+				MOV ECX,EAX									; |
+				mov eax,0x005E3400
+				CALL eax									; \Game.005E3400
+				*/
 
-		// testing old code
-		MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
-		PUSH PED
-		MOV EAX, 0x00425390
-		CALL EAX; Game.00425390
-		MOV ECX, EAX
-		MOV EAX, 0x00425560
-		CALL EAX; Game.00425560
-		MOV ECX, EAX
-		MOV EAX, 0x005CFB60
-		CALL EAX; Game.005CFB60
-		PUSH PED
-		MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
-		MOV EAX, 0x00425390
-		CALL EAX; Game.00425390
-		MOV ECX, EAX
-		MOV EAX, 0x005E3400
-		CALL EAX; Game.005E3400
+				/*	// destroy player structure
+					PUSH PED
+					MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+					mov eax, 0x00425390
+					CALL eax; Game.00425390
+					MOV ECX, EAX; |
+					mov eax, 0x005E3400
+					CALL eax; \Game.005E3400
 
-		mov eax, ped_frame
-		push eax
-		mov ecx, [eax]
-		call dword ptr ds : [ecx]
+					// now frame
+					mov eax, ped_frame
+					push eax
+					mov ecx, [eax]
+					call dword ptr ds : [ecx]*/
+
+				// testing old code
+				MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
+					PUSH PED
+					MOV EAX, 0x00425390
+					CALL EAX; Game.00425390
+					MOV ECX, EAX
+					MOV EAX, 0x00425560
+					CALL EAX; Game.00425560
+					MOV ECX, EAX
+					MOV EAX, 0x005CFB60
+					CALL EAX; Game.005CFB60
+					PUSH PED
+					MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
+					MOV EAX, 0x00425390
+					CALL EAX; Game.00425390
+					MOV ECX, EAX
+					MOV EAX, 0x005E3400
+					CALL EAX; Game.005E3400
+
+					mov eax, ped_frame
+					push eax
+					mov ecx, [eax]
+					call dword ptr ds : [ecx]
+			}
+		}
+		//g_CCore->GetGame()->SetFramePos(ped_frame,0,0,0);
 	}
-	//g_CCore->GetGame()->SetFramePos(ped_frame,0,0,0);
 }
 void CGame::DeleteCar(DWORD PED)
 {
 	_PED *localis =(_PED*) g_CCore->GetLocalPlayer()->GetEntity();
-	if (localis->playersCar == (_VEHICLE*)PED)
+	if (localis->playersCar == (_VEHICLE*)PED || localis->carLeavingOrEntering == (_VEHICLE*)PED)
 	{
 		g_CCore->GetGame()->KickPlayerFromCarFast((DWORD)localis);
 	}
@@ -2389,8 +2419,9 @@ void CGame::HideWeapon()
 
 void CGame::OnCollision()
 {
-	DWORD car = *(DWORD*)(*(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4) + 0x98);
-	float damage = *(float*)(car + 0x2A4);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	DWORD car = (DWORD) ped->playersCar;
+	float damage = ped->playersCar->engineDamage;
 
 	int vehID		= g_CCore->GetVehiclePool()->GetVehicleIdByBase(car);
 	CVehicle* veh	= g_CCore->GetVehiclePool()->Return(vehID);
@@ -2412,7 +2443,9 @@ void CGame::OnCollision()
 
 void CGame::OnCarShot()
 {
-	DWORD car = *(DWORD*)(*(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4)+0x98);
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	DWORD car = (DWORD)ped->playersCar;
+
 	byte damage = *(byte*)(car + 0x2094);
 
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(car);

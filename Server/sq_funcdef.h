@@ -65,6 +65,7 @@ SQInteger sq_vehicleGetRoofState(SQVM *vm);
 SQInteger sq_vehicleToggleSiren(SQVM *vm);
 SQInteger sq_vehicleGetSirenState(SQVM *vm);
 SQInteger sq_vehicleExplode(SQVM *vm);
+SQInteger sq_vehicleExists(SQVM *vm);
 
 SQInteger sq_isAnyPlayerInVehicle(SQVM *vm);
 

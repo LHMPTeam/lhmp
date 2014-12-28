@@ -71,11 +71,13 @@ void	CNetworkManager::OnConnectionIsAboutFinish()
 	// send him CONNECTION FINAL
 	isConnected = true;
 
+	g_CCore->GetChat()->AddMessage("Almost there ...");
+
 	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID) ID_CONNECTION_FINISHED);
 	bsOut.Write(NickName);
 	bsOut.Write(g_CCore->GetGame()->CameraGetFov());
-	peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+	peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
 void CNetworkManager::Pulse()
@@ -405,23 +407,26 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			int ID;
 			bsIn.Read(ID);
 			CPed* ped = g_CCore->GetPedPool()->Return(ID);
-			if (ped->InCar != -1)
+			if (ped)
 			{
-				CVehicle* veh = g_CCore->GetVehiclePool()->Return(ped->InCar);
-				if (veh != NULL)
+				if (ped->InCar != -1)
 				{
-					for (int i = 0; i < 4; i++)
+					CVehicle* veh = g_CCore->GetVehiclePool()->Return(ped->InCar);
+					if (veh != NULL)
 					{
-						if (veh->GetSeat(i) == ID)
-							veh->SetSeat(i, 0);
+						for (int i = 0; i < 4; i++)
+						{
+							if (veh->GetSeat(i) == ID)
+								veh->SetSeat(i, 0);
+						}
 					}
+					ped->InCar = -1;
+					veh->PlayerExit(ID);
+					ped->SetIsOnFoot(true);
 				}
-				ped->InCar = -1;
-				veh->PlayerExit(ID);
-				ped->SetIsOnFoot(true);
+				ped->ClearWeapons();
+				g_CCore->GetEngineStack()->AddMessage(ES_CREATEPLAYER, ID);
 			}
-			ped->ClearWeapons();
-			g_CCore->GetEngineStack()->AddMessage(ES_CREATEPLAYER,ID);
 
 		}
 		break;
@@ -501,8 +506,10 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				if(ped != NULL)
 					ped->SwitchWeapon(pw->wepID);
 			}
-			g_CCore->GetEngineStack()->AddMessage(ES_SWITCHWEAPON,(DWORD)pw);
-			g_CCore->GetLog()->AddLog("[NM]switchwep");
+			else {
+				g_CCore->GetEngineStack()->AddMessage(ES_SWITCHWEAPON, (DWORD)pw);
+				g_CCore->GetLog()->AddLog("[NM]switchwep");
+			}
 		}
 		break;
 		case LHMP_PLAYER_SHOOT:
@@ -519,7 +526,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			int currentID;
 			bsIn.Read(currentID);
 			char buff[255];
-			sprintf(buff,"[NM] Shot %i %f %f %f",pw->ID,pw->pos.x,pw->pos.y, pw->pos.z);
+			sprintf(buff,"[NM] Shot %i %f %f %f %d",pw->ID,pw->pos.x,pw->pos.y, pw->pos.z,currentID);
 			if(g_CCore->GetLocalPlayer()->GetOurID() != pw->ID)
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -1221,8 +1228,8 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			if (veh != NULL)
 			{
 				g_CCore->GetEngineStack()->AddMessage(ES_CAREXPLODE, ID);
+				veh->SetActive(false);
 			}
-			veh->SetActive(false);
 		}
 			break;
 		case LHMP_VEHICLE_RESPAWN:

@@ -779,7 +779,7 @@ SQInteger sq_playerAddWeapon(SQVM *vm)
 		bsOut.Write(weaponID);
 		bsOut.Write(ammo);
 		bsOut.Write(ammoSecond);
-		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), false);
 	}
 	return 1;
 }
@@ -799,7 +799,7 @@ SQInteger sq_playerDeleteWeapon(SQVM *vm)
 		bsOut.Write((MessageID)LHMP_PLAYER_DELETEWEAPON);
 		bsOut.Write(ID);
 		bsOut.Write(weaponID);
-		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), false);
 	}
 	return 1;
 }
@@ -869,11 +869,12 @@ SQInteger sq_vehicleSpawn(SQVM *vm)
 		bsOut.Write(vehicle_data);
 		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_RAKNET_GUID, true);
 
-		sq_pushbool(vm, true);
+		//sq_pushbool(vm, true);
+		sq_pushinteger(vm, ID);
 	}
 	else
 	{
-		sq_pushbool(vm, false);
+		sq_pushinteger(vm, -1);
 	}
 	return 1;
 }
@@ -881,13 +882,18 @@ SQInteger sq_vehicleDelete(SQVM *vm)
 {
 	SQInteger ID;
 	sq_getinteger(vm, -1, &ID);
-	g_CCore->GetVehiclePool()->Delete(ID);
-	BitStream bsOut;
-	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((MessageID)LHMP_VEHICLE_DELETE);
-	bsOut.Write(ID);
-	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-	sq_pushbool(vm, true);
+	if (g_CCore->GetVehiclePool()->Return(ID) != NULL)
+	{
+		g_CCore->GetVehiclePool()->Delete(ID);
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_VEHICLE_DELETE);
+		bsOut.Write(ID);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		sq_pushbool(vm, true);
+		return 1;
+	}
+	sq_pushbool(vm, false);
 	return 1;
 }
 
@@ -1187,6 +1193,21 @@ SQInteger sq_vehicleExplode(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_vehicleExists(SQVM *vm)
+{
+	SQInteger	ID;
+	sq_getinteger(vm, -1, &ID);
+
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+	if (veh != NULL)
+	{
+		sq_pushbool(vm, true);
+		return 1;
+	}
+	sq_pushbool(vm, false);
+	return 1;
+}
+
 
 
 SQInteger sq_playerPlayAnim(SQVM *vm)
@@ -1268,12 +1289,14 @@ SQInteger sq_playerSetCameraToDefault(SQVM *vm)
 
 SQInteger sq_timerCreate(SQVM *vm)
 {
-	SQInteger interval,repeat;	
+	SQInteger interval,repeat,param;	
 	const SQChar* name;
-	sq_getstring(vm, -3, &name);
-	sq_getinteger(vm, -2, &interval);
-	sq_getinteger(vm, -1, &repeat);
-	g_CCore->GetTimerPool()->New(vm, (char*)name, interval, repeat);
+	sq_getstring(vm, -4, &name);
+	sq_getinteger(vm, -3, &interval);
+	sq_getinteger(vm, -2, &repeat);
+	sq_getinteger(vm, -1, &param);
+	int ID = g_CCore->GetTimerPool()->New(vm, (char*)name, interval, repeat,param);
+	sq_pushinteger(vm, ID);
 	return 1;
 }
 
@@ -1304,6 +1327,7 @@ SQInteger sq_pickupCreate(SQVM *vm)
 	{
 		pickup->SendIt(-1);	// send it everybody
 	}
+	sq_pushinteger(vm, ID);
 	return 1;
 }
 
