@@ -23,7 +23,7 @@ bool CGameMode::LoadGameMode(char* name)
 			fseek(file, 0, SEEK_END);   // non-portable
 			int size = ftell(file);
 			fseek(file, 0, SEEK_SET);
-			
+
 			char *fileContent = new char[size+1];
 			fread(fileContent, sizeof(char), size, file);
 			fileContent[size] = 0x0;

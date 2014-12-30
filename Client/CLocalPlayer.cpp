@@ -85,26 +85,26 @@ float CLocalPlayer::GetHealth()
 byte CLocalPlayer::GetStatus()
 {
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
-	return ped->animState;
+	return ped->animStateLocal;
 	//return	*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x70);
 }
 bool CLocalPlayer::GetIsAiming()
 {
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
-	return ped->isAiming;
+	return (ped->isAiming == 1);
 	//return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E5) == 1);
 }
 bool CLocalPlayer::GetIsDucking()
 {
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
-	return ped->isDucking;
+	return (ped->isDucking == 1);
 	//return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x1E4) == 1);
 }
 
 bool CLocalPlayer::GetIsCarAnim()
 {
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
-	return ped->isInAnimWithCar;
+	return (ped->isInAnimWithCarLocal == 1);
 	//return	(*(BYTE*)((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x71) == 1);
 }
 bool CLocalPlayer::IsOnFoot()

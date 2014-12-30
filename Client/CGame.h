@@ -77,7 +77,10 @@ typedef struct _INVENTARY {
 
 typedef struct _PED {
 	OBJECT		object;				//  0000-006C
-	_pad(_unk1, 0x8);				//	006C-0074
+	_pad(_unk0, 0x4);				//	006C-0070
+	byte		animStateLocal;		//	0070-0071
+	byte		isInAnimWithCarLocal;//	0071-0072
+	_pad(_unk1, 0x2);				//	0072-0074
 	byte		animState;			//	0074-0075
 	byte		isInAnimWithCar;	//	0075-0076
 	_pad(_unk2, 0x22);

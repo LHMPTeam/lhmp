@@ -10,7 +10,7 @@
 #define LHMP_VERSION_TYPE	VERSION_TEST
 
 // when LHMP is compiled as test version
-#define LHMP_VERSION_TEST_HASH "edefc21c057f0eabceaa8d8fafa71955"
+#define LHMP_VERSION_TEST_HASH "b2be1cca2a00f92eb23917628c3cd453"
 
 enum versionTypes
 {

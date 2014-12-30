@@ -19,7 +19,6 @@ class CNetworkManager
 private:
 	RakPeerInterface			 *peer;
 	Packet						*packet;
-	//SystemAddress				*m_pPlayerID;
 	Slot						*slot;
 	SocketDescriptor			*sd;
 	int							m_pServerPort;

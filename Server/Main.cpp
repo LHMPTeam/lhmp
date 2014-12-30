@@ -15,6 +15,7 @@
 CCore	*g_CCore = NULL;
 int main()
 {
+    g_CCore->GetLog()->AddNormalLog("Testis: '%s'", "lol");
 	CConfig* cfg = new CConfig();
 	char*	server_name	= cfg->GetCString("servername", "Default Lost Heaven Server");
 	int		server_port = cfg->GetInt("server_port", 27015);
@@ -41,6 +42,7 @@ int main()
 	g_CCore->GetLog()->AddNormalLog("Server Name: %s", server_name);
 	g_CCore->GetLog()->AddNormalLog("Server Port: %d", server_port);
 	g_CCore->GetLog()->AddNormalLog("Max.Players: %d", max_players);
+	g_CCore->GetLog()->AddNormalLog("Gamemode:    %s", gamemode);
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
 	CCore CCore;
@@ -51,7 +53,7 @@ int main()
 		if (gamemode)
 		{
 			//g_CCore->GetLog()->AddNormalLog("Loading gamemode '%s'", gamemode);
-
+            g_CCore->GetLog()->AddNormalLog("WTF is: %s \n",gamemode);
 			if (CCore.GetGameMode()->LoadGameMode(gamemode) == false)
 			{
 				g_CCore->GetLog()->AddNormalLog("Loading of '%s' has failed - no gamemode loaded !",gamemode);

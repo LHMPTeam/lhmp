@@ -152,7 +152,7 @@ void CGraphics::Render()
 			RenderNametags();
 
 
-		DebugWeapons();
+		//DebugWeapons();
 	}
 
 

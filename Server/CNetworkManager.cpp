@@ -50,8 +50,6 @@ void CNetworkManager::PostMasterlist(bool now){
 		if (server != UNASSIGNED_SYSTEM_ADDRESS)			// if we are connected
 		{
 			int maxplayers = this->m_pServerMaxPlayers;
-
-
 			std::string svrname = this->m_pSvrName;
 			for (size_t pos = svrname.find(' ');
 				pos != std::string::npos;
@@ -59,6 +57,7 @@ void CNetworkManager::PostMasterlist(bool now){
 			{
 				svrname.replace(pos, 1, "+");
 			}
+
 			char postRequest[2048] = "";
 			char data[1024] = "";
 			sprintf_s(data, "name=%s&pt=%d&ms=%d&mod=%s", svrname.c_str(), port, maxplayers, "");
@@ -75,13 +74,8 @@ void CNetworkManager::PostMasterlist(bool now){
 				RakNet::Packet *packet = TCP.Receive();
 				if (packet)
 				{
-					//printf("TCP: %s", packet->data);
 					if (packet->data[13] == 'O'){
-						{
-							printf("Server successfully posted to master server.\n");
-
-						}
-
+						printf("Server successfully posted to master server.\n");
 					}
 					else{
 						printf("Posting to master server failed.\n");
@@ -118,13 +112,6 @@ void CNetworkManager::UpdateMasterlist(){
 			mod.replace(pos, 1, "+");
 		}
 		char postRequest[2048] = "";
-		/*sprintf_s(postRequest,
-		"GET /query/update.php?players=%d&name=%s HTTP/1.1\r\n"
-		"Content-Type: text/plain; charset=UTF-8\r\n"
-		"Host: lh-mp.eu\r\n"
-		"\r\n", peer->NumberOfConnections(), svrname.c_str());
-		*/
-		//printf("%s", mod.c_str());
 		char data[1024] = "";
 		sprintf_s(data, "port=%d&players=%d&mod=%s", this->m_pServerPort, peer->NumberOfConnections(),mod.c_str());
 		sprintf_s(postRequest,
@@ -137,24 +124,7 @@ void CNetworkManager::UpdateMasterlist(){
 		while (TCP.ReceiveHasPackets() == false)
 			RakSleep(10);
 		RakNet::Packet* pack = TCP.Receive();
-		/*char buff[1024];
-		if (pack == NULL)
-		{
-			printf("Pice\n");
-		}
-		else
-		{
-			printf("Hura\n");
-			printf("TCP: %s \n", pack->data);
-		}*/
-		//memcpy(&buff, &pack->data, pack->length);
-		//buff[pack->length] = 0;
-
-		//printf("TCP data: %s", buff);
-		//std::cout << "POST[" << sizeof(pack->data) << "]" <<"\n";
-
-	}
-	else
+	} else
 	{
 		printf("Connection to masterlist failed\n");
 	}
@@ -228,20 +198,14 @@ void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 	if (packet->data[0] == (MessageID)ID_TIMESTAMP)
 		offset = 1 + sizeof(RakNet::TimeMS);
 
-	//int ID = GetIDFromSystemAddress(packet->systemAddress);
-
-	//RakNet::RakString rs;
-	//float FOV;
 	BitStream bsIn(packet->data + offset, packet->length - offset, false);
 	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-	//bsIn.Read(rs);
-	//bsIn.Read(FOV);
+
+	// compare player's version
 	char version[100];
 	bsIn.Read(version);
 	if (strcmp(version, LHMP_VERSION_TEST_HASH) != 0)
 	{
-		//slot[ID].isUsed = NULL;
-		//g_CCore->GetPlayerPool()->Delete(ID);
 		RakNet::BitStream errStr;
 		errStr.Write((RakNet::MessageID)ID_GAME_BAD_VERSION);
 		peer->Send(&errStr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -438,8 +402,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				char buff[255];
 				char buff2[255];
 				bsIn.Read(buff);
-				//ChatMonitor(buff);
-				//sprintf(buff2,"[%s] %s",g_CCore->GetPlayers()[ID].nickname,buff);
+
 				sprintf(buff2, "[%s] %s", player->GetNickname(), buff);
 				if (g_CCore->GetScripts()->onPlayerText(ID, buff) == true)
 				{
@@ -481,17 +444,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 				SYNC::ON_FOOT_SYNC	syncData;
 				bsIn.Read(syncData);
-				/*player->SetPosition(syncData.position);
-				Vector3D rot;
-				rot.x = syncData.degree;
-				rot.z = syncData.degree_second;
-				player->SetRotation(rot);
-				player->SetStatus(syncData.status);
-				player->SetHealth(syncData.health);
-				player->SetIsDucking(syncData.isDucking);
-				player->SetIsAim(syncData.isAim);
-				player->SetTimeStamp(timestamp);*/
-
 				player->OnSync(syncData,timestamp);
 			}
 		}
@@ -506,9 +458,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 				SYNC::IN_CAR	syncData;
 				bsIn.Read(syncData);
-				/*player->SetHealth(syncData.health);
-				player->SetIsAim(syncData.isAiming);
-				player->SetCarAim(syncData.aim);*/
 				player->OnCarUpdate(syncData);
 			}
 		}
@@ -524,20 +473,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 				bsIn.Read(pID);
 				bsIn.Read(skin);
-
-				/*if (skin > 302)
-					return;
-				player->SetSkin(skin);
-
-				BitStream bsOut;
-				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID)LHMP_PLAYER_CHANGESKIN);
-				bsOut.Write(pID);
-				bsOut.Write(skin);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);*/
-				//player->SetTimeStamp(timestamp);
-				//bsIn.Read(g_CCore->GetPlayers()[ID].skinID);
-				//std::cout << g_CCore->GetPlayers()[ID].skinID << std::endl;
 				player->OnChangeSkin(skin);
 			}
 		}
@@ -551,19 +486,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				/*player->ResetWeapons();
-				if (player->InCar != -1)
-				{
-					g_CCore->GetVehiclePool()->Return(player->InCar)->PlayerExit(ID);
-				}
-
-				SendHimDoors(ID);
-				BitStream bsOut;
-				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID)LHMP_PLAYER_RESPAWN);
-				bsOut.Write(ID);
-				peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE, 0, packet->systemAddress, true);
-				g_CCore->GetScripts()->onPlayerSpawn(ID);*/
 				player->OnRespawn();
 			}
 		}
@@ -574,28 +496,15 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			//peer->Send(&bsIn,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,UNASSIGNED_SYSTEM_ADDRESS,true);
 
-			//bsIn.IgnoreBytes(sizeof(MessageID));
-			//bsIn.IgnoreBytes(sizeof(MessageID));
 			bsIn.IgnoreBytes(sizeof(int));
 			bsIn.Read(wepID);
 			bsIn.Read(wepLoaded);
 			bsIn.Read(wepHidden);
-			//std::cout << wepID << " " << wepLoaded << "\n";
 			int ID = GetIDFromSystemAddress(packet->systemAddress);
 			if(ID == -1) return;
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				/*player->AddWeapon(wepID, wepLoaded, wepHidden);
-
-				BitStream bsOut;
-				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID)LHMP_PLAYER_ADDWEAPON);
-				bsOut.Write(ID);
-				bsOut.Write(wepID);
-				bsOut.Write(wepLoaded);
-				bsOut.Write(wepHidden);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
 				player->OnAddWeapon(wepID, wepLoaded, wepHidden);
 			}
 		}
@@ -611,14 +520,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				/*player->DeleteWeapon(wepID);
-
-				BitStream bsOut;
-				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID)LHMP_PLAYER_DELETEWEAPON);
-				bsOut.Write(ID);
-				bsOut.Write(wepID);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
 				player->OnDeleteWeapon(wepID);
 			}
 		}
@@ -635,14 +536,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				/*player->SwitchWeapon(wepID);
-
-				BitStream bsOut;
-				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID)LHMP_PLAYER_SWITCHWEAPON);
-				bsOut.Write(ID);
-				bsOut.Write(wepID);
-				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
 				player->OnSwitchWeapon(wepID);
 			}
 		}
@@ -664,16 +557,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				/*player->OnShoot();
-				BitStream bsOut;
-				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID)LHMP_PLAYER_SHOOT);
-				bsOut.Write(ID);
-				bsOut.Write(x);
-				bsOut.Write(y);
-				bsOut.Write(z);
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, packet->systemAddress, true);*/
-				//g_CCore->GetScripts()->onPlayerShoot(ID, player->GetCurrentWeapon());
 				player->SetCurrentWeapon(weapon);
 				player->OnPlayerShoot(x, y, z);
 			}
@@ -690,10 +573,6 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 			if (player != NULL)
 			{
-				/*
-				player->OnThrowGranade();
-				g_CCore->GetScripts()->onPlayerShoot(ID, player->GetCurrentWeapon());
-				*/
 				player->OnPlayerThrowGranade(position);
 			}
 
@@ -703,8 +582,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		{
 			int ID = GetIDFromSystemAddress(packet->systemAddress), killerID;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//bsIn.IgnoreBytes(sizeof(MessageID));
-			//bsIn.IgnoreBytes(sizeof(MessageID));
+
 			bsIn.Read(killerID);
 			g_CCore->GetScripts()->onPlayerIsKilled(ID, killerID);
 			BitStream bsOut;

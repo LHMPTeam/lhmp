@@ -512,7 +512,8 @@ DWORD CGame::CreatePED()
 {
 	DWORD pedaddr, frameaddr;
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
-	DWORD TommyEngineObj = (DWORD) ped->object.frame;
+	//DWORD TommyEngineObj = (DWORD) ped->object.frame;
+	DWORD TommyEngineObj = ((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4)) + 0x68);
 	char objectname[255] = "lhmp";
 	char PEDmodel[255] = "Tommy.i3d";
 	_asm
@@ -807,7 +808,7 @@ void CGame::AfterRespawn()
 		{
 			if (veh->IsActive())
 			{
-				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin(),veh->GetPosition(),veh->GetRotation());
+				DWORD base = g_CCore->GetGame()->CreateCar(veh->GetSkin(), veh->GetPosition(), veh->GetRotation());
 				veh->SetEntity(base);
 				for (int i = 0; i < 4; i++)
 				{
@@ -832,6 +833,11 @@ void CGame::AfterRespawn()
 				veh->SetDamage(veh->GetDamage());
 				veh->SetShotDamage(veh->GetShotDamage());
 				veh->ToggleRoof(veh->GetRoofState());
+
+				/*char buff[200];
+				sprintf(buff, "Siren: %d", veh->GetSirenState());
+				g_CCore->GetChat()->AddMessage(buff);
+				*/
 				veh->SetSirenState(veh->GetSirenState());
 
 			}

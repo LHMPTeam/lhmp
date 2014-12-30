@@ -21,6 +21,7 @@ void* ConsoleThread(void *arg){
 }
 void CConsole::Init()
 {
+	// init selfstanding thread for console input
     #ifdef _WIN32
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&ConsoleThread, 0, NULL, NULL);
 	#else
@@ -30,10 +31,12 @@ void CConsole::Init()
 
 void CConsole::Tick()
 {
+	// load input from console
 	char buff[256];
 	std::cin.getline(buff, 255);
 	std::cin.clear();
 
+	// split input into command - variables
 	char command[256];
 	char varlist[512] = "";
 	char *pch;
@@ -48,9 +51,10 @@ void CConsole::Tick()
 		memcpy(varlist, pch + 1, strlen(pch));
 	}
 
-	//printf("Entered command: '%s'\n", command);
+	// if 'exit'/'quit'
 	if (strcmp(command, "exit") == 0 || strcmp(command, "quit") == 0)
 	{
+		// quit whole server
 		g_CCore->GetLog()->AddNormalLog("Exit");
 		g_CCore->GetNetworkManager()->GetPeer()->Shutdown(100, 0, IMMEDIATE_PRIORITY);
 		#ifdef _WIN32
@@ -73,20 +77,20 @@ void CConsole::Tick()
 		}
 		else
 		{
+			// kick player from server
 			SystemAddress sa = g_CCore->GetNetworkManager()->GetSystemAddressFromID(atoi(varlist));
 			g_CCore->GetNetworkManager()->GetPeer()->CloseConnection(sa, true);
 		}
 	}
 	else if (strcmp(command, "msg") == 0)
 	{
+		// sends admin message to all players
 		if (strlen(varlist) == 0)
 		{
 			g_CCore->GetLog()->AddNormalLog("Usage: msg <some message to all players>");
 		}
 		else
 		{
-			//SystemAddress sa = g_CCore->GetNetworkManager()->GetSystemAddressFromID(atoi(varlist));
-			//g_CCore->GetNetworkManager()->GetPeer()->CloseConnection(sa, true);
 			char message[250];
 			sprintf(message, "#ff0000[Admin]#fffFFF%s", varlist);
 			g_CCore->GetNetworkManager()->SendMessageToAll(message);
@@ -112,6 +116,7 @@ void CConsole::Tick()
 
 	if (strcmp(command, "pl") == 0)
 	{
+		// get real player count
 		int pocet = 0;
 		for (int i = 0; i < 100; i++)
 		{

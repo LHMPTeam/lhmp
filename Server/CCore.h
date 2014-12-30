@@ -16,7 +16,6 @@ typedef unsigned char byte;
 #include "CDoorPool.h"
 #include "CLog.h"
 #include "CPickupPool.h"
-//#include "CFileTransferPool.h"
 #include "CFileTransfer.h"
 
 class CCore
@@ -34,10 +33,8 @@ private:
 	CDoorPool			m_cDoorPool;
 	CPickupPool			m_cPickupPool;
 	CLog				m_cLog;
-	//CFileTransferPool	m_cFileTransferPool;
 	CFileTransfer		m_cFileTransfer;
 	char				m_cMapName[200];
-	//strPlayer*			m_pPlayers;
 
 public:
 	CCore();
