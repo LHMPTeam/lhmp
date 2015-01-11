@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Tesla" />
+		<Option title="Server" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/Tesla" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/Server" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -16,7 +16,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/Tesla" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/Server" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -366,10 +366,15 @@
 		<Unit filename="CVehiclePool.cpp" />
 		<Unit filename="CVehiclePool.h" />
 		<Unit filename="Main.cpp" />
+		<Unit filename="sq_SQlite.h" />
 		<Unit filename="sq_funcdef.cpp" />
+		<Unit filename="sq_funcdef.h" />
 		<Unit filename="sq_functions.cpp" />
+		<Unit filename="sq_functions.h" />
 		<Unit filename="sq_utils.cpp" />
+		<Unit filename="sq_utils.h" />
 		<Unit filename="squirrelheads.cpp" />
+		<Unit filename="squirrelheads.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

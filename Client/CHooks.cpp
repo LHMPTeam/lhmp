@@ -1023,7 +1023,7 @@ char endofmissionScript[] = "dim_act 1\r\n"
 							"end\r\n"; 
 
 char omg[] = "end\r\n";
-void OnScriptLoad(char* input)
+char* OnScriptLoad(char* input)
 {
 	// now instead of returning just change input address
 	if (strstr(input, "endofmission") != NULL || strstr(input, "player_lockcontrols") != NULL)
@@ -1032,6 +1032,7 @@ void OnScriptLoad(char* input)
 		char* script = new char[len + 1];
 		strcpy(script, endofmissionScript);
 		input = script;
+		return script;
 	}
 	else if (strstr(input, "change_mission") != NULL)
 	{
@@ -1039,8 +1040,11 @@ void OnScriptLoad(char* input)
 		char* script = new char[len + 1];
 		strcpy(script, omg);
 		input = script;
+		return script;
 	}
 
+	g_CCore->GetLog()->AddLog("Loading script ORIGINAL !");
+	return input;
 	// otherwise do not change anything
 
 	/*//if (strcmp(g_CCore->GetGame()->GetActualMapName(),"")
@@ -1091,8 +1095,10 @@ __declspec(naked) void Hook_OnScriptLoad()
 
 void HookLoadGameScript(DWORD a, DWORD script, DWORD b, DWORD c, DWORD d)
 {
-	char* newscript = (char*) script;
-	OnScriptLoad(newscript);
+	char* newscript = OnScriptLoad((char*) script);
+	g_CCore->GetLog()->AddLog("Loading script...");
+	//g_CCore->GetLog()->AddLog(newscript);
+
 
 
 	// loads script

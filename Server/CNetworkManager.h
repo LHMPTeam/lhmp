@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: handles network communication
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef CNETWORKMANAGER_H
 #define CNETWORKMANAGER_H
 
@@ -22,9 +31,10 @@ private:
 	Slot						*slot;
 	SocketDescriptor			*sd;
 	int							m_pServerPort;
-	std::string					m_pStartPos;
-	Vector3D					m_pSpawnPos;
-	DWORD						SPUtime;
+
+	std::string					m_pSvrName;
+	int							m_pServerMaxPlayers;
+	std::string					m_pServerMode;
 public:
 	CNetworkManager();
 	~CNetworkManager();
@@ -33,19 +43,37 @@ public:
 	SystemAddress				GetSystemAddressFromID(int);
 	Slot*						GetSlotID(int ID);
 	int							GetFirstFreeSlot();
+
+	void						SetServerName(std::string);
+	std::string					GetServerName();
+	void						SetMaxServerPlayers(int);
+	int							GetMaxServerPlayers();
+	void						SetServerMode(std::string);
+	std::string					GetServerMode();
+
+	// Tick callback
 	void						Pulse();
+	// Handles all packets with ID_GAME_LHMP_PACKET
 	void						LHMPPacket(Packet*, RakNet::TimeMS timestamp = NULL);
+
+	// Tick onfoot sync
 	void						SendSYNC();
+	// Tick car sync
 	void						SendCarSYNC();
+	// Sends initial info about players to new connected player
 	void						SendHimOthers(int);
+	// Sends initial info about cars to new connected player
 	void						SendHimCars(int);
+	// Sends initial info about doors to new connected player
 	void						SendHimDoors(int);
+	// Sends initial info about pickups to new connected player
 	void						SendHimPickups(int);
+
+	// send initial info to masterlist when server starts
 	void						PostMasterlist(bool);
+	// Tick master
 	void						UpdateMasterlist();
-	std::string					m_pSvrName;
-	int							m_pServerMaxPlayers;
-	std::string					m_pServerMode;
+
 	void						SendMessageToAll(char*);
 
 	void						SendPingUpdate();
