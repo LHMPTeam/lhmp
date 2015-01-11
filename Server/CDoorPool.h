@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: handles all synced doors
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef CDOORPOOL_H
 #define CDOORPOOL_H
 

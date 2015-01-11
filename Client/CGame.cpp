@@ -271,6 +271,10 @@ void CGame::Camera_lock(DWORD address)
 }
 void CGame::ChangeSkin(DWORD PED,int skinId)
 {
+	char buff[500];
+	sprintf(buff, "CGame::ChangeSkin %d %d", PED, skinId);
+	g_CCore->GetLog()->AddLog(buff);
+
 	skinId = Tools::Clamp(skinId, 0, (int) (sizeof(SKINS) / 200));
 	char * actualModel = (char*) (*(DWORD*)(*(DWORD*)(PED+0x68)+0x154)+0x0);
 	char isExact[255];
@@ -437,7 +441,7 @@ DWORD CGame::CreateCar(int skin)
 		popad
 	}
 	char buff[255];
-	sprintf(buff,"Adresa auta: %x %x", caraddr,addr);
+	sprintf(buff,"Car address: %x %x", caraddr,addr);
 	g_CCore->GetLog()->AddLog(buff);
 	return caraddr;
 }
@@ -660,7 +664,7 @@ DWORD CGame::CreatePED()
 	}
 	
 	char buff[255];
-	sprintf(buff, "Adresa PEda: %x %x", pedaddr, frameaddr);
+	sprintf(buff, "PED address: %x %x", pedaddr, frameaddr);
 	g_CCore->GetLog()->AddLog(buff);
 	return pedaddr;
 }
@@ -871,7 +875,7 @@ void CGame::ThrowAwayWeapon()
 			MOV wepId,eax
 		}
 		char buff[255];
-		sprintf(buff,"ThrowAway: %i",wepId);
+		sprintf(buff,"CGame::ThrowAway: %i",wepId);
 		//g_CCore->GetChat()->AddMessage(buff);
 		g_CCore->GetLog()->AddLog(buff);
 		RakNet::BitStream bsOut;
@@ -907,7 +911,7 @@ void CGame::TakeWeapon()
 			MOV wepHidden, EAX
 		}
 		char buff[255];
-		sprintf(buff,"TakeWep: %i %i %i",wepId,wepLoaded,wepHidden);
+		sprintf(buff,"CGame::TakeWep: %i %i %i",wepId,wepLoaded,wepHidden);
 		//g_CCore->GetChat()->AddMessage(buff);
 		g_CCore->GetLog()->AddLog(buff);
 		RakNet::BitStream bsOut;
@@ -933,7 +937,7 @@ void CGame::ChangeWeapon()
 			MOV wepId, EAX
 		}
 		char buff[255];
-		sprintf(buff,"SwitchWep: %i",wepId);
+		sprintf(buff,"CGame::SwitchWep: %i",wepId);
 		//g_CCore->GetChat()->AddMessage(buff);
 		g_CCore->GetLog()->AddLog(buff);
 		RakNet::BitStream bsOut;
@@ -1059,7 +1063,7 @@ void CGame::OnDeath()
 	if (killerId != -1)
 	{
 		char buff[255];
-		sprintf(buff, "Killed by 0x%i", killerId);
+		sprintf(buff, "CGame::OnDeath - Killed by 0x%i", killerId);
 		g_CCore->GetLog()->AddLog(buff);
 
 		RakNet::BitStream bsOut;
@@ -1242,7 +1246,7 @@ void CGame::PlayerEnteredVehicle()
 	bsOut.Write(seatID);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 
-	sprintf(buff, "[PEV] vehicle %x, seat id: %d", vehicle, seatID);
+	sprintf(buff, "CGame::PlayerEnteredVehicle %x, seat id: %d", vehicle, seatID);
 	g_CCore->GetLog()->AddLog(buff);
 }
 void CGame::PlayerExitVehicle()
@@ -1265,7 +1269,7 @@ void CGame::PlayerExitVehicle()
 	bsOut.Write(vehID);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 
-	sprintf(buff, "[PEV] Exit vehicle %x", vehicle);
+	sprintf(buff, "CGame::PlayerExitVehicle %x", vehicle);
 	g_CCore->GetLog()->AddLog(buff);
 }
 
@@ -1275,7 +1279,7 @@ void CGame::PlayerExitVehicleFinish()
 	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_EXIT_VEHICLE_FINISH);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
-	g_CCore->GetLog()->AddLog("[PEV] Exit vehicle finish");
+	g_CCore->GetLog()->AddLog("CGame::PlayerExitVehicleFinish");
 }
 
 void CGame::DeleteWeapon(DWORD PED,DWORD weaponID)
@@ -1478,9 +1482,11 @@ void CGame::SetFramePos(DWORD frame,float f1,float f2,float f3)
 
 void CGame::DeletePed(DWORD PED)
 {
+	if (PED == NULL)
+		return;
 	// Delete weapons
 	_PED* deletingPed = (_PED*)PED;
-	if (PED)
+	if (PED != NULL)
 	{
 
 		for (int i = 0; i < 8; i++)

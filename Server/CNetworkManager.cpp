@@ -30,7 +30,6 @@ DWORD postTime = timeGetTime();
 CNetworkManager::CNetworkManager()
 {
 	peer = NULL;
-	SPUtime = timeGetTime();
 	this->m_pServerMode = "Default+Mode";
 }
 CNetworkManager::~CNetworkManager()
@@ -138,7 +137,6 @@ bool CNetworkManager::Init(int port, int players,std::string startpos,std::strin
 {
 	m_pServerMaxPlayers = players;
 	m_pServerPort		= port;
-	m_pStartPos			= startpos;
 	m_pServerMode		= mode;
 	peer	= RakNet::RakPeerInterface::GetInstance();
 	sd		= new SocketDescriptor(port,0);
@@ -190,6 +188,30 @@ int	CNetworkManager::GetFirstFreeSlot()
 			return i;
 	}
 	return -1;
+}
+void		CNetworkManager::SetServerName(std::string name)
+{
+	this->m_pSvrName = name;
+}
+std::string		CNetworkManager::GetServerName()
+{
+	return this->m_pSvrName;
+}
+void			CNetworkManager::SetMaxServerPlayers(int max)
+{
+	this->m_pServerMaxPlayers = max;
+}
+int				CNetworkManager::GetMaxServerPlayers()
+{
+	return this->m_pServerMaxPlayers;
+}
+void			CNetworkManager::SetServerMode(std::string mode)
+{
+	this->m_pServerMode = mode;
+}
+std::string		CNetworkManager::GetServerMode()
+{
+	return this->m_pServerMode;
 }
 
 void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
@@ -1031,32 +1053,24 @@ void CNetworkManager::SendHimDoors(int he)
 
 void CNetworkManager::SendPingUpdate()
 {
-	//DWORD aktual = timeGetTime();
-	//if(aktual < SPUtime || (aktual-SPUtime) > 1000)
-	//{
-		//SPUtime = aktual;
-		//std::cout << "Tick\n";
-		for(int i=0; i < m_pServerMaxPlayers; i++)
+	for(int i=0; i < m_pServerMaxPlayers; i++)
+	{
+		CPlayer* player = g_CCore->GetPlayerPool()->Return(i);
+		if (player != NULL)
 		{
-			CPlayer* player = g_CCore->GetPlayerPool()->Return(i);
-			if(player == NULL) continue;
-			//strPlayer* actual = &g_CCore->GetPlayers()[i];
-			//if(actual->isSpawned)
-			if(player->IsSpawned())
+			if (player->IsSpawned())
 			{
 				SystemAddress sa = GetSystemAddressFromID(i);
 				BitStream bsOut;
-				bsOut.Write((MessageID) ID_GAME_LHMP_PACKET);
-				bsOut.Write((MessageID) LHMP_PLAYER_PING);
+				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+				bsOut.Write((MessageID)LHMP_PLAYER_PING);
 				bsOut.Write(i);
-				//bsOut.Write(random);
 				bsOut.Write(peer->GetLastPing(sa));
-				peer->Send(&bsOut,MEDIUM_PRIORITY,RELIABLE,0,UNASSIGNED_RAKNET_GUID,true);
+				peer->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, UNASSIGNED_RAKNET_GUID, true);
 				peer->Ping(sa);
-				//std::cout << peer->GetLastPing(sa) << std::endl;
 			}
 		}
-	//}
+	}
 }
 
 int	CNetworkManager::GetPort()

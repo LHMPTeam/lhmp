@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: entity template for game objects (human, cars, objects)
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef ENTITY_H
 #define ENTITY_H
 

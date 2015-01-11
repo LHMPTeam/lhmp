@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: log class
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef LOG_C
 #define LOG_C
 

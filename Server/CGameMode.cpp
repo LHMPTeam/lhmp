@@ -6,6 +6,12 @@
 #include "squirrelheads.h"
 
 extern CCore *g_CCore;
+
+CGameMode::CGameMode()
+{
+	sprintf(this->pGamemodeName, "default");
+}
+
 bool CGameMode::LoadGameMode(char* name)
 {
 	this->clientPoolSize = 0;
@@ -126,7 +132,7 @@ bool CGameMode::LoadGameMode(char* name)
 	return true;
 }
 
-bool CGameMode::UnloadGameMode(char* name)
+bool CGameMode::UnloadGameMode()
 {
 	// unloads all Squirrel scripts
 	g_CCore->GetScripts()->UnloadAll();
@@ -140,7 +146,7 @@ void CGameMode::ReloadGameMode()
 	char tempname[500];
 	strcpy(tempname, this->GetName());
 
-	this->UnloadGameMode(tempname);
+	this->UnloadGameMode();
 	this->LoadGameMode(tempname);
 
 	printf("Fucking name '%s' \n", tempname);

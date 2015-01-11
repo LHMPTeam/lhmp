@@ -179,6 +179,28 @@ void CChat::DoCommand(char str[])
 	else if (strcmp(command, "debug") == 0)
 	{
 		g_CCore->GetLog()->SetDebugState(!g_CCore->GetLog()->GetDebugState());
+		if (g_CCore->GetLog()->GetDebugState())
+			g_CCore->GetChat()->AddMessage("Debug - on");
+		else
+			g_CCore->GetChat()->AddMessage("Debug - off");
+	}
+	else if (strcmp(command, "logstates") == 0)
+	{
+		if (strlen(varlist) > 0)
+		{
+			int state = atoi(varlist);
+			if (state <= LOG_ALL)
+			{
+				g_CCore->GetLog()->SetLogState(state);
+			}
+		}
+		else {
+			g_CCore->GetChat()->AddMessage("Usage: /logstates <0,2>");
+			g_CCore->GetChat()->AddMessage("0 - log off");
+			g_CCore->GetChat()->AddMessage("1 - log normal");
+			g_CCore->GetChat()->AddMessage("2 - log all");
+			g_CCore->GetChat()->AddMessage("-----------------------");
+		}
 	}
 	else if (strcmp(command, "killme") == 0)
 	{

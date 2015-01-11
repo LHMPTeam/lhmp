@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: handles all server-to-client filetransfers
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef FILETRANSFER_C
 #define FILETRANSFER_C
 #include <vector>

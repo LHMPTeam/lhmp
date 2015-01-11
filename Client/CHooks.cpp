@@ -1023,41 +1023,61 @@ char endofmissionScript[] = "dim_act 1\r\n"
 							"end\r\n"; 
 
 char omg[] = "end\r\n";
-char* OnScriptLoad(char* input)
+void OnScriptLoad(char* input)
 {
-	_asm pushad
-	char* end = strstr(input, "endofmission");
-	if (end != NULL)
+	// now instead of returning just change input address
+	if (strstr(input, "endofmission") != NULL || strstr(input, "player_lockcontrols") != NULL)
 	{
-		_asm popad
-		return endofmissionScript;
+		int len = strlen(endofmissionScript);
+		char* script = new char[len + 1];
+		strcpy(script, endofmissionScript);
+		input = script;
 	}
-	end = strstr(input, "player_lockcontrols");
-	if (end != NULL)
+	else if (strstr(input, "change_mission") != NULL)
 	{
-		_asm popad
-		return endofmissionScript;
+		int len = strlen(omg);
+		char* script = new char[len + 1];
+		strcpy(script, omg);
+		input = script;
 	}
-	end = strstr(input, "change_mission");
-	if (end != NULL)
-	{
-		_asm popad
-		return omg;
-	}
-	_asm popad
-	return input;
+
+	// otherwise do not change anything
+
 	/*//if (strcmp(g_CCore->GetGame()->GetActualMapName(),"")
 	//return input;
 	return endofmissionScript;*/
 }
+
+// this is called afte OnScriptLoad
+void OnScriptDeload(char* script)
+{
+	if (strcmp(script, "NoAnimPreload") != NULL)
+	{
+		_asm {
+			//mov EDI, script
+			PUSH EDI
+			MOV EAX, 0x006243AC
+			CALL EAX; 006243AC
+			ADD ESP, 4
+		}
+	}
+}
+
 __declspec(naked) void Hook_OnScriptLoad()
 {
 	_asm {
-		push EDI
+		sub ESP, 0x4
+		mov DWORD PTR DS : [ESP],EDI // pointer to script
+		MOV EAX, ESP
+		pushad
+		push EAX	// push script pointer
+		//push EDI
 		call OnScriptLoad
 		add ESP, 0x4
-		//push EDI
-		mov EDI,EAX
+		popad
+		// now ESP stores our param
+		pop EDI			// pop EDI works as mov EDI, [ESP]
+
 		PUSH EAX; / Arg4
 		PUSH ECX; | Arg3
 		PUSH EBX; | Arg2
@@ -1065,6 +1085,59 @@ __declspec(naked) void Hook_OnScriptLoad()
 		MOV ECX, ESI;
 		//pop edi
 		PUSH 0x005AF869
+		retn
+	}
+}
+
+void HookLoadGameScript(DWORD a, DWORD script, DWORD b, DWORD c, DWORD d)
+{
+	char* newscript = (char*) script;
+	OnScriptLoad(newscript);
+
+
+	// loads script
+	_asm {
+		mov EAX, d
+			PUSH EAX
+			mov EAX, c
+			PUSH EAX
+			mov EAX, b
+			PUSH EAX
+			mov EAX, newscript
+			PUSH EAX
+			MOV ESI, a
+			MOV ECX, ESI
+			MOV EAX, 0x005BA6A0
+			CALL EAX; Game.005BA6A0; \Game.005BA6A0
+	}
+
+	if ((char*) script == newscript)
+	{
+		// delete it if it's genuie
+		_asm {
+			PUSH EDI
+				MOV EAX, 0x006243AC
+				CALL EAX; Game.006243AC;  free script memory
+				ADD ESP, 4
+		}
+	}
+}
+
+__declspec(naked) void Hook_OnScriptLoadFinal()
+{
+	_asm {
+		pushad
+		PUSH EAX; / Arg4
+		PUSH ECX; | Arg3
+		PUSH EBX; | Arg2
+		PUSH EDI; | Arg1
+		push ESI; |
+		call HookLoadGameScript
+		add ESP, 0x14
+		popad
+
+		
+		PUSH 0x005AF877
 		retn
 	}
 }
@@ -1530,6 +1603,9 @@ _declspec (naked) void Hook_PreventCarMoveWhenAbandoned()
 		ret
 	}
 }
+
+
+
 void SetHooks()
 {
 	// This should make car static
@@ -1626,8 +1702,11 @@ void SetHooks()
 	Tools::InstallJmpHook(0x004A3FA6, (DWORD)&Hook_ThrowGranade);
 	Tools::InstallJmpHook(0x004CC608, (DWORD)&Hook_OnDoorStateChange);
 
-	Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoad);
-
+	
+	/*Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoad);
+	Tools::InstallJmpHook(0x005AF86F, (DWORD)&OnScriptDeload);	// fix for some Win7 PCs (e.g. Robville one)
+	*/
+	Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoadFinal);
 
 	Tools::InstallJmpHook(0x005F93C4, (DWORD)&Hook_Respawn01);	
 

@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: loads, unloads and reloads gamemodes
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef CGAMEMODE_H
 #define CGAMEMODE_H
 
@@ -15,11 +24,14 @@ class CGameMode
 private:
 	char pGamemodeName[250];
 	ClientScript* clientPool;
-	int clientPoolSize = 0;
+	int clientPoolSize;
 public:
+	CGameMode();
+
 	void	AddClientScript(char*);
-	bool LoadGameMode(char*);
-	bool UnloadGameMode(char*);
+	// Load gamemode @name
+	bool LoadGameMode(char* name);
+	bool UnloadGameMode();
 	void ReloadGameMode();
 	// Returns  0 - OK
 	//			1 - failed to compile

@@ -32,7 +32,7 @@ bool CCore::Init(int port,int players, std::string startpos, std::string svrname
 {
 	if (m_cNetworkManager.Init(port, players, startpos, mode) == false)
 		return false;
-	m_cNetworkManager.m_pSvrName = svrname;
+	m_cNetworkManager.SetServerName(svrname);
 	if (visible == 1)
 		m_cNetworkManager.PostMasterlist(true);
 
@@ -51,7 +51,7 @@ void CCore::ReloadGamemode()
 	char tempname[500];
 	strcpy(tempname, this->GetGameMode()->GetName());
 	// reload gamemode
-	this->GetGameMode()->UnloadGameMode(tempname);
+	this->GetGameMode()->UnloadGameMode();
 
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -88,10 +88,8 @@ void	CCore::ChangeModeTo(char* newmode)
 	this->GetNetworkManager()->GetPeer()->Send(&bsOutR, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 
 
-	char tempname[500];
-	strcpy(tempname, this->GetGameMode()->GetName());
 	// reload gamemode
-	this->GetGameMode()->UnloadGameMode(tempname);
+	this->GetGameMode()->UnloadGameMode();
 
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -182,4 +180,10 @@ CLog* CCore::GetLog()
 CFileTransfer*	CCore::GetFileTransfer()
 {
 	return &this->m_cFileTransfer;
+}
+
+
+CBanSystem*		CCore::GetBanSystem()
+{
+	return &this->m_cBanSystem;
 }

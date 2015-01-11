@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: core of server, main class
+
+@author Romop5
+@version 1.0 1/9/14
+*/
+
 #ifndef CCORE_H
 #define	CCORE_H
 
@@ -17,11 +26,13 @@ typedef unsigned char byte;
 #include "CLog.h"
 #include "CPickupPool.h"
 #include "CFileTransfer.h"
+#include "CBanSystem.h"
 
 class CCore
 {
 private:
 	bool				m_bIsRunning;
+	CBanSystem			m_cBanSystem;
 	CNetworkManager		m_cNetworkManager;
 	CTickManager		m_cTickManager;
 	CPlayerPool			m_cPlayerPool;
@@ -39,14 +50,21 @@ private:
 public:
 	CCore();
 	~CCore();
+	// Init server with params
+	// Returns false if something went wrogn
 	bool	Init(int,int,std::string,std::string,std::string, int);
+	// Tick callback 
 	void	Pulse();
+	// Returns whether server is running
 	bool	IsRunning();
+	// Tick callback called every 1000ms (1s)
 	void	OnSecondElapsed();
 
 	// Reloads actuall mode
 	void	ReloadGamemode();
 	void	ChangeModeTo(char* newmode);
+
+	// return subclasses
 
 	CNetworkManager*	GetNetworkManager();
 	CTickManager*		GetTickManager();
@@ -60,6 +78,7 @@ public:
 	CPickupPool*		GetPickupPool();
 	CLog*				GetLog();
 	CFileTransfer*		GetFileTransfer();
+	CBanSystem*			GetBanSystem();
 
 	void				SetDefaultMap(char*);
 	char*				GetDefaultMap();

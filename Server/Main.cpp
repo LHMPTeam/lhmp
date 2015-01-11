@@ -13,9 +13,10 @@
 #endif
 
 CCore	*g_CCore = NULL;
+// Setups LHMP server
 int main()
 {
-    g_CCore->GetLog()->AddNormalLog("Testis: '%s'", "lol");
+	// Load config.txt
 	CConfig* cfg = new CConfig();
 	char*	server_name	= cfg->GetCString("servername", "Default Lost Heaven Server");
 	int		server_port = cfg->GetInt("server_port", 27015);
@@ -27,9 +28,11 @@ int main()
 	std::string startpos = "-1985.966675 -5.037054 4.284860";
 	max_players = Tools::Clamp(max_players, 0, MAX_PLAYERS);
 
+	// change console name to servername
 #ifdef _WIN32
 	SetConsoleTitle(server_name);
 #endif
+	// dump server info & variables
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 	g_CCore->GetLog()->AddNormalLog(" _        _   _          _      _    _____			");
 	g_CCore->GetLog()->AddNormalLog("| |      | | | |    _   | |\\  /| |  |     \\				");
@@ -45,34 +48,30 @@ int main()
 	g_CCore->GetLog()->AddNormalLog("Gamemode:    %s", gamemode);
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
+	// run CCore instance
 	CCore CCore;
 	g_CCore = &CCore;
+	// if server inits correctly
 	if (CCore.Init(server_port, max_players, startpos, server_name, mode, visible) == true)
 	{
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
-		if (gamemode)
+
+		// now try to load gamemode
+		if (CCore.GetGameMode()->LoadGameMode(gamemode) == false)
 		{
-			//g_CCore->GetLog()->AddNormalLog("Loading gamemode '%s'", gamemode);
-            g_CCore->GetLog()->AddNormalLog("WTF is: %s \n",gamemode);
-			if (CCore.GetGameMode()->LoadGameMode(gamemode) == false)
-			{
-				g_CCore->GetLog()->AddNormalLog("Loading of '%s' has failed - no gamemode loaded !",gamemode);
-			}
+			g_CCore->GetLog()->AddNormalLog("Loading of '%s' has failed - no gamemode loaded !",gamemode);
 		}
-		else {
-			g_CCore->GetLog()->AddNormalLog("wtf");
-		}
+
+		// load banlist
+		g_CCore->GetBanSystem()->LoadBanlist();
+
+		// call Squirrel onServerInit callback
 		CCore.GetScripts()->onServerInit();
 
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 		g_CCore->GetLog()->AddNormalLog("Server has started...");
 
-		/*FILE* file = fopen("lol.mp3", "rb");
-		if (file)
-		{
-			g_CCore->GetFileTransfer()->AddFile("lol.mp3", file);
-		}*/
-
+		// pulse CCore until server runs
 		while(CCore.IsRunning())
 		{
 			CCore.Pulse();
@@ -82,6 +81,7 @@ int main()
 	}
 	else
 	{
+		// Server haven't set up correctly, wait for user imput and then terminate
 		g_CCore->GetLog()->AddNormalLog("Server initialization failed, server will shutdown");
 		std::cin.get();
 		std::cin.get();

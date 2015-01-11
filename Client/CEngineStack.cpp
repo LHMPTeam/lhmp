@@ -39,6 +39,7 @@ void CEngineStack::DoMessage()
 		{
 		case CLIENT_ENGINESTACK::ES_SERVERRELOAD:
 		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_SERVERRELOAD",LOG_NORMAL);
 			// delete all cars
 			for (unsigned int i = 0; i < MAX_VEHICLES; i++)
 			{
@@ -83,7 +84,8 @@ void CEngineStack::DoMessage()
 		}
 		break;
 		case CLIENT_ENGINESTACK::ES_CREATEPLAYER:
-			{
+		{
+				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CREATEPLAYER",LOG_NORMAL);
 				CPed* ped = g_CCore->GetPedPool()->Return(start->data);
 				if(ped != NULL)
 				{
@@ -120,11 +122,13 @@ void CEngineStack::DoMessage()
 			break;
 		case CLIENT_ENGINESTACK::ES_DELETEPLAYER:
 		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_DELETEPLAYER", LOG_NORMAL);
 			g_CCore->GetGame()->DeletePed(start->data);
 		}
 			break;
 		case CLIENT_ENGINESTACK::ES_CHANGESKIN:
 			{
+				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CHANGESKIN", LOG_NORMAL);
 				if(start->data == g_CCore->GetLocalPlayer()->GetOurID())
 				{
 					DWORD adr = *(DWORD*) (*(DWORD*)(0x006F9464)+0xE4);
@@ -152,6 +156,7 @@ void CEngineStack::DoMessage()
 			break;
 		case CLIENT_ENGINESTACK::ES_PLAYANIM:
 			{
+				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYANIM", LOG_NORMAL);
 				if(start->data == g_CCore->GetLocalPlayer()->GetOurID())
 				{
 					DWORD adr = *(DWORD*) (*(DWORD*)(0x006F9464)+0xE4);
@@ -171,6 +176,7 @@ void CEngineStack::DoMessage()
 			break;
 		case CLIENT_ENGINESTACK::ES_PLAYANIM_STRING:
 		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYANIM_STRING", LOG_NORMAL);
 			ENGINE_STACK::PLAYER_PLAYANIM* pw = (ENGINE_STACK::PLAYER_PLAYANIM*) start->data;
 			if (pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
 			{
@@ -192,6 +198,7 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_PLAYSOUND_STRING:
 		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYSOUND_STRING", LOG_NORMAL);
 			ENGINE_STACK::PLAYER_PLAYSOUND* pw = (ENGINE_STACK::PLAYER_PLAYSOUND*) start->data;
 			//char test[] = "sounds\\15020060.wav";
 			g_CCore->GetGame()->PlayGameSound(pw->name);
@@ -199,6 +206,7 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_ADDWEAPON:
 			{
+				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_ADDWEAPON", LOG_NORMAL);
 				ENGINE_STACK::PLAYER_ADDWEAPON* pw = (ENGINE_STACK::PLAYER_ADDWEAPON*) start->data;
 				if(pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
 				{
@@ -208,7 +216,6 @@ void CEngineStack::DoMessage()
 						if (Tools::isShootingArm(pw->wepID))
 						{
 							g_CCore->GetLocalPlayer()->SetWeapon(pw->wepID, pw->wepLoaded, pw->wepHidden);
-							g_CCore->GetLog()->AddLog("SetWeapon lol");
 						}
 						else
 						{
@@ -234,6 +241,7 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_DELETEWEAPON:
 			{
+				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_DELETEWEAPON", LOG_NORMAL);
 				ENGINE_STACK::PLAYER_DELETEWEAPON* pw = (ENGINE_STACK::PLAYER_DELETEWEAPON*) start->data;
 				if(pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
 				{
@@ -255,6 +263,7 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_SWITCHWEAPON:
 			{
+				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_SWITCHWEAPON", LOG_NORMAL);
 				ENGINE_STACK::PLAYER_SWITCHWEAPON* pw = (ENGINE_STACK::PLAYER_SWITCHWEAPON*) start->data;
 				if(pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
 				{
@@ -303,7 +312,7 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_THROWGRANADE:
 		{
-			g_CCore->GetLog()->AddLog("ThrowGranade");
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_THROWGRANADE", LOG_NORMAL);
 			ENGINE_STACK::PLAYER_SHOOT* pw = (ENGINE_STACK::PLAYER_SHOOT*) start->data;
 
 			if (pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
@@ -317,7 +326,6 @@ void CEngineStack::DoMessage()
 				{
 					if (ped->GetEntity() != 0)
 					{
-						g_CCore->GetLog()->AddLog("ThrowGranade PED");
 						g_CCore->GetGame()->ThrowGranade(ped->GetEntity(), pw->pos);
 						//ped->OnThrowGranade();
 					}
@@ -326,7 +334,8 @@ void CEngineStack::DoMessage()
 		}
 		break;
 		case CLIENT_ENGINESTACK::ES_PLAYERDEATH:
-		{
+		{ 
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYERDEATH", LOG_NORMAL);
 			if (start->data == g_CCore->GetLocalPlayer()->GetOurID())
 			{
 				DWORD adr = *(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4);
@@ -347,12 +356,14 @@ void CEngineStack::DoMessage()
 			break;
 		case CLIENT_ENGINESTACK::ES_CAMERASETPOS:
 		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CAMERASETPOS", LOG_NORMAL);
 			ENGINE_STACK::CAMERA_SET* pw = (ENGINE_STACK::CAMERA_SET*) start->data;
 			g_CCore->GetGame()->SetCameraPos(pw->pos, pw->rot.x, pw->rot.y, pw->rot.z,0);
 		}
 			break;
 		case CLIENT_ENGINESTACK::ES_CAMERAUNLOCK:
 		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CAMERAUNLOCK", LOG_NORMAL);
 			g_CCore->GetGame()->CameraUnlock();
 		}
 		break;

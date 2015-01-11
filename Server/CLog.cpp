@@ -80,133 +80,26 @@ void CLog::AddLog(int mode, char* message)
 
 void CLog::AddNormalLog(char* format, ...)
 {
-	char endBuff[500] = "";
-	int start = 0;
-	int len = strlen(format);
-	int count = 0;
-	for (int i = 0; i < len; i++)
-	{
-		if (format[i] == '%')
-			count++;
-	}
-	if (count > 0)
-	{
-		va_list vl;
-		va_start(vl, format);
-		for (int i = 0; i < len; i++)
-		{
-			if (format[i] == '%' && len - 1 != i)
-			{
-				switch (format[i + 1])
-				{
-				case '%':
-					sprintf(endBuff, "%s%%", endBuff);
-					break;
-				case 'i':
-				case 'd':
-					sprintf(endBuff, "%s%d", endBuff, va_arg(vl, int));
-					break;
-				case 'f':
-					sprintf(endBuff, "%s%f", endBuff, va_arg(vl, double));
-					break;
-				case 'u':
-					sprintf(endBuff, "%s%u", endBuff, va_arg(vl, unsigned int));
-					break;
-				case 'x':
-				case 'X':
-					sprintf(endBuff, "%s%X", endBuff, va_arg(vl, unsigned int));
-					break;
-				case 'p':
-					sprintf(endBuff, "%s%p", endBuff, va_arg(vl, unsigned int));
-					break;
-				case 's':
-					sprintf(endBuff, "%s%s", endBuff, va_arg(vl, char*));
-					break;
-				default:
-					break;
-				}
-				i++;
-			}
-			else {
-				sprintf(endBuff, "%s%c", endBuff, format[i]);
-			}
-		}
-		va_end(vl);
-	}
-	else {
-		sprintf(endBuff, "%s", format);
-	}
-
-	// let's see the result
-	//this->AddLog(1,endBuff);
-	printf("%s\n", endBuff);
-	this->WriteToDisc(endBuff, false);
-
+	char endbuff[500] = "";
+	va_list args;
+	va_start(args, format);
+	vsprintf(endbuff, format, args);
+	va_end(args);
+	printf("%s\n", endbuff);
+	this->WriteToDisc(endbuff, false);
 }
 
 void CLog::AddDebug(char* format, ...)
 {
-	char endBuff[500] = "";
-	int start = 0;
-	int len = strlen(format);
-	int count = 0;
-	for (int i = 0; i < len; i++)
-	{
-		if (format[i] == '%')
-			count++;
-	}
-	if (count > 0)
-	{
-		va_list vl;
-		va_start(vl, format);
-		for (int i = 0; i < len; i++)
-		{
-			if (format[i] == '%' && len - 1 != i)
-			{
-				switch (format[i + 1])
-				{
-				case '%':
-					sprintf(endBuff, "%s%%", endBuff);
-					break;
-				case 'i':
-				case 'd':
-					sprintf(endBuff, "%s%d", endBuff, va_arg(vl, int));
-					break;
-				case 'f':
-					sprintf(endBuff, "%s%f", endBuff, va_arg(vl, double));
-					break;
-				case 'u':
-					sprintf(endBuff, "%s%u", endBuff, va_arg(vl, unsigned int));
-					break;
-				case 'x':
-				case 'X':
-					sprintf(endBuff, "%s%X", endBuff, va_arg(vl, unsigned int));
-					break;
-				case 'p':
-					sprintf(endBuff, "%s%p", endBuff, va_arg(vl, unsigned int));
-					break;
-				case 's':
-					sprintf(endBuff, "%s%s", endBuff, va_arg(vl, char*));
-					break;
-				default:
-					break;
-				}
-				i++;
-			}
-			else {
-				sprintf(endBuff, "%s%c", endBuff, format[i]);
-			}
-		}
-		va_end(vl);
-	}
-	else {
-		sprintf(endBuff, "%s", format);
-	}
-
-	// let's see the result
-	//this->AddLog(1,endBuff);
+	char endbuff[500] = "";
+	va_list args;
+	va_start(args, format);
+	vsprintf(endbuff, format, args);
+	va_end(args);
+	printf("%s\n", endbuff);
+	
 	if(this->bPrintDebug)
-		printf("%s\n", endBuff);
-	this->WriteToDisc(endBuff, true);
+		printf("%s\n", endbuff);
+	this->WriteToDisc(endbuff, true);
 
 }
