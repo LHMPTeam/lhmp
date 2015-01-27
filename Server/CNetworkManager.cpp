@@ -266,13 +266,15 @@ void	CNetworkManager::OnPlayerFileTransferFinished(RakNet::SystemAddress)
 void	CNetworkManager::OnPlayerDisconnect(RakNet::Packet* packet)
 {
 	int ID = GetIDFromSystemAddress(packet->systemAddress);
+	// if regular RakNet client lost connection
 	if (ID != -1)
 	{
-		g_CCore->GetScripts()->onPlayerDisconnect(ID);
-
+		// if it was connected player
 		CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 		if (player != NULL)
 		{
+			g_CCore->GetScripts()->onPlayerDisconnect(ID);
+
 			if (player->InCar != -1)
 			{
 				CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->InCar);
@@ -602,52 +604,54 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			break;
 		case LHMP_PLAYER_DEATH:
 		{
-			int ID = GetIDFromSystemAddress(packet->systemAddress), killerID;
+			int ID = GetIDFromSystemAddress(packet->systemAddress), killerID,reason,part;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 
-			bsIn.Read(killerID);
-			g_CCore->GetScripts()->onPlayerIsKilled(ID, killerID);
+			bsIn.Read(killerID); // -1 if undetected / suicide
+			bsIn.Read(reason); 
+			bsIn.Read(part);
+
+			if (killerID == -1)
+				killerID = ID;
+			g_CCore->GetScripts()->onPlayerIsKilled(ID, killerID,reason,part);
 			BitStream bsOut;
 			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 			bsOut.Write((MessageID)LHMP_PLAYER_DEATH);
 			bsOut.Write(ID);
+			bsOut.Write(reason);
+			bsOut.Write(part);
 			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 
-
-			if (ID != killerID)
+			CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+			
+			//if player exists
+			if (player)
 			{
-				CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
-				if (player != NULL)
+				// if he is in a car
+				if (player->InCar != -1)
 				{
-					CPlayer* killer = g_CCore->GetPlayerPool()->Return(killerID);
-
-					char buff[255];
-					sprintf_s(buff, "Player %s was killed by %s.", player->GetNickname(), killer->GetNickname());
-					//g_CCore->GetNetworkManager()->SendMessageToAll(buff);
-
-					if (player->InCar != -1)
+					// get him out of car (at least at server side)
+					CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->InCar);
+					if (veh)
 					{
-						g_CCore->GetVehiclePool()->Return(player->InCar)->PlayerExit(ID);
-					}
-				}
-			}
-			else if (ID == killerID)
-			{
-				CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
-				if (player != NULL)
-				{
-					//char buff[255];
-					//sprintf_s(buff, "Player %s commited suicide.", player->GetNickname());
-					//g_CCore->GetNetworkManager()->SendMessageToAll(buff);
-
-					if (player->InCar != -1)
-					{
-						g_CCore->GetVehiclePool()->Return(player->InCar)->PlayerExit(ID);
+						veh->PlayerExit(ID);
 					}
 				}
 			}
 		}
 		break;
+		case LHMP_PLAYER_DEATH_END:
+		{
+			int ID = GetIDFromSystemAddress(packet->systemAddress), killerID, reason, part;
+								 
+			BitStream bsOut;
+			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+			bsOut.Write((MessageID)LHMP_PLAYER_DEATH_END);
+			bsOut.Write(ID);
+			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+
+		}
+			break;
 		case LHMP_PLAYER_HIT:
 		{
 			int ID = GetIDFromSystemAddress(packet->systemAddress), attackerID;

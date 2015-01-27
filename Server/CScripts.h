@@ -54,7 +54,7 @@ public:
 	void onPlayerExitVehicle(int, int);
 	void onPlayerExitVehicleFinish(int);
 	void onPlayerSpawn(int);
-	void onPlayerIsKilled(int,int);
+	void onPlayerIsKilled(int playerID,int killerID,int reason, int hitbox);
 	void onServerTick(int);
 	void onServerTickSecond(int);
 	void onPlayerKeyPressed(int,int);

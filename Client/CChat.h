@@ -38,7 +38,6 @@ private:
 	CChatStack*				ChatPoolStart;
 	unsigned int			elementCount;
 
-	LPDIRECT3DTEXTURE8		chatTexture;
 	int						animation;
 
 	bool					shouldReRender;
@@ -49,6 +48,8 @@ public:
 	CChat();
 	~CChat();
 	// Dx callbacks
+
+	LPDIRECT3DTEXTURE8		chatTexture;
 	void					OnLostDevice();
 	void					OnResetDevice();
 	void					Render(IDirect3DDevice8*,LPD3DXFONT);

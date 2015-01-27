@@ -630,7 +630,7 @@ void CScripts::onPlayerSpawn(int playerID)
 	}
 }
 
-void CScripts::onPlayerIsKilled(int playerID,int killerID)
+void CScripts::onPlayerIsKilled(int playerID,int killerID,int reason, int hitbox)
 {
 	bool ret = true;
 	for (int i = 0; i < MAX_SCRIPTS; i++) {
@@ -657,6 +657,10 @@ void CScripts::onPlayerIsKilled(int playerID,int killerID)
 
 				sq_pushinteger(pVM, killerID);
 
+				sq_pushinteger(pVM, reason);
+
+				sq_pushinteger(pVM, hitbox);
+
 				/*// Push the text onto the stack
 				sq_pushstring(pVM, text, -1);
 
@@ -664,7 +668,7 @@ void CScripts::onPlayerIsKilled(int playerID,int killerID)
 
 				// Call the function
 				// Call the function
-				if (!SQ_FAILED(sq_call(pVM, 3, false, true)))
+				if (!SQ_FAILED(sq_call(pVM, 5, false, true)))
 				{
 					/*SQBool result;
 					sq_getbool(pVM, sq_gettop(pVM), &result);

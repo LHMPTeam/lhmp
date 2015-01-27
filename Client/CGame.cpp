@@ -1070,6 +1070,7 @@ void CGame::OnDeath()
 		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH);
 		bsOut.Write(killerId);
+		bsOut.Write((unsigned char) 0xFF);
 		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 	}
 }
@@ -1080,6 +1081,7 @@ void CGame::OnSuicide()
 	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH);
 	bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
+	bsOut.Write((unsigned char)0xFF);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 }
 void CGame::Shoot(DWORD PED,Vector3D pos)
@@ -1358,6 +1360,56 @@ void CGame::KillPed(DWORD PED)
 	}
 	g_CCore->GetGame()->ShouldKill = false;
 
+}
+
+
+void CGame::FixAfterDeath(DWORD ped)
+{
+	DWORD locPed = ped;
+	_asm {
+		mov ECX, locPed
+		mov eax, 0x004ABE40
+		call EAX
+	}
+}
+
+void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
+{
+	DWORD locPed = ped;
+	DWORD locReason = reason;
+	DWORD locPart = part;
+	/*char buff[500];
+	sprintf(buff, "%x; %x; %x", ped, reason, part);
+	g_CCore->GetLog()->AddLog(buff);
+	*/
+
+	g_CCore->GetGame()->ShouldKill = true;
+
+	_asm {
+		sub ESP, 0xC	// create null vector
+			mov DWORD PTR DS : [ESP], 0x0
+			mov DWORD PTR DS : [ESP + 0x4], 0x0
+			mov DWORD PTR DS : [ESP + 0x8], 0x0
+			MOV ESI, locPed
+			MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
+			MOV EDX, DWORD PTR DS : [ESI]
+			PUSH 0
+			PUSH locPart
+			PUSH 0
+			LEA EAX, DWORD PTR SS : [ESP + 0xC]
+			PUSH 0x41200000
+			PUSH EAX
+			LEA ECX, DWORD PTR SS : [ESP + 0x14]
+			LEA EAX, DWORD PTR SS : [ESP + 0x14]
+			PUSH ECX
+			PUSH EAX
+			PUSH locReason
+			MOV ECX, ESI
+			CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
+			add ESP, 0xC
+		end:
+	}
+	g_CCore->GetGame()->ShouldKill = false;
 }
 
 void CGame::SetOn(DWORD PED,bool hide)

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <stdio.h>
 
-SQInteger sq_dopice(SQVM* pVM);
 SQInteger sq_sendPlayerMessage(SQVM *vm);
 SQInteger sq_sendAllMessage(SQVM *vm); 
 SQInteger sq_playerChangeSkin(SQVM *vm);
@@ -13,11 +12,13 @@ SQInteger sq_playerGetSkinID(SQVM *vm);
 SQInteger sq_playerGetHealth(SQVM *vm);
 SQInteger sq_playerGetPosition(SQVM *vm);
 SQInteger sq_playerGetRotation(SQVM *vm);
+SQInteger sq_playerGetRotationAsVector(SQVM *vm);
 SQInteger sq_playerInVehicleID(SQVM *vm);
 SQInteger sq_playerSetPosition(SQVM *vm);
 SQInteger sq_playerSetHealth(SQVM *vm);
 SQInteger sq_playerGetMoney(SQVM *vm);
 SQInteger sq_playerSetRotation(SQVM *vm);
+SQInteger sq_playerSetRotationVector(SQVM *vm);
 SQInteger sq_playerSetMoney(SQVM *vm);
 SQInteger sq_playerEnableMoney(SQVM *vm);
 SQInteger sq_playerGetIP(SQVM *vm);
@@ -68,6 +69,8 @@ SQInteger sq_vehicleExplode(SQVM *vm);
 SQInteger sq_vehicleExists(SQVM *vm);
 
 SQInteger sq_isAnyPlayerInVehicle(SQVM *vm);
+SQInteger sq_getDistanceBetween3DPoints(SQVM *vm);
+SQInteger sq_getDistanceBetween2DPoints(SQVM *vm);
 
 SQInteger sq_serverGetName(SQVM *vm);
 SQInteger sq_serverGetGamemodeName(SQVM *vm);

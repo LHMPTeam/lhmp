@@ -31,6 +31,16 @@ CPed::CPed()
 		this->weapon[i].wepID = 0;
 
 	this->InCar = -1;
+
+	this->nametag = NULL;
+}
+
+CPed::~CPed()
+{
+	if (this->nametag != NULL)
+	{
+		this->nametag->Release();
+	}
 }
 void CPed::SetActive(bool b)
 {
@@ -237,6 +247,9 @@ void CPed::Interpolate()
 
 	if (this->GetEntity() != 0)
 	{
+		PED* ped = (PED*) this->GetEntity();
+		//if (ped->object.isActive == 1)
+		//	return;
 		//RakNet::TimeMS actualtime = RakNet::GetTimeMS(), b = this->timestamp, c = this->timeDiff;
 		//char buff[255];
 		//sprintf(buff, "I: %i %i %i", actualtime, b, c);

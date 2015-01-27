@@ -62,5 +62,9 @@ public:
 	// Server
 	void			ServerUpdateWeapon();
 
+	// Callback
+
+	void			OnDeath(int killer, int reason, int part);
+
 };
 #endif

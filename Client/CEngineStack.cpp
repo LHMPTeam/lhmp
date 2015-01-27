@@ -354,6 +354,49 @@ void CEngineStack::DoMessage()
 			}
 		}
 			break;
+		case CLIENT_ENGINESTACK::ES_PLAYERDEATHEX:
+		{
+			ENGINE_STACK::KILL_PED_EX* pw = (ENGINE_STACK::KILL_PED_EX*) start->data;
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYERDEATHEX", LOG_NORMAL);
+			if (pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
+			{
+				DWORD adr = *(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4);
+				g_CCore->GetGame()->KillPedEx(adr,pw->reason,pw->part);
+			}
+			else
+			{
+				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
+				if (ped != 0)
+				{
+					if (ped->GetEntity() != 0)
+					{
+						g_CCore->GetGame()->KillPedEx(ped->GetEntity(), pw->reason, pw->part);
+					}
+				}
+			}
+		}
+			break;
+		case CLIENT_ENGINESTACK::ES_PLAYERDEATH_END:
+		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYERDEATH_END", LOG_NORMAL);
+			if (start->data == g_CCore->GetLocalPlayer()->GetOurID())
+			{
+				DWORD adr = *(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4);
+				g_CCore->GetGame()->FixAfterDeath(adr);
+			}
+			else
+			{
+				CPed* ped = g_CCore->GetPedPool()->Return(start->data);
+				if (ped != 0)
+				{
+					if (ped->GetEntity() != 0)
+					{
+						g_CCore->GetGame()->FixAfterDeath(ped->GetEntity());
+					}
+				}
+			}
+		}
+			break;
 		case CLIENT_ENGINESTACK::ES_CAMERASETPOS:
 		{
 			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CAMERASETPOS", LOG_NORMAL);

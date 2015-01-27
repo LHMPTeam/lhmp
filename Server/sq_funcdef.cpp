@@ -4,46 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <ios>
+#include "../shared/tools.h"
 extern CCore* g_CCore;
-
-SQInteger sq_dopice(SQVM *squirrelVM)
-{
-	//std::cout << "picewtf" << std::endl;
-	//sq_pushroottable(squirrelVM);                              // +1
-
-	// The name the array will have in the root table.
-	//sq_pushstring(squirrelVM, "sampleArray", -1);              // +1
-
-	// Push the array on the stack.
-	sq_newarray(squirrelVM, 0);                                // +1
-
-	// Push an integer on the stack and append it to the array.
-	sq_pushinteger(squirrelVM, 50);                            // +1
-	sq_arrayappend(squirrelVM, -2);                            // -1
-
-	// Push a string on the stack and append it to the array.
-	sq_pushstring(squirrelVM, _SC("This is a string."), -1);   // +1
-	sq_arrayappend(squirrelVM, -2);                            // -1
-
-	// Push another array on the stack.
-	//sq_newarray(squirrelVM, 0);                                // +1
-
-	/*// Append intArray's values to the new array.
-	for (int i = 0; i < intArrayLength; i++) {
-		sq_pushinteger(squirrelVM, intArray[i]);               // +1
-		sq_arrayappend(squirrelVM, -2);                        // -1
-	}*/
-
-	// Append the new array to the previous array.
-	//sq_arrayappend(squirrelVM, -2);                            // -1
-
-	// Set the array in the root table.
-	//sq_newslot(squirrelVM, -3, SQFalse);                       // -2
-
-	// Pop the root table.
-	//sq_poptop(squirrelVM);                                     // -1
-	return 1;
-}
 
 SQInteger sq_playerSetWeatherParam(SQVM *vm)
 {
@@ -442,6 +404,22 @@ SQInteger sq_playerGetRotation(SQVM *vm)
 	if (player != NULL)
 	{
 		Vector3D pos = player->GetRotation();
+		sq_pushfloat(vm,Tools::RotationTo360(pos.x, pos.z));
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_playerGetRotationAsVector(SQVM *vm)
+{
+	SQInteger	ID;
+	sq_getinteger(vm, -1, &ID);
+
+	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+	if (player != NULL)
+	{
+		Vector3D pos = player->GetRotation();
 		sq_newarray(vm, 0);
 		sq_pushfloat(vm, pos.x);
 		sq_arrayappend(vm, -2);
@@ -517,11 +495,13 @@ SQInteger sq_playerSetHealth(SQVM *vm)
 		}
 		else
 		{
-			g_CCore->GetScripts()->onPlayerIsKilled(ID, ID);
+			//g_CCore->GetScripts()->onPlayerIsKilled(ID, ID,DEATH_FALL,0);
 			BitStream bsOut;
 			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 			bsOut.Write((MessageID)LHMP_PLAYER_DEATH);
-			bsOut.Write(ID);
+			bsOut.Write(ID); 
+			bsOut.Write((int)6);
+			bsOut.Write((int)0);
 			g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 			if (player->InCar != -1)
 			{
@@ -624,6 +604,31 @@ SQInteger sq_playerEnableMoney(SQVM *vm)
 SQInteger sq_playerSetRotation(SQVM *vm)
 {
 	SQInteger	ID;
+	SQFloat rotation;
+	sq_getinteger(vm, -4, &ID);
+	sq_getfloat(vm, -1, &rotation);
+
+	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+	if (player != NULL)
+	{
+		Vector3D newRotation = Tools::ComputeOffsetDegrees(rotation);
+		player->SetRotation(newRotation);
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_PLAYER_SET_ROTATION);
+		bsOut.Write(ID);
+		bsOut.Write(newRotation);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		sq_pushbool(vm, true);
+		return 1;
+	}
+	sq_pushbool(vm, false);
+	return 1;
+}
+
+SQInteger sq_playerSetRotationVector(SQVM *vm)
+{
+	SQInteger	ID;
 	Vector3D	rot;
 	sq_getinteger(vm, -4, &ID);
 	sq_getfloat(vm, -3, &rot.x);
@@ -646,6 +651,7 @@ SQInteger sq_playerSetRotation(SQVM *vm)
 	sq_pushbool(vm, false);
 	return 1;
 }
+
 SQInteger sq_playerGetIP(SQVM *vm)
 {
 	SQInteger	ID;
@@ -674,7 +680,7 @@ SQInteger sq_playerPutToVehicle(SQVM *vm)
 			bsOut.Write(ID);
 			bsOut.Write(carID);
 			bsOut.Write(seatID);
-			g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+			g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 			sq_pushbool(vm, true);
 			return 1;
 		}
@@ -822,6 +828,39 @@ SQInteger sq_isAnyPlayerInVehicle(SQVM *vm)
 		}
 	}
 	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_getDistanceBetween3DPoints(SQVM *vm)
+{
+	Vector3D pointA, pointB;
+	sq_getfloat(vm, -6, &pointA.x);
+	sq_getfloat(vm, -5, &pointA.y);
+	sq_getfloat(vm, -4, &pointA.z);
+	sq_getfloat(vm, -3, &pointB.x);
+	sq_getfloat(vm, -2, &pointB.y);
+	sq_getfloat(vm, -1, &pointB.z);
+
+	float c = (pointA.x - pointB.x)*(pointA.x - pointB.x) + (pointA.y - pointB.x)*(pointA.y - pointB.y) 
+			+ (pointA.z - pointB.z)*(pointA.z - pointB.z);
+	
+	c = sqrt(c);
+	sq_pushfloat(vm,c);
+	return 1;
+}
+
+SQInteger sq_getDistanceBetween2DPoints(SQVM *vm)
+{
+	float pointAx,pointAy,pointBx,pointBy;
+	sq_getfloat(vm, -6, &pointAx);
+	sq_getfloat(vm, -5, &pointAy);
+	sq_getfloat(vm, -3, &pointBx);
+	sq_getfloat(vm, -2, &pointBy);
+
+	float c = (pointAx - pointBx)*(pointAx - pointBx) + (pointAy - pointBx)*(pointAy - pointBy);
+
+	c = sqrt(c);
+	sq_pushfloat(vm, c);
 	return 1;
 }
 

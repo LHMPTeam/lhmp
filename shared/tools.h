@@ -113,17 +113,47 @@ namespace Tools
 		}
 		return result;
 	}
+	/*---------------------------------------------------------------------------------*/
+	//								Convert DEGREES and vice versa
+	/*---------------------------------------------------------------------------------*/
+#define RADIAN 3.14f / 180.0f
+	// convert 360 degrees system into ingame (unit circle ratio)
 	static Vector3D ComputeOffsetDegrees(float degree)
 	{
 		Vector3D ang;
-		//ang.x = (float) (cos(degree*3.14/180)-sin(degree*3.14/180));
-		//ang.z = (float) (sin(degree*3.14/180)+cos(degree*3.14/180));
-		ang.x = (float)(cos(degree*3.14 / 180));
-		ang.z = (float)(sin(degree*3.14 / 180));
-		//x' = x*cos b - y*sin b
-		//y' = x*sin b + y*cos b
+		ang.x = (float)(cos(degree*RADIAN));
+		ang.z = (float)(sin(degree*RADIAN));
 		return ang;
 	}
+
+	// convert unit circle ratios (ingame rotation system) into 360 degree system
+	// 180 means interval <-180,180>
+	static float RotationTo180(float x, float y)
+	{
+		return atan2(x, y);
+	}
+
+	// convert unit circle ratios (ingame rotation system) into 360 degree system
+	// interval <0,360>
+	static float RotationTo360(float x, float y)
+	{
+		float result = atan2(x, y)*(float)RADIAN;	// actually, this converts to degrees
+		if (result < 0)
+		{
+			result = 360.0f - result*(-1);
+		}
+		return result;
+	}
+
+	// reverse sine  function, converts ratio to <0,180> degree system
+	static float ASinTo180(float x)
+	{
+		return asin(x)*(float)RADIAN;
+	}
+
+	/*---------------------------------------------------------------------------------*/
+	//								HOOKS
+	/*---------------------------------------------------------------------------------*/
 	static void InstallCallHook(DWORD address, DWORD function)
 	{
 		DWORD lpflOldProtect;
@@ -168,6 +198,20 @@ namespace Tools
 	{
 		return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2) + pow(pos1.z - pos2.z, 2));
 	}
+
+	// Optimized, 2.5 times faster, however, only if you compare distances
+	// Returns 0 (equal), 1 (distance is smaller than compareDistance) or 2 (bigger)
+	static int GetDistanceBetween3DPointsEx(Vector3D pos1, Vector3D pos2, float compareDistance)
+	{
+		float cONc = ((pos1.x - pos2.x)*(pos1.x - pos2.x)) + ((pos1.y - pos2.y)*(pos1.y - pos2.y)) + ((pos1.z - pos2.z)*(pos1.z - pos2.z));
+		float compareSEC = compareDistance*compareDistance;
+		if (cONc == compareSEC)
+			return 0;
+		else if (cONc < compareSEC)
+			return 1;
+		return 2;
+	}
+
 	static bool isFloatNan(float f){ return (f != f); };
 	static Vector3D NullVect()
 	{

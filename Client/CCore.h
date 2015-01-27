@@ -28,6 +28,7 @@
 #include "CPickupPool.h"
 #include "CFileTransfer.h"
 #include "CFileSystem.h"
+#include "CNametags.h"
 #include <time.h>
 
 #include "../shared/tools.h"
@@ -55,6 +56,7 @@ private:
 	CKeyboard				m_cKeyboard;
 	CIngameMenu				m_cIngameMenu;
 	CPickupPool				m_cPickuppool;
+	CNametags				m_cNametags;
 
 
 public:
@@ -85,6 +87,7 @@ public:
 	CPickupPool*			GetPickupPool();
 	CFileTransfer*			GetFileTransfer();
 	CFileSystem*			GetFileSystem();
+	CNametags*				GetNametags();
 
 	bool					m_bIsGameLoaded;
 	bool					m_bIsRespawning;         

@@ -50,10 +50,16 @@ void			CFile::WriteBytes(unsigned char data[], int len)
 		fwrite(data, 1, len, this->handle);
 	}
 	alreadyWritten += len;
-	
-	char buff[250];
-	sprintf(buff, "Data arrived: %d/%d", alreadyWritten, this->GetSize());
-	g_CCore->GetChat()->AddMessage(buff);
+
+	//char buff[250];
+	//sprintf(buff, "Data arrived: %d/%d", alreadyWritten, this->GetSize());
+	//g_CCore->GetChat()->AddMessage(buff);
+
+	// if file transfer is done properly
+	if (alreadyWritten == this->GetSize())
+	{
+		this->CloseHandle();
+	}
 }
 
 void CFile::CloseHandle()
@@ -119,6 +125,9 @@ void CFileTransfer::InitTransfer(RakNet::BitStream* stream)
 		{
 			CFile* fuckgod = new CFile(ID, file, name, checksum, (int) size);
 			this->fileList.push_back(fuckgod);
+
+			// we are going to download this files, so increase overall bytes count
+			this->overallBytes += (int)size;
 		}
 		else
 		{
@@ -146,6 +155,9 @@ CFileTransfer::CFileTransfer()
 	this->status = FILETRANSFER_STATE::NO_TRANSFER;
 	this->fileList.clear();
 	this->downloadingID = 0;
+
+	this->overallBytes = 0;
+	this->receivedBytes = 0;
 }
 
 void CFileTransfer::HandlePacket(RakNet::BitStream* stream)
@@ -168,6 +180,9 @@ void CFileTransfer::HandlePacket(RakNet::BitStream* stream)
 								int ID, bytesCount;
 								stream->Read(ID);
 								stream->Read(bytesCount);
+								
+								// increase received byte count
+								this->receivedBytes += bytesCount;
 
 								for (int i = 0; i < bytesCount; i++)
 									stream->Read(data[i]);
@@ -221,13 +236,19 @@ void CFileTransfer::Render()
 		Vector2D screen = g_CCore->GetGraphics()->GetResolution();
 		if (this->status == FILETRANSFER_STATE::CHECKING_INTEGRITY)
 		{
-			g_CCore->GetGraphics()->GetFont()->DrawTextA("#CHECKING FILE INTEGRITY", screen.x / 2, screen.y / 2,0xFFFF0000);
+			g_CCore->GetGraphics()->GetFont()->DrawTextA("#CHECKING FILE INTEGRITY...", screen.x / 2, screen.y / 2,0xFFFF0000);
 		}
 		else {
 			for (unsigned int i = 0; i < this->fileList.size(); i++)
 			{
 				if (downloadingID == this->fileList[i]->GetID())
 				{
+					// overall (received/awaiting bytes)
+					float overallRatio = (float)this->receivedBytes / (float)this->overallBytes;
+					g_CCore->GetGraphics()->FillARGB((screen.x / 2), (screen.y / 2) - 50, 200, 10, 0xaa000000);
+					g_CCore->GetGraphics()->FillARGB((screen.x / 2), (screen.y / 2) - 50, (int)(200 * overallRatio), 10, 0xFFff0000);
+
+					// file downloading status
 					char buff[255];
 					sprintf(buff, "DOWNLOADING FILE '%s'", this->fileList[i]->GetName());
 					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, screen.x / 2, screen.y / 2, 0xFFFF0000);
@@ -239,6 +260,8 @@ void CFileTransfer::Render()
 					sprintf(buff, "%.2f%sB/%.2f%sB", Tools::GetMetricUnitNum((float)this->fileList[i]->GetAlreadyWritten()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetAlreadyWritten())],
 						Tools::GetMetricUnitNum((float)this->fileList[i]->GetSize()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetSize())]);
 					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, screen.x / 2, (screen.y / 2) + 65, 0xFFFF0000);
+
+					return;
 				}
 			}
 		}

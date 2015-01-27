@@ -264,3 +264,9 @@ CFileSystem*	CCore::GetFileSystem()
 {
 	return &this->m_cFileSystem;
 }
+
+
+CNametags*		CCore::GetNametags()
+{
+	return &this->m_cNametags;
+}

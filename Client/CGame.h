@@ -15,6 +15,12 @@
 typedef unsigned long DWORD;
 #include "../shared/structures.h"
 
+enum ObjectTypes
+{
+	OBJECT_LOCALPLAYER = 0x2,
+	OBJECT_VEHICLE = 0x4,
+	OBJECT_ENEMY = 0x1B
+};
 #define _pad(x,y) byte x[y]
 
 typedef struct _FRAME {
@@ -30,7 +36,7 @@ typedef struct _OBJECT {
 	_pad(__unk2, 0x10);				//	0014-0024
 	Vector3D	position;			//	0024-0030
 	Vector3D	rotation;			//	0030-003C
-	_pad(__unk3, 0x21);
+	_pad(__unk3, 0x21);				//  003C-005D
 	bool		isActive;			//	005D-005E
 	_pad(__unk4, 0xA);
 	FRAME*		frame;				//	0068-006C
@@ -125,16 +131,16 @@ public:
 	void UpdateCars();
 	void UpdatePeds();
 
-	static void ChangeSkin(DWORD,int);
+	static void ChangeSkin(DWORD, int);
 	// vehicles
-	static DWORD CreateCar(int skinID,Vector3D position,Vector3D rotation);
+	static DWORD CreateCar(int skinID, Vector3D position, Vector3D rotation);
 	static DWORD CreateCar(int skinID);
 	//static DWORD CreateCar(int);
 
 	static void ToggleVehicleRoof(DWORD, BYTE);
 	static void SetCarPosition(DWORD, Vector3D);
 	static void SetCarRotation(DWORD, Vector3D);
-	static void CarUpdate(DWORD, Vector3D,Vector3D);
+	static void CarUpdate(DWORD, Vector3D, Vector3D);
 	static void	CarRepair(DWORD);
 	static void CarLock(DWORD, BYTE);
 	static void GivePlayerToCarFast(DWORD, int, int);
@@ -172,15 +178,17 @@ public:
 	static void PlayerExitVehicle();
 	static void PlayerExitVehicleFinish();
 	// Weapons
-	static void AddWeapon(DWORD,DWORD,DWORD,DWORD,DWORD);
+	static void AddWeapon(DWORD, DWORD, DWORD, DWORD, DWORD);
 	static void DeleteWeapon(DWORD, DWORD);
-	static void SwitchWeapon(DWORD,DWORD);
-	static void Shoot(DWORD,Vector3D);
-	static void ThrowGranade(DWORD,Vector3D);
+	static void SwitchWeapon(DWORD, DWORD);
+	static void Shoot(DWORD, Vector3D);
+	static void ThrowGranade(DWORD, Vector3D);
 
 	// Human
 	static _PED*	GetLocalPED();
 	static void KillPed(DWORD);
+	static void KillPedEx(DWORD ped, DWORD reason, DWORD part);
+	static void FixAfterDeath(DWORD ped);
 	static void SetOn(DWORD,bool);
 
 	// frames

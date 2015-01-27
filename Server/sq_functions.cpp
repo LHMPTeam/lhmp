@@ -4,7 +4,7 @@
 
 int Init(SQVM* vM)
 {
-	RegisterFunction(vM, "testfunc", (SQFUNCTION)sq_dopice, 0, "");
+	//RegisterFunction(vM, "testfunc", (SQFUNCTION)sq_dopice, 0, "");
 	RegisterFunction(vM, "sendPlayerMessage", (SQFUNCTION)sq_sendPlayerMessage, 3, ".is");
 	RegisterFunction(vM, "sendAllMessage", (SQFUNCTION)sq_sendAllMessage, 2, ".s");
 
@@ -17,12 +17,14 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "playerGetMoney", (SQFUNCTION)sq_playerGetMoney, 2, ".n");
 	RegisterFunction(vM, "playerGetPosition", (SQFUNCTION)sq_playerGetPosition, 2, ".n");
 	RegisterFunction(vM, "playerGetRotation", (SQFUNCTION)sq_playerGetRotation, 2, ".n");
+	RegisterFunction(vM, "playerGetRotationAsVector", (SQFUNCTION)sq_playerGetRotationAsVector, 2, ".n");
 	RegisterFunction(vM, "playerInVehicleID", (SQFUNCTION)sq_playerInVehicleID, 2, ".n");
 	RegisterFunction(vM, "playerSetPosition", (SQFUNCTION)sq_playerSetPosition, 5, ".nfff");
 	RegisterFunction(vM, "playerSetHealth", (SQFUNCTION)sq_playerSetHealth, 3, ".nf");
 	RegisterFunction(vM, "playerSetMoney", (SQFUNCTION)sq_playerSetMoney, 3, ".nn");
 	RegisterFunction(vM, "playerEnableMoney", (SQFUNCTION)sq_playerEnableMoney, 3, ".nn");
-	RegisterFunction(vM, "playerSetRotation", (SQFUNCTION)sq_playerSetRotation, 5, ".nfff");
+	RegisterFunction(vM, "playerSetRotation", (SQFUNCTION)sq_playerSetRotation, 5, ".nf");
+	RegisterFunction(vM, "playerSetRotationVector", (SQFUNCTION)sq_playerSetRotationVector, 5, ".nfff");
 	RegisterFunction(vM, "playerGetIP", (SQFUNCTION)sq_playerGetIP, 2, ".n");
 	RegisterFunction(vM, "playerPutToVehicle", (SQFUNCTION)sq_playerPutToVehicle, 4, ".nnn");
 	RegisterFunction(vM, "playerKick", (SQFUNCTION)sq_playerKick, 2, ".n");
@@ -75,6 +77,8 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "vehicleExists", (SQFUNCTION)sq_vehicleExists, 2, ".n");
 
 	RegisterFunction(vM, "isAnyPlayerInVehicle", (SQFUNCTION)sq_isAnyPlayerInVehicle, 2, ".n");
+	RegisterFunction(vM, "getDistanceBetween3DPoints", (SQFUNCTION)sq_getDistanceBetween3DPoints, 2, ".ffffff");
+	RegisterFunction(vM, "getDistanceBetween2DPoints", (SQFUNCTION)sq_getDistanceBetween2DPoints, 2, ".ffff");
 
 	RegisterFunction(vM, "serverGetName", (SQFUNCTION)sq_serverGetName, 1, ".");
 	RegisterFunction(vM, "serverGetGamemodeName", (SQFUNCTION)sq_serverGetGamemodeName, 1, ".");
@@ -93,6 +97,14 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "iniRemoveFile", (SQFUNCTION)sq_iniRemoveFile, 2, ".s");
 	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s");
 
+	// part of human body
+	RegisterVariable(vM, "PLAYER_RIGHHAND", 1);
+	RegisterVariable(vM, "PLAYER_LEFTHAND", 2);
+	RegisterVariable(vM, "PLAYER_RIGHTLEG", 3);
+	RegisterVariable(vM, "PLAYER_LEFTLEG", 4);
+	RegisterVariable(vM, "PLAYER_TORSO", 5);
+	RegisterVariable(vM, "PLAYER_HEAD", 6);
+	// keyboard const.
 	RegisterVariable(vM, "KEY_A", 0); 
 	RegisterVariable(vM, "KEY_B", 1);
 	RegisterVariable(vM, "KEY_C", 2);

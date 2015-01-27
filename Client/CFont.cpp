@@ -77,7 +77,8 @@ void	CFont::DrawColoredText(char* text, int x, int y,DWORD color, bool shadow)
 		text[start] = 0x0;
 		this->DrawTextA(text, x + drawn, y, color, shadow);
 		//this->m_pFont->DrawTextA(x + drawn, y, color, text);
-		drawn = this->GetFontWidth(text);
+		SIZE size =  this->GetFontWidth(text);
+		drawn = size.cx;
 		text[start] = '#';
 		color = Tools::GetARGBFromString(text + 1);
 		this->DrawColoredText(text+7, x+drawn, y, color, shadow);
@@ -87,7 +88,7 @@ void	CFont::DrawColoredText(char* text, int x, int y,DWORD color, bool shadow)
 
 //----------------------------------------------------
 
-int		CFont::GetFontWidth(char text[], int len)
+SIZE	CFont::GetFontWidth(char text[], int len)
 {
 	char backup;
 	if (len != -1)
@@ -102,8 +103,7 @@ int		CFont::GetFontWidth(char text[], int len)
 	{
 		text[len] = backup;
 	}
-
-	return textSize.cx;
+	return textSize;
 }
 int		CFont::GetColoredTextWidth(char text[])
 {
@@ -117,7 +117,8 @@ int		CFont::GetColoredTextWidth(char text[])
 			start = Tools::getFirstColorStamp(text);
 			if (start == -1)
 			{
-				size += this->GetFontWidth(pointer);
+				SIZE size2 = this->GetFontWidth(pointer);
+				size += size2.cx;
 				break;
 			}
 			else if (start == 0)
@@ -125,7 +126,8 @@ int		CFont::GetColoredTextWidth(char text[])
 				pointer = pointer + 7;
 			}
 			else {
-				size += this->GetFontWidth(pointer,start);
+				SIZE size2 = this->GetFontWidth(pointer, start);
+				size += size2.cx;
 				pointer = pointer + start + 7;
 			}
 		}
@@ -138,7 +140,8 @@ int		CFont::GetStrlenForWidth(int size, char* text)
 	int len = strlen(text);
 	for (int i = 0; i < len; i++)
 	{
-		curSize += this->GetFontWidth(text + i, 1);
+		SIZE size2 =  this->GetFontWidth(text + i, 1);
+		curSize += size2.cx;
 		if (curSize > size)
 			return i;
 	}

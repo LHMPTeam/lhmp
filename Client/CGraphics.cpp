@@ -119,6 +119,49 @@ void DebugWeapons()
 
 void CGraphics::Render()
 {
+	if (g_CCore->GetChat()->chatTexture != NULL)
+	{
+		D3DSURFACE_DESC desc;
+		g_CCore->GetChat()->chatTexture->GetLevelDesc(0, &desc);
+
+		Vector3D nullVector;
+		nullVector.x = -1984.88f;
+		nullVector.y = -2.03f;
+		nullVector.z = 23.144f;
+
+		float ratio = (10/Tools::GetDistanceBetween3DPoints(nullVector, g_CCore->GetLocalPlayer()->GetLocalPos()));
+		if (ratio < 1.0f)
+			ratio = 1.0f;
+
+		Vector3D screen;
+		this->CalcScreenPosition(nullVector, &screen);
+		//char puf[500];
+		//sprintf(puf, "Screen %f %f %f", screen.x, screen.y, screen.z);
+		//this->DrawTextA(puf,500,300,0xFFFF0000,true);
+		//this->FillARGB(screen.x, screen.y, screen.z, 40, 40, 0xFFFF0000);
+		this->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (0.5f*desc.Height*ratio), screen.z, 500, 500, g_CCore->GetChat()->chatTexture);
+
+		this->FillARGB(screen.x - 50, screen.y + (0.5f*desc.Height*ratio) + 10, screen.z, 100, 20, D3DCOLOR_XRGB(0, 255, 0));
+	}
+
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
+	// Render debug - Local Playear isAlive
+	if (ped)
+	{
+		char buff[200];
+		sprintf(buff, "Local PED: %d", ped->object.isActive);
+		this->DrawTextA(buff, 500, 100, 0xFFFF0000, true);
+	}
+
+	// Render nametags
+	if (ped != NULL)
+	{
+		if (g_CCore->IsRunning() && g_CCore->m_bIsRespawning == false)
+		{
+			g_CCore->GetNametags()->Tick();
+		}
+	}
+
 	g_CCore->GetGame()->UpdatePeds();
 	g_CCore->GetGame()->UpdateCars();
 	if (bShowHud == true && g_CCore->GetIngameMenu()->isActive() == false)
@@ -145,17 +188,6 @@ void CGraphics::Render()
 		
 		g_CCore->GetFileTransfer()->Render();
 	}
-
-	if (g_CCore->GetLocalPlayer()->GetEntity() != NULL)
-	{
-		if (g_CCore->IsRunning() && g_CCore->m_bIsRespawning == false)
-			RenderNametags();
-
-
-		//DebugWeapons();
-	}
-
-
 	g_CCore->GetIngameMenu()->Tick();
 
 	//char buff[100];
@@ -169,6 +201,7 @@ void CGraphics::Render()
 	this->DrawTextA(buff, 700, 200, 0xffffffff, true);*/
 
 	//this->FillARGB(100, 100,0.5f, 50, 50, 0xFF00adef);
+
 }
 
 void CGraphics::RenderLoadingScreen()
@@ -202,10 +235,12 @@ void CGraphics::RenderLoadingScreen()
 
 void CGraphics::RenderNametags()
 {
+	// if nametags are enabled on server-side & client-side (GUI show)
 	if (m_bShowNameTags == true && m_bUserShowNameTags == true)
 	{
 		Vector3D screen;
 		char buff[100];
+		// for every player
 		for (int i = 0; i < MAX_PLAYERS; i++)
 		{
 			CPed* ped = g_CCore->GetPedPool()->Return(i);
@@ -215,26 +250,10 @@ void CGraphics::RenderNametags()
 			if (ped->GetHealth() == 0.0f) continue;		// death
 			Vector3D pos1 = g_CCore->GetLocalPlayer()->GetLocalPos();
 			Vector3D pos2 = ped->GetPosition();
-			/*if (ped->InCar == -1)
-			{
-			pos2 = ped->GetPosition();
-			}
-			else
-			{
-			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ped->InCar);
-			pos2 = veh->GetPosition();
-			}*/
+
 			if (Tools::GetDistanceBetween3DPoints(pos1, pos2) > 50.0f) continue;
 			Vector3D pos = ped->GetPosition();
-			/*if (ped->InCar == -1)
-			{
-			pos = ped->GetPosition();
-			}
-			else
-			{
-			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ped->InCar);
-			pos = veh->GetPosition();
-			}*/
+
 			pos.y += 2.25;
 			if (ped->IsDucking())
 				pos.y -= 1.0;
@@ -273,29 +292,6 @@ void CGraphics::RenderNametags()
 				m_DirectDevice->Clear(1, &rect2, D3DCLEAR_TARGET, farba, 0, 0);
 			}
 		}
-		/*for (int i = 0; i < 100; i++)
-		{
-		CVehicle* veh = g_CCore->GetVehiclePool()->Return(i);
-		if (veh != NULL)
-		{
-		if (veh->GetEntity() != NULL)
-		{
-		Vector3D pos = veh->GetPosition();
-		Vector3D interp = veh->GetInterVect();
-		Vector3D temp = veh->GetTempVect();
-		Vector3D screenPos;
-		CalcScreenPosition(pos, &screenPos);
-		if (screenPos.z < 1)
-		{
-		char text[255];
-		sprintf_s(text, "%f %f %f", pos.x, pos.y,pos.z);
-		this->DrawTextA(text, (int)screenPos.x, (int) screenPos.y, 0xFFCCCCCC, true);
-		sprintf_s(text, "%f %f %f %f %f %f", interp.x, interp.y, interp.z, temp.x, temp.y, temp.z);
-		this->DrawTextA(text, (int)screenPos.x, (int)screenPos.y+20, 0xFFCCCCCC, true);
-		}
-		}
-		}
-		}*/
 	}
 }
 
@@ -762,10 +758,10 @@ void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 	my_vertex g_square_vertices[] = {
-		{ (float)x, (float)(y + h), 0.0f, 0.0f, color }, // x, y, z, rhw, color
-		{ (float)x, (float) y, 0.0f, 0.0f, color },
-		{ (float)(x + w), (float)(y + h), 0.0f, 0.0f, color },
-		{ (float)(x + w), (float)y, 0.0f, 0.0f, color }
+		{ (float)x, (float)(y + h), z, 0.0f, color }, // x, y, z, rhw, color
+		{ (float)x, (float)y, z, 0.0f, color },
+		{ (float)(x + w), (float)(y + h), z, 0.0f, color },
+		{ (float)(x + w), (float)y, z, 0.0f, color }
 	};
 
 	unsigned char*	buffer;
@@ -784,6 +780,137 @@ void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
 
 
 }
+
+void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEXTURE8 texture)
+{
+#define OURVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1)
+	struct thisVertex {
+		float x, y, z;
+		float rhw;
+		float tu, tv;
+	};
+	this->GetDevice()->SetTexture(0, texture);
+
+	// TEST
+	m_DirectDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHAREF, 0x08);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+	m_DirectDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	m_DirectDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	m_DirectDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_VERTEXBLEND, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+
+
+	m_DirectDevice->SetRenderState(D3DRS_WRAP0, 0);
+	// TEST end
+
+	/*m_DirectDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHAREF, 0x08);
+	m_DirectDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+	m_DirectDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	m_DirectDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	m_DirectDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
+	m_DirectDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
+	m_DirectDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_COLORWRITEENABLE,
+		D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN |
+		D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);*/
+	/*m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);*/
+
+	/*m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);*/
+
+	
+	/*m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);*/
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+	//m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	//m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_NONE);
+	//m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_NONE);
+
+	// x, y, z, rhw, color
+	thisVertex g_square_vertices[] = {
+		{ (float)x, (float)y, z, 0.0f, 0.0f, 0.0f },
+		{ (float)(x + w), (float)y, z, 0.0f, 1.0f, 0.0f },
+		{ (float)x, (float)(y + h), z, 0.0f, 0.0f, 1.0f }, 
+		{ (float)(x + w), (float)(y + h), z, 0.0f, 1.0f, 1.0f }
+	};
+
+	unsigned char*	buffer;
+	m_vb->Lock(0, 0, &buffer, 0);
+	memcpy(buffer, g_square_vertices, sizeof(g_square_vertices));
+	m_vb->Unlock();
+
+
+	this->GetDevice()->SetPixelShader(NULL);
+	this->GetDevice()->SetVertexShader(OURVERTEX);
+
+	this->GetDevice()->SetStreamSource(0, m_vb, sizeof(thisVertex));
+
+	//Now we're drawing a Triangle Strip, 4 vertices to draw 2 triangles.
+	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
+	m_DirectDevice->SetTexture(0,NULL);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+	m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+
+
+}
+
 void CGraphics::Clear(int x, int y, int w, int h, D3DCOLOR color)
 {
 	D3DRECT rec = { x,y,x+w,y+h};
@@ -1079,6 +1206,8 @@ __declspec(noinline) void CGraphics::OnLostDevice()
 	g_CCore->GetIngameMenu()->OnLostDevice();
 	this->m_d3dFont->InvalidateDeviceObjects();
 	this->m_cFont->OnDeviceLost();
+
+	g_CCore->GetNametags()->OnLostDevice();
 }
 void CGraphics::OnResetDevice()
 {

@@ -204,7 +204,36 @@ void CChat::DoCommand(char str[])
 	}
 	else if (strcmp(command, "killme") == 0)
 	{
-		g_CCore->GetGame()->KillPed(g_CCore->GetLocalPlayer()->GetBase());
+		//g_CCore->GetGame()->KillPed(g_CCore->GetLocalPlayer()->GetBase());
+		DWORD PED = g_CCore->GetLocalPlayer()->GetBase();
+			g_CCore->GetGame()->ShouldKill = true;
+
+			_asm {
+				sub ESP, 0xC	// create null vector
+					mov DWORD PTR DS : [ESP],0x0
+					mov DWORD PTR DS : [ESP+0x4], 0x0
+					mov DWORD PTR DS : [ESP+0x8], 0x0
+				//sub ESP, 0x500
+					MOV ESI, PED
+					MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
+					MOV EDX, DWORD PTR DS : [ESI]
+					PUSH 0
+					PUSH 6
+					PUSH 0
+					LEA EAX, DWORD PTR SS : [ESP + 0xC]
+					PUSH 0x41200000
+					PUSH EAX
+					LEA ECX, DWORD PTR SS : [ESP + 0x14]
+					LEA EAX, DWORD PTR SS : [ESP + 0x14]
+					PUSH ECX
+					PUSH EAX
+					PUSH 1
+					MOV ECX, ESI
+					CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
+					add ESP, 0xC
+				end:
+			}
+			g_CCore->GetGame()->ShouldKill = false;
 	}
 	else if(strcmp(command,"bg") == 0)
 	{
@@ -877,8 +906,13 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 		sprintf(buffer, "SetRenderTarget %s", buffer);
 		MessageBoxA(NULL, buffer, buffer, MB_OK);
 	}
+	
+	//device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 255, 255), 1.0f, 0);
+	device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 0, 0), 1.0f, 0);
 
-	device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 255, 255), 1.0f, 0);
+	g_CCore->GetGraphics()->Clear(0, 0, 1, 1, 0xFF00adef);
+	g_CCore->GetGraphics()->Clear(0, 1, 1, 1, 0xFFff0000);
+	g_CCore->GetGraphics()->Clear(1, 0, 1, 1, 0xFF00ff00);
 	
 	if (this->IsBackgroundActive() == 1)
 	{

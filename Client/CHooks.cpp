@@ -456,23 +456,26 @@ _declspec(naked) void Hook_PreventHit()
 	Tools::Nop(0x00497024,6); // granade*/
 }
 
-void OnDeath(DWORD killerBase)
+void OnDeath(DWORD killerBase,unsigned char hitbox)
 {
 	int killerId = 0;
 	killerId = g_CCore->GetPedPool()->GetPedIdByBase(killerBase);
 	if (killerId != -1)
 	{
 		char buff[255];
-		sprintf(buff, "Killed by 0x%i", killerId);
+		sprintf(buff, "Killed by 0x%i [Part %d]", killerId, hitbox);
 		g_CCore->GetLog()->AddLog(buff);
 
 		RakNet::BitStream bsOut;
 		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH);
 		bsOut.Write(killerId);
+		bsOut.Write(hitbox);
 		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 	}
 }
+
+// death reason ESP+0x60
 _declspec(naked) void Hook_OnDeath()
 {
 	_asm
@@ -482,11 +485,14 @@ _declspec(naked) void Hook_OnDeath()
 			jnz ped
 			cmp EBP, 0x0		// if EBP[killerBase] is 0 = suicide
 			jz suicide
-			pushad
-		PUSH EBP
+			// move DEATH part into EAX
+		mov EAX, DWORD PTR DS : [ESP + 0x64]
+		pushad
+		PUSH EAX; // part - hitbox
+		PUSH EBP; // killer - PED
 		mov EAX, OnDeath
 		call EAX
-		add ESP, 0x4
+		add ESP, 0x8
 		popad
 			jmp ped
 		suicide :
@@ -509,7 +515,8 @@ _declspec(naked) void Hook_OnDeath2()
 			jnz ped
 		pushad
 	}
-	g_CCore->GetGame()->OnSuicide();
+	//g_CCore->GetGame()->OnSuicide();
+	g_CCore->GetLocalPlayer()->OnDeath(-1, DEATH_EXPLODEINCAR, 0);
 	_asm
 	{
 		popad
@@ -537,6 +544,26 @@ _declspec(naked) void Hook_OnDeath3()
 		ped :
 		push 0x004987C2
 			ret
+	}
+}
+
+// player sink
+_declspec(naked) void Hook_OnDeath4()
+{
+	_asm
+	{
+		MOV DWORD PTR DS : [esi + 0x644], 0x0
+			cmp BYTE PTR SS : [ESI + 0x10], 0x2
+			jnz ped
+			pushad
+	}
+	g_CCore->GetLocalPlayer()->OnDeath(-1, DEATH_DROWN, 0);
+	_asm
+	{
+		popad
+		ped :
+		push 0x0049BFF4
+		ret
 	}
 }
 void PlayerEnteredVehicle(DWORD vehicle, DWORD seatID)
@@ -1610,10 +1637,177 @@ _declspec (naked) void Hook_PreventCarMoveWhenAbandoned()
 	}
 }
 
+//-------------------------------- Hit call back -----------------------------
+bool OnHitCallback(DWORD victim,DWORD reason, DWORD unk1, DWORD unk2, DWORD unk3, float damage, DWORD attacker,  DWORD playerPart,DWORD unk4)
+{
+	PED* ped = (PED*)victim;
+
+	// prevent hit if it's enemy
+	if (ped->object.objectType == OBJECT_ENEMY && g_CCore->GetGame()->ShouldKill == false)
+		return true;
+	
+	g_CCore->GetChat()->AddMessage("CHooks::OnHitCall");
+	
+	// Check whether player is already dead
+	bool isAlreadyDead = (ped->object.isActive == 0);
+	DWORD result;
+	// call original function
+	_asm {
+		MOV EAX, unk4
+		PUSH EAX
+		MOV EAX, playerPart
+		PUSH EAX
+		MOV EAX, attacker
+		PUSH EAX
+		MOV EAX, damage
+		PUSH EAX
+		MOV EAX, unk3
+		PUSH EAX
+		MOV EAX, unk2
+		PUSH EAX
+		MOV EAX, unk1
+		PUSH EAX
+		MOV EAX, reason
+		PUSH EAX
+		MOV ECX, victim
+		MOV EAX, 0x00496710
+		CALL EAX; Game.00496710; \Game.00496710
+		MOV result, EAX
+	}
+	// if player is already dead, we won't sync this event
+	if (!isAlreadyDead)
+	{
+		// if victim is local player
+		if (ped->object.objectType == OBJECT_LOCALPLAYER)
+		{
+			// is dead
+			if (ped->object.isActive == 0)
+			{
+				// if attacker == NULL -> suicide
+				if (attacker != NULL)
+				{
+					PED* anotherPed = (PED*)attacker;
+					// if attacker is another player
+					if (anotherPed->object.objectType == OBJECT_ENEMY)
+					{
+						// killed by player
+						int ID = g_CCore->GetPedPool()->GetPedIdByBase(attacker);
+						g_CCore->GetLocalPlayer()->OnDeath(ID, reason, playerPart);
+						return result;
+					}
+					// if it's vehicle, then let's try to get its driver
+					else if (anotherPed->object.objectType == OBJECT_VEHICLE)
+					{
+						int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(attacker);
+						if (ID != -1)
+						{
+							CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+							if (veh)
+							{
+								g_CCore->GetLocalPlayer()->OnDeath(veh->GetSeat(0), reason, playerPart);
+								return result;
+							}
+						}
+					}
+
+				}
+				// otherwise it's suicide
+				g_CCore->GetLocalPlayer()->OnDeath(-1, reason, playerPart);
+			}
+		}
+	}
+	return result;
+}
 
 
+//0041223B    CALL Game.00496710; \Game.00496710
+_declspec (naked) void Hook_OnPlayerHit01()
+{
+	_asm {
+		PUSH EAX; / Arg8
+		MOV EAX, DWORD PTR SS : [ESP + 24]; |
+		PUSH ECX; | part(head = 6)
+		MOV ECX, DWORD PTR SS : [ESP + 24]; |
+		PUSH EDI; | Arg6 owner(could be car too, wtf ? )
+		PUSH EDX; | Arg5 range ? (50.0 in this case)
+		MOV EDX, DWORD PTR SS : [ESP + 28]; |
+		PUSH EAX; | Arg4 again some rot ?
+		MOV EAX, DWORD PTR SS : [ESP + 28]; |
+		PUSH ECX; | Arg3 position vector
+		PUSH EDX; | Arg2 rotation
+		PUSH EAX; | Arg1
+		PUSH ESI; |
+		MOV EAX, OnHitCallback
+		CALL EAX
+		ADD ESP, 0x24
+
+		// return
+		PUSH 0x00412240
+		ret
+	}
+}
+
+//004CBC5A    CALL Game.00496710; \Game.00496710
+_declspec (naked) void Hook_OnPlayerHit02()
+{
+	_asm {
+		PUSH EAX; / Arg8
+		MOV EAX, DWORD PTR SS : [ESP + 0x1C]; |
+		PUSH ECX; | Arg7
+		MOV ECX, DWORD PTR SS : [ESP + 0x1C]; |
+		PUSH EDX; | Arg6
+		MOV EDX, DWORD PTR SS : [ESP + 0x1C]; |
+		PUSH EAX; | Arg5
+		MOV EAX, DWORD PTR SS : [ESP + 0x1C]; | Arg4 = position
+		PUSH ECX; | Arg4
+		MOV ECX, DWORD PTR SS : [ESP + 0x1C]; | Arg3 is again a position vector
+		PUSH EDX; | Arg3
+		PUSH EAX; | Arg2
+		PUSH ECX; | Arg1
+		PUSH ESI; | Arg2 = rotation vector
+		MOV EAX, OnHitCallback
+		CALL EAX
+		ADD ESP, 0x24
+			// return
+		PUSH 0x004CBC5F
+		ret
+	}
+}
+void RestInPeace()
+{
+	g_CCore->GetChat()->AddMessage("TESTIQ - OK ROMCO");
+
+	// Send info to server
+	RakNet::BitStream bsOut;
+	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH_END);
+	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+}
+
+_declspec (naked) void Hook_RestInPeace()
+{
+	_asm {
+		cmp DWORD PTR DS : [ECX+0x10],0x2
+		JNE end
+		pushad
+			push ECX
+			call RestInPeace
+			add ESP, 0x4
+		popad
+		end:
+		push 0x004ABE40
+		retn
+	
+	}
+}
 void SetHooks()
 {
+	Tools::InstallCallHook(0x004940C0, (DWORD)&Hook_RestInPeace);
+
+	// OnPlayerHit callback - usefull for death detection & hit, shot or explosion splash
+	Tools::InstallJmpHook(0x00412221, (DWORD)&Hook_OnPlayerHit01);
+	Tools::InstallJmpHook(0x004CBC3C, (DWORD)&Hook_OnPlayerHit02);
+
 	// This should make car static
 	Tools::InstallJmpHook(0x0052D307, (DWORD)&Hook_PreventCarMoveWhenAbandoned);
 
@@ -1671,7 +1865,7 @@ void SetHooks()
 	Tools::InstallJmpHook(0x0055A52F, (DWORD)&Hook_HideWeapon);
 	Tools::InstallJmpHook(0x004A3BBF, (DWORD)&Hook_OnShoot);
 
-	Tools::Nop(0x00497394, 6);
+	/*Tools::Nop(0x00497394, 6);
 	Tools::InstallCallHook(0x00497394, (DWORD)&Hook_PreventHit);
 	Tools::Nop(0x00496BA9, 6);
 	Tools::InstallCallHook(0x00496BA9, (DWORD)&Hook_PreventHit);
@@ -1681,10 +1875,26 @@ void SetHooks()
 	Tools::InstallCallHook(0x00497024, (DWORD)&Hook_PreventHit);
 	Tools::Nop(0x0049709D, 6);
 	Tools::InstallCallHook(0x0049709D, (DWORD)&Hook_PreventHit);
-	Tools::Nop(0x00497483, 6);
-	Tools::InstallCallHook(0x00497483, (DWORD)&Hook_OnDeath);
+	Tools::Nop(0x00497483, 6);*/
+
+	// TODO - useless
+	// When he is killed by enemy or when falls down or hit by car 
+	//--Tools::InstallCallHook(0x00497483, (DWORD)&Hook_OnDeath);
+
+
+	// Killed by explosion (in car)	- need to be keeped IT ISN'T CALLED BY CALLBACK
 	Tools::InstallJmpHook(0x004AAB71, (DWORD)&Hook_OnDeath2);
-	Tools::InstallJmpHook(0x004987B8, (DWORD)&Hook_OnDeath3);
+
+	// Car sink / car collision / killed in car (by enemy weapon)
+	//--Tools::InstallJmpHook(0x004987B8, (DWORD)&Hook_OnDeath3);
+
+
+	// Player sink
+	//0049BFEA | .C786 44060000 >MOV DWORD PTR DS : [ESI + 644], 0 IT ISN'T CALLED BY CALLBACK
+	Tools::InstallJmpHook(0x0049BFEA, (DWORD)&Hook_OnDeath4);
+
+
+
 	//004987C2
 	//Tools::Nop(0x00491C17, 6);
 	//Tools::InstallCallHook(0x00491C17, (DWORD)&Hook_OnPlayerEnteredVehicle);

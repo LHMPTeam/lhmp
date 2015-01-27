@@ -12,6 +12,7 @@
 #define	__PED_H
 #include "CEntity.h"
 #include "../shared/structures.h"
+#include <d3d8.h>
 class CPed: public CEntity
 {
 private:
@@ -30,11 +31,14 @@ private:
 	int				currentWep;
 	SWeapon			weapon[8];
 
-
 public:
+	CPed();
+	~CPed();
+	LPDIRECT3DTEXTURE8		nametag;		// TODO move to private
+
 	void		SetIsOnFoot(bool);
 	bool		IsOnFoot();
-	CPed();
+	
 	void		UpdateGameObject();
 	void		SetName(char[]);
 	void		SetDucking(byte);

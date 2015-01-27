@@ -41,12 +41,15 @@ private:
 	int status;
 	std::vector <CFile*> fileList;
 
+	// All files which are going to be received together
+	int overallBytes;
+	// Count of already received bytes (< or == overallBytes)
+	int receivedBytes;
+
 	void InitTransfer(RakNet::BitStream* stream);
 public:
 	CFileTransfer();
-
 	void HandlePacket(RakNet::BitStream* stream);
-
 	void Render();
 };
 

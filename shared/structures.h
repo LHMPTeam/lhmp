@@ -121,6 +121,7 @@ enum LHMPNetMessages
 	LHMP_PLAYER_THROWGRANADE,
 	LHMP_PLAYER_SHOOT,
 	LHMP_PLAYER_DEATH,
+	LHMP_PLAYER_DEATH_END,
 	LHMP_PLAYER_HIT,
 	LHMP_PLAYER_PUT_TO_VEHICLE,
 	LHMP_PLAYER_SET_HEALTH,
@@ -171,6 +172,41 @@ enum LHMPNetMessages
 	LHMP_PICKUP_CREATE,
 	LHMP_PICKUP_DELETE,
 	LHMP_PICKUP_SETVISIBLE
+};
+
+// Reasons why player died
+enum LHMPDeathReasons
+{
+	// Killed by gun
+	DEATH_SHOT = 0x0,
+	// Killed by hand or melee weapon
+	DEATH_HIT = 0x1,
+	// Killed by explosion (of car, granade)
+	DEATH_EXPLOSION = 0x2,
+	// Killed by flames (molotov & petrol pump)
+	DEATH_FLAMES = 0x3,
+	// Killed in car (car sink or after collision)
+	DEATH_INCAR = 0x5,
+	// When player falls or commit suicide (via script)
+	DEATH_FALL = 0x6,
+	// Getting hit by car (of another player)
+	DEATH_HITBYCAR = 0x8,
+	// Exploding in car (LHMP)
+	DEATH_EXPLODEINCAR = 10,
+	// Player sink (drown (LHMP)
+	DEATH_DROWN = 11
+};
+
+// Player body parts
+enum LHMPPlayerParts
+{
+	PLAYERPART_UNKNOWN = 0,
+	PLAYERPART_RIGHTARM = 1,
+	PLAYERPART_LEFTARM = 2,
+	PLAYERPART_RIGHTLEG = 3,
+	PLAYERPART_LEFTLEG = 4,
+	PLAYERPART_BODY = 5,
+	PLAYERPART_HEAD = 6
 };
 
 
@@ -277,6 +313,8 @@ enum CLIENT_ENGINESTACK
 	ES_CREATEPLAYER,
 	ES_DELETEPLAYER,
 	ES_PLAYERDEATH,
+	ES_PLAYERDEATHEX,
+	ES_PLAYERDEATH_END,
 	ES_CHANGESKIN,
 	ES_PLAYANIM,
 	ES_PLAYANIM_STRING,
@@ -370,6 +408,12 @@ namespace ENGINE_STACK
 	{
 		char buff[200];
 		bool state;
+	};
+	struct KILL_PED_EX
+	{
+		int ID;
+		int reason;
+		int part;
 	};
 }
 

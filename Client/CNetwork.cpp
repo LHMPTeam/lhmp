@@ -559,15 +559,36 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_DEATH:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			int ID;
+			int ID,reason,part;
 			bsIn.Read(ID);
+			bsIn.Read(reason);
+			bsIn.Read(part);
 			char buff[255];
 			sprintf(buff, "[NM] PlayerDeath %i", ID);
 			g_CCore->GetLog()->AddLog(buff);
-			g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATH, (DWORD)ID);
+			//g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATH, (DWORD)ID);
+
+			ENGINE_STACK::KILL_PED_EX* pw = new ENGINE_STACK::KILL_PED_EX[1];
+			pw->ID = ID;
+			pw->part = part;
+			pw->reason = reason;
+			g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATHEX, (DWORD)pw);
 
 		}
 		break;
+		case LHMP_PLAYER_DEATH_END:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID, reason, part;
+			bsIn.Read(ID);
+			char buff[500];
+			sprintf(buff, "[NM] PlayerDeathEND %i", ID);
+			g_CCore->GetLog()->AddLog(buff);
+
+			g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATH_END, ID);
+
+		}
+			break;
 		case LHMP_PLAYER_PUT_TO_VEHICLE:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
@@ -946,7 +967,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
 			if (veh != NULL)
 			{
-				veh->SetSirenState((bool)state);
+				veh->SetSirenState((state == 1));
 			}
 		}
 			break;

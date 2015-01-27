@@ -392,3 +392,23 @@ void	CLocalPlayer::ServerUpdateWeapon()
 	bsOut.Write(player->inventary.slot[0].weaponType);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 }
+
+
+void	CLocalPlayer::OnDeath(int killer, int reason, int part)
+{
+	char buff[250];
+	sprintf(buff, "Attacker: %d Reason %d Part %d", killer, reason, part);
+	g_CCore->GetChat()->AddMessage(buff);
+
+	// Send info to server
+	RakNet::BitStream bsOut;
+	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH);
+	// killer ID
+	bsOut.Write(killer);
+	// reason type (shot)
+	bsOut.Write(reason);
+	// player's part type (head, body,leg)
+	bsOut.Write(part);
+	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+}

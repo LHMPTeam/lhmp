@@ -85,6 +85,7 @@ public:
 	void				Clear(int, int, int, int, D3DCOLOR);
 	void				FillARGB(int x, int y, int w, int h, D3DCOLOR color);
 	void				FillARGB(int x, int y,float z, int w, int h, D3DCOLOR color);
+	void				RenderTexture(int x, int y, float z, int w, int h,LPDIRECT3DTEXTURE8 texture);
 
 	// states
 	bool				IsCamFreezed;
