@@ -3,6 +3,7 @@
 #include "CDirectInput8Proxy.h"
 #include "CDirect3D8Proxy.h"
 #include "CHooks.h"
+#include "AntiCheat.h"
 #include <Psapi.h>
 #include <Windows.h>
 #pragma comment( lib, "psapi.lib" )
@@ -92,6 +93,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 				SetHooks();
 				WaitTillD3D8IsLoaded();	// DxHook
 				CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&MainThread, 0, 0, 0);	// hlavne vlakno
+				CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&ACMainThread, 0, 0, 0); // AntiCheat thread
 				//CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&TestKB, 0, 0, 0);	// testovacia klavesnica
 			}
 			else {
