@@ -447,6 +447,9 @@
     <ClCompile Include="CFileTransfer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CNametags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directx8hook.h">
@@ -1026,6 +1029,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CFileSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CNametags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

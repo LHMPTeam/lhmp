@@ -212,6 +212,7 @@
     <ClCompile Include="..\sdks\RakNet\VitaIncludes.cpp" />
     <ClCompile Include="..\sdks\RakNet\WSAStartupSingleton.cpp" />
     <ClCompile Include="..\sdks\RakNet\_FindFirst.cpp" />
+    <ClCompile Include="CBanSystem.cpp" />
     <ClCompile Include="CConfig.cpp" />
     <ClCompile Include="CConsole.cpp" />
     <ClCompile Include="CCore.cpp" />
@@ -400,13 +401,13 @@
     <ClInclude Include="..\shared\structures.h" />
     <ClInclude Include="..\shared\tools.h" />
     <ClInclude Include="..\shared\version.h" />
+    <ClInclude Include="CBanSystem.h" />
     <ClInclude Include="CConfig.h" />
     <ClInclude Include="CConsole.h" />
     <ClInclude Include="CCore.h" />
     <ClInclude Include="CDoorPool.h" />
     <ClInclude Include="CEntity.h" />
     <ClInclude Include="CFileTransfer.h" />
-    <ClInclude Include="CFileTransferPool.h" />
     <ClInclude Include="CGameMode.h" />
     <ClInclude Include="CLog.h" />
     <ClInclude Include="CPickup.h" />

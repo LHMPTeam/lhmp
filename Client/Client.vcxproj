@@ -230,6 +230,7 @@
     <ClCompile Include="CInterpolation.cpp" />
     <ClCompile Include="CKeyboard.cpp" />
     <ClCompile Include="CLog.cpp" />
+    <ClCompile Include="CNametags.cpp" />
     <ClCompile Include="CPed.cpp" />
     <ClCompile Include="CPedPool.cpp" />
     <ClCompile Include="CPickup.cpp" />
@@ -424,6 +425,7 @@
     <ClInclude Include="CInterpolation.h" />
     <ClInclude Include="CKeyboard.h" />
     <ClInclude Include="CLog.h" />
+    <ClInclude Include="CNametags.h" />
     <ClInclude Include="CPed.h" />
     <ClInclude Include="CPedPool.h" />
     <ClInclude Include="CPickup.h" />

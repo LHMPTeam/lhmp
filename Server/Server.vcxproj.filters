@@ -435,6 +435,9 @@
     <ClCompile Include="..\sdks\md5\md5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CBanSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNetworkManager.h">
@@ -992,10 +995,10 @@
     <ClInclude Include="CFileTransfer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CFileTransferPool.h">
+    <ClInclude Include="..\sdks\md5\md5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\sdks\md5\md5.h">
+    <ClInclude Include="CBanSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
