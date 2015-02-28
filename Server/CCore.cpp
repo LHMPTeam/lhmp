@@ -17,6 +17,7 @@ bool CCore::IsRunning()
 
 void CCore::Pulse()
 {
+	m_cQueryServer.Tick();
 	m_cNetworkManager.Pulse();
 	m_cTickManager.Pulse();
 	m_cTimerPool.Tick();
@@ -31,6 +32,8 @@ void CCore::OnSecondElapsed()
 bool CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible)
 {
 	if (m_cNetworkManager.Init(port, players, startpos, mode) == false)
+		return false;
+	if (m_cQueryServer.StartServer(port + 1, 100) == false)
 		return false;
 	m_cNetworkManager.SetServerName(svrname);
 	if (visible == 1)
@@ -186,4 +189,9 @@ CFileTransfer*	CCore::GetFileTransfer()
 CBanSystem*		CCore::GetBanSystem()
 {
 	return &this->m_cBanSystem;
+}
+
+CQueryServer*		CCore::GetQueryServer()
+{
+	return &this->m_cQueryServer;
 }

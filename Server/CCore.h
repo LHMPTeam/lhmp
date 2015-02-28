@@ -27,6 +27,7 @@ typedef unsigned char byte;
 #include "CPickupPool.h"
 #include "CFileTransfer.h"
 #include "CBanSystem.h"
+#include "CQueryServer.h"
 
 class CCore
 {
@@ -45,6 +46,7 @@ private:
 	CPickupPool			m_cPickupPool;
 	CLog				m_cLog;
 	CFileTransfer		m_cFileTransfer;
+	CQueryServer		m_cQueryServer;
 	char				m_cMapName[200];
 
 public:
@@ -79,6 +81,7 @@ public:
 	CLog*				GetLog();
 	CFileTransfer*		GetFileTransfer();
 	CBanSystem*			GetBanSystem();
+	CQueryServer*		GetQueryServer();
 
 	void				SetDefaultMap(char*);
 	char*				GetDefaultMap();

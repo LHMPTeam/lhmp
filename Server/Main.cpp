@@ -24,6 +24,7 @@ int main()
 	char*	gamemode	= cfg->GetCString("gamemode", "default");
 	char*	mode		= cfg->GetCString("mode", "Default mode");
 	bool	visible		= cfg->GetBool("visible", 1);
+	char*	websiteurl = cfg->GetCString("website", "(No URL!)");
 	delete cfg;
 	std::string startpos = "-1985.966675 -5.037054 4.284860";
 	max_players = Tools::Clamp(max_players, 0, MAX_PLAYERS);
@@ -46,6 +47,7 @@ int main()
 	g_CCore->GetLog()->AddNormalLog("Server Port: %d", server_port);
 	g_CCore->GetLog()->AddNormalLog("Max.Players: %d", max_players);
 	g_CCore->GetLog()->AddNormalLog("Gamemode:    %s", gamemode);
+	g_CCore->GetLog()->AddNormalLog("URL:         %s", websiteurl);
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
 	// run CCore instance
