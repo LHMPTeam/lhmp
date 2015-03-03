@@ -4,8 +4,9 @@
 ; multiple TABs and spaces are ignored
 ; --------------------------------------------
 			
- servername		Romco public server - please connect
+ servername		JUST FOR TESTERS, dudes
  maxplayers		64
  server_port		27015
  gamemode		Freeroam1
+ visible		false
 

@@ -879,7 +879,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 {
 	if (chatTexture == NULL)
 	{
-		D3DXCreateTexture(device, 500, 500,
+		D3DXCreateTexture(device, 512, 512,
 			1, D3DUSAGE_RENDERTARGET,
 			D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &chatTexture);
 	}
@@ -907,12 +907,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 		MessageBoxA(NULL, buffer, buffer, MB_OK);
 	}
 	
-	//device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 255, 255), 1.0f, 0);
-	device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 0, 0), 1.0f, 0);
-
-	g_CCore->GetGraphics()->Clear(0, 0, 1, 1, 0xFF00adef);
-	g_CCore->GetGraphics()->Clear(0, 1, 1, 1, 0xFFff0000);
-	g_CCore->GetGraphics()->Clear(1, 0, 1, 1, 0xFF00ff00);
+	device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 255, 255), 1.0f, 0);
 	
 	if (this->IsBackgroundActive() == 1)
 	{

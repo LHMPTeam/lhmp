@@ -90,7 +90,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\sdks\DirectX9SDK2007\Lib;$(SolutionDir)\sdks\dx8sdk\lib;$(SolutionDir)\sdks\detours\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\sdks\DirectX9SDK2007\Lib;$(SolutionDir)\sdks\dx8sdk\lib;$(SolutionDir)\sdks\detours\lib;$(SolutionDir)\sdks\CEGUI\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -215,6 +215,8 @@
     <ClCompile Include="..\sdks\RakNet\VitaIncludes.cpp" />
     <ClCompile Include="..\sdks\RakNet\WSAStartupSingleton.cpp" />
     <ClCompile Include="..\sdks\RakNet\_FindFirst.cpp" />
+    <ClCompile Include="AntiCheat.cpp" />
+    <ClCompile Include="CCEGUI.cpp" />
     <ClCompile Include="CChat.cpp" />
     <ClCompile Include="CColoredText.cpp" />
     <ClCompile Include="CCore.cpp" />
@@ -405,6 +407,8 @@
     <ClInclude Include="..\shared\structures.h" />
     <ClInclude Include="..\shared\tools.h" />
     <ClInclude Include="..\shared\version.h" />
+    <ClInclude Include="AntiCheat.h" />
+    <ClInclude Include="CCEGUI.h" />
     <ClInclude Include="CChat.h" />
     <ClInclude Include="CColoredText.h" />
     <ClInclude Include="CCore.h" />

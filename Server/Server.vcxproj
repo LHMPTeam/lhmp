@@ -226,6 +226,7 @@
     <ClCompile Include="CPickupPool.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CPlayerPool.cpp" />
+    <ClCompile Include="CQueryServer.cpp" />
     <ClCompile Include="CScript.cpp" />
     <ClCompile Include="CScripts.cpp" />
     <ClCompile Include="CTCP.cpp" />
@@ -412,6 +413,7 @@
     <ClInclude Include="CLog.h" />
     <ClInclude Include="CPickup.h" />
     <ClInclude Include="CPickupPool.h" />
+    <ClInclude Include="CQueryServer.h" />
     <ClInclude Include="CScript.h" />
     <ClInclude Include="CScripts.h" />
     <ClInclude Include="CNetworkManager.h" />

@@ -23,29 +23,23 @@ void CNametags::Tick()
 			{
 				// ok, remote player is close enough
 				// now check whether his nametag texture exists - TODO
-
 				// if doesn't exist, create it & render text to it
 				if (ped->nametag == NULL)
 				{
 					this->RenderToTexture(i);
 				}
-				else {
-					ped->nametag->Release();
-					this->RenderToTexture(i);
-				}
 
-				// now calculate player position on screen - TODO
-
-				// now just render the texture :)
-				
 				if (ped->nametag != NULL)
 				{
 					Vector3D screen;
+					// now calculate player position on screen
 					g_CCore->GetGraphics()->CalcScreenPosition(playerPosition, &screen);
 					// if object is on screen
 					if (screen.z > 0.0f)
 					{
-						screen.z -= 0.001f; // sligtly push more forward to local player
+						// sligtly push more forwards to local player
+						//screen.z -= 0.001f; 
+						// Retreive texture's size
 						D3DSURFACE_DESC desc;
 						ped->nametag->GetLevelDesc(0, &desc);
 
@@ -53,18 +47,22 @@ void CNametags::Tick()
 						if (ratio < 1.0f)
 							ratio = 1.0f;
 
-						//g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (0.5f*desc.Height*ratio), screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
-						g_CCore->GetGraphics()->RenderTexture(screen.x, screen.y, screen.z,500, 500, g_CCore->GetChat()->chatTexture);
+						int barWidth = 100;
+						int barHeight = 10;
+						float healthPercentage = ped->GetHealth() / 200.0f;
+						DWORD healthBarColor = 0xFFFF0000; // red color
+						//if player has more than 50% of life
+						if (ped->GetHealth() > 50.0f)
+							healthBarColor = 0xFF00FF00; // green color
 
-						int width = 100;
-						int height = 10;
-						float healthratio = ped->GetHealth() / 200.0f;
-						g_CCore->GetGraphics()->FillARGB(screen.x - (0.5f*desc.Width*ratio), screen.y + (0.5f*height*ratio) + 10, screen.z, (desc.Width*ratio), (height*ratio), D3DCOLOR_XRGB(0, 0, 0));
+						// render the health bar's background
+						g_CCore->GetGraphics()->FillARGB(screen.x - (barWidth / 2) - 1, screen.y - barHeight-2, screen.z, barWidth + 2, barHeight + 2, D3DCOLOR_XRGB(0, 0, 0));
+						// now render the health bar itself
+						g_CCore->GetGraphics()->FillARGB(screen.x - (barWidth / 2), screen.y - barHeight - 1, screen.z, barWidth*healthPercentage, barHeight, healthBarColor);	
 
-						if (healthratio > 0.5f)
-							g_CCore->GetGraphics()->FillARGB(screen.x - (0.5f*width*ratio), screen.y + (0.5f*height*ratio) + 10, screen.z, (width*ratio*healthratio), (height*ratio), D3DCOLOR_XRGB(0, 255, 0));
-						else
-							g_CCore->GetGraphics()->FillARGB(screen.x - (0.5f*width*ratio), screen.y + (0.5f*height*ratio) + 10, screen.z, (width*ratio*healthratio), (height*ratio), D3DCOLOR_XRGB(255, 0, 0));
+						// now render player's nick (scaled using ratio)
+						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio)-barHeight-5, screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
+
 					}
 				}
 			}
@@ -81,14 +79,10 @@ void CNametags::RenderToTexture(int playerID)
 		// at first, get size 
 		SIZE size = g_CCore->GetGraphics()->GetFont()->GetFontWidth(ped->GetName());
 
-		/*D3DXCreateTexture(g_CCore->GetGraphics()->GetDevice(), size.cx + 10, size.cy+5,
+		D3DXCreateTexture(g_CCore->GetGraphics()->GetDevice(), size.cx + 10, size.cy+5,
 			1, D3DUSAGE_RENDERTARGET,
 			D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &ped->nametag);
-			*/
-		D3DXCreateTexture(g_CCore->GetGraphics()->GetDevice(), 64, 64,
-			1, D3DUSAGE_RENDERTARGET,
-			D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &ped->nametag);
-
+			
 		if (ped->nametag != NULL)
 		{
 
@@ -110,20 +104,11 @@ void CNametags::RenderToTexture(int playerID)
 
 			// clear texture to clean one
 			//g_CCore->GetGraphics()->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB( 0,255, 255, 255), 1.0f, 0);
-			g_CCore->GetGraphics()->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 0, 0), 1.0f, 0);
+			g_CCore->GetGraphics()->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
 			// now we are ready to render to texture
 
-			//g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 2, 2, 0xFFFFFFFF, false);
-			//g_CCore->GetGraphics()->FillARGB(0, 0, 500, 500, 0xFFFF0000);
-			//g_CCore->GetGraphics()->DrawTextA(ped->GetName(), 2, 2, D3DCOLOR_XRGB(255,255,255), false);
-			//g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 2, 2, D3DCOLOR_XRGB(255, 255, 255), false);
-			//g_CCore->GetGraphics()->DrawTextA("petoooo", 2, 2, 0xFFFFFFFF, false);
-			//g_CCore->GetGraphics()->GetFont()->DrawTextA("petoooo", 2, 2, 0xFFFFFFFF, false);
-
-			g_CCore->GetGraphics()->DrawTextA(ped->GetName(), 20, 20, D3DCOLOR_XRGB(255, 255, 255), false);
-			g_CCore->GetGraphics()->DrawTextA(ped->GetName(), 20, 0, D3DCOLOR_XRGB(255, 255, 255), false);
-			g_CCore->GetGraphics()->DrawTextA(ped->GetName(), 20, 40, D3DCOLOR_XRGB(255, 255, 255), false);
-
+			g_CCore->GetGraphics()->DrawTextA(ped->GetName(), 2, 2, D3DCOLOR_XRGB(255, 255, 255), true);
+		
 			// return D3D to previos stage and release unneeded resources
 			g_CCore->GetGraphics()->GetDevice()->SetRenderTarget(pOldTarget, oldStencil);
 			pSurf->Release();

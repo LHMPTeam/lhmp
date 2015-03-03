@@ -119,14 +119,15 @@ void DebugWeapons()
 
 void CGraphics::Render()
 {
-	if (g_CCore->GetChat()->chatTexture != NULL)
+	// TODO - remove this debug bullshits
+	/*if (g_CCore->GetChat()->chatTexture != NULL)
 	{
 		D3DSURFACE_DESC desc;
 		g_CCore->GetChat()->chatTexture->GetLevelDesc(0, &desc);
 
 		Vector3D nullVector;
 		nullVector.x = -1984.88f;
-		nullVector.y = -2.03f;
+		nullVector.y = -4.03f;
 		nullVector.z = 23.144f;
 
 		float ratio = (10/Tools::GetDistanceBetween3DPoints(nullVector, g_CCore->GetLocalPlayer()->GetLocalPos()));
@@ -139,9 +140,9 @@ void CGraphics::Render()
 		//sprintf(puf, "Screen %f %f %f", screen.x, screen.y, screen.z);
 		//this->DrawTextA(puf,500,300,0xFFFF0000,true);
 		//this->FillARGB(screen.x, screen.y, screen.z, 40, 40, 0xFFFF0000);
-		this->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (0.5f*desc.Height*ratio), screen.z, 500, 500, g_CCore->GetChat()->chatTexture);
+		this->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio) - 20 - 10, screen.z, (desc.Width*ratio), (desc.Height*ratio), g_CCore->GetChat()->chatTexture);
 
-		this->FillARGB(screen.x - 50, screen.y + (0.5f*desc.Height*ratio) + 10, screen.z, 100, 20, D3DCOLOR_XRGB(0, 255, 0));
+		this->FillARGB(screen.x -(80*ratio), screen.y - 20, screen.z, 160*ratio, 20, D3DCOLOR_XRGB(0, 255, 0));
 	}
 
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
@@ -151,8 +152,9 @@ void CGraphics::Render()
 		char buff[200];
 		sprintf(buff, "Local PED: %d", ped->object.isActive);
 		this->DrawTextA(buff, 500, 100, 0xFFFF0000, true);
-	}
+	}*/
 
+	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	// Render nametags
 	if (ped != NULL)
 	{
@@ -884,10 +886,10 @@ void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEX
 
 	// x, y, z, rhw, color
 	thisVertex g_square_vertices[] = {
-		{ (float)x, (float)y, z, 0.0f, 0.0f, 0.0f },
-		{ (float)(x + w), (float)y, z, 0.0f, 1.0f, 0.0f },
-		{ (float)x, (float)(y + h), z, 0.0f, 0.0f, 1.0f }, 
-		{ (float)(x + w), (float)(y + h), z, 0.0f, 1.0f, 1.0f }
+		{ (float)x, (float)y, z, 1.0f, 0.0f, 0.0f },
+		{ (float)(x + w), (float)y, z, 1.0f, 1.0f, 0.0f },
+		{ (float)x, (float)(y + h), z, 1.0f, 0.0f, 1.0f }, 
+		{ (float)(x + w), (float)(y + h), z, 1.0f, 1.0f, 1.0f }
 	};
 
 	unsigned char*	buffer;
@@ -904,6 +906,7 @@ void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEX
 	//Now we're drawing a Triangle Strip, 4 vertices to draw 2 triangles.
 	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
+	// SetTexture NULL is important, it makes texture availables Release() function
 	m_DirectDevice->SetTexture(0,NULL);
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);

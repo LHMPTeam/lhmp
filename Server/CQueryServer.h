@@ -1,3 +1,12 @@
+/**
+Lost Heaven Multiplayer
+
+Purpose: server query system
+
+@author Romop5
+@version 1.0 28/02/15
+*/
+
 #ifndef _CQUERYSERVER
 #define _CQUERYSERVER
 #include "TCPInterface.h"
