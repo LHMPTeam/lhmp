@@ -5,12 +5,22 @@
 
 extern CCore *g_CCore;
 
+void threadCallback()
+{
+	g_CCore->GetQueryServer()->Tick();
+}
+
 bool CQueryServer::StartServer(int port, int maxConnections)
 {
 	tcpServer = new RakNet::TCPInterface();
 	if (tcpServer->Start(port, (unsigned int)maxConnections))
 	{
 		this->isRunning = true;
+#ifdef _WIN32
+		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&threadCallback, 0, NULL, NULL);
+#else
+		pthread_create(&tid1, NULL, &TCP, NULL);
+#endif
 		return true;
 	}
 	return false;
@@ -19,32 +29,38 @@ bool CQueryServer::StartServer(int port, int maxConnections)
 // Receive
 void CQueryServer::Tick()
 {
-	if (tcpServer->ReceiveHasPackets())
+	while (1 == 1)
 	{
-		RakNet::Packet* packet = tcpServer->Receive();
-		char* text = new char[packet->length + 1];
-		memcpy(text, packet->data, packet->length);
-		text[packet->length] = 0x0;
-		printf("[Query] %s \n", text);
-		
-		if (packet->data[0] == 'L' && packet->data[1] == 'H' && packet->data[2] == 'M' && packet->data[3] == 'P')
+		if (tcpServer->ReceiveHasPackets())
 		{
-			switch ((char)packet->data[4])
+			RakNet::Packet* packet = tcpServer->Receive();
+			char* text = new char[packet->length + 1];
+			memcpy(text, packet->data, packet->length);
+			text[packet->length] = 0x0;
+			printf("[Query] %s \n", text);
+
+			if (packet->data[0] == 'L' && packet->data[1] == 'H' && packet->data[2] == 'M' && packet->data[3] == 'P')
 			{
-				// Overall packet
-			case 'o':
-				this->OverallPacket(packet->systemAddress);
-				break;
-				// Player list
-			case 'p':
-				this->PlayerList(packet->systemAddress);
-				break;
-				// Ping
-			case 'i':
-				this->PingPacket(packet->systemAddress);
-				break;
+				switch ((char)packet->data[4])
+				{
+					// Overall packet
+				case 'o':
+					this->OverallPacket(packet->systemAddress);
+					break;
+					// Player list
+				case 'p':
+					this->PlayerList(packet->systemAddress);
+					break;
+					// Ping
+				case 'i':
+					this->PingPacket(packet->systemAddress);
+					break;
+				}
 			}
 
+		}
+		else {
+			Sleep(5);
 		}
 	}
 }
@@ -89,6 +105,13 @@ void CQueryServer::OverallPacket(RakNet::SystemAddress receiver)
 	*(unsigned short*)buffPointer = g_CCore->GetNetworkManager()->GetPeer()->GetMaximumIncomingConnections();
 	buffPointer += 2; 
 	len += 2;
+
+	*(unsigned char*)buffPointer = strlen(g_CCore->GetDefaultMap());
+	buffPointer += 1;
+	len += 1;
+	sprintf(buffPointer, "%s", g_CCore->GetDefaultMap());
+	buffPointer += strlen(g_CCore->GetDefaultMap());
+	len += strlen(g_CCore->GetDefaultMap());
 	
 	/**(unsigned char*)buffPointer = g_CCore->GetNetworkManager()->GetServerMode().length();
 	buffPointer += 1;
