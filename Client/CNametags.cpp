@@ -56,12 +56,12 @@ void CNametags::Tick()
 							healthBarColor = 0xFF00FF00; // green color
 
 						// render the health bar's background
-						g_CCore->GetGraphics()->FillARGB(screen.x - (barWidth / 2) - 1, screen.y - barHeight-2, screen.z, barWidth + 2, barHeight + 2, D3DCOLOR_XRGB(0, 0, 0));
+						g_CCore->GetGraphics()->FillARGB((int) (screen.x - (barWidth / 2.0f) - 1.0f), (int) (screen.y - barHeight-2), screen.z, barWidth + 2, barHeight + 2, D3DCOLOR_XRGB(0, 0, 0));
 						// now render the health bar itself
-						g_CCore->GetGraphics()->FillARGB(screen.x - (barWidth / 2), screen.y - barHeight - 1, screen.z, barWidth*healthPercentage, barHeight, healthBarColor);	
+						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int) (screen.y - barHeight - 1.0f), (int)screen.z, barWidth*healthPercentage, barHeight, healthBarColor);	
 
 						// now render player's nick (scaled using ratio)
-						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio)-barHeight-5, screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
+						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio)-barHeight-5, (int)screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
 
 					}
 				}

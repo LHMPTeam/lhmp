@@ -33,7 +33,7 @@ bool CCore::Init(int port,int players, std::string startpos, std::string svrname
 {
 	if (m_cNetworkManager.Init(port, players, startpos, mode) == false)
 		return false;
-	if (m_cQueryServer.StartServer(port + 1, 10000) == false)
+	if (m_cQueryServer.StartServer(port + 1) == false)
 		return false;
 	m_cNetworkManager.SetServerName(svrname);
 	if (visible == 1)

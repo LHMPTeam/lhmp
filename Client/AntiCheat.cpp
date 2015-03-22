@@ -52,7 +52,7 @@ void ACScanModules() {
 		hProcessSelf = GetCurrentProcess();
 	};
 
-	int i;
+	unsigned int i;
 
 	if (EnumProcessModules(hProcessSelf, hModules, sizeof(hModules), &dwCBNeeded)) {
 		for (i = 0; i < (dwCBNeeded / sizeof(HMODULE)); i++) {
@@ -72,7 +72,7 @@ void ACScanProcesses() {
 	DWORD dwProcesses[1024];
 	DWORD dwCBNeeded;
 	DWORD dwCProcesses;
-	int i;
+	unsigned int i;
 
 	if (EnumProcesses(dwProcesses, sizeof(dwProcesses), &dwCBNeeded)) {
 		dwCProcesses = dwCBNeeded / sizeof(DWORD);

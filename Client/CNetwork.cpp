@@ -579,7 +579,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_DEATH_END:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			int ID, reason, part;
+			int ID;// reason, part;
 			bsIn.Read(ID);
 			char buff[500];
 			sprintf(buff, "[NM] PlayerDeathEND %i", ID);

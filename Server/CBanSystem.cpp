@@ -76,7 +76,7 @@ void CBanSystem::ParseLineFromFile(char line[255])
 	if (strlen(newInput) == 0)
 		return;
 
-	for (int i = 0; i < strlen(newInput); i++)
+	for (unsigned int i = 0; i < strlen(newInput); i++)
 	{
 		if (newInput[i] == ' ')
 		{

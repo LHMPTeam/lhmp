@@ -231,7 +231,6 @@ void CChat::DoCommand(char str[])
 					MOV ECX, ESI
 					CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
 					add ESP, 0xC
-				end:
 			}
 			g_CCore->GetGame()->ShouldKill = false;
 	}
@@ -314,7 +313,7 @@ void CChat::DoCommand(char str[])
 		lpList = (HKL*)LocalAlloc(LPTR, (uLayouts * sizeof(HKL)));
 		uLayouts = GetKeyboardLayoutList(uLayouts, lpList);
 
-		for (int i = 0; i < uLayouts; ++i)
+		for (unsigned int i = 0; i < uLayouts; ++i)
 		{
 			GetLocaleInfo(MAKELCID(((UINT)lpList[i] & 0xffffffff),
 				SORT_DEFAULT), LOCALE_SLANGUAGE, szBuf, 512);

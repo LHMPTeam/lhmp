@@ -89,11 +89,11 @@ void DebugWeapons()
 				Vector3D screen;
 				g_CCore->GetGraphics()->CalcScreenPosition(gamePED->object.position, &screen);
 
-				g_CCore->GetGraphics()->DrawTextA("Weapon list (ID,ammo,ammo)", screen.x + 200, screen.y,0xffff0000, true);
+				g_CCore->GetGraphics()->DrawTextA("Weapon list (ID,ammo,ammo)", (int)(screen.x + 200.0f), (int)screen.y,0xffff0000, true);
 
 				char aha[250];
 				sprintf(aha, "Current ID: %d",ped->GetCurrentWeapon());
-				g_CCore->GetGraphics()->DrawTextA(aha, screen.x + 100, screen.y + 40, 0xffffffff, true);
+				g_CCore->GetGraphics()->DrawTextA(aha, (int) (screen.x + 100.0f), (int) (screen.y + 40.0f), 0xffffffff, true);
 				/*for (int i = 0; i < 8; i++)
 				{
 					SWeapon *wep = ped->GetWeapon(i);
@@ -109,7 +109,7 @@ void DebugWeapons()
 				{
 					char buff[250];
 					sprintf(buff, "%d %d %d", gamePED->inventary.slot[i].weaponType, gamePED->inventary.slot[i].ammoLoaded, gamePED->inventary.slot[i].ammo);
-					g_CCore->GetGraphics()->DrawTextA(buff, screen.x + 300, screen.y + 20 + (i * 20), 0xffffffff, true);
+					g_CCore->GetGraphics()->DrawTextA(buff, (int) (screen.x + 300.0f), (int)(screen.y + 20.0f + (i * 20.0f)), 0xffffffff, true);
 					
 				}
 			}

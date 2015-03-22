@@ -1356,7 +1356,6 @@ void CGame::KillPed(DWORD PED)
 			MOV ECX, ESI
 			CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
 			add ESP, 0x500
-		end:
 	}
 	g_CCore->GetGame()->ShouldKill = false;
 
@@ -1407,7 +1406,6 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 			MOV ECX, ESI
 			CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
 			add ESP, 0xC
-		end:
 	}
 	g_CCore->GetGame()->ShouldKill = false;
 }

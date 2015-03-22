@@ -642,7 +642,8 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		break;
 		case LHMP_PLAYER_DEATH_END:
 		{
-			int ID = GetIDFromSystemAddress(packet->systemAddress), killerID, reason, part;
+			int ID = GetIDFromSystemAddress(packet->systemAddress);
+			//killerID, reason, part;
 								 
 			BitStream bsOut;
 			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);

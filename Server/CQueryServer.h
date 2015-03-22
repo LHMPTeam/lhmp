@@ -9,7 +9,8 @@ Purpose: server query system
 
 #ifndef _CQUERYSERVER
 #define _CQUERYSERVER
-#include "TCPInterface.h"
+
+#include "../sdks/UDPWrapper/UDPWrapper.h"
 
 //----------	Query types ---------//
 /*
@@ -24,21 +25,21 @@ Purpose: server query system
 class CQueryServer 
 {
 public:
-	// Start TCP server
-	bool StartServer(int port, int maxConnections);
+	// Start query server
+	bool StartServer(int port);
 	
 	// Receive
 	void Tick();
 
 	// 'o' returns basic information about server
-	void OverallPacket(RakNet::SystemAddress receiver);
+	void OverallPacket(UDPPacket* packet);
 	// 'p'
-	void PlayerList(RakNet::SystemAddress receiver);
+	void PlayerList(UDPPacket* packet);
 	// 'i' 
-	void PingPacket(RakNet::SystemAddress receiver);
+	void PingPacket(UDPPacket* packet);
 
 private:
-	RakNet::TCPInterface* tcpServer;
+	UDPWrapper* queryServer;
 	bool isRunning;
 };
 

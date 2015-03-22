@@ -977,7 +977,7 @@ SQInteger sq_vehicleToggleSiren(SQVM *vm)
 
 	if (veh != NULL)
 	{
-		veh->SetSirenState((bool)state);
+		veh->SetSirenState(state == true);
 		BitStream bsOut;
 		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((MessageID)LHMP_VEHICLE_TOGGLE_SIREN);
@@ -1390,7 +1390,7 @@ void iniGetParam(const char* file, const char* param, char* value)
 			{
 				char out[256] = "";
 				int offset = strlen(param) + 1;
-				for (int i = 0; i < (strlen(line.c_str()) - strlen(param) - 1); i++)
+				for (unsigned int i = 0; i < (strlen(line.c_str()) - strlen(param) - 1); i++)
 				{
 					out[i] = line.c_str()[i + offset];
 				}

@@ -36,7 +36,7 @@ int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	// find the position of the last backslash and delete whatever follows
 	// (eg C:\Games\loader.exe becomes C:\Games\)
 	int pos = 0;
-	for (int k = 0; k < strlen(path); k++) {
+	for (int k = 0; k < (int) strlen(path); k++) {
 		if (path[k] == '\\') {
 			pos = k;
 		}
@@ -72,7 +72,7 @@ int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 			MessageBoxA(NULL, "Game process creation has failed. Please, run as an ADMINISTRATOR !", "Error", MB_OK | MB_ICONERROR);
 		}
 		else {
-			sprintf(buff, "CreateProcess failed. Error ID: 0x%x\n", errorID);
+			sprintf_s(buff, "CreateProcess failed. Error ID: 0x%x\n", errorID);
 			MessageBoxA(NULL, buff, "Error", MB_OK | MB_ICONERROR);
 		}
 		return 1;

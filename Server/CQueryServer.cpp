@@ -10,10 +10,11 @@ void threadCallback()
 	g_CCore->GetQueryServer()->Tick();
 }
 
-bool CQueryServer::StartServer(int port, int maxConnections)
+bool CQueryServer::StartServer(int port)
 {
-	tcpServer = new RakNet::TCPInterface();
-	if (tcpServer->Start(port, (unsigned int)maxConnections))
+	queryServer = new UDPWrapper();
+	//if (tcpServer->Start(port, (unsigned int)maxConnections))
+	if (queryServer->StartServer(port) == UDP_OK)
 	{
 		this->isRunning = true;
 #ifdef _WIN32
@@ -29,14 +30,16 @@ bool CQueryServer::StartServer(int port, int maxConnections)
 // Receive
 void CQueryServer::Tick()
 {
+	UDPPacket* packet;
 	while (1 == 1)
 	{
-		if (tcpServer->ReceiveHasPackets())
+		packet = queryServer->Receive();
+		// If there IS a packet
+		if (packet)
 		{
-			RakNet::Packet* packet = tcpServer->Receive();
-			char* text = new char[packet->length + 1];
-			memcpy(text, packet->data, packet->length);
-			text[packet->length] = 0x0;
+			char* text = new char[packet->messageLength + 1];
+			memcpy(text, packet->data, packet->messageLength);
+			text[packet->messageLength] = 0x0;
 			printf("[Query] %s \n", text);
 
 			if (packet->data[0] == 'L' && packet->data[1] == 'H' && packet->data[2] == 'M' && packet->data[3] == 'P')
@@ -45,15 +48,15 @@ void CQueryServer::Tick()
 				{
 					// Overall packet
 				case 'o':
-					this->OverallPacket(packet->systemAddress);
+					this->OverallPacket(packet);
 					break;
 					// Player list
 				case 'p':
-					this->PlayerList(packet->systemAddress);
+					this->PlayerList(packet);
 					break;
 					// Ping
 				case 'i':
-					this->PingPacket(packet->systemAddress);
+					this->PingPacket(packet);
 					break;
 				}
 			}
@@ -76,7 +79,7 @@ void CQueryServer::Tick()
 	13-14	website length
 	14-15	'website' - string
 */
-void CQueryServer::OverallPacket(RakNet::SystemAddress receiver)
+void CQueryServer::OverallPacket(UDPPacket* packet)
 {
 	char buff[1024];
 	char* buffPointer = buff;
@@ -118,12 +121,12 @@ void CQueryServer::OverallPacket(RakNet::SystemAddress receiver)
 	sprintf(buffPointer, "%s", g_CCore->GetNetworkManager()->GetServerMode().c_str());
 	buffPointer += g_CCore->GetNetworkManager()->GetServerMode().length();
 	*/
-	tcpServer->Send(buff, len, receiver, false);
-
+	//tcpServer->Send(buff, len, receiver, false);
+	queryServer->SendData(len, buff, (sockaddr*)&packet->sender);
 
 	printf("[Query] Sending overall packet\n");
 }
-void CQueryServer::PlayerList(RakNet::SystemAddress receiver)
+void CQueryServer::PlayerList(UDPPacket* packet)
 {
 	int playerCount = 0,messageLength = 0;
 	// allocate enough space
@@ -150,16 +153,17 @@ void CQueryServer::PlayerList(RakNet::SystemAddress receiver)
 	*(unsigned short*)(buff + 5) = (unsigned short)playerCount;
 
 	// Send message
-	tcpServer->Send(buff, messageLength, receiver, false);
-
+	//tcpServer->Send(buff, messageLength, receiver, false);
+	queryServer->SendData(messageLength, buff, (sockaddr*)&packet->sender);
 
 
 }
 
-void CQueryServer::PingPacket(RakNet::SystemAddress receiver)
+void CQueryServer::PingPacket(UDPPacket* packet)
 {
 	char buff[255];
 	sprintf(buff, "LHMPi");
 	*(int*) (buff+5) = rand();
-	tcpServer->Send(buff, strlen(buff), receiver,false);
+	//tcpServer->Send(buff, strlen(buff), receiver,false);
+	queryServer->SendData(strlen(buff), buff, (sockaddr*)&packet->sender);
 }
