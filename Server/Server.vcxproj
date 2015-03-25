@@ -212,6 +212,7 @@
     <ClCompile Include="..\sdks\RakNet\VitaIncludes.cpp" />
     <ClCompile Include="..\sdks\RakNet\WSAStartupSingleton.cpp" />
     <ClCompile Include="..\sdks\RakNet\_FindFirst.cpp" />
+    <ClCompile Include="..\sdks\UDPWrapper\UDPWrapper.cpp" />
     <ClCompile Include="CBanSystem.cpp" />
     <ClCompile Include="CConfig.cpp" />
     <ClCompile Include="CConsole.cpp" />
@@ -397,6 +398,7 @@
     <ClInclude Include="..\sdks\RakNet\WSAStartupSingleton.h" />
     <ClInclude Include="..\sdks\RakNet\XBox360Includes.h" />
     <ClInclude Include="..\sdks\RakNet\_FindFirst.h" />
+    <ClInclude Include="..\sdks\UDPWrapper\UDPWrapper.h" />
     <ClInclude Include="..\shared\gamestructures.h" />
     <ClInclude Include="..\shared\limits.h" />
     <ClInclude Include="..\shared\structures.h" />

@@ -977,7 +977,7 @@ SQInteger sq_vehicleToggleSiren(SQVM *vm)
 
 	if (veh != NULL)
 	{
-		veh->SetSirenState(state == true);
+		veh->SetSirenState((state == SQTrue));
 		BitStream bsOut;
 		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((MessageID)LHMP_VEHICLE_TOGGLE_SIREN);

@@ -1,6 +1,8 @@
 /* Simple UDP Wrapper for LHMP
 		by Romop5
 */
+#ifndef _UDPWRAPPER_H
+#define _UDPWRAPPER_H
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -64,3 +66,5 @@ private:
 
 	sockaddr_in server;
 };
+
+#endif

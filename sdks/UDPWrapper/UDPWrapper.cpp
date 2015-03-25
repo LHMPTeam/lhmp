@@ -73,7 +73,7 @@ void UDPWrapper::SendData(unsigned int length, const void* data)
 // send data to receiver
 void UDPWrapper::SendData(unsigned int length, const void* data, sockaddr* receiver)
 {
-	int slen, recv_len;
+	int slen;
 	slen = sizeof(this->server);
 	if (sendto(this->p_socket, (const char*)data, length, 0, receiver, slen) == SOCKET_ERROR)
 	{
