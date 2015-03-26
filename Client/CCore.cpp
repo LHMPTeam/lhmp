@@ -42,7 +42,6 @@ void CCore::Run()
 
 	byte carChangePosFix[] = "\xE9\xF1\x00\x00\x00\x90";//   
 	byte disableCheats[] = "\xEB\x5F";	// JMP SHORT 0x005F96B0 at 005F964F
-	byte disableRadar[] = "\x00";	// 00491D97
 	byte disableImmortalModeWhenLockedControls[] = "\xEB\x13";
 
 	byte jmpToFreeride[] = "\xE9\x9D\x01\x00\x00";		// JMP Game.005F9DED
@@ -114,9 +113,6 @@ void CCore::Run()
 	//******************************************************************************************************************
 	// disable cheats (boxer,municak)
 	PatchBytes(0x005F964F, disableCheats);
-
-	// disable radar (in car)
-	PatchBytes(0x00491D9B, disableRadar);
 
 	// disable scripts
 	//PatchBytes(0x005AF836, disableScripts);

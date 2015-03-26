@@ -1800,8 +1800,35 @@ _declspec (naked) void Hook_RestInPeace()
 	
 	}
 }
+
+int ChangeRadarRendering()
+{
+	float radarwidth = *(float*)0x0063D29C;
+	float posun = 1920.0f - (radarwidth + 320.0f);
+	float restx = (g_CCore->GetGraphics()->GetResolution().x / 1920.0f) * posun;
+
+	__asm mov eax, restx
+}
+
+__declspec(naked) void Hook_ChangeRadarRendering()
+{
+	__asm
+	{
+		call ChangeRadarRendering
+		PUSH EAX
+		FLD DWORD PTR DS : [ESP]
+		POP EAX
+
+		MOV EAX, 0x0054FDC2
+		JMP EAX
+	}
+}
+
 void SetHooks()
 {
+	//change radar position on screen
+	Tools::InstallJmpHook(0x0054FDB6, (DWORD)&Hook_ChangeRadarRendering);
+
 	Tools::InstallCallHook(0x004940C0, (DWORD)&Hook_RestInPeace);
 
 	// OnPlayerHit callback - usefull for death detection & hit, shot or explosion splash
