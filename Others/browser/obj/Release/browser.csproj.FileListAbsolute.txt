@@ -39,3 +39,13 @@ I:\Programming\LHMP\LHMP-dev\Others\browser\obj\Release\browser.Properties.Resou
 I:\Programming\LHMP\LHMP-dev\Others\browser\obj\Release\browser.csproj.GenerateResource.Cache
 I:\Programming\LHMP\LHMP-dev\Others\browser\obj\Release\browser.exe
 I:\Programming\LHMP\LHMP-dev\Others\browser\obj\Release\browser.pdb
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\Release\browser.exe.config
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\Release\browser.exe
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\Release\browser.pdb
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.csprojResolveAssemblyReference.cache
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.Form1.resources
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.Form2.resources
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.Properties.Resources.resources
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.csproj.GenerateResource.Cache
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.exe
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\browser\obj\Release\browser.pdb

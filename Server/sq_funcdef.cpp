@@ -897,6 +897,7 @@ SQInteger sq_vehicleSpawn(SQVM *vm)
 		vehicle_data.damage = veh->GetDamage();
 		vehicle_data.shotdamage = veh->GetShotDamage();
 		vehicle_data.roofState = veh->GetRoofState();
+		vehicle_data.engineState = veh->GetEngineState();
 		vehicle_data.siren = veh->GetSirenState();
 
 		vehicle_data.ID = ID;

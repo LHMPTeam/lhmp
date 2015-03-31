@@ -1,4 +1,4 @@
-#include "CCore.h"
+﻿#include "CCore.h"
 #include "CEngineStack.h"
 //#include "structures.h"
 #include "../shared/structures.h"
@@ -446,7 +446,20 @@ void CEngineStack::DoMessage()
 				veh->SetDamage(veh->GetDamage());
 				veh->SetShotDamage(veh->GetShotDamage());
 				veh->ToggleRoof(veh->GetRoofState());
+				veh->ToggleEngine(veh->GetEngineState());
 				veh->SetSirenState(veh->GetSirenState());
+
+				char test[256];
+				sprintf_s(test, "Engine: %d", veh->GetEngineState());
+
+				// otazka znie - setuješ niekde vôbec tu premennu ? ais hej len teraz neviem kde xD dobre nie ? (rofl)
+				// piče, čo si ty za vývojára ? keď už sa ani vo svojom pár riadkovom kóde nevyznáš
+				// nevyznam lebo toto nieje par riadkovy kod 
+				// je, engine to predtým nepodporovalo, čiže všetko čo súvisí s enginom si napísal ty
+				// -> mal by si najlepšie vedieť čo sa kde deje
+
+
+				g_CCore->GetLog()->AddLog(test);
 				/*for (int i = 0; i < 4; i++)
 				{
 					if (veh->seea)
@@ -691,6 +704,7 @@ void CEngineStack::DoMessage()
 						veh->SetDamage(veh->GetDamage());
 						veh->SetShotDamage(veh->GetShotDamage());
 						veh->ToggleRoof(veh->GetRoofState());
+						veh->ToggleEngine(veh->GetEngineState());
 					}
 					else {
 						veh->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());

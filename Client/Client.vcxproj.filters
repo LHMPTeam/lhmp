@@ -450,9 +450,6 @@
     <ClCompile Include="CNametags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CCEGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AntiCheat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1038,9 +1035,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CNametags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CCEGUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AntiCheat.h">

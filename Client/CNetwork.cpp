@@ -925,6 +925,9 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				veh->SetUpInterpolation();
 				veh->SetDamage(vehicle.damage);
 				veh->ToggleRoof(vehicle.roofState);
+				veh->ToggleEngine(vehicle.engineState);
+
+				//g_CCore->GetLog()->AddLog()
 				veh->SetSirenState(vehicle.siren);
 				for (int i = 0; i < 4; i++)
 					veh->SetSeat(i, vehicle.seat[i]);
@@ -932,6 +935,27 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			}
 		}
 		break;
+		case LHMP_VEHICLE_TOGGLE_ENGINE:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID;
+			BYTE state;
+
+			bsIn.Read(ID);
+			bsIn.Read(state);
+
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+
+			if (veh != NULL && g_CCore->GetLocalPlayer()->GetOurID() != veh->GetSeat(0))
+			{
+				veh->ToggleEngine(state);
+				char buff[255];
+				sprintf(buff, "[Nm] TOGGLE ENGINE %d STATE: %d", ID, state);
+				g_CCore->GetLog()->AddLog(buff);
+			}
+		}
+		break;
+
 		case LHMP_VEHICLE_TOGGLE_ROOF:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);

@@ -19,6 +19,7 @@ CVehicle::CVehicle()
 	shotdamage = 10;
 	onGas = 0; 
 	roofState = 0;
+	engineState = 0;
 	siren = 0;
 	isExploded = false;
 }
@@ -36,6 +37,16 @@ void CVehicle::ToggleRoof(byte state)
 byte CVehicle::GetRoofState()
 {
 	return this->roofState;
+}
+
+void CVehicle::ToggleEngine(byte state)
+{
+	this->engineState = state;
+}
+
+byte CVehicle::GetEngineState()
+{
+	return this->engineState;
 }
 
 bool CVehicle::IsStarted()
@@ -159,6 +170,7 @@ bool CVehicle::GetHornState()
 {
 	return this->horn;
 }
+
 
 void CVehicle::SetSirenState(bool b)
 {
