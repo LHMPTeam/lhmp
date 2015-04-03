@@ -706,6 +706,8 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			vehicle_data.damage = veh->GetDamage();
 			vehicle_data.shotdamage = veh->GetShotDamage();
 			vehicle_data.roofState = veh->GetRoofState();
+			vehicle_data.engineState = veh->GetEngineState();
+
 			vehicle_data.siren = veh->GetSirenState();
 			vehicle_data.ID = ID;
 			for (int i = 0; i < 4;i++)
@@ -817,7 +819,33 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 			//std::cout << "JackVeh" << GetIDFromSystemAddress(packet->systemAddress) << " - " << vehID << seatID <<std::endl;
 		}
-			break;
+		break;
+
+		case LHMP_VEHICLE_TOGGLE_ENGINE:
+		{
+			int vehID;
+			BYTE state;
+
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			bsIn.Read(vehID);
+			bsIn.Read(state);
+
+			//serverside set engine status
+
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+			if (veh != NULL)
+			{
+				veh->ToggleEngine(state);
+			}
+
+			BitStream bsOut;
+			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+			bsOut.Write((MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
+			bsOut.Write(vehID);
+			bsOut.Write(state);
+			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		}
+		break;
 
 		case LHMP_VEHICLE_DELETE:
 		{
@@ -1134,6 +1162,7 @@ void CNetworkManager::SendHimCars(int ID)
 				vehicle.damage		= veh->GetDamage();
 				vehicle.shotdamage	= veh->GetShotDamage();
 				vehicle.roofState	= veh->GetRoofState();
+				vehicle.engineState = veh->GetEngineState();
 				//std::cout << "Damage: " << vehicle.damage << std::endl;
 				for (int i = 0; i < 4; i++)
 					vehicle.seat[i] = veh->GetSeat(i);

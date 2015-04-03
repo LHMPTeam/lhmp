@@ -37,6 +37,7 @@ CVehicle::CVehicle()
 	actual = playerPos;
 	previous = playerPos;
 	isSpawned = 0;
+	engineState = 0;
 	damage = 100.0f;
 	shotdamage = 10;
 	onGas = false;
@@ -353,6 +354,25 @@ byte CVehicle::GetRoofState()
 {
 	return this->roofState;
 }
+
+void CVehicle::ToggleEngine(byte state)
+{
+	if (this->GetEntity() != NULL)
+	{
+		g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), state);
+	}
+	this->engineState = state;
+
+	char buff[200];
+	sprintf(buff, "Toggle Engine  %d", this->engineState);
+	g_CCore->GetLog()->AddLog(buff);
+}
+
+byte CVehicle::GetEngineState()
+{
+	return this->engineState;
+}
+
 
 void	CVehicle::SetWheelsAngle(float ang)
 {

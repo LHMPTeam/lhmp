@@ -1833,6 +1833,97 @@ _declspec (naked) void Hook_RestInPeace()
 	
 	}
 }
+
+int ChangeRadarRendering()
+{
+	float radarwidth = *(float*)0x0063D29C;
+	float posun = 1920.0f - (radarwidth + 320.0f);
+	float restx = (g_CCore->GetGraphics()->GetResolution().x / 1920.0f) * posun;
+
+	__asm mov eax, restx
+}
+
+__declspec(naked) void Hook_ChangeRadarRendering()
+{
+	__asm
+	{
+		call ChangeRadarRendering
+			PUSH EAX
+			FLD DWORD PTR DS : [ESP]
+			POP EAX
+
+			MOV EAX, 0x0054FDC2
+			JMP EAX
+	}
+}
+
+void OnPlayerVehicleEngineStateChange(DWORD vehicle, BYTE state)
+{
+	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
+	int ourID = g_CCore->GetLocalPlayer()->GetOurID();
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+
+	int playerid = veh->GetPlayerSeat(0);
+
+	if (playerid != -1)
+	{
+		if (ourID == playerid)
+		{
+			veh->ToggleEngine(state);
+		}
+
+		//Send data 
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
+		bsOut.Write(vehID);
+		bsOut.Write(state);
+		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	}
+
+
+}
+
+__declspec(naked) void Hook_OnPlayerStartedVehicleEngine()
+{
+	__asm
+	{
+		pushad
+			SUB ESI, 0x70
+			PUSH 1
+			PUSH ESI
+			CALL OnPlayerVehicleEngineStateChange
+			ADD ESP, 0x8
+			popad
+
+			MOV AL, BYTE PTR DS : [ESI + 0x50C]
+			MOV BYTE PTR DS : [ESI + 0x50D], AL
+			POP EDI;  kernel32.7631338A
+			POP ESI;  kernel32.7631338A
+			POP EBX;  kernel32.7631338A
+			RETN 4
+	}
+}
+
+__declspec(naked) void Hook_OnPlayerStoppedVehicleEngine()
+{
+	__asm
+	{
+		pushad
+			SUB ESI, 0x70
+			PUSH 0
+			PUSH ESI
+			CALL OnPlayerVehicleEngineStateChange
+			ADD ESP, 0x8
+			popad
+
+			POP EDI;  ntdll.77C9FD91
+			POP ESI;  ntdll.77C9FD91
+			POP EBX;  ntdll.77C9FD91
+			RETN 4
+	}
+}
+
 void SetHooks()
 {
 	// Fixes drive-by rotation

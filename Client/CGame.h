@@ -137,6 +137,7 @@ public:
 	static DWORD CreateCar(int skinID);
 	//static DWORD CreateCar(int);
 
+	static void ToggleVehicleEngine(DWORD vehicle, BYTE state);
 	static void ToggleVehicleRoof(DWORD, BYTE);
 	static void SetCarPosition(DWORD, Vector3D);
 	static void SetCarRotation(DWORD, Vector3D);

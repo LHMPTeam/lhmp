@@ -47,6 +47,31 @@ void CGame::ToggleVehicleRoof(DWORD vehbase, BYTE state)
 	}
 }
 
+void CGame::ToggleVehicleEngine(DWORD vehicle, BYTE state)
+{
+	if (state == 1)
+	{
+		__asm
+		{
+			MOV EAX, vehicle
+				ADD EAX, 0x70
+				MOV    BYTE PTR DS : [EAX + 0xCA8], 1
+				MOV BYTE PTR DS : [EAX + 0x6B4], 1
+		}
+	}
+	else if (state == 0)
+	{
+		__asm
+		{
+			MOV EAX, vehicle
+				ADD EAX, 0x70
+				MOV    BYTE PTR DS : [EAX + 0xCA8], 0
+				MOV BYTE PTR DS : [EAX + 0x6B4], 0
+				MOV BYTE PTR DS : [EAX + 0x66C], 0
+		}
+	}
+}
+
 void CGame::ToggleCityMusic(byte state)
 {
 	g_CCore->GetGame()->SetMusicState(state);
@@ -837,12 +862,8 @@ void CGame::AfterRespawn()
 				veh->SetDamage(veh->GetDamage());
 				veh->SetShotDamage(veh->GetShotDamage());
 				veh->ToggleRoof(veh->GetRoofState());
-
-				/*char buff[200];
-				sprintf(buff, "Siren: %d", veh->GetSirenState());
-				g_CCore->GetChat()->AddMessage(buff);
-				*/
 				veh->SetSirenState(veh->GetSirenState());
+				veh->ToggleEngine(veh->GetEngineState());
 
 			}
 		}

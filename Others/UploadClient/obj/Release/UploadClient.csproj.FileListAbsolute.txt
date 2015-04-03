@@ -19,3 +19,9 @@ I:\Programming\LHMP\LHMP-dev\Others\Release\UploadClient.pdb
 I:\Programming\LHMP\LHMP-dev\Others\UploadClient\obj\Release\UploadClient.csprojResolveAssemblyReference.cache
 I:\Programming\LHMP\LHMP-dev\Others\UploadClient\obj\Release\UploadClient.exe
 I:\Programming\LHMP\LHMP-dev\Others\UploadClient\obj\Release\UploadClient.pdb
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\Release\UploadClient.exe.config
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\Release\UploadClient.exe
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\Release\UploadClient.pdb
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\UploadClient\obj\Release\UploadClient.csprojResolveAssemblyReference.cache
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\UploadClient\obj\Release\UploadClient.exe
+C:\Users\David\Documents\lost-heaven-mp-lhmp\Others\UploadClient\obj\Release\UploadClient.pdb
