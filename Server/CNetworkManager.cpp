@@ -214,6 +214,33 @@ std::string		CNetworkManager::GetServerMode()
 	return this->m_pServerMode;
 }
 
+void			CNetworkManager::SetWebsite(char* web)
+{
+	strcpy_s(this->website, 512,web);
+}
+char*			CNetworkManager::GetWebsite()
+{
+	return this->website;
+}
+
+// Returns the real count of players (doesn't include players who are downloading files)
+unsigned int	CNetworkManager::GetPlayerCount()
+{
+	unsigned int count = 0;
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		if (g_CCore->GetPlayerPool()->Return(i) != NULL)
+		{
+			count++;
+		}
+	}
+	return count;
+}
+unsigned int	CNetworkManager::GetMaxPlayerCount()
+{
+	return this->GetPeer()->GetMaximumIncomingConnections();
+}
+
 void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 {
 	int offset = 0;
@@ -874,18 +901,22 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		break;
 		case LHMP_DOOR_SET_STATE:
 		{
-			bool state;
+			int state;
+			bool facing;
 			char name[200];
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			bsIn.Read(name);
 			bsIn.Read(state);
-			g_CCore->GetDoorPool()->Push(name,state);
+			bsIn.Read(facing);
+			g_CCore->GetDoorPool()->Push(name,(bool)state,facing);
 			BitStream bsOut;
 
+			bool stateOut = state;
 			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 			bsOut.Write((MessageID)LHMP_DOOR_SET_STATE);
 			bsOut.Write(name);
-			bsOut.Write(state);
+			bsOut.Write(stateOut);
+			bsOut.Write(facing);
 			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 		}
 			break;
@@ -1051,6 +1082,7 @@ void CNetworkManager::SendHimDoors(int he)
 		bsOut.Write((MessageID)LHMP_DOOR_SET_STATE);
 		bsOut.Write(door->name);
 		bsOut.Write(door->state);
+		bsOut.Write(door->facing);
 		peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, sa, false);
 		door = door->nextDoor;
 	}

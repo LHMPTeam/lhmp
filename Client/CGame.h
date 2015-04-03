@@ -189,11 +189,11 @@ public:
 	static void KillPed(DWORD);
 	static void KillPedEx(DWORD ped, DWORD reason, DWORD part);
 	static void FixAfterDeath(DWORD ped);
-	static void SetOn(DWORD,bool);
+	static void SetOn(DWORD, bool);
 
 	// frames
 	static void SetFrameModel(DWORD, char*);
-	static void SetFramePos(DWORD,float,float,float);
+	static void SetFramePos(DWORD, float, float, float);
 
 	static DWORD CreateSoundFrame(DWORD, char*, float, float);
 	static void  RemoveSoundFrame(DWORD);
@@ -201,6 +201,8 @@ public:
 	static DWORD CreateEmptyFrame();
 	static DWORD FindFrame(char*);
 	static DWORD FindActor(char*);
+
+	static char* GetFrameName(FRAME* frame);
 
 	//collisions
 	static void CreateBoxCollision(DWORD);
@@ -221,6 +223,8 @@ public:
 
 	static void	CameraSetFocusOnObject(DWORD);
 	static void CameraSetDefaultFocus();
+
+	static Vector3D GetCameraPos();
 
 	// map
 	static void DisableBridges();
@@ -246,6 +250,7 @@ public:
 	static void	 ConsoleAddText(char*, DWORD);
 
 	void SetDoorState(char* door, bool state);
+	void SetDoorStateFacing(char* door, bool shouldClose,bool facing);
 	char*	GetActualMapName();
 	char mapName[200];
 

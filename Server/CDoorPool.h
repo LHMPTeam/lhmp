@@ -15,22 +15,24 @@ struct sDoor
 {
 	char name[200];
 	bool state;
+	bool facing;
 	sDoor* nextDoor;
-	sDoor(char* nm, bool st)
+	sDoor(char* nm, bool st,bool fc)
 	{
 		state = st;
 		sprintf(name, nm);
 		nextDoor = 0;
+		facing = fc;
 	}
 };
 class CDoorPool
 {
 private:
 	sDoor* start, *end;
-	void Add(char*, bool state);
+	void Add(char*, bool state, bool facing);
 public:
 	CDoorPool();
-	void Push(char*, bool state);
+	void Push(char*, bool state,bool facing);
 	void Pop();
 	sDoor* GetStart();
 };

@@ -59,6 +59,7 @@ public:
 	void		Interpolate();
 
 	virtual Vector3D GetPosition();
+	Vector3D	GetPEDFramePosition();
 
 	// Weapon actions
 	SWeapon* GetWeapon(int);
@@ -72,6 +73,7 @@ public:
 	void ClearWeapons();
 
 	void gCheckWeapons();
+
 
 	int			InCar;
 };

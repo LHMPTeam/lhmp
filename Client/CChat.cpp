@@ -287,13 +287,33 @@ void CChat::DoCommand(char str[])
 	else if (strcmp(command, "getdoor") == 0)
 	{
 		//g_CCore->GetGame()->ChangeMap("MISE13-ZRADCE","");  MISE20-PAULI
-		DWORD door = g_CCore->GetGame()->FindActor("Box66");
-
-		char buff[255];
-		sprintf(buff, "Door: %p", door);
-		g_CCore->GetChat()->AddMessage(buff);
+		OBJECT* door = (OBJECT*) g_CCore->GetGame()->FindActor("mrize dve 08");
+		if (door)
+		{
+			char buff[255];
+			sprintf(buff, "Door: %p %s", door, g_CCore->GetGame()->GetFrameName(door->frame));
+			g_CCore->GetChat()->AddMessage(buff);
+		}
+		else {
+			g_CCore->GetChat()->AddMessage("[E] No doors found !");
+		}
 	}
 
+	else if (strcmp(command, "oldway") == 0)
+	{
+		g_CCore->GetGame()->SetDoorState("mrize dve 08", 2);
+
+	}
+	else if (strcmp(command, "toggledoor1") == 0)
+	{
+		g_CCore->GetGame()->SetDoorStateFacing("mrize dve 08", 2, 0);
+
+	}
+	else if (strcmp(command, "toggledoor2") == 0)
+	{
+		g_CCore->GetGame()->SetDoorStateFacing("mrize dve 08", 3, 0);
+
+	}
 	
 	else if (strcmp(command, "reloadmap") == 0)
 	{

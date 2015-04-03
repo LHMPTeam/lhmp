@@ -222,6 +222,7 @@
     <ClCompile Include="CFileTransfer.cpp" />
     <ClCompile Include="CGameMode.cpp" />
     <ClCompile Include="CLog.cpp" />
+    <ClCompile Include="CMasterServer.cpp" />
     <ClCompile Include="CNetworkManager.cpp" />
     <ClCompile Include="CPickup.cpp" />
     <ClCompile Include="CPickupPool.cpp" />
@@ -413,6 +414,7 @@
     <ClInclude Include="CFileTransfer.h" />
     <ClInclude Include="CGameMode.h" />
     <ClInclude Include="CLog.h" />
+    <ClInclude Include="CMasterServer.h" />
     <ClInclude Include="CPickup.h" />
     <ClInclude Include="CPickupPool.h" />
     <ClInclude Include="CQueryServer.h" />

@@ -30,21 +30,18 @@
     <ClCompile Include="..\sdks\UDPWrapper\UDPWrapper.cpp">
       <Filter>Source Files\sdks</Filter>
     </ClCompile>
-    <ClCompile Include="CServersList.cpp">
+    <ClCompile Include="CServers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CSeversList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CNetwork.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CPendingServers.h">
+    <ClInclude Include="CServers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

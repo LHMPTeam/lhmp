@@ -1286,17 +1286,19 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			char name[200];
 			//Vector3D speed;
-			bool state;
+			bool state,facing;
 			bsIn.Read(name);
 			bsIn.Read(state);
+			bsIn.Read(facing);
 
 			char buff[250];
-			sprintf(buff, "[Nm] SET DOOR %s STATE %d",name,state);
+			sprintf(buff, "[Nm] SET DOOR %s STATE %d %d",name,state,facing);
 			g_CCore->GetLog()->AddLog(buff);
 
 			ENGINE_STACK::DOOR_SET_STATE* data = new ENGINE_STACK::DOOR_SET_STATE[1];
 			sprintf(data->buff, name);
 			data->state = state;
+			data->facing = facing;
 			g_CCore->GetEngineStack()->AddMessage(ES_DOOR_SET_STATE, (DWORD)data);
 			
 		}

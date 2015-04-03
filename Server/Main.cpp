@@ -54,7 +54,7 @@ int main()
 	CCore CCore;
 	g_CCore = &CCore;
 	// if server inits correctly
-	if (CCore.Init(server_port, max_players, startpos, server_name, mode, visible) == true)
+	if (CCore.Init(server_port, max_players, startpos, server_name, mode, visible, websiteurl) == true)
 	{
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
@@ -72,6 +72,9 @@ int main()
 
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 		g_CCore->GetLog()->AddNormalLog("Server has started...");
+
+
+		g_CCore->GetMasterServer()->AddServerToMaster();
 
 		// pulse CCore until server runs
 		while(CCore.IsRunning())

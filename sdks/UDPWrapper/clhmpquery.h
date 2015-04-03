@@ -2,7 +2,7 @@
 #define _CLHMPQUERY_H
 
 #ifdef _WIN32
-//#include <winsock2.h>
+#include <winsock2.h>
 #else
 #include <string.h>
 #define sprintf_s sprintf
@@ -13,10 +13,28 @@
 
 typedef void(*callbackfunction)(unsigned int,void*, unsigned char);
 
+// -2 is assigned ID for any master query
+#define MASTERSERVER (unsigned int) (-2)
+
 struct Player
 {
 	int ID;
 	char nickname[255];
+};
+
+struct Server
+{
+	char IP[20];
+	int port;
+	Server(char* inIP, int inPort)
+	{
+		strcpy(IP, inIP);
+		port = inPort;
+	}
+	Server()
+	{
+
+	}
 };
 
 struct PlayerPacket {
@@ -33,12 +51,14 @@ struct PlayerPacket {
 
 struct OverallPacket{
     int ID;
+	bool hasPassword;
     char hostname[255];
     char gamemode[255];
 	char mapname[255];
+	char website[255];
     short players, maxPlayer;
 	unsigned int ping;
-    OverallPacket(int nID, char* host, char* mode, short pl, short max,unsigned int INping,char* INmapname)
+	OverallPacket(int nID, char* host, char* mode, short pl, short max, unsigned int INping, char* INmapname, char* INwebsite,bool password)
     {
         ID = nID;
         strcpy(hostname, host);
@@ -47,7 +67,21 @@ struct OverallPacket{
         maxPlayer = max;
 		ping = INping;
 		strcpy(mapname, INmapname);
+		strcpy(website, INwebsite);
+		hasPassword = password;
     }
+};
+
+struct MasterResponse {
+	// servers' count
+	unsigned int count;
+	// pool of server struct, (count) elements
+	Server*	servers;
+	MasterResponse(unsigned short c)
+	{
+		this->count = c;
+		servers = new Server[c];
+	}
 };
 
 enum CallbackEvent
@@ -55,12 +89,15 @@ enum CallbackEvent
     QUERY_FAILED,
     QUERY_CONNECTION_FAILED,
     QUERY_OVERALL,
-    QUERY_PLAYERLIST
+	QUERY_PLAYERLIST,
+	QUERY_MASTER_FAILED,
+	QUERY_MASTER_SUCCESS
 };
 enum Types
 {
     TYPE_BASIC,
-    TYPE_PLAYERLIST
+    TYPE_PLAYERLIST,
+	TYPE_MASTERLIST
 };
 enum TaskStates
 {
@@ -103,7 +140,8 @@ public:
     // Query IP:port to get player list
     // You can specify unicate ID
 	void queryPlayerlist(const char* IPaddress, unsigned int port, unsigned int ID = (unsigned int)-1);
-    // Query IP:port to get elementary + playerlist
+   
+	void queryMasterlist(const char* IPaddress);
 
     // intern function called by worker thread to ensure we are listening from server
     void			Tick();
@@ -119,11 +157,14 @@ private:
     unsigned int	taskSize;
     sTask* taskPool[1000];
 
-    void OnConnnectionFailed(unsigned int taskID);
+	void OnConnnectionFailed(unsigned int taskID);
+	void OnMasterConnnectionFailed(unsigned int taskID);
     void OnDataArrived(unsigned int taskID, char* data, unsigned int len);
 
     void ProcessOverall(unsigned int taskID, char* data, unsigned int len);
     void ProcessPlayerlist(unsigned int taskID, char* data, unsigned int len);
+
+	void ProcessMaster(unsigned int taskID, char* data, unsigned int len);
 
 };
 

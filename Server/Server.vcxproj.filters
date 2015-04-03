@@ -450,6 +450,9 @@
     <ClCompile Include="..\sdks\UDPWrapper\UDPWrapper.cpp">
       <Filter>Source Files\UDPWrapper</Filter>
     </ClCompile>
+    <ClCompile Include="CMasterServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNetworkManager.h">
@@ -1018,6 +1021,9 @@
     </ClInclude>
     <ClInclude Include="..\sdks\UDPWrapper\UDPWrapper.h">
       <Filter>Header Files\UDPWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="CMasterServer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,6 +21,7 @@ void CCore::Pulse()
 	m_cNetworkManager.Pulse();
 	m_cTickManager.Pulse();
 	m_cTimerPool.Tick();
+	m_cMaster.Pulse();
 }
 
 // pulse every 1000ms
@@ -29,13 +30,14 @@ void CCore::OnSecondElapsed()
 	m_cNetworkManager.SendPingUpdate();
 	m_cPickupPool.Tick();
 }
-bool CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible)
+bool CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible,char* website)
 {
 	if (m_cNetworkManager.Init(port, players, startpos, mode) == false)
 		return false;
 	if (m_cQueryServer.StartServer(port + 1) == false)
 		return false;
 	m_cNetworkManager.SetServerName(svrname);
+	m_cNetworkManager.SetWebsite(website);
 	if (visible == 1)
 		m_cNetworkManager.PostMasterlist(true);
 
@@ -194,4 +196,10 @@ CBanSystem*		CCore::GetBanSystem()
 CQueryServer*		CCore::GetQueryServer()
 {
 	return &this->m_cQueryServer;
+}
+
+
+CMasterList*		CCore::GetMasterServer()
+{
+	return &this->m_cMaster;
 }

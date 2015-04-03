@@ -602,7 +602,11 @@ void CEngineStack::DoMessage()
 		{
 			g_CCore->GetLog()->AddLog("ES_DOORSETSTATE");
 			ENGINE_STACK::DOOR_SET_STATE* pw = (ENGINE_STACK::DOOR_SET_STATE*) start->data;
-			g_CCore->GetGame()->SetDoorState(pw->buff, pw->state);
+			g_CCore->GetGame()->SetDoorStateFacing(pw->buff, pw->state,pw->facing);
+
+			char buff[255];
+			sprintf(buff, "DoorChange: %d %d", pw->state, pw->facing);
+			g_CCore->GetLog()->AddLog(buff);
 		}
 		break;
 		case CLIENT_ENGINESTACK::ES_CHANGEMAP:

@@ -2,6 +2,7 @@
 #include "CQueryServer.h"
 #include "TCPInterface.h"
 #include <stdio.h>
+#include "../shared/version.h"
 
 extern CCore *g_CCore;
 
@@ -40,9 +41,10 @@ void CQueryServer::Tick()
 			char* text = new char[packet->messageLength + 1];
 			memcpy(text, packet->data, packet->messageLength);
 			text[packet->messageLength] = 0x0;
-			printf("[Query] %s \n", text);
-
-			if (packet->data[0] == 'L' && packet->data[1] == 'H' && packet->data[2] == 'M' && packet->data[3] == 'P')
+			//printf("[Query] %s \n", text);
+			char signature[] = "LHMP";
+			//if (packet->data[0] == 'L' && packet->data[1] == 'H' && packet->data[2] == 'M' && packet->data[3] == 'P')
+			if (*(int*)signature == *(int*) packet->data)
 			{
 				switch ((char)packet->data[4])
 				{
@@ -85,45 +87,74 @@ void CQueryServer::OverallPacket(UDPPacket* packet)
 	char* buffPointer = buff;
 	int len = 0;
 	sprintf(buff, "LHMPo");
+
 	buffPointer += 5;
 	len += 5;
-	*(unsigned char*)buffPointer = g_CCore->GetNetworkManager()->GetServerName().length();
-	buffPointer += 1;
-	len += 1;
-	sprintf(buffPointer, "%s", g_CCore->GetNetworkManager()->GetServerName().c_str());
+	// --------- Add protocol version - 1 byte
+	*(unsigned char*)buffPointer = (unsigned char)LHMP_QUERY_PROTOCOL;
+	buffPointer++;
+	len++;
+	// --------- Add hasPassword - 1 byte
+	// TODO - implement passwords
+	*(unsigned char*)buffPointer = (unsigned char)0;
+	buffPointer++;
+	len++;	
+	// --------- Add player's count - 2 bytes
+	*(unsigned short*)buffPointer = (unsigned short)g_CCore->GetNetworkManager()->GetPlayerCount();
+	buffPointer+= 2;
+	len += 2;
+	// --------- Add max player's count - 2 bytes
+	*(unsigned short*)buffPointer = (unsigned short)g_CCore->GetNetworkManager()->GetMaxPlayerCount();
+	buffPointer += 2;
+	len += 2;
+
+	//---------------------------------- STRINGS ----------------------------------------------------------//
+
+	// --------- Add server name (length) - 1 byte
+	*(unsigned char*)buffPointer = (unsigned char)g_CCore->GetNetworkManager()->GetServerName().length();
+	buffPointer ++;
+	len++;
+	// --------- Add server name - N bytes
+	memcpy(buffPointer, g_CCore->GetNetworkManager()->GetServerName().c_str(), g_CCore->GetNetworkManager()->GetServerName().length());
 	buffPointer += g_CCore->GetNetworkManager()->GetServerName().length();
 	len += g_CCore->GetNetworkManager()->GetServerName().length();
 
-	*(unsigned char*)buffPointer = g_CCore->GetNetworkManager()->GetServerMode().length();
-	buffPointer += 1;
-	len += 1;
-	sprintf(buffPointer, "%s", g_CCore->GetNetworkManager()->GetServerMode().c_str());
+	// --------- Add gamemode (length) - 1 byte
+	*(unsigned char*)buffPointer = (unsigned char)g_CCore->GetNetworkManager()->GetServerMode().length();
+	buffPointer++;
+	len++;
+	// --------- Add gamemode - N bytes
+	memcpy(buffPointer, g_CCore->GetNetworkManager()->GetServerMode().c_str(), g_CCore->GetNetworkManager()->GetServerMode().length());
 	buffPointer += g_CCore->GetNetworkManager()->GetServerMode().length();
 	len += g_CCore->GetNetworkManager()->GetServerMode().length();
 
-	*(unsigned short*)buffPointer = g_CCore->GetNetworkManager()->GetPeer()->NumberOfConnections();
-	buffPointer += 2; 
-	len += 2;
+	// --------- Add website (length) - 1 byte
+	*(unsigned char*)buffPointer = (unsigned char)strlen(g_CCore->GetNetworkManager()->GetWebsite());
+	buffPointer++;
+	len++;
+	// --------- Add website - N bytes
+	memcpy(buffPointer, g_CCore->GetNetworkManager()->GetWebsite(), strlen(g_CCore->GetNetworkManager()->GetWebsite()));
+	buffPointer += strlen(g_CCore->GetNetworkManager()->GetWebsite());
+	len += strlen(g_CCore->GetNetworkManager()->GetWebsite());
 
-	*(unsigned short*)buffPointer = g_CCore->GetNetworkManager()->GetPeer()->GetMaximumIncomingConnections();
-	buffPointer += 2; 
-	len += 2;
-
-	*(unsigned char*)buffPointer = strlen(g_CCore->GetDefaultMap());
-	buffPointer += 1;
-	len += 1;
-	sprintf(buffPointer, "%s", g_CCore->GetDefaultMap());
+	// --------- Add default map (length) - 1 byte
+	*(unsigned char*)buffPointer = (unsigned char)strlen(g_CCore->GetDefaultMap());
+	buffPointer++;
+	len++;
+	// --------- Add default map - N bytes
+	memcpy(buffPointer, g_CCore->GetDefaultMap(), strlen(g_CCore->GetDefaultMap()));
 	buffPointer += strlen(g_CCore->GetDefaultMap());
 	len += strlen(g_CCore->GetDefaultMap());
-	
-	/**(unsigned char*)buffPointer = g_CCore->GetNetworkManager()->GetServerMode().length();
-	buffPointer += 1;
-	sprintf(buffPointer, "%s", g_CCore->GetNetworkManager()->GetServerMode().c_str());
-	buffPointer += g_CCore->GetNetworkManager()->GetServerMode().length();
-	*/
-	//tcpServer->Send(buff, len, receiver, false);
+
+	// Now just send data
 	queryServer->SendData(len, buff, (sockaddr*)&packet->sender);
 
+	/*for (int i = 0; i < len; i++)
+	{
+		printf("%x%c ", buff[i], buff[i]);
+	}
+	printf("\n");
+	*/
 	printf("[Query] Sending overall packet\n");
 }
 void CQueryServer::PlayerList(UDPPacket* packet)
@@ -157,6 +188,7 @@ void CQueryServer::PlayerList(UDPPacket* packet)
 	queryServer->SendData(messageLength, buff, (sockaddr*)&packet->sender);
 
 
+	printf("[Query] Sending playerlist packet\n");
 }
 
 void CQueryServer::PingPacket(UDPPacket* packet)
@@ -166,4 +198,5 @@ void CQueryServer::PingPacket(UDPPacket* packet)
 	*(int*) (buff+5) = rand();
 	//tcpServer->Send(buff, strlen(buff), receiver,false);
 	queryServer->SendData(strlen(buff), buff, (sockaddr*)&packet->sender);
+	printf("[Query] Sending pingpacket\n");
 }

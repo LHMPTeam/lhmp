@@ -20,6 +20,7 @@ void CServersList::Start()
 {
 	query->Prepare(&callback,1000);
 	lastCheck = GetTickCount();
+
 }
 // check if enough time elapsed, then call TestAllServers
 void CServersList::Pulse()
@@ -51,6 +52,12 @@ void CServersList::TestAllServers()
 void CServersList::SendAllServers(UDPPacket* packet)
 {
 	// TODO sends info
+
+}
+
+// Add new server into list
+void AddServerIntoList(char* IP, int port)
+{
 
 }
 

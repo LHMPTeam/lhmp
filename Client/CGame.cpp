@@ -1848,6 +1848,11 @@ DWORD CGame::FindActor(char* frame)
 	return res;
 }
 
+char* CGame::GetFrameName(FRAME* frm)
+{
+	return (char*)(*(DWORD*)((DWORD)frm + 0x100) + 0x0);
+}
+
 void CGame::SetCameraPos(Vector3D pos,float r1,float r2,float r3,float r4)
 {
 	_asm
@@ -1892,6 +1897,12 @@ void CGame::SetCameraPos(Vector3D pos,float r1,float r2,float r3,float r4)
 		add esp, 0x400
 	}
 	
+}
+
+
+Vector3D CGame::GetCameraPos()
+{
+	return *(Vector3D*)(0x006EFDAC);
 }
 
 void CGame::CameraUnlock()
@@ -2892,6 +2903,30 @@ void CGame::SetDoorState(char* door, bool state)
 				MOV ECX, ped
 				MOV EAX, 0x004A26D0
 				CALL EAX
+		}
+	}
+}
+
+void CGame::SetDoorStateFacing(char* door, bool shouldClose,bool facing)
+{
+	DWORD doorBase = FindActor(door);
+	// if close(1), then action = 3
+	// if open(0), then action = 2
+	byte action = (shouldClose == 1 ? 3 : 2);
+	if (doorBase)
+	{
+		_asm {
+			PUSH 0
+			MOV ECX, doorBase;
+			MOV ESI, ECX
+			XOR EAX, EAX
+			MOV AL, action
+			MOV DWORD PTR DS : [ESI + 0x70], EAX;				set what we want to achieve(2 - open,3 - close doors)
+			XOR EAX, EAX
+			MOV AL,facing
+			MOV BYTE PTR DS : [ESI + 0x11E], AL;				set facing
+			MOV EAX, 0x0044C750
+			CALL EAX
 		}
 	}
 }

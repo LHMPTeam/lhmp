@@ -11,7 +11,12 @@
 pthread_t tid;
 void Sleep(unsigned int ms)
 {
-	usleep(ms);
+	//usleep(ms);
+	struct timespec tim, tim2;
+	tim.tv_sec = 0;
+	tim.tv_nsec = 1000000*ms;
+
+	nanosleep(&tim , &tim2); 
 }
 
 unsigned int GetTickCount()
@@ -58,13 +63,19 @@ void CLHMPQuery::queryPlayerlist(const char* IPaddress, unsigned int port, unsig
     this->AddTask((char*)IPaddress, port, TYPE_PLAYERLIST, ID);
 }
 
+
+void CLHMPQuery::queryMasterlist(const char* IPaddress)
+{
+	this->AddTask((char*)IPaddress, 50000, TYPE_MASTERLIST,MASTERSERVER);
+}
+
+
 // intern function called by worker thread to ensure we are listening from server
 void		CLHMPQuery::Tick()
 {
     for (unsigned int i = 0; i < this->taskSize; i++)
     {
 		unsigned int time = GetTickCount();
-        //printf("suve!\n");
         if (taskPool[i] != NULL)
         {
 			UDPPacket* pack = taskPool[i]->client->Receive();
@@ -75,7 +86,10 @@ void		CLHMPQuery::Tick()
 				// if timeout
 				if ((time - taskPool[i]->timeStamp) > 1000)
 				{
-					this->OnConnnectionFailed(i);
+					if (taskPool[i]->ID == MASTERSERVER)
+						this->OnMasterConnnectionFailed(i);
+					else
+						this->OnConnnectionFailed(i);
 				}
 			}
 		}
@@ -128,6 +142,9 @@ bool	CLHMPQuery::AddTask(char* IP, int port, unsigned char type, unsigned int ID
 	case TYPE_PLAYERLIST:
 		client->SendData(5,"LHMPp");
 		break;
+	case TYPE_MASTERLIST:
+		client->SendData(5, "LHMPr");
+		break;
 	default:
 		return false;
 		break;
@@ -144,22 +161,37 @@ void CLHMPQuery::OnConnnectionFailed(unsigned int taskID)
     delete taskPool[taskID];
     taskPool[taskID] = NULL;
 }
+
+void CLHMPQuery::OnMasterConnnectionFailed(unsigned int taskID)
+{
+	(*this->p_userCallback)(taskPool[taskID]->ID, NULL, QUERY_MASTER_FAILED);
+	taskPool[taskID]->client->CleanUP();
+	delete taskPool[taskID];
+	taskPool[taskID] = NULL;
+}
+
 void CLHMPQuery::OnDataArrived(unsigned int taskID, char* data, unsigned int len)
 {
+	char signature[] = "LHMP";
     if (len > 5)
     {
-        if (data[0] == 'L' && data[1] == 'H' && data[2] == 'M' && data[3] == 'P')
-        {
-            switch (data[4])
-            {
-            case 'o':
-                this->ProcessOverall(taskID, data, len);
-                break;
-            case 'p':
-                this->ProcessPlayerlist(taskID, data, len);
-            }
-            return;
-        }
+		//if (data[0] == 'L' && data[1] == 'H' && data[2] == 'M' && data[3] == 'P')
+		if (*(int*) data == *(int*) signature)
+		{
+			switch (data[4])
+			{
+			case 'o':
+				this->ProcessOverall(taskID, data, len);
+				break;
+			case 'p':
+				this->ProcessPlayerlist(taskID, data, len);
+				break;
+			case 'r':
+				this->ProcessMaster(taskID, data, len);
+				break;
+			}
+			return;
+		}
     }
 
 	(*this->p_userCallback)(taskPool[taskID]->ID, NULL, QUERY_FAILED);
@@ -169,40 +201,68 @@ void CLHMPQuery::OnDataArrived(unsigned int taskID, char* data, unsigned int len
 
 void CLHMPQuery::ProcessOverall(unsigned int taskID, char* data, unsigned int len)
 {
-	/*for (int i = 0; i < len; i++)
+	// 5 bytes stands for 'LHMPo'
+	unsigned int dataRead = 5;
+
+	// --- Read protocol version - initial version is 0
+	unsigned char queryProtocol = data[dataRead];
+	dataRead++;
+
+	// this class was written for protocol 0, different protocol would cause incompability
+	if (queryProtocol == 0)
 	{
-		printf("%2X%c ", (unsigned char)data[i], data[i]);
+		// --- Read (bool) hasPassword - if == 1, server is protected with pass
+		bool hasPassword = data[dataRead];
+		dataRead++;
+
+		// --- Read player's count / max players
+		short players = *(short*)(data + dataRead);
+		dataRead += 2;
+		short maxPlayers = *(short*)(data + dataRead);
+		dataRead += 2;
+
+		// --- Read server name
+		int serverNameLen = data[dataRead];
+		dataRead++;
+
+		char* serverName = new char[serverNameLen + 1];
+		memcpy(serverName, data + dataRead, serverNameLen);
+		serverName[serverNameLen] = 0x0;
+		dataRead += serverNameLen;
+
+		// --- Read server mode
+		int serverModeLen = data[dataRead];
+		dataRead++;
+
+		char* serverMode = new char[serverModeLen + 1];
+		memcpy(serverMode, data + dataRead, serverModeLen);
+		serverMode[serverModeLen] = 0x0;
+		dataRead += serverModeLen;
+
+		// --- Read server website
+		int serverWebLen = data[dataRead];
+		dataRead++;
+
+		char* serverWeb = new char[serverWebLen + 1];
+		memcpy(serverWeb, data + dataRead, serverWebLen);
+		serverWeb[serverWebLen] = 0x0;
+		dataRead += serverWebLen;
+
+		// --- Read server map
+		int serverMapLen = data[dataRead];
+		dataRead++;
+
+		char* serverMap = new char[serverMapLen + 1];
+		memcpy(serverMap, data + dataRead, serverMapLen);
+		serverMap[serverMapLen] = 0x0;
+		dataRead += serverMapLen;
+
+		// Process given data
+		unsigned int ping = GetTickCount() - taskPool[taskID]->timeStamp;
+		OverallPacket* packet = new OverallPacket(taskPool[taskID]->ID, serverName, serverMode, players, maxPlayers, ping, serverMap,serverWeb,hasPassword);
+		(*this->p_userCallback)(taskPool[taskID]->ID, packet, (unsigned char)QUERY_OVERALL);
+		delete packet;
 	}
-	printf("\n");
-	*/
-
-    int serverNameLen = data[5];
-    char* serverName = new char[serverNameLen + 1];
-    memcpy(serverName, data + 6, serverNameLen);
-    serverName[serverNameLen] = 0x0;
-    //printf("ServerName: '%s'\n", serverName);
-
-    int serverModeLen = data[6 + serverNameLen];
-    char* serverMode = new char[serverModeLen + 1];
-    memcpy(serverMode, data + 7 + serverNameLen, serverModeLen);
-    serverMode[serverModeLen] = 0x0;
-    //printf("ServerMode: '%s'\n", serverMode);
-
-    short players = *(short*)(data + 7 + serverNameLen + serverModeLen);
-    short maxPlayers = *(short*)(data + 9 + serverNameLen + serverModeLen);
-    //printf("ServerPlayers: '%u/%u'\n", players, maxPlayers);
-
-	int serverMapLen = (int) *(unsigned char*)(data + 11 + serverNameLen + serverModeLen);
-	char* serverMap = new char[serverMapLen + 1];
-	memcpy(serverMap, data + 12 + serverNameLen + serverModeLen, serverMapLen);
-	serverMap[serverMapLen] = 0x0;
-
-	//printf("MapName: %d '%s\n", serverMapLen,serverMap);
-
-	unsigned int ping = GetTickCount()-taskPool[taskID]->timeStamp;
-	OverallPacket* packet = new OverallPacket(taskPool[taskID]->ID, serverName, serverMode, players, maxPlayers, ping, serverMap);
-	(*this->p_userCallback)(taskPool[taskID]->ID, packet, (unsigned char)QUERY_OVERALL);
-    delete packet;
 	taskPool[taskID]->client->CleanUP();
     delete taskPool[taskID];
     taskPool[taskID] = NULL;
@@ -210,11 +270,6 @@ void CLHMPQuery::ProcessOverall(unsigned int taskID, char* data, unsigned int le
 
 void CLHMPQuery::ProcessPlayerlist(unsigned int taskID, char* data, unsigned  int len)
 {
-    /*for (int i = 0; i < len; i++)
-    {
-        //printf("%2X%c ", (unsigned char)data[i], data[i]);
-    }*/
-
     int alreadyUsed = 7;
     int playerID, stringLen;
     char playerString[256];
@@ -231,7 +286,7 @@ void CLHMPQuery::ProcessPlayerlist(unsigned int taskID, char* data, unsigned  in
         playerString[stringLen] = 0x0;	// fill the missing \0 terminator
         alreadyUsed += 3 + stringLen;
 
-        printf("Player[%d]: %s\n", playerID, playerString);
+        //printf("Player[%d]: %s\n", playerID, playerString);
 		// place info about player into packet
 		packet->playersPool[i].ID = playerID;
 		strcpy(packet->playersPool[i].nickname, playerString);
@@ -242,4 +297,30 @@ void CLHMPQuery::ProcessPlayerlist(unsigned int taskID, char* data, unsigned  in
 	delete taskPool[taskID];
 	taskPool[taskID] = NULL;
  
+}
+
+
+void CLHMPQuery::ProcessMaster(unsigned int taskID, char* data, unsigned int len)
+{
+	unsigned short count = *(short*)(data + 5);
+	//printf("Master response, count: %u \n",count);
+	MasterResponse* packet = new MasterResponse(count);
+	for (int i = 0; i < count; i++)
+	{
+		// 6 - size of item (4bytes IP, 2bytes port)
+		in_addr serverIP = *(in_addr*)(data + (i * 6) + 7);
+		unsigned short port = *(unsigned short*)(data + (i * 6) + 11);
+		//printf("Server %d: %s:%u \n", i, inet_ntoa(serverIP), port);
+		packet->servers[i] = Server(inet_ntoa(serverIP), port);
+	}
+
+	// Clean up task
+	printf("co to kurva\n");
+	(*this->p_userCallback)(taskPool[taskID]->ID, packet, (unsigned char)QUERY_MASTER_SUCCESS);
+	delete packet;
+	taskPool[taskID]->client->CleanUP();
+	delete taskPool[taskID];
+	taskPool[taskID] = NULL;
+
+	printf("co to kurva %d %p\n", taskID, taskPool[taskID]);
 }

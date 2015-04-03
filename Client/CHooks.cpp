@@ -1007,13 +1007,21 @@ _declspec(naked) void Hook_EngineLoad()
 
 void OnDoorStateChange(DWORD doorActor, int state)
 {
-	char* actorName = (char*)(*(DWORD*)(*(DWORD*)(doorActor + 0x68) + 0x100) + 0x0);
+	OBJECT* doors = (OBJECT*)(doorActor);
+	char* actorName = g_CCore->GetGame()->GetFrameName(doors->frame);
+	bool facing = *(bool*)(doorActor + 0x11E);
 
+	char buff[255];
+	sprintf(buff, "[Hook] DoorChange: %s %d %d", actorName, state, facing);
+	g_CCore->GetLog()->AddLog(buff);
+
+	g_CCore->GetLog()->AddLog(actorName);
 	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((RakNet::MessageID)LHMP_DOOR_SET_STATE);
 	bsOut.Write(actorName);
 	bsOut.Write(state);
+	bsOut.Write(facing);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 }
 
@@ -1021,13 +1029,8 @@ __declspec(naked) void Hook_OnDoorStateChange()
 {
 	_asm
 	{
-		pushad
-			PUSH EDX
-			PUSH ECX
-			MOV EAX, OnDoorStateChange
-			CALL EAX
-			ADD ESP, 0x8
-			popad
+			PUSH EDX // state
+			PUSH ECX // doorActor
 
 			PUSH 0
 			PUSH 0
@@ -1036,6 +1039,17 @@ __declspec(naked) void Hook_OnDoorStateChange()
 			MOV ECX, EBP
 			MOV EAX, 0x004A26D0
 			CALL EAX
+			POP ECX
+			POP EDX
+			// start custom code
+			pushad
+			PUSH EDX
+			PUSH ECX
+			MOV EAX, OnDoorStateChange
+			CALL EAX
+			ADD ESP, 0x8
+			popad
+			// end custom code
 			mov eax, 0x004CC8B2
 			jmp eax
 	}
@@ -1693,7 +1707,7 @@ bool OnHitCallback(DWORD victim,DWORD reason, DWORD unk1, DWORD unk2, DWORD unk3
 						// killed by player
 						int ID = g_CCore->GetPedPool()->GetPedIdByBase(attacker);
 						g_CCore->GetLocalPlayer()->OnDeath(ID, reason, playerPart);
-						return result;
+						return (result == 1);
 					}
 					// if it's vehicle, then let's try to get its driver
 					else if (anotherPed->object.objectType == OBJECT_VEHICLE)
@@ -1705,7 +1719,7 @@ bool OnHitCallback(DWORD victim,DWORD reason, DWORD unk1, DWORD unk2, DWORD unk3
 							if (veh)
 							{
 								g_CCore->GetLocalPlayer()->OnDeath(veh->GetSeat(0), reason, playerPart);
-								return result;
+								return (result == 1);
 							}
 						}
 					}
@@ -1716,7 +1730,7 @@ bool OnHitCallback(DWORD victim,DWORD reason, DWORD unk1, DWORD unk2, DWORD unk3
 			}
 		}
 	}
-	return result;
+	return (result == 1);
 }
 
 
@@ -1773,6 +1787,25 @@ _declspec (naked) void Hook_OnPlayerHit02()
 		ret
 	}
 }
+
+// This hook fixes remote player drive-by problem
+// (weapon's rotation was desynced)
+
+_declspec (naked) void Hook_OnChangePlayerCarRotation()
+{
+	// PatchBytes(0x0049BB23, drivebyshootfix);
+	_asm {
+		// is local
+		CMP DWORD PTR DS : [ESI + 0x10], 0x02
+		JNE end
+		FSTP DWORD PTR DS : [ESI + 0x5F4]
+	end:
+	   // jmp back to code
+	   PUSH 0x0049BB29
+	   RETN
+	}
+}
+
 void RestInPeace()
 {
 	g_CCore->GetChat()->AddMessage("TESTIQ - OK ROMCO");
@@ -1802,6 +1835,9 @@ _declspec (naked) void Hook_RestInPeace()
 }
 void SetHooks()
 {
+	// Fixes drive-by rotation
+	Tools::InstallJmpHook(0x0049BB23, (DWORD)&Hook_OnChangePlayerCarRotation);
+
 	Tools::InstallCallHook(0x004940C0, (DWORD)&Hook_RestInPeace);
 
 	// OnPlayerHit callback - usefull for death detection & hit, shot or explosion splash

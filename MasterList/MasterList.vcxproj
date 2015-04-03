@@ -79,14 +79,13 @@
     <ClCompile Include="..\sdks\UDPWrapper\clhmpquery.cpp" />
     <ClCompile Include="..\sdks\UDPWrapper\UDPWrapper.cpp" />
     <ClCompile Include="CNetwork.cpp" />
-    <ClCompile Include="CServersList.cpp" />
+    <ClCompile Include="CServers.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCore.h" />
     <ClInclude Include="CNetwork.h" />
-    <ClInclude Include="CPendingServers.h" />
-    <ClInclude Include="CSeversList.h" />
+    <ClInclude Include="CServers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

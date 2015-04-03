@@ -1,9 +1,14 @@
-#include "../sdks/UDPWrapper/UDPWrapper.h"
+//#include "../sdks/UDPWrapper/UDPWrapper.h"
 #include "CCore.h"
 
 
 int main()
 {
+	printf("/***********************/\n");
+	printf("/*  LHMP Masterserver  */\n");
+	printf("/*  coded by Romop5    */\n");
+	printf("/***********************/\n");
+	printf("\n");
 	bool result = CCore::getInstance().StartMaster();
 	// it's has successfully started
 	if (result)
@@ -12,6 +17,7 @@ int main()
 		for (;;)
 		{
 			CCore::getInstance().Pulse();
+			Sleep(10);
 		}
 	}
 	else {

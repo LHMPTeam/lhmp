@@ -427,6 +427,22 @@ Vector3D CPed::GetPosition()
 	}
 }
 
+
+Vector3D	CPed::GetPEDFramePosition()
+{
+	if (this->EntityBase != NULL)
+	{
+		DWORD base_ped = this->EntityBase;
+		DWORD base = *(DWORD*)(base_ped + 0x68);
+		Vector3D pos;
+		pos.x = *(float*)(base + 0x40);
+		pos.y = *(float*)(base + 0x44);
+		pos.z = *(float*)(base + 0x48);
+		return pos;
+	}
+	return Vector3D();
+}
+
 void CPed::OnThrowGranade()
 {
 	for (int i = 0; i < 8; i++)

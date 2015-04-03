@@ -49,7 +49,7 @@ unsigned int UDPWrapper::StartClient(char* hostname, int port)
 	char newhost[50] = "127.0.0.1";
 	if (host)
 	{
-		strcpy(newhost, host->h_name);
+		strcpy(newhost, inet_ntoa(*(struct in_addr *)*host->h_addr_list));
 	}
 
 	//setup address structure

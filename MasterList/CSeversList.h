@@ -33,6 +33,10 @@ public:
 	// Sends all servers+port to guy, who is responding
 	void SendAllServers(UDPPacket* packet);
 
+	// Add new server into list
+	void AddServerIntoList(char* IP, int port);
+
+	// intern function
 	void HandleCallback(int reason, int ID);
 
 private:

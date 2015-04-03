@@ -408,6 +408,7 @@ namespace ENGINE_STACK
 	{
 		char buff[200];
 		bool state;
+		bool facing;
 	};
 	struct KILL_PED_EX
 	{

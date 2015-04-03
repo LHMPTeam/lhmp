@@ -48,6 +48,9 @@ void CCore::Run()
 	byte jmpToFreeride[] = "\xE9\x9D\x01\x00\x00";		// JMP Game.005F9DED
 	byte disableESCmenu[] = "\xE9\xA5\x00\x00\x00\x00";	// JMP Game.005F97B3
 
+	byte drivebyshootfix[] = "\x3E\xD9\x5C\x24\x40\x90";
+
+
 
 	PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
 
@@ -137,6 +140,10 @@ void CCore::Run()
 	Tools::Nop(0x00536723, 23);
 	Tools::Nop(0x00536BA1, 23);
 	//-------------------------
+
+	// Fix in-car remote player weapon rotation (drive-by shooting)
+	//PatchBytes(0x0049BB23, drivebyshootfix);
+	// now as a hook (check CHooks)
 
 }
 

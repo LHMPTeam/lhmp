@@ -35,6 +35,7 @@ private:
 	std::string					m_pSvrName;
 	int							m_pServerMaxPlayers;
 	std::string					m_pServerMode;
+	char						website[512];
 public:
 	CNetworkManager();
 	~CNetworkManager();
@@ -50,6 +51,12 @@ public:
 	int							GetMaxServerPlayers();
 	void						SetServerMode(std::string);
 	std::string					GetServerMode();
+
+	void						SetWebsite(char*);
+	char*						GetWebsite();
+
+	unsigned int				GetPlayerCount();
+	unsigned int				GetMaxPlayerCount();
 
 	// Tick callback
 	void						Pulse();

@@ -28,6 +28,7 @@ typedef unsigned char byte;
 #include "CFileTransfer.h"
 #include "CBanSystem.h"
 #include "CQueryServer.h"
+#include "CMasterServer.h"
 
 class CCore
 {
@@ -47,6 +48,7 @@ private:
 	CLog				m_cLog;
 	CFileTransfer		m_cFileTransfer;
 	CQueryServer		m_cQueryServer;
+	CMasterList			m_cMaster;
 	char				m_cMapName[200];
 
 public:
@@ -54,7 +56,7 @@ public:
 	~CCore();
 	// Init server with params
 	// Returns false if something went wrogn
-	bool	Init(int,int,std::string,std::string,std::string, int);
+	bool	Init(int,int,std::string,std::string,std::string, int, char* website);
 	// Tick callback 
 	void	Pulse();
 	// Returns whether server is running
@@ -82,6 +84,7 @@ public:
 	CFileTransfer*		GetFileTransfer();
 	CBanSystem*			GetBanSystem();
 	CQueryServer*		GetQueryServer();
+	CMasterList*		GetMasterServer();
 
 	void				SetDefaultMap(char*);
 	char*				GetDefaultMap();
