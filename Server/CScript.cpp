@@ -1,16 +1,6 @@
 #include "CScript.h"
 #include "squirrelheads.h"
 
-/*void printfunc(SQVM * pVM, const char * szFormat, ...)
-{
-	va_list vl;
-	char szBuffer[512];
-	va_start(vl, szFormat);
-	vsprintf(szBuffer, szFormat, vl);
-	va_end(vl);
-	logprintf(szBuffer);
-}
-*/
 CScript::CScript(const char *szScriptName)
 {
 	// get the script path

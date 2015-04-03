@@ -13,18 +13,7 @@
 
 extern CCore *g_CCore;
 
-#ifndef _WIN32
-#include <sys/time.h>
-extern unsigned long timeGetTime();
-/*unsigned long timeGetTime()
-{
-struct timeval now;
-gettimeofday(&now, NULL);
-return now.tv_usec/1000;
-}*/
-#define sprintf_s sprintf
-#define Sleep usleep
-#endif
+#include "../shared/linux.h"
 
 DWORD postTime = timeGetTime();
 CNetworkManager::CNetworkManager()

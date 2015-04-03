@@ -10,9 +10,7 @@ Purpose: core of server, main class
 #ifndef CCORE_H
 #define	CCORE_H
 
-#ifndef _WIN32
-typedef unsigned char byte;
-#endif
+#include "../shared/linux.h"
 
 #include "CNetworkManager.h"
 #include "CTickManager.h"

@@ -4,9 +4,17 @@
 #include <stdio.h>
 #include "../shared/version.h"
 
+#ifndef _WIN32
+#include <pthread.h>
+#endif
+
 extern CCore *g_CCore;
 
-void threadCallback()
+#ifdef _WIN32
+void threadCallbackServer()
+#else
+void* threadCallbackServer(void* arg)
+#endif
 {
 	g_CCore->GetQueryServer()->Tick();
 }
@@ -19,9 +27,10 @@ bool CQueryServer::StartServer(int port)
 	{
 		this->isRunning = true;
 #ifdef _WIN32
-		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&threadCallback, 0, NULL, NULL);
+		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&threadCallbackServer, 0, NULL, NULL);
 #else
-		pthread_create(&tid1, NULL, &TCP, NULL);
+        pthread_t tid2;
+		pthread_create(&tid2, NULL, &threadCallbackServer, NULL);
 #endif
 		return true;
 	}
@@ -98,7 +107,7 @@ void CQueryServer::OverallPacket(UDPPacket* packet)
 	// TODO - implement passwords
 	*(unsigned char*)buffPointer = (unsigned char)0;
 	buffPointer++;
-	len++;	
+	len++;
 	// --------- Add player's count - 2 bytes
 	*(unsigned short*)buffPointer = (unsigned short)g_CCore->GetNetworkManager()->GetPlayerCount();
 	buffPointer+= 2;

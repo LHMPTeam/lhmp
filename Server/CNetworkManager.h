@@ -17,9 +17,8 @@ Purpose: handles network communication
 #include "BitStream.h"
 #include "RakNetTypes.h"
 #include <stdlib.h>
-#ifndef _WIN32
-typedef unsigned long DWORD;
-#endif // _WIN32
+
+#include "../shared/linux.h"
 
 //#include "CCore.h"
 using namespace RakNet;

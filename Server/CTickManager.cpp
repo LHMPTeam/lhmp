@@ -3,26 +3,8 @@
 #include <stdio.h>
 extern CCore *g_CCore;
 
+#include "../shared/linux.h"
 
-#ifndef _WIN32
-#include <sys/time.h>
-unsigned long timeGetTime()
-{
-/*struct timeval now;
-gettimeofday(&now, NULL);
-return now.tv_usec/1000;*/
-
-	timespec timespec_time;
-	__uint32_t theTick = 0;
-
-	clock_gettime(CLOCK_REALTIME, &timespec_time);
-
-	theTick = timespec_time.tv_nsec / 1000000;
-	theTick += timespec_time.tv_sec * 1000;
-	return theTick;
-}
-#define Sleep usleep
-#endif
 CTickManager::CTickManager()
 {
 	lastSecond = timeGetTime();

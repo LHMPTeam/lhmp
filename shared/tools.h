@@ -25,10 +25,12 @@ typedef unsigned long DWORD;
 #include <algorithm>
 #include <math.h> 
 
+#define RADIAN 3.14f / 180.0f
+#define PatchBytes(a,b) Tools::WriteBytes(a,b,sizeof(b));
 
 namespace Tools
 {
-	#ifdef _WIN32
+#ifdef _WIN32
 	static void WriteBytes(DWORD address,byte* bytes,size_t size)
 	{
 		DWORD lpflOldProtect;
@@ -36,7 +38,6 @@ namespace Tools
 		memcpy((void*)address, (void*)bytes, size);
 		VirtualProtect((void*)address, size, lpflOldProtect, &lpflOldProtect);
 	}
-#define PatchBytes(a,b) Tools::WriteBytes(a,b,sizeof(b));
 
 	static void SetString(DWORD address, char* string)
 	{
@@ -70,7 +71,29 @@ namespace Tools
 			*(BYTE*)(address+i) = 0x90;
 		}
 	}
-
+	/*---------------------------------------------------------------------------------*/
+	//								HOOKS
+	/*---------------------------------------------------------------------------------*/
+	static void InstallCallHook(DWORD address, DWORD function)
+	{
+		DWORD lpflOldProtect;
+		VirtualProtect((void*)address, 5, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+		*(BYTE*)(address) = 0xE8;
+		*(DWORD*)(address + 1) = (unsigned long)function - (address + 5);
+		VirtualProtect((void*)address, 5, lpflOldProtect, &lpflOldProtect);
+	}
+	static void InstallJmpHook(DWORD address, DWORD function)
+	{
+		DWORD lpflOldProtect;
+		VirtualProtect((void*)address, 5, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+		*(BYTE*)(address) = 0xE9;
+		*(DWORD*)(address + 1) = (unsigned long)function - (address + 5);
+		VirtualProtect((void*)address, 5, lpflOldProtect, &lpflOldProtect);
+	}
+#endif
+	/*---------------------------------------------------------------------------------*/
+	//								REST
+	/*---------------------------------------------------------------------------------*/
 	static DWORD GetARGBFromString(char buff[]) 
 	{
 		if(strlen(buff) < 6)
@@ -116,7 +139,6 @@ namespace Tools
 	/*---------------------------------------------------------------------------------*/
 	//								Convert DEGREES and vice versa
 	/*---------------------------------------------------------------------------------*/
-#define RADIAN 3.14f / 180.0f
 	// convert 360 degrees system into ingame (unit circle ratio)
 	static Vector3D ComputeOffsetDegrees(float degree)
 	{
@@ -151,26 +173,6 @@ namespace Tools
 		return asin(x)*(float)RADIAN;
 	}
 
-	/*---------------------------------------------------------------------------------*/
-	//								HOOKS
-	/*---------------------------------------------------------------------------------*/
-	static void InstallCallHook(DWORD address, DWORD function)
-	{
-		DWORD lpflOldProtect;
-		VirtualProtect((void*)address, 5, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
-		*(BYTE*)(address) = 0xE8;
-		*(DWORD*)(address + 1) = (unsigned long)function - (address+5);
-		VirtualProtect((void*)address, 5, lpflOldProtect, &lpflOldProtect);
-	}	
-	static void InstallJmpHook(DWORD address, DWORD function)
-	{
-		DWORD lpflOldProtect;
-		VirtualProtect((void*)address, 5, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
-		*(BYTE*)(address) = 0xE9;
-		*(DWORD*)(address + 1) = (unsigned long)function - (address + 5);
-		VirtualProtect((void*)address, 5, lpflOldProtect, &lpflOldProtect);
-	}
-	#endif
 	static float GetMetricUnitNum(float num)
 	{
 		while ((num / 1000.0f) >= 1.0f)

@@ -4,9 +4,9 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#else
-typedef unsigned long DWORD;
 #endif
+
+#include "../shared/linux.h"
 
 
 #define SERVER_TICK	20

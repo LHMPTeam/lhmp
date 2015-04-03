@@ -4,7 +4,7 @@
 #include "../shared/tools.h"
 #ifndef _WIN32
 #include <pthread.h>
-pthread_t tid;
+extern pthread_t tid;
 #endif // _WIN32
 extern CCore *g_CCore;
 

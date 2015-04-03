@@ -2,9 +2,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #else
-#include <sys/time.h>
-extern unsigned long timeGetTime();
-#define Sleep usleep
+#include "../shared/linux.h"
 #endif
 
 CTimer::CTimer(SQVM* script, char* fce, int interval, int repeat,int param)
