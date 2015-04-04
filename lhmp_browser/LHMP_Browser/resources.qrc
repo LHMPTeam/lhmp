@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/refresh.png</file>
+        <file>data/bg.png</file>
+        <file>data/close.png</file>
+        <file>data/close_hover.png</file>
+        <file>data/community.png</file>
+        <file>data/community_hover.png</file>
+        <file>data/countryside.jpg</file>
+        <file>data/direct.png</file>
+        <file>data/direct_hover.png</file>
+        <file>data/icon.png</file>
+        <file>data/map.png</file>
+        <file>data/minimize.png</file>
+        <file>data/minimize_hover.png</file>
+        <file>data/ping.png</file>
+        <file>data/refresh_hover.png</file>
+        <file>data/race.jpg</file>
+        <file>data/city.jpg</file>
+        <file>data/bg2.jpg</file>
+        <file>data/bg3.jpg</file>
+        <file>data/bg1.jpg</file>
+        <file>data/unknown.jpg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,78 @@
+#ifndef LAUNCHER_H
+#define LAUNCHER_H
+
+#define _WINSOCKAPI_
+
+#include <QMainWindow>
+#include <QtCore>
+#include <QtGui>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QGraphicsDropShadowEffect>
+#include <QLineEdit>
+#include <QKeyEvent>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QFileDialog>
+#include <QTreeView>
+
+namespace Ui {
+class Launcher;
+}
+
+class Launcher : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit Launcher(QWidget *parent = 0);
+    ~Launcher();
+
+private slots:
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void on_btnPlay_clicked();
+
+    void on_pushButton_6_clicked();
+
+    void on_tableWidget_itemSelectionChanged();
+
+    void replyFinished (QNetworkReply *reply);
+
+    void on_pushButton_5_clicked();
+
+    void on_tableWidget_doubleClicked(const QModelIndex &index);
+
+    void on_label_21_linkActivated(const QString &link);
+
+private:
+    Ui::Launcher *ui;
+
+    bool ReadConfig();
+    bool WriteConfig();
+    bool CheckForUpdates();
+    bool RefreshServerList();
+    void PopulateServerList();
+    bool JoinGame(QString address);
+    void SetMafiaPath();
+    void ShowServerInfo();
+    QString FileChecksum(QString path);
+
+    void mousePressEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
+
+    QPoint pos;
+    QNetworkAccessManager *manager;
+
+    QString nickname, clientVersion, mafiaPath, filesURL, serversURL;
+
+    QString launcherVersion = "0.0.0";
+    QString filesPath = "lhmp/";
+    QUrl launcherUpdateJSONURL = QUrl("http://lh-mp.eu/launcher/launcher.json");
+};
+
+#endif // LAUNCHER_H
