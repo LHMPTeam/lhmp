@@ -84,6 +84,11 @@ void	CKeyboard::OnKeyDown(unsigned char i)
 		{
 			g_CCore->GetChat()->ChatMessage += ' ';
 		}
+		else if (i == DIK_ESCAPE)
+		{
+			g_CCore->GetChat()->SetTyping(false);
+			g_CCore->GetChat()->ChatMessage = "";
+		}
 	}
 	else	// no typing
 	{
@@ -244,8 +249,11 @@ void	CKeyboard::OnASCIIKeyDown(char key)
 		{
 			if (key == 't' || key == 'T')
 			{
-				g_CCore->GetChat()->SetTyping(true);
-				g_CCore->GetChat()->SetRerenderState(true);
+				if (!g_CCore->GetIngameMenu()->isActive())
+				{
+					g_CCore->GetChat()->SetTyping(true);
+					g_CCore->GetChat()->SetRerenderState(true);
+				}
 			}
 		}
 	}
@@ -324,8 +332,11 @@ void	CKeyboard::ProccessMessage(LPMSG lpMsg)
 						{
 							if (key == 't' || key == 'T')
 							{
-								g_CCore->GetChat()->SetTyping(true);
-								g_CCore->GetChat()->SetRerenderState(true);
+								if (!g_CCore->GetIngameMenu()->isActive())
+								{
+									g_CCore->GetChat()->SetTyping(true);
+									g_CCore->GetChat()->SetRerenderState(true);
+								}
 							}
 						}
 					}
