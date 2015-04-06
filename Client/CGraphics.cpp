@@ -1063,8 +1063,8 @@ void CGraphics::RenderScoreboard()
 	char buff[255];
 	int numLines = 2;
 	// Render title
-	FillARGB(x,y-25,width,25,0xffcc0000);
-	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetServerName(), x + 10, y - 23, 0xffffffff, true);
+	FillARGB(x, y - 25, width, 25, 0xffdb0000);
+	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetServerName(), x + 10, y - 22, 0xffffffff, true);
 	//DrawText(g_CCore->GetNetwork()->GetServerName(),x+10,y-23,0xffffffff,true);
 	// Render content
 	for(int ID = 0; ID < MAX_PLAYERS;ID++)
@@ -1074,17 +1074,17 @@ void CGraphics::RenderScoreboard()
 		if(ped->IsActive() == 0) continue;
 		numLines++;
 	}
-	FillARGB(x,y,width,20+(20*numLines),0xff000000);
+	FillARGB(x, y, width, 20 + (20 * numLines), 0x60000000);
 	// Render navigation
 	g_CCore->GetGraphics()->GetFont()->DrawText("ID", x + 10, y + 10, 0xffffffff, true);
-	g_CCore->GetGraphics()->GetFont()->DrawText("Nickname", x + 30, y + 10, 0xffffffff, true);
-	g_CCore->GetGraphics()->GetFont()->DrawText("Ping", x + 150, y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Nickname", x + 40, y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Ping", x + 335, y + 10, 0xffffffff, true);
 	// Render local player
 	sprintf(buff,"%i",g_CCore->GetLocalPlayer()->GetOurID());
 	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, 20 + y + 10, 0xffffffff, true);
-	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetNick(), x + 30, 20 + y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetNick(), x + 40, 20 + y + 10, 0xffffffff, true);
 	sprintf(buff,"%i",g_CCore->GetLocalPlayer()->GetPing());
-	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 150, 20 + y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 335, 20 + y + 10, 0xffffffff, true);
 
 	//y = screen.y*0.4;
 	for(int ID = 0; ID < MAX_PLAYERS;ID++)
@@ -1127,10 +1127,10 @@ void CGraphics::RenderStatistics()
 	int width = 300;
 	int x = (screen.x - width) / 2, y = screen.y / 2;
 	// Title
-	FillARGB(x, y - 25, width, 25, 0xffcc0000);
-	g_CCore->GetGraphics()->GetFont()->DrawText("Statistics:", x + 10, y - 23, 0xffffffff, true);
+	FillARGB(x, y - 25, width, 25, 0xffdb0000);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Statistics", x + 10, y - 22, 0xffffffff, true);
 
-	FillARGB(x, y, width, 160, 0x50000000);
+	FillARGB(x, y, width, 160, 0x60000000);
 	sprintf(buff, "Bytes Per Second Received: %.2f%sB", Tools::GetMetricUnitNum((float)uBytesPerSecondReceived), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)uBytesPerSecondReceived)]);
 	//this->DrawTextA(buff,x+10,y+10,D3DCOLOR_XRGB(255,255,255),true);
 	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, y + 10, D3DCOLOR_XRGB(255, 255, 255), true);
