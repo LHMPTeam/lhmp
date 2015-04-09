@@ -29,8 +29,7 @@ RESOURCES += \
 
 LIBS += -lwsock32
 
-DISTFILES +=
+DISTFILES += \
+    launcher.rc
 
-QMAKE_TARGET_COMPANY = "Lost Heaven Multiplayer"
-QMAKE_TARGET_PRODUCT = "Lost Heaven Multiplayer"
-QMAKE_TARGET_DESCRIPTION = "Mafia the City of Lost Heaven Multiplayer"
+RC_FILE = launcher.rc

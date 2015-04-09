@@ -277,7 +277,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
             if (launcherVersion != version) {
                 // Self update
-                manager->get(QNetworkRequest(QString("%1launcher.exe").arg(filesURL)));
+                manager->get(QNetworkRequest(QString("%1setup.exe").arg(filesURL)));
             }
 
             // Check client version
@@ -322,8 +322,8 @@ void Launcher::replyFinished(QNetworkReply *reply)
             fileName.replace(filesURL, "");
 
             // If launcher
-            if (fileName == "launcher.exe") {
-                QString path = QString("%1/launcher.tmp").arg(QDir::currentPath());
+            if (fileName == "setup.exe") {
+                QString path = QString("%1/setup.exe").arg(QDir::currentPath());
 
                 QFile *file = new QFile(path);
 
@@ -337,17 +337,13 @@ void Launcher::replyFinished(QNetworkReply *reply)
                 delete file;
 
                 // Start update process
-                /*path = QDir::currentPath();
+                path = QDir::currentPath();
 
-                QFile updater(QString("%1/updater.exe").arg(path));
+                QProcess *process = new QProcess();
 
-                if (updater.exists()) {
-                    QProcess *process = new QProcess();
+                process->startDetached(QString("%1/setup.exe").arg(path));
 
-                    process->start(QString("%1/updater.exe").arg(path));
-                };
-
-                exit(0);*/
+                exit(0);
             } else {
                 QString path = QString("%1/%2/%3").arg(mafiaPath).arg(filesPath).arg(fileName);
 
@@ -373,7 +369,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 }
 
 bool Launcher::ReadConfig() {
-    QString path = QCoreApplication::applicationDirPath();
+    /*QString path = QCoreApplication::applicationDirPath();
             path.append("/lhmp_config");
 
     QFile *file = new QFile(path);
@@ -399,11 +395,23 @@ bool Launcher::ReadConfig() {
         WriteConfig();
     }
 
-    return file->error();
+    return file->error();*/
+
+    QSettings settings("Lost Heaven Multiplayer", "Launcher");
+
+    nickname = settings.value("nickname", "").toString();
+
+    if (!nickname.isEmpty()) {
+        ui->lineEdit->setText(nickname);
+    }
+
+    mafiaPath = settings.value("path", "").toString();
+
+    return true;
 }
 
 bool Launcher::WriteConfig() {
-    QString path = QCoreApplication::applicationDirPath();
+    /*QString path = QCoreApplication::applicationDirPath();
             path.append("/lhmp_config");
 
     QFile file(path);
@@ -424,7 +432,16 @@ bool Launcher::WriteConfig() {
     file.flush();
     file.close();
 
-    return file.error();
+    return file.error();*/
+
+    nickname = ui->lineEdit->text();
+
+    QSettings settings("Lost Heaven Multiplayer", "Launcher");
+
+    settings.setValue("nickname", nickname);
+    settings.setValue("path", mafiaPath);
+
+    return true;
 }
 
 bool Launcher::CheckForUpdates() {
@@ -562,7 +579,7 @@ void Launcher::SetMafiaPath() {
 
     QMessageBox msg;
     msg.setWindowTitle("Lost Heaven Multiplayer");
-    msg.setText("You need to specify the location of your Mafia installation folder in order to play Lost Heaven Multiplayer.");
+    msg.setText("You need to specify the location of your Mafia installation folder in order to play Lost Heaven Multiplayer.<br/><br/><b>If you encounter any problems, you may need to run this launcher as an administrator.</b>");
     msg.setInformativeText("Please specify the location of your Mafia installation in the next window.");
     msg.setIcon(QMessageBox::Warning);
     msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -640,7 +657,7 @@ bool Launcher::JoinGame(QString address) {
 
         process->start(pathLoader, addressSplit);
     } else {
-        QMessageBox::critical(this, tr("Lost Heaven Multiplayer"), tr("Unable to find Mafia and/or Launcher executable."));
+        QMessageBox::critical(this, tr("Lost Heaven Multiplayer"), tr("Unable to launch Mafia and/or launcher executable."));
     }
 
     fileExecutable.close();
