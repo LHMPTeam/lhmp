@@ -236,30 +236,47 @@ void CFileTransfer::Render()
 		Vector2D screen = g_CCore->GetGraphics()->GetResolution();
 		if (this->status == FILETRANSFER_STATE::CHECKING_INTEGRITY)
 		{
-			g_CCore->GetGraphics()->GetFont()->DrawTextA("#CHECKING FILE INTEGRITY...", screen.x / 2, screen.y / 2,0xFFFF0000);
+			//g_CCore->GetGraphics()->GetFont()->DrawTextA("#CHECKING FILE INTEGRITY...", screen.x / 2, screen.y / 2,0xFFFF0000);
 		}
 		else {
 			for (unsigned int i = 0; i < this->fileList.size(); i++)
 			{
 				if (downloadingID == this->fileList[i]->GetID())
 				{
-					// overall (received/awaiting bytes)
-					float overallRatio = (float)this->receivedBytes / (float)this->overallBytes;
-					g_CCore->GetGraphics()->FillARGB((screen.x / 2), (screen.y / 2) - 50, 200, 10, 0xaa000000);
-					g_CCore->GetGraphics()->FillARGB((screen.x / 2), (screen.y / 2) - 50, (int)(200 * overallRatio), 10, 0xFFff0000);
+					int x = (int)((screen.x - 384) / 2), y = (int)(screen.y*0.4);
+
+					// Title + container
+					g_CCore->GetGraphics()->FillARGB(x, y - 25, 384, 25, 0xffdb0000);
+					g_CCore->GetGraphics()->GetFont()->DrawText("Downloading resources", x + 10, y - 22, 0xffffffff, true);
+
+					g_CCore->GetGraphics()->FillARGB(x, y, 384, 85, 0x60000000);
 
 					// file downloading status
 					char buff[255];
-					sprintf(buff, "DOWNLOADING FILE '%s'", this->fileList[i]->GetName());
-					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, screen.x / 2, screen.y / 2, 0xFFFF0000);
+					sprintf(buff, "Resource: %s", this->fileList[i]->GetName());
+					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 20, y + 10, 0xffffffff);
 
 					float ratio = this->fileList[i]->GetAlreadyWritten() / (float)this->fileList[i]->GetSize();
-					g_CCore->GetGraphics()->FillARGB((screen.x / 2), (screen.y / 2) + 50, 200, 10, 0xaa000000);
-					g_CCore->GetGraphics()->FillARGB((screen.x / 2), (screen.y / 2) + 50, (int)(200 * ratio), 10, 0xFFff0000);
+					g_CCore->GetGraphics()->FillARGB(x + 20, y + 35, 344, 15, 0xaa000000);
+					g_CCore->GetGraphics()->FillARGB(x + 20, y + 35, (int)(344 * ratio), 15, 0xFFff0000);
 
-					sprintf(buff, "%.2f%sB/%.2f%sB", Tools::GetMetricUnitNum((float)this->fileList[i]->GetAlreadyWritten()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetAlreadyWritten())],
+					sprintf(buff, "%.2f%sB / %.2f%sB", Tools::GetMetricUnitNum((float)this->fileList[i]->GetAlreadyWritten()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetAlreadyWritten())],
 						Tools::GetMetricUnitNum((float)this->fileList[i]->GetSize()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetSize())]);
-					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, screen.x / 2, (screen.y / 2) + 65, 0xFFFF0000);
+					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 215, y + 55, 0xffffffff);
+
+
+					// overall (received/awaiting bytes)
+					//x = (int)((screen.x - 384) / 2), y = (int)(screen.y*0.4+90+40);
+
+					// Title + container 2
+					/*g_CCore->GetGraphics()->FillARGB(x, y - 25, 384, 25, 0xffdb0000);
+					g_CCore->GetGraphics()->GetFont()->DrawText("Overall progress", x + 10, y - 22, 0xffffffff, true);
+
+					g_CCore->GetGraphics()->FillARGB(x, y, 384, 60, 0x60000000);*/
+
+					float overallRatio = (float)this->receivedBytes / (float)this->overallBytes;
+					g_CCore->GetGraphics()->FillARGB(x, y + 85, 384, 20, 0xaa000000);
+					g_CCore->GetGraphics()->FillARGB(x, y + 85, (int)(384 * overallRatio), 20, 0xFFff0000);
 
 					return;
 				}

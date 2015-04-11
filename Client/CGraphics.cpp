@@ -226,12 +226,13 @@ void CGraphics::RenderLoadingScreen()
 	m_sprite->End();
 
 	//FillARGB(resolution.x*0.10, resolution.y*0.90, resolution.x*0.8*g_CCore->GetGame()->loadingStatus, 20, D3DCOLOR_XRGB(255,255,255));
-	FillARGB(0, (int)(resolution.y*0.90f), (int)(resolution.x*g_CCore->GetGame()->loadingStatus), 1, D3DCOLOR_XRGB(200, 200, 200));
+	FillARGB(0, (int)(resolution.y - 12), (int)(resolution.x), 12, D3DCOLOR_ARGB(150, 0, 0, 0));
+	FillARGB(0, (int)(resolution.y - 12), (int)(resolution.x*g_CCore->GetGame()->loadingStatus), 12, D3DCOLOR_XRGB(200, 0, 0));
 	//this->Clear(0, resolution.y*0.90, resolution.x*((int)(g_CCore->GetGame()->loadingStatus)), 1, D3DCOLOR_XRGB(200, 200, 200));
 
-	char buff[10];
+	/*char buff[10];
 	sprintf(buff, "%.0f%%", g_CCore->GetGame()->loadingStatus * 100);
-	g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, resolution.x / 2, (int)(resolution.y*0.90f) - 40, 0xffffffff, false);
+	g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, resolution.x / 2, (int)(resolution.y*0.90f) - 40, 0xffffffff, false);*/
 
 }
 
