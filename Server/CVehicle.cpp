@@ -181,6 +181,16 @@ bool CVehicle::GetSirenState()
 	return this->siren;
 }
 
+void CVehicle::SetFuel(float fuel)
+{
+	this->fuel = fuel;
+}
+
+float CVehicle::GetFuel()
+{
+	return this->fuel;
+}
+
 void CVehicle::SetSecondRot(Vector3D rot)
 {
 	this->secondRot = rot;

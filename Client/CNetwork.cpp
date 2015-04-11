@@ -780,9 +780,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_TOGGLE_CITY_MUSIC:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			int ID;
 			int state;
-			bsIn.Read(ID);
 			bsIn.Read(state);
 
 			char buff[255];
@@ -993,6 +991,25 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		}
 			break;
 
+		case LHMP_VEHICLE_SET_FUEL:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID;
+			float fuel;
+			bsIn.Read(ID);
+			bsIn.Read(fuel);
+
+			char buff[255];
+			sprintf(buff, "[Nm] SET FUEL %f", fuel);
+			g_CCore->GetLog()->AddLog(buff);
+
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+			if (veh != NULL)
+			{
+				veh->SetFuel(fuel);
+			}
+		}
+			break;
 		case LHMP_PLAYER_ENTERED_VEHICLE:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);

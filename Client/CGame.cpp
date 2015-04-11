@@ -75,13 +75,16 @@ void CGame::ToggleVehicleEngine(DWORD vehicle, BYTE state)
 void CGame::ToggleCityMusic(byte state)
 {
 	g_CCore->GetGame()->SetMusicState(state);
-	DWORD base = *(DWORD*)((*(DWORD*)0x65115C) + 0x24);
-	*(DWORD*)(*(DWORD*)((*(DWORD*)0x65115C) + 0x24) + 0x2FC0) = (byte)state;
 
 	__asm
 	{
-		MOV ECX, DWORD PTR DS : [base]
-		MOV EAX, 0x005E9D70
+		PUSH state;  Case 139 of switch 005BB320
+		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+		MOV EAX, 0x00425390
+
+		CALL EAX
+		MOV ECX, EAX
+		MOV EAX, 0x005E9DF0
 		CALL EAX
 	}
 }

@@ -724,6 +724,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				veh->SetSecondRot(syncData.secondRot);
 				veh->SetOnGas(syncData.gasOn);
 				veh->SetTimeStamp(timestamp);
+				veh->SetFuel(syncData.fuel);
 
 				for (int i = 0; i < 4; i++)
 				{

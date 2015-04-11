@@ -61,6 +61,8 @@ SQInteger sq_vehicleSetPosition(SQVM *vm);
 SQInteger sq_vehicleSetSpeed(SQVM *vm);
 SQInteger sq_vehicleSetDamage(SQVM *vm);
 SQInteger sq_vehicleSetRotation(SQVM *vm);
+SQInteger sq_vehicleSetFuel(SQVM *vm);
+SQInteger sq_vehicleGetFuel(SQVM *vm);
 SQInteger sq_vehicleToggleRoof(SQVM *vm);
 SQInteger sq_vehicleGetRoofState(SQVM *vm);
 SQInteger sq_vehicleToggleSiren(SQVM *vm);

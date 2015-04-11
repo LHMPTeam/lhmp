@@ -57,6 +57,7 @@ CVehicle::CVehicle()
 
 	explodedCar = NULL;
 	siren = 0;
+	fuel = 60.0f;
 }
 CVehicle::~CVehicle()
 {
@@ -298,6 +299,7 @@ void CVehicle::SendSync()
 		syncData.wheels = wheels;
 		syncData.gasOn = this->onGas;
 		syncData.horn = veh->hornState;
+		syncData.fuel = this->GetFuel();
 		//syncData.horn = (*(byte*)(this->GetEntity() + 0x51C) == 1);
 		RakNet::BitStream bsOut;
 		bsOut.Write((RakNet::MessageID)ID_TIMESTAMP);
@@ -410,9 +412,31 @@ void CVehicle::SetHornState(bool b)
 {
 	this->horn = b;
 }
+
 bool CVehicle::GetHornState()
 {
 	return this->horn;
+}
+
+void CVehicle::SetFuel(float fuel)
+{
+	this->fuel = fuel;
+
+	if (this->GetEntity() != NULL)
+	{
+		*(float*)(this->GetEntity() + 0xD1C) = fuel;
+	}
+
+}
+
+float CVehicle::GetFuel()
+{
+	if (this->GetEntity() != NULL)
+	{
+		this->fuel = *(float*)(this->GetEntity() + 0xD1C);
+
+	}
+	return this->fuel;
 }
 
 void CVehicle::SetSirenState(bool b)

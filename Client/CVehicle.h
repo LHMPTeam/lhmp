@@ -30,6 +30,7 @@ private:
 
 	Vector3D		speed;
 	float			wheels;
+	float			fuel;
 
 	Vector3D		vehPos;
 	bool			horn;
@@ -81,6 +82,9 @@ public:
 
 	void		SetHornState(bool);
 	bool		GetHornState();
+
+	void		SetFuel(float);
+	float		GetFuel();
 
 	void        SetSirenState(bool);
 	bool        GetSirenState();
