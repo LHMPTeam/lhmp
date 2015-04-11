@@ -1,3 +1,10 @@
+/**
+    Lost Heaven Multiplayer
+    CLHMPQuery.h
+	Purpose: class for server/master commnication
+	@author Romop5
+*/
+
 #ifndef _CLHMPQUERY_H
 #define _CLHMPQUERY_H
 
@@ -56,9 +63,9 @@ struct OverallPacket{
     char gamemode[255];
 	char mapname[255];
 	char website[255];
-    short players, maxPlayer;
+    unsigned short players, maxPlayer;
 	unsigned int ping;
-	OverallPacket(int nID, char* host, char* mode, short pl, short max, unsigned int INping, char* INmapname, char* INwebsite,bool password)
+	OverallPacket(int nID, char* host, char* mode, unsigned short pl, unsigned short max, unsigned int INping, char* INmapname, char* INwebsite,bool password)
     {
         ID = nID;
         strcpy(hostname, host);

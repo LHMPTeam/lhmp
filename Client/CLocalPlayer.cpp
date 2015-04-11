@@ -137,6 +137,7 @@ void CLocalPlayer::Pulse()
 	{
 		if (this->IsOnFoot())
 		{
+			// Send on-foot sync
 			SYNC::ON_FOOT_SYNC syncData;
 			syncData.position = this->GetLocalPos();
 			Vector3D rot = this->GetLocalRot();
@@ -158,24 +159,16 @@ void CLocalPlayer::Pulse()
 			bsOut.Write(syncData);
 			g_CCore->GetNetwork()->SendServerMessage(&bsOut, LOW_PRIORITY, UNRELIABLE);
 
-			/*char buff[255];
-			sprintf(buff, "STATE %x", this->GetStatus());
-			g_CCore->GetLog()->AddLog(buff);
-			*/
 		}
 		else
 		{
-			//MessageBox(NULL,"aha","aha",MB_OK);
-			//g_CCore->GetLog()->AddLog("InCar");
-			//DWORD car = ((*(DWORD*)((*(DWORD*)0x006F9464) + 0xE4) + 0x3088));
-			//int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(car);
+			// Send in-car sync
 			if (this->IDinCar != -1)
 			{
 				CVehicle* veh = g_CCore->GetVehiclePool()->Return(IDinCar);
 				if (veh != NULL)
 					veh->SendSync();
 			}
-			//g_CCore->GetLog()->AddLog("Auto");
 
 			SYNC::IN_CAR syncData;
 			syncData.ID = this->GetOurID();

@@ -26,6 +26,8 @@ void CServers::HandleCallback(unsigned int ID, void* data, unsigned char reason)
 					CCore::getInstance().getNetwork()->OnSuccess(it->GetHost());
 				}
 				//OverallPacket* packet = (OverallPacket*)data;
+				OverallPacket* packet = (OverallPacket*)data;
+				it->ChangePlayersCount(packet->players);
 
 			}
 			else {

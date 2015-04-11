@@ -1,3 +1,10 @@
+/**
+    Lost Heaven Multiplayer
+    UDPWrapper.cpp
+	Purpose: simple UDP wrapper for LHMP written by me
+	@author Romop5
+*/
+
 #include "UDPWrapper.h"
 #include <stdio.h>
 

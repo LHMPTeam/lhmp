@@ -539,6 +539,7 @@ _asm
 
 DWORD CGame::CreatePED()
 {
+	g_CCore->GetChat()->AddMessage("CreatePED is called now");
 	DWORD pedaddr, frameaddr;
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	//DWORD TommyEngineObj = (DWORD) ped->object.frame;
@@ -770,6 +771,7 @@ void CGame::PreRespawn()
 		{
 			if (ped->GetEntity() != NULL)
 			{
+				g_CCore->GetGame()->ChangeSkin(ped->GetEntity(), 293);
 				g_CCore->GetGame()->DeletePed(ped->GetEntity());
 				ped->SetEntity(NULL);
 			}
@@ -787,6 +789,12 @@ void CGame::PreRespawn()
 				veh->SetEntity(NULL);
 			}
 		}
+	}
+
+	// Delete all localplayer weapons
+	if (g_CCore->GetGame()->GetLocalPED() != NULL)
+	{
+		g_CCore->GetGame()->DeleteAllWeapons((DWORD)g_CCore->GetGame()->GetLocalPED());
 	}
 }
 void CGame::Respawn()
@@ -1329,6 +1337,22 @@ void CGame::DeleteWeapon(DWORD PED,DWORD weaponID)
 	}
 }
 
+
+void CGame::DeleteAllWeapons(DWORD ped)
+{
+	if (ped != NULL)
+	{
+		PED* player = (PED*)ped;
+		for (int i = 0; i < 8; i++)
+		{
+			if (player->inventary.slot[i].weaponType != 0)
+			{
+				g_CCore->GetGame()->DeleteWeapon(ped, player->inventary.slot[i].weaponType);
+			}
+		}
+	}
+}
+
 _PED*	CGame::GetLocalPED()
 {
 	if ((*(DWORD*)0x006F9464) != NULL)
@@ -1555,22 +1579,42 @@ void CGame::DeletePed(DWORD PED)
 {
 	if (PED == NULL)
 		return;
+
 	// Delete weapons
 	_PED* deletingPed = (_PED*)PED;
 	if (PED != NULL)
 	{
-
-		for (int i = 0; i < 8; i++)
+		// TODO - test
+		/*for (int i = 0; i < 8; i++)
 		{
 			if (deletingPed->inventary.slot[i].weaponType != 0)
 			{
 				g_CCore->GetGame()->DeleteWeapon(PED, deletingPed->inventary.slot[i].weaponType);
 			}
-		}
+		}*/
+
+		g_CCore->GetGame()->DeleteAllWeapons(PED);
+
 
 		DWORD ped_frame = (DWORD)deletingPed->object.frame;
 		if (ped_frame)
 		{
+			char buff[255];
+			sprintf(buff, "Deleting ped: %p [%p]", PED, ped_frame);
+			g_CCore->GetChat()->AddMessage(buff);
+
+			/*// TESTING STUFF
+			_asm {
+				MOV ECX, PED
+				PUSH 0
+				MOV EAX, DWORD PTR DS : [ECX];  Game.0063B488
+				CALL DWORD PTR DS : [EAX + 0x94]
+			}
+			return;
+			*/
+
+
+			// END OF TEST
 			_asm{
 				/*PUSH PED
 				MOV ECX,DWORD PTR DS:[0x65115C]				;  Game.006F9440

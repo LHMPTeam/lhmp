@@ -181,6 +181,7 @@ public:
 	// Weapons
 	static void AddWeapon(DWORD, DWORD, DWORD, DWORD, DWORD);
 	static void DeleteWeapon(DWORD, DWORD);
+	static void DeleteAllWeapons(DWORD ped);
 	static void SwitchWeapon(DWORD, DWORD);
 	static void Shoot(DWORD, Vector3D);
 	static void ThrowGranade(DWORD, Vector3D);

@@ -1,7 +1,7 @@
 #ifndef _CSERVERS_H
 #define _CSERVERS_H
 
-#include "../sdks/UDPWrapper/clhmpquery.h"
+#include "../sdks/UDPWrapper/CLHMPQuery.h"
 #include <vector>
 
 // Stores a server, provides functions to handle it
@@ -14,6 +14,7 @@ public:
 		this->isPending = pendingOrStatic;
 		memcpy(&this->IPAddress, &inAddr, sizeof(sockaddr_in));
 		this->port = inPort;
+		this->players = 0;
 	}
 	// returns IP address
 	char* GetIP()
@@ -45,12 +46,23 @@ public:
 		this->isPending = false;
 	}
 
+	void ChangePlayersCount(unsigned short inPlayers)
+	{
+		this->players = inPlayers;
+	}
+
+	unsigned short GetPlayers()
+	{
+		return this->players;
+	}
+
 private:
 	bool isPending;
 	unsigned int ID;
 	// get inet as IP
 	sockaddr_in		IPAddress;
 	unsigned short port;
+	unsigned short players;
 };
 
 class CServers

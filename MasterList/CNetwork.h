@@ -2,7 +2,7 @@
 #define _CNETWORK_H
 
 // handles all connections & data receiving
-#include "../sdks/UDPWrapper/clhmpquery.h"
+#include "../sdks/UDPWrapper/CLHMPQuery.h"
 class CNetwork
 {
 public:
@@ -20,6 +20,8 @@ public:
 	void	OnFail(sockaddr_in);
 
 	void	SendServers(sockaddr_in);
+
+	void	SendMasterInfo(sockaddr_in);
 private:
 	UDPWrapper* server;
 };

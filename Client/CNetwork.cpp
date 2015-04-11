@@ -1313,14 +1313,17 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bsIn.Read(facing);
 
 			char buff[250];
-			sprintf(buff, "[Nm] SET DOOR %s STATE %d %d",name,state,facing);
+			sprintf(buff, "[Nm] SET DOOR '%s'[%d] STATE %d %d",name,strlen(name),state,facing);
 			g_CCore->GetLog()->AddLog(buff);
+			if (strlen(name) > 0)
+			{
 
-			ENGINE_STACK::DOOR_SET_STATE* data = new ENGINE_STACK::DOOR_SET_STATE[1];
-			sprintf(data->buff, name);
-			data->state = state;
-			data->facing = facing;
-			g_CCore->GetEngineStack()->AddMessage(ES_DOOR_SET_STATE, (DWORD)data);
+				ENGINE_STACK::DOOR_SET_STATE* data = new ENGINE_STACK::DOOR_SET_STATE[1];
+				sprintf(data->buff, name);
+				data->state = state;
+				data->facing = facing;
+				g_CCore->GetEngineStack()->AddMessage(ES_DOOR_SET_STATE, (DWORD)data);
+			}
 			
 		}
 			break;

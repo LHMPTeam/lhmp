@@ -85,7 +85,10 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_CREATEPLAYER:
 		{
-				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CREATEPLAYER",LOG_NORMAL);
+													char message[255];
+													sprintf(message,"CLIENT_ENGINESTACK::ES_CREATEPLAYER [ID:%d]", start->data);
+													g_CCore->GetLog()->AddLog(message, LOG_NORMAL);
+				//g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CREATEPLAYER",LOG_NORMAL);
 				CPed* ped = g_CCore->GetPedPool()->Return(start->data);
 				if(ped != NULL)
 				{
@@ -101,13 +104,6 @@ void CEngineStack::DoMessage()
 					if (handle != NULL)
 					{
 						g_CCore->GetGame()->ChangeSkin(ped->GetEntity(),ped->GetSkin());
-						/*for (int i = 0; i < 8; i++)
-						{
-							g_CCore->GetChat()->AddMessage("ES_CREATEPLAYER - adding weapon");
-							SWeapon* wep = ped->GetWeapon(i);
-							if (wep->wepID != NULL)
-								g_CCore->GetGame()->AddWeapon(ped->GetEntity(), wep->wepID, wep->wepLoaded, wep->wepHidden,0);
-						}*/
 					}
 					if (ped->InCar != -1)
 					{

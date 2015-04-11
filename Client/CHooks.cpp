@@ -1437,31 +1437,6 @@ _declspec(naked) void Hook_ExplodeCar()
 			RETN
 	}
 }
-void	LastASCIIPressedKey(char key)
-{
-	// sprava je volana 2x po sebe, bohvie preco, toto je fix
-	//ignore = !ignore;
-	//if (ignore == false)
-	//{
-		if (key >= '!' && key <= '~')
-		{
-			//g_CCore->GetKeyboard()->OnASCIIKeyDown(key);
-		}
-	//}
-}
-_declspec(naked) void Hook_LastASCIIPressedKey()
-{
-	_asm
-	{
-		pushad
-		push EDX
-		call LastASCIIPressedKey
-		add ESP, 0x4
-		popad
-		MOV DWORD PTR DS : [0x101C1408], EDX
-		retn 4
-	}
-}
 
 // NOT USED
 _declspec(naked) void Hook_DoorUnlock()
@@ -1859,29 +1834,32 @@ __declspec(naked) void Hook_ChangeRadarRendering()
 
 void OnPlayerVehicleEngineStateChange(DWORD vehicle, BYTE state)
 {
-	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
-	int ourID = g_CCore->GetLocalPlayer()->GetOurID();
-	CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
-
-	int playerid = veh->GetPlayerSeat(0);
-
-	if (playerid != -1)
+	if (vehicle != NULL)
 	{
-		if (ourID == playerid)
+		int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
+		int ourID = g_CCore->GetLocalPlayer()->GetOurID();
+		// if that vehicle is valid LHMP vehicle (that means synced)
+		if (vehID != -1)
 		{
-			veh->ToggleEngine(state);
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+			int playerid = veh->GetPlayerSeat(0);
+
+			// if localPlayer == driver of that vehicle
+			if (playerid == g_CCore->GetLocalPlayer()->GetOurID())
+			{
+				veh->ToggleEngine(state);
+
+				//Send data 
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+				bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
+				bsOut.Write(vehID);
+				bsOut.Write(state);
+				g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+			}
 		}
 
-		//Send data 
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
-		bsOut.Write(vehID);
-		bsOut.Write(state);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 	}
-
-
 }
 
 __declspec(naked) void Hook_OnPlayerStartedVehicleEngine()
@@ -1924,10 +1902,98 @@ __declspec(naked) void Hook_OnPlayerStoppedVehicleEngine()
 	}
 }
 
+void ValidateCarDeleting(DWORD entity)
+{
+	DWORD car = *(DWORD*)(entity + 0xC);
+	if (g_CCore->GetVehiclePool()->GetVehicleIdByBase(car) == -1)
+	{
+		// if it returns -1, that means the vehicle is either not synced or doesn't exists
+		// let's presume the second case
+		// so just delete it from entity
+		*(DWORD*)(entity + 0xC) = 0x0;
+	}
+}
+
+__declspec(naked) void Fix_CarDeleting()
+{
+	__asm
+	{
+		MOV ESI, ECX
+		PUSHAD
+		PUSH ESI
+		CALL ValidateCarDeleting
+		ADD ESP, 0x4
+		POPAD
+		MOV EAX, 0x005DAA60
+		CALL EAX
+
+		// return back to code
+		PUSH 0x005D4AA8
+		RETN
+	}
+}
+
+bool ValidateCarDeletingTwo(DWORD entity)
+{
+	DWORD car = *(DWORD*)(entity + 0x9C);
+	if (g_CCore->GetVehiclePool()->GetVehicleIdByBase(car) == -1)
+	{
+		// if it returns -1, that means the vehicle is either not synced or doesn't exists
+		// let's presume the second case
+		// so just delete it from entity
+		*(DWORD*)(entity + 0x9C) = 0x0;
+		return true;
+	}
+	return false;
+}
+
+
+__declspec(naked) void Fix_CarDeletingSecond()
+{
+	__asm
+	{
+		MOV EAX, DWORD PTR DS : [ESI + 0x9C];  EAX = car
+		PUSHAD
+		PUSH ESI
+		CALL ValidateCarDeletingTwo
+		ADD ESP, 0x4
+		CMP AL,0x1
+		JE badcode
+		POPAD
+		// return back to code - OK
+		PUSH 0x0048DC84
+		RETN
+	badcode:
+			POPAD
+			PUSH 0x0048E6FB
+			RETN
+	
+	}
+}
+
 void SetHooks()
 {
+	//---------------------- Fix deleting car
+
+	Tools::InstallJmpHook(0x005D4AA1, (DWORD)&Fix_CarDeleting);
+
+
+	Tools::InstallJmpHook(0x0048DC7E, (DWORD)&Fix_CarDeletingSecond);
+
+	//Veh Engine Start
+	//004CC9F7 | .E8 E4AE0400    CALL Game.005178E0
+
+
+	Tools::InstallJmpHook(0x005384BB, (DWORD)&Hook_OnPlayerStartedVehicleEngine);
+
+	//Veh Engine Stop
+	Tools::InstallJmpHook(0x00538595, (DWORD)&Hook_OnPlayerStoppedVehicleEngine);
+
 	// Fixes drive-by rotation
 	Tools::InstallJmpHook(0x0049BB23, (DWORD)&Hook_OnChangePlayerCarRotation);
+
+	//change radar position on screen
+	Tools::InstallJmpHook(0x0054FDB6, (DWORD)&Hook_ChangeRadarRendering);
 
 	Tools::InstallCallHook(0x004940C0, (DWORD)&Hook_RestInPeace);
 
@@ -1953,7 +2019,7 @@ void SetHooks()
 
 	//Tools::InstallJmpHook(0x71C8C38A, (DWORD)&Hook_PeekMessage);
 
-	Tools::InstallJmpHook(0x1006DEDB, (DWORD)&Hook_LastASCIIPressedKey);
+	//Tools::InstallJmpHook(0x1006DEDB, (DWORD)&Hook_LastASCIIPressedKey);
 	Tools::InstallCallHook(0x005FB203, (DWORD)&Hook_EngineLoad);
 
 

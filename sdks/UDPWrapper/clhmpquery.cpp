@@ -1,3 +1,10 @@
+/**
+    Lost Heaven Multiplayer
+    CLHMPQuery.cpp
+	Purpose: class for server/master commnication
+	@author Romop5
+*/
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 
@@ -216,9 +223,9 @@ void CLHMPQuery::ProcessOverall(unsigned int taskID, char* data, unsigned int le
 		dataRead++;
 
 		// --- Read player's count / max players
-		short players = *(short*)(data + dataRead);
+		unsigned short players = *(unsigned short*)(data + dataRead);
 		dataRead += 2;
-		short maxPlayers = *(short*)(data + dataRead);
+		unsigned short maxPlayers = *(unsigned short*)(data + dataRead);
 		dataRead += 2;
 
 		// --- Read server name
@@ -315,12 +322,10 @@ void CLHMPQuery::ProcessMaster(unsigned int taskID, char* data, unsigned int len
 	}
 
 	// Clean up task
-	printf("co to kurva\n");
 	(*this->p_userCallback)(taskPool[taskID]->ID, packet, (unsigned char)QUERY_MASTER_SUCCESS);
 	delete packet;
 	taskPool[taskID]->client->CleanUP();
 	delete taskPool[taskID];
 	taskPool[taskID] = NULL;
 
-	printf("co to kurva %d %p\n", taskID, taskPool[taskID]);
 }

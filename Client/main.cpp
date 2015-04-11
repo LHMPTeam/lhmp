@@ -78,6 +78,9 @@ int GetGameVersion()
 	return 0;
 }
 
+// DLL Entry function
+// set-ups hooks and module
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -93,6 +96,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 				SetHooks();
 				WaitTillD3D8IsLoaded();	// DxHook
 				CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&MainThread, 0, 0, 0);	// hlavne vlakno
+				CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&ACMainThread, 0, 0, 0); // AntiCheat thread
 				//CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&TestKB, 0, 0, 0);	// testovacia klavesnica
 			}
 			else {
@@ -116,6 +120,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+// Main LHMP thread, runs tick loop
 void MainThread(void)
 {
 	CCore CCore;
@@ -139,6 +144,8 @@ void MainThread(void)
 	}
 }
 
+// Hooks Mafia's Windows Message system proceed callback
+
 BOOL WINAPI hookPeekMessageW(
 	__out LPMSG lpMsg,
 	__in_opt HWND hWnd,
@@ -149,24 +156,11 @@ BOOL WINAPI hookPeekMessageW(
 	bool result = orig_PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg) == 1;
 	if (result)
 	{
-		/*char buff[200];
-		sprintf(buff, "Message 0x%x", lpMsg->message);
-		g_CCore->GetChat()->AddMessage(buff);
-		*/
 		if (lpMsg->message == WM_INPUT)
 		{
+			// WM_INPUT is used to get all keyboard input
 			g_CCore->GetKeyboard()->ProccessMessage(lpMsg);
 		}
-		/*else if (lpMsg->message == WM_QUIT || lpMsg->message == WM_CLOSE)
-		{
-			g_CCore->ShutdownClient();
-			return 0;
-		}*/
-		/*else if (lpMsg->message == WM_KILLFOCUS || (lpMsg->message == WM_ACTIVATE && LOWORD(lpMsg->wParam) == WA_INACTIVE))
-		{
-			// prevent game focus lost
-			return true;
-		}*/
 	}
 	return result;
 }

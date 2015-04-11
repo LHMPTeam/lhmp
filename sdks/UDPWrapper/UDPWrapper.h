@@ -1,6 +1,10 @@
-/* Simple UDP Wrapper for LHMP
-		by Romop5
+/**
+    Lost Heaven Multiplayer
+    UDPWrapper.h
+	Purpose: simple UDP wrapper for LHMP written by me
+	@author Romop5
 */
+
 #ifndef _UDPWRAPPER_H
 #define _UDPWRAPPER_H
 

@@ -32,6 +32,11 @@ void CNetwork::Pulse()
 					//CCore::getInstance().getServers()->SendAllServers(packet);
 					this->SendServers(packet->sender);
 					break;
+				case 's':
+					printf("Request from browser(master info) \n");
+					// r = request for master info (servers/players count)
+					this->SendMasterInfo(packet->sender);
+					break;
 
 				// new client
 				case 'c':
@@ -97,6 +102,31 @@ void	CNetwork::SendServers(sockaddr_in receiver)
 
 
 	this->server->SendData(packetSize, data, (sockaddr*)&receiver);
+
+	delete[] data;
+}
+
+
+void	CNetwork::SendMasterInfo(sockaddr_in receiver)
+{
+	unsigned int players = 0;
+	std::vector <CServer>* pool = CCore::getInstance().getServers()->GetPool();
+	unsigned short servers = pool->size();
+
+	// get current count of players
+	for (std::vector<CServer>::iterator it = pool->begin(); it != pool->end(); ++it)
+	{
+		players += it->GetPlayers();
+	}
+
+	// LHMPs(5) + uint (2) + uint(4) => 11 bytes long packet
+	unsigned char* data = new unsigned char[11];
+	memcpy(data, "LHMPs", 5);
+	*(unsigned short *)(data + 5) = servers;
+	*(unsigned int *)(data + 7) = players;
+
+
+	this->server->SendData(11, data, (sockaddr*)&receiver);
 
 	delete[] data;
 }
