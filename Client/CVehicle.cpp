@@ -110,6 +110,7 @@ void CVehicle::UpdateGameObject()
 void CVehicle::SetUpInterpolation()
 {
 	this->interpolation.SetUpInterpolation(this->playerPos);
+	this->interpolation.SetUpInterpolationRotVehicle(this->rotation, this->secondRot);
 }
 
 void CVehicle::Interpolate()
@@ -122,6 +123,8 @@ void CVehicle::Interpolate()
 		bool hasDriver = !(this->Seat[0] == -1);
 
 		this->playerPos = interpolation.Interpolate();
+		this->rotation = interpolation.InterpolateRotVehicle();
+		this->secondRot = interpolation.InterpolateRotVehicle2();
 
 		DWORD entity = this->GetEntity();
 		float x = this->speed.x, y = this->speed.y, z = this->speed.z;
@@ -285,10 +288,11 @@ void CVehicle::SendSync()
 		this->actual = pos;
 		this->SetPosition(pos);
 		this->SetSecondRot(secondRot);
-		//this->timeLastMessage = RakNet::GetTimeMS();
+		this->timeLastMessage = RakNet::GetTimeMS();
 		interpolation.SetTimestamp(RakNet::GetTimeMS());
 		interpolation.SetUpInterpolation(pos);
 		interpolation.SetPosition(pos);
+
 		VEH::SYNC syncData;
 		syncData.ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(this->GetEntity());
 		syncData.position = pos;
@@ -299,12 +303,14 @@ void CVehicle::SendSync()
 		syncData.gasOn = this->onGas;
 		syncData.horn = veh->hornState;
 		//syncData.horn = (*(byte*)(this->GetEntity() + 0x51C) == 1);
+
 		RakNet::BitStream bsOut;
 		bsOut.Write((RakNet::MessageID)ID_TIMESTAMP);
 		bsOut.Write(RakNet::GetTimeMS());
 		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_SYNC);
 		bsOut.Write(syncData);
+
 		g_CCore->GetNetwork()->SendServerMessage(&bsOut, LOW_PRIORITY, UNRELIABLE);
 		//g_CCore->GetLog()->AddLog("vehicle stream");
 	}

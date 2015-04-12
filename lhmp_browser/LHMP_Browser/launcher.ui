@@ -224,7 +224,7 @@ QToolTip {
      </property>
      <property name="styleSheet">
       <string notr="true">#frame_2 {
-	background: url(:/data/bg1.jpg);
+	background: url(:/data/bg1.png);
 
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
@@ -825,7 +825,7 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.002, stop:0 rgba(
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background: url(:/data/bg2.jpg);
+       <string notr="true">background: url(:/data/bg2.png);
 background-repeat: no-repeat;</string>
       </property>
       <property name="frameShape">
@@ -1220,7 +1220,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </property>
       <property name="styleSheet">
        <string notr="true">#frame_8 {
-	background: url(:/data/bg3.jpg)  551px 5550px;
+	background: url(:/data/bg3.png)  551px 5550px;
 
 	border: 1px solid rgba(0, 0, 0, 150);
 }</string>

@@ -1077,15 +1077,15 @@ void CGraphics::RenderScoreboard()
 	}
 	FillARGB(x, y, width, 20 + (20 * numLines), 0x60000000);
 	// Render navigation
-	g_CCore->GetGraphics()->GetFont()->DrawText("ID", x + 10, y + 10, 0xffffffff, true);
-	g_CCore->GetGraphics()->GetFont()->DrawText("Nickname", x + 40, y + 10, 0xffffffff, true);
-	g_CCore->GetGraphics()->GetFont()->DrawText("Ping", x + 335, y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("ID", x + (width * 0.02), y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Nickname", x + (width * 0.10), y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Ping", x + (width * 0.87), y + 10, 0xffffffff, true);
 	// Render local player
 	sprintf(buff,"%i",g_CCore->GetLocalPlayer()->GetOurID());
-	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, 20 + y + 10, 0xffffffff, true);
-	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetNick(), x + 40, 20 + y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + (width * 0.02), 20 + y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetNick(), x + (width * 0.10), 20 + y + 10, 0xffffffff, true);
 	sprintf(buff,"%i",g_CCore->GetLocalPlayer()->GetPing());
-	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 335, 20 + y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + (width * 0.87), 20 + y + 10, 0xffffffff, true);
 
 	//y = screen.y*0.4;
 	for(int ID = 0; ID < MAX_PLAYERS;ID++)
@@ -1095,10 +1095,10 @@ void CGraphics::RenderScoreboard()
 		if(ped->IsActive() == 1)
 		{
 			sprintf(buff,"%i",ID);
-			g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 10, 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
-			g_CCore->GetGraphics()->GetFont()->DrawText(ped->GetName(), x + 30, 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
+			g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + (width * 0.02), 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
+			g_CCore->GetGraphics()->GetFont()->DrawText(ped->GetName(), x + (width * 0.10), 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
 			sprintf(buff,"%i",ped->GetPing());
-			g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + 150, 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
+			g_CCore->GetGraphics()->GetFont()->DrawText(buff, x + (width * 0.87), 20 + y + 30 + (numRendered * 20), 0xffffffff, true);
 			numRendered++;
 		}
 	}

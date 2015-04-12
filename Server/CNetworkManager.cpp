@@ -389,9 +389,9 @@ void CNetworkManager::Pulse()
 					peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
 					
 					char buff[255];
-					sprintf(buff, "Player %s[%i]'s connected server.", player->GetNickname(), ID);
+					sprintf(buff, "Player %s connected to the server.", player->GetNickname());
 					this->SendMessageToAll(buff);
-					printf("Player %s[%i]'s connected server.\n", player->GetNickname(),ID);
+					printf("Player %s connected to the server.\n", player->GetNickname());
 
 
 					g_CCore->GetScripts()->onPlayerConnect(ID);

@@ -265,7 +265,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 					ped->SetDucking(syncData.isDucking);
 					ped->SetAiming(syncData.isAim);
 					ped->SetCarAnim(syncData.isCarAnim);
-					ped->SetTimeStamp(timestamp);
+					ped->SetTimeStamp(timestamp + ped->GetPing());
 					ped->SetPosition(syncData.position);
 					ped->SetUpInterpolation();
 					ped->UpdateGameObject();
@@ -1084,12 +1084,20 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			{
 				if (timestamp - veh->GetTimeStamp() > 0)
 				{
+					int ping = 0;
+
+					CPed* ped = g_CCore->GetPedPool()->Return(veh->GetSeat(0));
+
+					if (ped != NULL) {
+						ping = ped->GetPing();
+					}
+
 					//veh->SetVehiclePosition(syncData.position);
 					veh->SetRotation(syncData.rotation);
 					veh->SetWheelsAngle(syncData.wheels);
 					veh->SetSpeed(syncData.speed);
 					veh->SetHornState(syncData.horn);
-					veh->SetTimeStamp(timestamp);
+					veh->SetTimeStamp(timestamp + ping);
 					veh->SetSecondRot(syncData.secondRot);
 					veh->SetPosition(syncData.position);
 					veh->SetIsOnGas(syncData.gasOn);

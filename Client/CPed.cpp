@@ -11,6 +11,7 @@ CPed::CPed()
 	playerPos.x = -1985.97f;
 	playerPos.y = -5.03f;
 	playerPos.z = 4.28f;
+
 	actual = playerPos;
 	previous = playerPos;
 	isSpawned	= 0;
@@ -157,8 +158,9 @@ void CPed::UpdateGameObject()
 		{
 			if (this->IsOnFoot() && ped->playersCar == NULL && (this->IsCarAnim() == false))
 			{
-				Vector3D rot = this->GetRotation();
-				ped->object.rotation = rot;
+				//Vector3D rot = this->GetRotation();
+				//ped->object.rotation = rot;
+
 				ped->health = this->fHealth;
 				if (this->state != 163)
 					ped->animState = this->state;
@@ -231,8 +233,7 @@ void CPed::SetUpInterpolation()
 	this->playerPos.y += speedvector.y;
 	this->playerPos.z += speedvector.z;*/
 	interpolation.SetUpInterpolation(playerPos);
-
-
+	interpolation.SetUpInterpolationRot(rotation);
 }
 
 void CPed::SetAiming(byte bIs)
@@ -308,8 +309,12 @@ void CPed::Interpolate()
 			*(float*) (this->pedBase+0x2C) = this->playerPos.z;*/
 			//interpolationTick = actualtime;
 			PED* ped = (PED*) this->GetEntity();
+
 			this->playerPos = interpolation.Interpolate();
 			ped->object.position = this->playerPos;
+
+			ped->object.rotation = interpolation.InterpolateRot();
+			//this->SetRotation(ped->object.rotation);
 
 			/**(float*)(this->EntityBase + 0x24) = this->playerPos.x;
 			*(float*)(this->EntityBase + 0x28) = this->playerPos.y;

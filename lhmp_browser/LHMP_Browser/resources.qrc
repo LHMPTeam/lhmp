@@ -6,7 +6,7 @@
         <file>data/close_hover.png</file>
         <file>data/community.png</file>
         <file>data/community_hover.png</file>
-        <file>data/countryside.jpg</file>
+        <file>data/countryside.png</file>
         <file>data/direct.png</file>
         <file>data/direct_hover.png</file>
         <file>data/icon.png</file>
@@ -15,11 +15,11 @@
         <file>data/minimize_hover.png</file>
         <file>data/ping.png</file>
         <file>data/refresh_hover.png</file>
-        <file>data/race.jpg</file>
-        <file>data/city.jpg</file>
-        <file>data/bg2.jpg</file>
-        <file>data/bg3.jpg</file>
-        <file>data/bg1.jpg</file>
-        <file>data/unknown.jpg</file>
+        <file>data/race.png</file>
+        <file>data/city.png</file>
+        <file>data/bg2.png</file>
+        <file>data/bg3.png</file>
+        <file>data/bg1.png</file>
+        <file>data/unknown.png</file>
     </qresource>
 </RCC>

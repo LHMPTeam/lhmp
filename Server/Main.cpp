@@ -73,7 +73,6 @@ int main()
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 		g_CCore->GetLog()->AddNormalLog("Server has started...");
 
-
 		g_CCore->GetMasterServer()->AddServerToMaster();
 
 		// pulse CCore until server runs

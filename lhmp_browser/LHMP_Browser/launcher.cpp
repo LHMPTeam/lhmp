@@ -495,7 +495,7 @@ bool Launcher::RefreshServerList() {
         ui->label_10->setText("0");
         ui->label_12->setText("0");
 
-        ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/unknown.jpg);}");
+        ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/unknown.png);}");
 
         ui->label_6->setText("Unknown");
         ui->label_19->setText("Unknown");
@@ -673,7 +673,7 @@ void Launcher::ShowServerInfo() {
 
     if (serverCount > 0 && !refreshing) {
         QString name, gamemode, players, address, ping, map, playerList;
-        int rowCount;
+        int rowCount = 0;
 
         ui->btnPlay->setEnabled(true);
         ui->label_22->setVisible(true);
@@ -691,8 +691,6 @@ void Launcher::ShowServerInfo() {
         if (playerlist) {
             ui->tableWidget_2->setColumnWidth(0, 25);
             ui->tableWidget_2->setColumnWidth(1, 200);
-
-            rowCount = ui->tableWidget_2->rowCount();
 
             QStringList playersListSplit = playerList.split("|");
 
@@ -737,22 +735,22 @@ void Launcher::ShowServerInfo() {
         ui->label_23->setText(ping);
 
         if (map == "freeride") {
-            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/city.jpg);}");
+            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/city.png);}");
 
             ui->label_6->setText("Lost Heaven (City)");
             ui->label_19->setText("Lost Heaven (City)");
         } else if (map == "freekrajina") {
-            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/countryside.jpg);}");
+            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/countryside.png);}");
 
             ui->label_6->setText("Lost Heaven (Countryside)");
             ui->label_19->setText("Lost Heaven (Countryside)");
         } else if (map == "mise06-autodrom") {
-            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/race.jpg);}");
+            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/race.png);}");
 
             ui->label_6->setText("Lost Heaven Racing Circuit");
             ui->label_19->setText("Lost Heaven Racing Circuit");
         } else {
-            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/unknown.jpg);}");
+            ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/unknown.png);}");
 
             ui->label_6->setText("Unknown");
             ui->label_19->setText("Unknown");
