@@ -62,10 +62,9 @@ void CInterpolation::SetUpInterpolationRotVehicle(Vector3D rotation, Vector3D ro
 	this->actualRot.y = roundf(rotation.y * 100) / 100;
 	this->actualRot.z = roundf(rotation.z * 100) / 100;
 
-	// Only 10 for debug
-	this->actualRot2.x = roundf(rotation2.x * 10) / 10;
-	this->actualRot2.y = roundf(rotation2.y * 10) / 10;
-	this->actualRot2.z = roundf(rotation2.z * 10) / 10;
+	this->actualRot2.x = roundf(rotation2.x * 100) / 100;
+	this->actualRot2.y = roundf(rotation2.y * 100) / 100;
+	this->actualRot2.z = roundf(rotation2.z * 100) / 100;
 }
 
 Vector3D CInterpolation::Interpolate() {
