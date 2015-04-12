@@ -158,6 +158,7 @@ enum LHMPNetMessages
 	LHMP_VEHICLE_SET_POSITION,
 	LHMP_VEHICLE_SET_ROTATION,
 	LHMP_VEHICLE_SET_SPEED,
+	LHMP_VEHICLE_SET_FUEL,
 	LHMP_VEHICLE_TOGGLE_ROOF,
 	LHMP_VEHICLE_TOGGLE_ENGINE,
 	LHMP_VEHICLE_TOGGLE_SIREN,
@@ -297,6 +298,7 @@ namespace VEH
 		Vector3D	secondRot;
 		Vector3D	speed;
 		float		wheels;
+		float		fuel;
 		bool		horn;
 		bool		gasOn;
 	};

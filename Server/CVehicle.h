@@ -17,6 +17,7 @@ private:
 	Vector3D		secondRot;
 
 	float			damage;
+	float			fuel;
 	byte			shotdamage;
 
 	bool			onGas;
@@ -51,6 +52,9 @@ public:
 
 	void		SetHornState(bool);
 	bool		GetHornState();
+
+	void		SetFuel(float);
+	float		GetFuel();
 
 	void        SetSirenState(bool);
 	bool        GetSirenState();

@@ -291,7 +291,7 @@ SQInteger sq_playerChangeSkin(SQVM *vm)
 	if (skinID > 303)
 		return 1;
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
-	if (player != NULL)
+	if (player != NULL && player->InCar)
 	{
 		/*player->SetSkin(skinID);
 		//	BitStream bsOut;
@@ -1020,6 +1020,47 @@ SQInteger sq_vehicleGetRoofState(SQVM *vm)
 	{
 		bool state = (vehicle->GetRoofState() == 1);
 		sq_pushbool(vm, !state);
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_vehicleSetFuel(SQVM *vm)
+{
+	SQInteger	ID;
+	SQFloat		fuel;
+	sq_getinteger(vm, -2, &ID);
+	sq_getfloat(vm, -1, &fuel);
+
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+
+	if (veh != NULL)
+	{
+		veh->SetFuel(fuel);
+
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_VEHICLE_SET_FUEL);
+		bsOut.Write(ID);
+		bsOut.Write(fuel);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(veh->GetSeat(0)), false);
+		return 1;
+	}
+	return 1;
+}
+
+SQInteger sq_vehicleGetFuel(SQVM *vm)
+{
+	SQInteger ID;
+	sq_getinteger(vm, -1, &ID);
+
+	CVehicle* vehicle = g_CCore->GetVehiclePool()->Return(ID);
+
+	if (vehicle != NULL)
+	{
+		float fuel = vehicle->GetFuel();
+		sq_pushfloat(vm, fuel);
 		return 1;
 	}
 	sq_pushnull(vm);

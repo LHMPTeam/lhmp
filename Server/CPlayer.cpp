@@ -259,7 +259,7 @@ void	CPlayer::OnCarUpdate(SYNC::IN_CAR syncData)
 
 void	CPlayer::OnChangeSkin(int skin)
 {
-	if (skin > 302)
+	if (skin > 303)
 		return;
 	this->SetSkin(skin);
 
