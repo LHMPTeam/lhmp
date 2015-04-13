@@ -75,10 +75,7 @@ public:
 	// Sends initial info about pickups to new connected player
 	void						SendHimPickups(int);
 
-	// send initial info to masterlist when server starts
-	void						PostMasterlist(bool);
-	// Tick master
-	void						UpdateMasterlist();
+	void						UpdateConsoleName();
 
 	void						SendMessageToAll(char*);
 

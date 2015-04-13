@@ -103,6 +103,7 @@ void CNetworkManager::Pulse()
 			break;
 		case ID_CONNECTION_FINISHED:
 		{
+				g_CCore->GetChat()->ClearChat();
 				g_CCore->GetChat()->AddMessage("Lost Heaven Multiplayer started.");
 				char version[255];
 #if LHMP_VERSION_TYPE == 1
@@ -115,7 +116,7 @@ void CNetworkManager::Pulse()
 				sprintf(version, "Build time %s %s", __DATE__, __TIME__);
 				g_CCore->GetChat()->AddMessage(version);
 #endif
-				g_CCore->GetChat()->AddMessage("Connected to server.");	
+				g_CCore->GetChat()->AddMessage("Connected to the server.");
 				
 				RakNet::BitStream bsIn(packet->data+offset, packet->length-offset, false);
 				
@@ -156,17 +157,16 @@ void CNetworkManager::Pulse()
 			//printf("The server is full.\n");
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
-				g_CCore->GetChat()->AddMessage("We have been disconnected.");
+			g_CCore->GetChat()->AddMessage("Disconnected from the server.");
 				//printf("We have been disconnected.\n");
 			break;
 		case ID_CONNECTION_LOST:
-				g_CCore->GetChat()->AddMessage("Connection lost");
-				//printf("Connection lost.\n");
+			g_CCore->GetChat()->AddMessage("Connection with the server lost.");
 			break;
 		case ID_CONNECTION_ATTEMPT_FAILED:
-				g_CCore->GetChat()->AddMessage("Connection attempt failed. Trying reconnect.");
-				ConnectServer();
-				break;
+			g_CCore->GetChat()->AddMessage("Connection attempt failed, trying to reconnect.");
+			ConnectServer();
+			break;
 		case ID_GAME_ALIVE:
 		case ID_GAME_SYNC:
 			break;
@@ -895,7 +895,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bsIn.Read(status);
 
 			g_CCore->GetGame()->SetLockControls(status == 1);
-			g_CCore->GetGame()->UpdateControls();
+			//g_CCore->GetGame()->UpdateControls();
 
 		}
 			break;

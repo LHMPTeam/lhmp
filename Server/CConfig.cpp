@@ -33,6 +33,7 @@ void	CConfig::LoadConfig()
 	// is file opened
 	if (file != NULL)
 	{
+		printf("[Success] Cofig file opened\n");
 		// calculate file size
 		fseek(file, 0, SEEK_END);   // non-portable
 		int size = ftell(file);
@@ -55,6 +56,9 @@ void	CConfig::LoadConfig()
 		}
 		// close file
 		fclose(file);
+	}
+	else {
+		printf("[Error] Cofig file failed to load\n");
 	}
 }
 

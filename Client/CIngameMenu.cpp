@@ -33,7 +33,7 @@ bool CIngameMenu::isActive()
 void CIngameMenu::setActive(bool b)
 {
 	this->m_bIsActive = b;
-	g_CCore->GetGame()->UpdateControls();
+	//g_CCore->GetGame()->UpdateControls();		--- NO LONGER NEEDED
 }
 void CIngameMenu::Tick()
 {

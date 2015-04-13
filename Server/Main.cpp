@@ -54,7 +54,8 @@ int main()
 	CCore CCore;
 	g_CCore = &CCore;
 	// if server inits correctly
-	if (CCore.Init(server_port, max_players, startpos, server_name, mode, visible, websiteurl) == true)
+	int startupResult;
+	if ((startupResult = CCore.Init(server_port, max_players, startpos, server_name, mode, visible, websiteurl)) == STARTUP_SUCCESS)
 	{
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
@@ -87,6 +88,15 @@ int main()
 	{
 		// Server haven't set up correctly, wait for user imput and then terminate
 		g_CCore->GetLog()->AddNormalLog("Server initialization failed, server will shutdown");
+		switch (startupResult)
+		{
+		case STARTUP_NETWORK_FAILED:
+			g_CCore->GetLog()->AddNormalLog("Reason: network init has failed");
+			break;
+		case STARTUP_QUERY_FAILED:
+			g_CCore->GetLog()->AddNormalLog("Reason: query init has failed");
+			break;
+		}
 		std::cin.get();
 		std::cin.get();
 	}

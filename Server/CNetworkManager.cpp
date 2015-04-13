@@ -1,6 +1,5 @@
 #include "CNetworkManager.h"
 #include "CCore.h"
-#include "CTCP.h"
 #include <sstream>
 #include "TCPInterface.h"
 
@@ -27,101 +26,16 @@ CNetworkManager::~CNetworkManager()
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 	delete(slot);
 }
-void CNetworkManager::PostMasterlist(bool now){
-	int port = this->m_pServerPort;
-	CTCP *cTCP = new CTCP(port);
-	TCPInterface TCP;
-	if (TCP.Start(0, 0) != false)
-	{
-		SystemAddress server;
-		server = TCP.Connect("lh-mp.eu", 80, true);
-		if (server != UNASSIGNED_SYSTEM_ADDRESS)			// if we are connected
-		{
-			int maxplayers = this->m_pServerMaxPlayers;
-			std::string svrname = this->m_pSvrName;
-			for (size_t pos = svrname.find(' ');
-				pos != std::string::npos;
-				pos = svrname.find(' ', pos))
-			{
-				svrname.replace(pos, 1, "+");
-			}
 
-			char postRequest[2048] = "";
-			char data[1024] = "";
-			sprintf_s(data, "name=%s&pt=%d&ms=%d&mod=%s", svrname.c_str(), port, maxplayers, "");
-			sprintf_s(postRequest,
-				"POST /query/add.php HTTP/1.1\r\n"
-				"Content-Type: application/x-www-form-urlencoded\r\n"
-				"Content-Length: %d\r\n"
-				"Host: lh-mp.eu\r\n\r\n"
-				"%s\r\n", strlen(data), data);
-			TCP.Send(postRequest, strlen(postRequest), server, false);
-			RakNet::TimeMS StartTime = RakNet::GetTimeMS();
-			while (1)
-			{
-				RakNet::Packet *packet = TCP.Receive();
-				if (packet)
-				{
-					if (packet->data[13] == 'O'){
-						printf("Server successfully posted to master server.\n");
-					}
-					else{
-						printf("Posting to master server failed.\n");
-					}
-					break;
-				}
-				if (RakNet::GetTimeMS() - StartTime > 5000)
-				{
-					printf("Posting to master server failed.\n");
-					break;
-				}
-				Sleep(100);
-			}
-		}
-		else
-		{
-			printf("Connection failed");
-		}
-	}
-}
-void CNetworkManager::UpdateMasterlist(){
-	TCPInterface TCP;
-	if (TCP.Start(0, 0) == false)
-		return;
-	SystemAddress server;
-	server = TCP.Connect("lh-mp.eu", 80, true);
-	if (server != UNASSIGNED_SYSTEM_ADDRESS)			// if we are connected
-	{
-		std::string mod = this->m_pServerMode;
-		for (size_t pos = mod.find(' ');
-			pos != std::string::npos;
-			pos = mod.find(' ', pos))
-		{
-			mod.replace(pos, 1, "+");
-		}
-		char postRequest[2048] = "";
-		char data[1024] = "";
-		sprintf_s(data, "port=%d&players=%d&mod=%s", this->m_pServerPort, peer->NumberOfConnections(),mod.c_str());
-		sprintf_s(postRequest,
-			"POST /query/update.php HTTP/1.1\r\n"
-			"Content-Type: application/x-www-form-urlencoded\r\n"
-			"Content-Length: %d\r\n"
-			"Host: lh-mp.eu\r\n\r\n"
-			"%s\r\n", strlen(data), data);
-		TCP.Send(postRequest, strlen(postRequest), server, false);
-		while (TCP.ReceiveHasPackets() == false)
-			RakSleep(10);
-		RakNet::Packet* pack = TCP.Receive();
-	} else
-	{
-		printf("Connection to masterlist failed\n");
-	}
+void	CNetworkManager::UpdateConsoleName()
+{
 #ifdef _WIN32
 	char buff[255];
-	sprintf(buff, "%s:%u Players: %d/%d", this->m_pSvrName.c_str(), this->m_pServerPort, peer->NumberOfConnections(),this->m_pServerMaxPlayers);
+	sprintf(buff, "%s:%u Players: %d/%d", this->m_pSvrName.c_str(), this->m_pServerPort, peer->NumberOfConnections(), this->m_pServerMaxPlayers);
 	SetConsoleTitle(buff);
 #endif
 }
+
 bool CNetworkManager::Init(int port, int players,std::string startpos,std::string mode)
 {
 	m_pServerMaxPlayers = players;

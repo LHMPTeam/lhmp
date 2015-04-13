@@ -78,7 +78,9 @@ void CGame::ToggleCityMusic(byte state)
 
 	__asm
 	{
-		PUSH state;  Case 139 of switch 005BB320
+		XOR EAX,EAX
+		MOV AL, state
+		PUSH EAX;  Case 139 of switch 005BB320
 		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
 		MOV EAX, 0x00425390
 
@@ -175,6 +177,8 @@ void CGame::Tick()
 			}
 		}
 	}
+
+	g_CCore->GetKeyboard()->ProceedHoldingKeys();
 }
 void CGame::StopAndWaitForGame()
 {
@@ -809,7 +813,7 @@ void CGame::Respawn()
 void CGame::AfterRespawn()
 {
 	g_CCore->GetGame()->SetTrafficVisible(false);
-	g_CCore->GetGame()->UpdateControls();
+	//g_CCore->GetGame()->UpdateControls();		--- NO LONGER NEEDED
 	g_CCore->GetGame()->PoliceManager();
 
 	g_CCore->GetChat()->AddMessage("Respawned !");
@@ -3451,11 +3455,14 @@ bool CGame::isControlLocked()
 {
 	return this->bLockControls;
 }
+
 void CGame::SetLockControls(bool b)
 {
 	this->bLockControls = b;
-	this->UpdateControls();
+	//this->UpdateControls();
 }
+// NO LONGER USED, input is blocked in Main.cpp / PeekMessageHook
+/*
 void CGame::UpdateControls()
 {
 	DWORD pedbase = g_CCore->GetLocalPlayer()->GetEntity();
@@ -3463,7 +3470,7 @@ void CGame::UpdateControls()
 	{
 		*(byte*)(pedbase + 0xADA) = (g_CCore->GetChat()->IsTyping() || this->isControlLocked() || g_CCore->GetIngameMenu()->isActive());
 	}
-}
+}*/
 
 void CGame::SetTrafficVisible(bool baf)
 {
@@ -3668,6 +3675,10 @@ void CGame::PickupsTick()
 	}
 }
 
+byte CGame::IsTabMapEnabled()
+{
+	return *(BYTE*)0x00661A14;
+}
 
 int CGame::GetGameVersion()
 {

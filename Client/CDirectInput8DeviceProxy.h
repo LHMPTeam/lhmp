@@ -77,14 +77,18 @@ public:
 
 	STDMETHOD(GetDeviceState)(DWORD size, LPVOID data)
 	{
+		DWORD   dwNumItems = INFINITE;
 		HRESULT hr = p_DID->GetDeviceState(size, data);
+		((BYTE *)data)[DIK_TAB] = 0x00;
 		if(g_CCore != NULL)
 		{
-			if(p_bIsKeyboard)
+			// Clear the buffer so the game won't get any events.
+			if ((g_CCore->GetChat()->IsTyping() || g_CCore->GetGame()->isControlLocked() || g_CCore->GetIngameMenu()->isActive()))
 			{
-				g_CCore->GetKeyboard()->ProceedKeyboard(data);
-				((BYTE *) data)[DIK_TAB] = 0x00;  // TAB block (due to map render)   
-				//((BYTE *) data)[DIK_ESCAPE] = 0x00;  // ESC block (due to menu activate)
+				memset(data, 0, size);
+				p_DID->GetDeviceData(sizeof (DIDEVICEOBJECTDATA), NULL, &dwNumItems, 0);
+
+				return NULL;
 			}
 		}
 		return hr;

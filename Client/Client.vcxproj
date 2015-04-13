@@ -216,7 +216,6 @@
     <ClCompile Include="..\sdks\RakNet\WSAStartupSingleton.cpp" />
     <ClCompile Include="..\sdks\RakNet\_FindFirst.cpp" />
     <ClCompile Include="AntiCheat.cpp" />
-    <ClCompile Include="CCEGUI.cpp" />
     <ClCompile Include="CChat.cpp" />
     <ClCompile Include="CColoredText.cpp" />
     <ClCompile Include="CCore.cpp" />

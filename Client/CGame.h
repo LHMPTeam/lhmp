@@ -122,7 +122,7 @@ public:
 	bool ShouldKill;
 	bool isControlLocked();
 	void SetLockControls(bool b);
-	void UpdateControls();
+	//void UpdateControls();
 
 	void Tick();
 	void StopAndWaitForGame();
@@ -152,6 +152,7 @@ public:
 	static void ExplodeCar(DWORD);
 	static void LockCarDoor(DWORD, int, bool);
 	// else
+	static byte IsTabMapEnabled();
 	static void PlayGameSound(char[]);
 	static void ToggleCityMusic(byte);
 	static DWORD CreatePED();

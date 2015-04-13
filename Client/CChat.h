@@ -64,6 +64,8 @@ public:
 	void					SetBackground(bool);
 	bool					IsBackgroundActive();
 
+	void					ClearChat();
+
 	// chat rendering
 	void					RenderTexture(IDirect3DDevice8*);
 	void					DoRendering();

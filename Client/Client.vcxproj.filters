@@ -450,9 +450,6 @@
     <ClCompile Include="CNametags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CCEGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AntiCheat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

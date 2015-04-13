@@ -30,63 +30,37 @@ void CCore::OnSecondElapsed()
 	m_cNetworkManager.SendPingUpdate();
 	m_cPickupPool.Tick();
 }
-bool CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible,char* website)
+
+int CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible,char* website)
 {
 	if (m_cNetworkManager.Init(port, players, startpos, mode) == false)
-		return false;
+		return STARTUP_NETWORK_FAILED;
 	if (m_cQueryServer.StartServer(port + 1) == false)
-		return false;
+		return STARTUP_QUERY_FAILED;
 	m_cNetworkManager.SetServerName(svrname);
 	m_cNetworkManager.SetWebsite(website);
-	if (visible == 1)
-		m_cNetworkManager.PostMasterlist(true);
+	//if (visible == 1)
+//		m_cNetworkManager.PostMasterlist(true);
 
 	m_cConsole.Init();
-	return true;
+	return STARTUP_SUCCESS;
 }
 
 void CCore::ReloadGamemode()
 {
-	// at first tell everybody, that we are reloading mode (make them stop everything)
-	RakNet::BitStream bsOutR;
-	bsOutR.Write((RakNet::MessageID)ID_SERVERRELOAD);
-	this->GetNetworkManager()->GetPeer()->Send(&bsOutR, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-	
-
-	char tempname[500];
-	strcpy(tempname, this->GetGameMode()->GetName());
-	// reload gamemode
-	this->GetGameMode()->UnloadGameMode();
-
-	for (int i = 0; i < MAX_PLAYERS; i++)
-	{
-		this->GetPlayerPool()->Delete(i);
-	}
-
-	for (int i = 0; i < MAX_VEHICLES; i++)
-	{
-		this->GetVehiclePool()->Delete(i);
-	}
-
-	this->GetGameMode()->LoadGameMode(tempname);
-
-
-	this->GetScripts()->onServerInit();
-
-	// start
-	for (int i = 0; i < MAX_PLAYERS; i++)
-	{
-		Slot* slot = this->GetNetworkManager()->GetSlotID(i);
-		if (slot->isUsed)
-		{
-			this->GetFileTransfer()->SendFiles(slot->sa);
-		}
-	}
+	// Change mode to our current one -> reload
+	this->ChangeModeTo(this->GetGameMode()->GetName());
 }
 
 
 void	CCore::ChangeModeTo(char* newmode)
 {
+
+	this->GetLog()->AddNormalLog("Changing mode to: '%s'", newmode);
+	// it's neccessary to backup, @newmode might be rewritten during Unloadgamemode()
+	char modeToLoad[512];
+	strcpy(modeToLoad, newmode);
+
 	// at first tell everybody, that we are reloading mode (make them stop everything)
 	RakNet::BitStream bsOutR;
 	bsOutR.Write((RakNet::MessageID)ID_SERVERRELOAD);
@@ -96,17 +70,24 @@ void	CCore::ChangeModeTo(char* newmode)
 	// reload gamemode
 	this->GetGameMode()->UnloadGameMode();
 
+
+	// Delete all players
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
 		this->GetPlayerPool()->Delete(i);
 	}
 
+	// Delete all vehicles
 	for (int i = 0; i < MAX_VEHICLES; i++)
 	{
 		this->GetVehiclePool()->Delete(i);
 	}
 
-	this->GetGameMode()->LoadGameMode(newmode);
+	// reset the doors' pool
+	this->GetDoorPool()->Reset();
+
+	// everything is set to default, now load gamemode
+	this->GetGameMode()->LoadGameMode(modeToLoad);
 
 
 	this->GetScripts()->onServerInit();

@@ -372,9 +372,6 @@
     <ClCompile Include="..\sdks\RakNet\WSAStartupSingleton.cpp">
       <Filter>Source Files\RakNetSource</Filter>
     </ClCompile>
-    <ClCompile Include="CTCP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -925,9 +922,6 @@
     </ClInclude>
     <ClInclude Include="..\sdks\RakNet\XBox360Includes.h">
       <Filter>Header Files\RakNetSource</Filter>
-    </ClInclude>
-    <ClInclude Include="CTCP.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CPlayer.h">
       <Filter>Header Files</Filter>

@@ -148,9 +148,11 @@ void CChat::DoCommand(char str[])
 
 	if (strcmp(command, "exit") == 0 || strcmp(command, "quit") == 0 || strcmp(command, "q") == 0)
 	{
-		//g_CCore->GetNetwork()->GetPeer()->Shutdown(100,0,IMMEDIATE_PRIORITY);
-		//TerminateProcess(GetCurrentProcess(), 0);
 		g_CCore->ShutdownClient();
+	}
+	else if (strcmp(command, "clearchat") == 0)
+	{
+		this->ClearChat();
 	}
 	else if (strcmp(command, "setwidth") == 0)
 	{
@@ -299,22 +301,6 @@ void CChat::DoCommand(char str[])
 		}
 	}
 
-	else if (strcmp(command, "oldway") == 0)
-	{
-		g_CCore->GetGame()->SetDoorState("mrize dve 08", 2);
-
-	}
-	else if (strcmp(command, "toggledoor1") == 0)
-	{
-		g_CCore->GetGame()->SetDoorStateFacing("mrize dve 08", 2, 0);
-
-	}
-	else if (strcmp(command, "toggledoor2") == 0)
-	{
-		g_CCore->GetGame()->SetDoorStateFacing("mrize dve 08", 3, 0);
-
-	}
-	
 	else if (strcmp(command, "reloadmap") == 0)
 	{
 		g_CCore->GetGame()->ReloadMap();
@@ -880,7 +866,7 @@ bool CChat::IsTyping()
 void CChat::SetTyping(bool b)
 {
 	bIsTyping = b;
-	g_CCore->GetGame()->UpdateControls();
+	//g_CCore->GetGame()->UpdateControls(); --- NO LONGER NEEDED
 }
 
 
@@ -892,6 +878,25 @@ void CChat::SetBackground(bool bg)
 bool CChat::IsBackgroundActive()
 {
 	return m_bBackground;
+}
+
+
+// Clears all chat messages
+void	CChat::ClearChat()
+{
+	this->elementCount = 0;
+	CChatStack* pointer = this->ChatPoolStart;
+	CChatStack* current;
+	this->ChatPoolStart = NULL;
+	while (pointer != NULL)
+	{
+		current = pointer;
+		pointer = pointer->next;
+		delete current->text;
+		delete current;
+	}
+
+	this->shouldWeRerender();
 }
 
 void	CChat::RenderTexture(IDirect3DDevice8* device)

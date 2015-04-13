@@ -104,6 +104,7 @@ void CConsole::Tick()
 
 	else if (strcmp(command, "load") == 0)
 	{
+		g_CCore->GetLog()->AddNormalLog("Varlist[%d]: '%s'",strlen(varlist),varlist);
 		if (strlen(varlist) == 0)
 		{
 			g_CCore->GetLog()->AddNormalLog("Usage: load <gamemode>");

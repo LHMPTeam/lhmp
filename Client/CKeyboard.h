@@ -4,8 +4,7 @@
 	Purpose: proccess all input from keyboard
 
 	@author Romop5
-	@version 1.0 1/9/14
-	@todo clean code, ged rid of DirectInput
+	@version 13/4/15
 */
 
 #ifndef __C_KEYBOARD
@@ -15,32 +14,22 @@
 
 class CKeyboard
 {
-private:
-	bool				shiftPressed;
-	bool				capslockPressed;
-	bool				ignore;
 public:
 	CKeyboard();
-	unsigned char		keys[256];
-	void				ProceedKeyboard(void *);
-	void				OnKeyDown(unsigned char);	
-	void				OnKeyReleased(unsigned char);
-	void				OnKeyHolding(unsigned char);
-
-	void				ApplyHook();
-	void*				oldProc;
-	unsigned int		lastBACKSPACE;
-
-	int					GetScriptKey(unsigned char);
-
-	void				SetStates(bool shift, bool caps);
-	bool				isCapsLockPressed();
-	bool				isShiftPressed();
-	void				OnASCIIKeyDown(char);
-
-	// Raw input
-	
+	// returns whether ceratin key is down
+	bool				isHolding(unsigned short vk);
+	// callback which proceeds key which are being held
+	void				ProceedHoldingKeys();
+	// Called by raw input hook -> feeds are class with fresh input
 	void				ProccessMessage(LPMSG message);
+private:
+	void				OnKeyDown(unsigned short);
+	void				OnKeyReleased(unsigned short);
+	void				OnKeyHolding(unsigned short);
+	// used for IsHolding
+	bool				holdingKeys[256];
+	void				SetHolding(unsigned short key, bool isHolded);
+
 	// Returns NULL when conversion is invalid, otherwise a ASCII char
 	char				ConvertToASCII(unsigned short VK);
 };

@@ -321,7 +321,8 @@ void CVehicle::SendSync()
 
 void CVehicle::PlayerEnter(int ID, int seat)
 {
-	this->Seat[seat] = ID;
+	this->SetSeat(seat, ID);
+	//this->Seat[seat] = ID;
 	if (ID == g_CCore->GetLocalPlayer()->GetOurID())
 		g_CCore->GetLocalPlayer()->IDinCar = g_CCore->GetVehiclePool()->GetVehicleIdByBase(this->GetEntity());
 }
@@ -329,7 +330,8 @@ void CVehicle::PlayerExit(int ID)
 {
 	for (int i = 0; i < 4;i++)
 		if (Seat[i] == ID)
-			this->Seat[i] = -1;
+			this->SetSeat(i, -1);
+			//this->Seat[i] = -1;
 	if (ID == g_CCore->GetLocalPlayer()->GetOurID())
 		g_CCore->GetLocalPlayer()->IDinCar = -1;
 }
@@ -400,9 +402,15 @@ int		CVehicle::GetSeat(int ID)
 	return this->Seat[ID];
 }
 
-void CVehicle::SetSeat(int ID, int pID)
+void CVehicle::SetSeat(int seatID, int pID)
 {
-	this->Seat[ID] = pID;
+	this->Seat[seatID] = pID;
+
+	char buff[100];
+	sprintf(buff, "SetSeat seat %d ID %d", seatID, pID);
+	g_CCore->GetLog()->AddLog(buff);
+	sprintf(buff, "SetSeat seats %d %d %d %d", this->Seat[0], this->Seat[1], this->Seat[2], this->Seat[3]);
+	g_CCore->GetLog()->AddLog(buff);
 }
 
 void CVehicle::SetVehiclePosition(Vector3D pos)

@@ -231,7 +231,6 @@
     <ClCompile Include="CQueryServer.cpp" />
     <ClCompile Include="CScript.cpp" />
     <ClCompile Include="CScripts.cpp" />
-    <ClCompile Include="CTCP.cpp" />
     <ClCompile Include="CTickManager.cpp" />
     <ClCompile Include="CTimer.cpp" />
     <ClCompile Include="CTimerPool.cpp" />
@@ -423,7 +422,6 @@
     <ClInclude Include="CNetworkManager.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CPlayerPool.h" />
-    <ClInclude Include="CTCP.h" />
     <ClInclude Include="CTickManager.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CTimerPool.h" />

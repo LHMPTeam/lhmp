@@ -8,28 +8,24 @@ CDoorPool::CDoorPool()
 }
 void CDoorPool::Push(char* name, bool state,bool facing)
 {
-	if (start == NULL)
+	// loop through the pool to find out if the same element exists
+	// if not, create a new one 
+	sDoor* item = start;
+	while (item != NULL)
 	{
-		this->Add(name, state,facing);
-	} else
-	{
-		sDoor* item = start;
-		while (item != NULL)
+		// if element with same name exists
+		if (strcmp(item->name, name) == 0)
 		{
-			// names are equal => we found right element
-			if (strcmp(item->name, name) == 0)
-			{
-				item->state = state;
-				item->facing = facing;
-				return;
-			}
-			else {
-				item = item->nextDoor;
-			}
+			item->state = state;
+			item->facing = facing;
+			return;
 		}
-		// if there is no element with name, create a new one
-		this->Add(name, state,facing);
+		else {
+			item = item->nextDoor;
+		}
 	}
+	// if there is no element with name, create a new one
+	this->Add(name, state,facing);
 }
 
 void CDoorPool::Add(char* name, bool state, bool facing)
@@ -46,7 +42,22 @@ void CDoorPool::Add(char* name, bool state, bool facing)
 	}
 }
 
+// Returns the first element
 sDoor* CDoorPool::GetStart()
 {
 	return this->start;
+}
+
+// Deletes all pool elements
+void CDoorPool::Reset()
+{
+	sDoor* pointer = this->GetStart();
+	sDoor* current;
+	this->start = NULL;
+	while (pointer != NULL)
+	{
+		current = pointer;
+		pointer = pointer->nextDoor;
+		delete current;
+	}
 }

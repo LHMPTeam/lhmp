@@ -28,6 +28,13 @@ Purpose: core of server, main class
 #include "CQueryServer.h"
 #include "CMasterServer.h"
 
+enum STARTUP_ERRORS
+{
+	STARTUP_SUCCESS,
+	STARTUP_NETWORK_FAILED,
+	STARTUP_QUERY_FAILED
+};
+
 class CCore
 {
 private:
@@ -54,7 +61,7 @@ public:
 	~CCore();
 	// Init server with params
 	// Returns false if something went wrogn
-	bool	Init(int,int,std::string,std::string,std::string, int, char* website);
+	int		Init(int,int,std::string,std::string,std::string, int, char* website);
 	// Tick callback 
 	void	Pulse();
 	// Returns whether server is running

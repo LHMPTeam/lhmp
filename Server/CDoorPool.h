@@ -32,9 +32,15 @@ private:
 	void Add(char*, bool state, bool facing);
 public:
 	CDoorPool();
+
+	// Push new element (edits if element already exists)
 	void Push(char*, bool state,bool facing);
-	void Pop();
+	
+	// Returns the handle of the first pool element
 	sDoor* GetStart();
+
+	// this will completly delete all members of pool -> default, clean pool
+	void Reset();
 };
 
 #endif

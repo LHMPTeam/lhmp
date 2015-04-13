@@ -1194,7 +1194,7 @@ void OnChangemapRespawn()
 	if (g_CCore->GetNetwork()->IsConnected() == false)
 	{
 		g_CCore->GetGame()->SetTrafficVisible(false);
-		g_CCore->GetGame()->UpdateControls();
+		//g_CCore->GetGame()->UpdateControls();		// --- NO LONGER NEEDED
 		g_CCore->GetGame()->PoliceManager();
 		g_CCore->GetGame()->DisableBridges();
 		g_CCore->m_bIsRespawning = false;
@@ -1838,11 +1838,25 @@ void OnPlayerVehicleEngineStateChange(DWORD vehicle, BYTE state)
 	{
 		int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
 		int ourID = g_CCore->GetLocalPlayer()->GetOurID();
+
+		char buff[500];
+		sprintf(buff, "[Hook] OnEngineStateC %d %d 0x%p", vehID, ourID,vehicle);
+		g_CCore->GetLog()->AddLog(buff);
+
 		// if that vehicle is valid LHMP vehicle (that means synced)
 		if (vehID != -1)
 		{
 			CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+			if (veh == NULL)
+			{
+				g_CCore->GetLog()->AddLog("VEHICLE NOT FOUND !");
+				return;
+			}
 			int playerid = veh->GetPlayerSeat(0);
+
+			//sprintf(buff, "[Hook] OnEngineStateC %d 0x%p", playerid, veh->GetEntity());
+			sprintf(buff, "[Hook] OnEngineStateC %d | %d %d %d %d", playerid, veh->GetPlayerSeat(0), veh->GetPlayerSeat(1), veh->GetPlayerSeat(2), veh->GetPlayerSeat(3));
+			g_CCore->GetLog()->AddLog(buff);
 
 			// if localPlayer == driver of that vehicle
 			if (playerid == g_CCore->GetLocalPlayer()->GetOurID())
