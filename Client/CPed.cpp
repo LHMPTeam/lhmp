@@ -310,10 +310,12 @@ void CPed::Interpolate()
 			//interpolationTick = actualtime;
 			PED* ped = (PED*) this->GetEntity();
 
+			//this->playerPos = interpolation.Interpolate();
 			this->playerPos = interpolation.Interpolate();
-			ped->object.position = this->playerPos;
+			this->rotation = interpolation.InterpolateRot();
 
-			ped->object.rotation = interpolation.InterpolateRot();
+			ped->object.position = this->playerPos;
+			ped->object.rotation = this->rotation;
 			//this->SetRotation(ped->object.rotation);
 
 			/**(float*)(this->EntityBase + 0x24) = this->playerPos.x;

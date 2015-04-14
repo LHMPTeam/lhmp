@@ -75,13 +75,13 @@ bool CVehicle::IsActive()
 
 void CVehicle::UpdateGameObject()
 {
-	if (this->GetEntity() != NULL)
+	/*if (this->GetEntity() != NULL)
 	{
 		if (Seat[0] != g_CCore->GetLocalPlayer()->GetOurID())
 		{
 			//g_CCore->GetLog()->AddLog("VehicleUpdate");
 			//g_CCore->GetGame()->SetCarPosition(this->GetEntity(), this->GetPosition());
-			g_CCore->GetGame()->SetCarRotation(this->GetEntity(), this->GetRotation());
+			//g_CCore->GetGame()->SetCarRotation(this->GetEntity(), interpolation.InterpolateRotVehicle());
 			
 		}
 	}
@@ -110,6 +110,7 @@ void CVehicle::UpdateGameObject()
 
 void CVehicle::SetUpInterpolation()
 {
+	this->interpolation.SetTimestamp(RakNet::GetTimeMS());
 	this->interpolation.SetUpInterpolation(this->playerPos);
 	this->interpolation.SetUpInterpolationRotVehicle(this->rotation, this->secondRot);
 }
