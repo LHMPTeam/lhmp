@@ -24,7 +24,7 @@ CInterpolation::CInterpolation() {
 }
 
 void CInterpolation::SetUpInterpolation(Vector3D position) {
-	RakNet::TimeMS difference = (this->timestamp) - (this->timeLastMessage);
+	/*RakNet::TimeMS difference = (this->timestamp) - (this->timeLastMessage);
 
 	if (difference > 1) {
 		this->timeDiff = difference;
@@ -37,7 +37,18 @@ void CInterpolation::SetUpInterpolation(Vector3D position) {
 		this->actualPos.x = roundf(position.x * 100) / 100;
 		this->actualPos.y = roundf(position.y * 100) / 100;
 		this->actualPos.z = roundf(position.z * 100) / 100;
-	}
+	}*/
+
+	this->timeDiff = (this->timestamp) - (this->timeLastMessage);
+	this->timeLastMessage = this->timestamp;
+	this->interpolationTick = RakNet::GetTimeMS();
+
+	this->previousPos = this->actualPos;
+
+	// Rounding lessens jittery bouncing
+	this->actualPos.x = roundf(position.x * 100) / 100;
+	this->actualPos.y = roundf(position.y * 100) / 100;
+	this->actualPos.z = roundf(position.z * 100) / 100;
 }
 
 void CInterpolation::SetUpInterpolationRot(Vector3D rotation) {

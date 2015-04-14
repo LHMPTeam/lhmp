@@ -311,11 +311,18 @@ void CPed::Interpolate()
 			PED* ped = (PED*) this->GetEntity();
 
 			//this->playerPos = interpolation.Interpolate();
+			
+			/*
+			Enable this if scripting commands break, caused some visual sync problems though
 			this->playerPos = interpolation.Interpolate();
 			this->rotation = interpolation.InterpolateRot();
 
 			ped->object.position = this->playerPos;
-			ped->object.rotation = this->rotation;
+			ped->object.rotation = this->rotation;*/
+
+			ped->object.position = interpolation.Interpolate();
+			ped->object.rotation = interpolation.InterpolateRot();
+
 			//this->SetRotation(ped->object.rotation);
 
 			/**(float*)(this->EntityBase + 0x24) = this->playerPos.x;
