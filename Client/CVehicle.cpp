@@ -398,9 +398,10 @@ float	CVehicle::GetWheelsAngle()
 	return this->wheels;
 }
 
-int		CVehicle::GetSeat(int ID)
+// Returns the player, sitting at @seatID seat or -1 (if it's empty)
+int		CVehicle::GetSeat(int seatID)
 {
-	return this->Seat[ID];
+	return this->Seat[seatID];
 }
 
 void CVehicle::SetSeat(int seatID, int pID)
@@ -531,12 +532,13 @@ void	CVehicle::SetIsOnGas(bool gas)
 }
 
 
+// Returns the seat that player is sitting at or -1 if he isn't in car
 int		CVehicle::GetPlayerSeat(int pp)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (this->Seat[i] != -1)
-			return Seat[i];
+		if (this->Seat[i] == pp)
+			return i;
 	}
 	return -1;
 }

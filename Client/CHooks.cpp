@@ -1852,10 +1852,10 @@ void OnPlayerVehicleEngineStateChange(DWORD vehicle, BYTE state)
 				g_CCore->GetLog()->AddLog("VEHICLE NOT FOUND !");
 				return;
 			}
-			int playerid = veh->GetPlayerSeat(0);
+			int playerid = veh->GetSeat(0);
 
 			//sprintf(buff, "[Hook] OnEngineStateC %d 0x%p", playerid, veh->GetEntity());
-			sprintf(buff, "[Hook] OnEngineStateC %d | %d %d %d %d", playerid, veh->GetPlayerSeat(0), veh->GetPlayerSeat(1), veh->GetPlayerSeat(2), veh->GetPlayerSeat(3));
+			//sprintf(buff, "[Hook] OnEngineStateC %d | %d %d %d %d", playerid, veh->GetPlayerSeat(0), veh->GetPlayerSeat(1), veh->GetPlayerSeat(2), veh->GetPlayerSeat(3));
 			g_CCore->GetLog()->AddLog(buff);
 
 			// if localPlayer == driver of that vehicle
