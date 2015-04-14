@@ -103,10 +103,6 @@ Vector3D CInterpolation::InterpolateRotVehicle() {
 	this->InterRotation.y = Lerp(this->previousRot.y, this->actualRot.y, t);
 	this->InterRotation.z = Lerp(this->previousRot.z, this->actualRot.z, t);
 
-	this->InterRotation2.x = Lerp(this->previousRot2.x, this->actualRot2.x, t);
-	this->InterRotation2.y = Lerp(this->previousRot2.y, this->actualRot2.y, t);
-	this->InterRotation2.z = Lerp(this->previousRot2.z, this->actualRot2.z, t);
-
 	return (this->InterRotation);
 }
 
@@ -136,5 +132,7 @@ void CInterpolation::SetPosition(Vector3D pos) {
 }
 
 float CInterpolation::Lerp(float v0, float v1, float t) {
+	if (t > 1) t = 1;
+
 	return (1 - t) * v0 + t * v1;
 }

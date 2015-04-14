@@ -534,8 +534,8 @@ int		CVehicle::GetPlayerSeat(int pp)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (this->Seat[i] == pp)
-			return i;
+		if (this->Seat[i] != -1)
+			return Seat[i];
 	}
 	return -1;
 }
