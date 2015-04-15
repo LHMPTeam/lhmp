@@ -144,6 +144,7 @@ public:
 	static void CarUpdate(DWORD, Vector3D, Vector3D);
 	static void	CarRepair(DWORD);
 	static void CarLock(DWORD, BYTE);
+	static void SetPlayerPosition(DWORD PED, Vector3D position);
 	static void GivePlayerToCarFast(DWORD, int, int);
 	static void GivePlayerToCar(DWORD, int, int);
 	static void KickPlayerFromCar(DWORD, int);
