@@ -57,6 +57,7 @@ private:
     bool WriteConfig();
     bool CheckForUpdates();
     bool RefreshServerList();
+    bool AskPatchPermission();
     void PopulateServerList();
     bool JoinGame(QString address);
     void SetMafiaPath();

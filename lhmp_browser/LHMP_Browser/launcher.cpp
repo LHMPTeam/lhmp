@@ -22,8 +22,8 @@ CLHMPQuery* query;
 
 ServerInfo queryResultServers[1024];
 UpdateFile files[128];
-int queryCount, queryCountMax, serverCount, playerCount;
-bool refreshing = false, playerlist = false, masterDown = false;
+int queryCount, queryCountMax, serverCount, playerCount, allowPatch = -1, needsUpdatingCount = 0;
+bool refreshing = false, playerlist = false, masterDown = false, noPlayers = false, patchQuestionRan = false, updated = false;
 
 void queryCallback(unsigned int serverID, void* data, unsigned char reasonID)
 {
@@ -246,6 +246,8 @@ void Launcher::PopulateServerList() {
             ui->tableWidget->setItem(rowCount, 0, new QTableWidgetItem("Error contacting the master server, please try again later."));
         } else {
             ui->tableWidget->setItem(rowCount, 0, new QTableWidgetItem("No servers found."));
+
+            noPlayers = true;
         }
     }
 
@@ -278,6 +280,10 @@ void Launcher::replyFinished(QNetworkReply *reply)
             if (launcherVersion != version) {
                 // Self update
                 manager->get(QNetworkRequest(QString("%1setup.exe").arg(filesURL)));
+
+                ui->label_3->setText("Downloading new launcher update...");
+            } else {
+                ui->label_3->setText("You are running the latest version.");
             }
 
             // Check client version
@@ -304,16 +310,30 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
                 name = fileDetails[0].toString();
                 hash = fileDetails[1].toString();
-                hashLocal = FileChecksum(QString("%1/%2").arg(path).arg(name));
+
+                QString location = QString("%1%2").arg(path).arg(name);
+
+                if (name == "loader.exe" || name == "Game.exe" || name == "LS3DF.dll") {
+                    location = QString("%1/%2").arg(mafiaPath).arg(name);
+                }
+
+                hashLocal = FileChecksum(location);
 
                 // Download and update
                 if (hashLocal.isEmpty() || hashLocal != hash) {
                     manager->get(QNetworkRequest(QString("%1%2").arg(filesURL).arg(name)));
+
+                    needsUpdatingCount++;
+
+                    qDebug() << location << name << hashLocal << hash << QString("%1%2").arg(filesURL).arg(name);
                 }
             }
 
-            // todo
-            ui->label_3->setText("You are running the latest version.");
+            if (needsUpdatingCount == 0) {
+                updated = true;
+            } else {
+                ui->label_3->setText("Downloading new updates...");
+            }
 
             RefreshServerList();
         } else {
@@ -344,6 +364,71 @@ void Launcher::replyFinished(QNetworkReply *reply)
                 process->startDetached(QString("%1/setup.exe").arg(path));
 
                 exit(0);
+            } else if (fileName == "Game.exe") {
+                if (!QFile(QString("%1/%2.bk").arg(mafiaPath).arg(fileName)).exists()) {
+                    if (allowPatch == -1) {
+                        AskPatchPermission();
+                    }
+
+                    if (allowPatch == 1) {
+                        QFile::copy(QString("%1/%2").arg(mafiaPath).arg(fileName), QString("%1/%2.bk").arg(mafiaPath).arg(fileName));
+
+                        QString path = QString("%1/%2").arg(mafiaPath).arg(fileName);
+
+                        QFile *file = new QFile(path);
+
+                        if(file->open(QFile::WriteOnly)) {
+                            file->write(reply->readAll());
+
+                            file->flush();
+                            file->close();
+                        }
+
+                        delete file;
+
+                        needsUpdatingCount--;
+                    }
+                }
+            } else if (fileName == "LS3DF.dll") {
+                if (!QFile(QString("%1/%2.bk").arg(mafiaPath).arg(fileName)).exists()) {
+                    if (allowPatch == -1) {
+                        AskPatchPermission();
+                    }
+
+                    if (allowPatch == 1) {
+                        QFile::copy(QString("%1/%2").arg(mafiaPath).arg(fileName), QString("%1/%2.bk").arg(mafiaPath).arg(fileName));
+
+                        QString path = QString("%1/%2").arg(mafiaPath).arg(fileName);
+
+                        QFile *file = new QFile(path);
+
+                        if(file->open(QFile::WriteOnly)) {
+                            file->write(reply->readAll());
+
+                            file->flush();
+                            file->close();
+                        }
+
+                        delete file;
+
+                        needsUpdatingCount--;
+                    }
+                }
+            } else if (fileName == "loader.exe") {
+                QString path = QString("%1/%2").arg(mafiaPath).arg(fileName);
+
+                QFile *file = new QFile(path);
+
+                if(file->open(QFile::WriteOnly)) {
+                    file->write(reply->readAll());
+
+                    file->flush();
+                    file->close();
+                }
+
+                delete file;
+
+                needsUpdatingCount--;
             } else {
                 QString path = QString("%1/%2/%3").arg(mafiaPath).arg(filesPath).arg(fileName);
 
@@ -357,15 +442,53 @@ void Launcher::replyFinished(QNetworkReply *reply)
                 }
 
                 delete file;
+
+                needsUpdatingCount--;
             }
         }
     } else {
         ui->label_3->setText("Could not contact the update server, visit lh-mp.eu for support.");
 
+        updated = true;
+
         qDebug() << reply->errorString();
     }
 
+    qDebug() << reply->url();
+
+    if (needsUpdatingCount == 0) {
+        updated = true;
+
+        ui->label_3->setText("You are running the latest version.");
+    }
+
     reply->deleteLater();
+}
+
+bool Launcher::AskPatchPermission() {
+    if (patchQuestionRan) return 0;
+
+    patchQuestionRan = true;
+
+    QMessageBox msg;
+    msg.setWindowTitle("Lost Heaven Multiplayer");
+    msg.setText("You must have Mafia version 1.0 installed in order to play Lost Heaven Multiplayer.");
+    msg.setInformativeText("Do you want to install the needed version? A backup of yoru original files will be kept.");
+    msg.setIcon(QMessageBox::Question);
+    msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msg.setDefaultButton(QMessageBox::Ok);
+
+    int ret = msg.exec();
+
+    if (ret == QMessageBox::Cancel) {
+        allowPatch = 0;
+
+        updated = true;
+    } else {
+        allowPatch = 1;
+    }
+
+    return ret;
 }
 
 bool Launcher::ReadConfig() {
@@ -480,6 +603,7 @@ bool Launcher::RefreshServerList() {
         queryCountMax = -1;
 
         masterDown = false;
+        noPlayers = false;
 
         query->queryMasterlist(serversURL.toUtf8());
 
@@ -569,7 +693,7 @@ void Launcher::on_pushButton_6_clicked()
     bool result;
     QString address = QInputDialog::getText(this, tr("Connect to server"), tr("Server address to connect to (IP:PORT):"), QLineEdit::Normal, tr("127.0.0.1:27015"), &result);
 
-    if (result && !address.isEmpty()) {
+    if (result && !address.isEmpty() && updated) {
         JoinGame(address);
     }
 }
@@ -638,6 +762,8 @@ void Launcher::SetMafiaPath() {
 }
 
 bool Launcher::JoinGame(QString address) {
+    if (address.isEmpty()) return false;
+
     QStringList addressSplit = address.split(":");
 
     QString pathExecutable = mafiaPath;
@@ -675,7 +801,7 @@ void Launcher::ShowServerInfo() {
         QString name, gamemode, players, address, ping, map, playerList;
         int rowCount = 0;
 
-        ui->btnPlay->setEnabled(true);
+        if (updated) ui->btnPlay->setEnabled(true);
         ui->label_22->setVisible(true);
         ui->label_23->setVisible(true);
         ui->line_7->setVisible(true);
@@ -773,7 +899,9 @@ void Launcher::on_pushButton_5_clicked()
 
 void Launcher::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
-    JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text());
+    if (!masterDown && !noPlayers && updated) {
+        JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text());
+    }
 }
 
 void Launcher::on_label_21_linkActivated(const QString &link)
