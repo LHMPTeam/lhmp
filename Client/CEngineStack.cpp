@@ -122,6 +122,23 @@ void CEngineStack::DoMessage()
 			g_CCore->GetGame()->DeletePed(start->data);
 		}
 			break;
+		case CLIENT_ENGINESTACK::ES_PLAYERSETPOS:
+		{
+			g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_PLAYERSETPOS", LOG_NORMAL);
+			ENGINE_STACK::PLAYER_SETPOS* pw = (ENGINE_STACK::PLAYER_SETPOS*) start->data;
+			// if it's local player
+			if (pw->ID == g_CCore->GetLocalPlayer()->GetOurID())
+			{
+				g_CCore->GetGame()->SetPlayerPosition(g_CCore->GetLocalPlayer()->GetEntity(), pw->pos);
+			}
+			else {
+				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
+				if (ped != NULL)
+				{
+					g_CCore->GetGame()->SetPlayerPosition(ped->GetEntity() , pw->pos);
+				}
+			}
+		}break;
 		case CLIENT_ENGINESTACK::ES_CHANGESKIN:
 			{
 				g_CCore->GetLog()->AddLog("CLIENT_ENGINESTACK::ES_CHANGESKIN", LOG_NORMAL);

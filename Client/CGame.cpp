@@ -895,6 +895,25 @@ void CGame::AfterRespawn()
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED);
 
 	g_CCore->GetEngineStack()->AddMessage(ES_CHANGESKIN, g_CCore->GetLocalPlayer()->GetOurID());
+
+
+	/*// Test
+	DWORD poolStart = *(DWORD*)((*(DWORD*)0x0065115C) + 0x38);
+	DWORD poolEnd = *(DWORD*)((*(DWORD*)0x0065115C) + 0x3C);
+	while (poolStart != poolEnd)
+	{
+		OBJECT* obj = (OBJECT*)*(DWORD*)poolStart;
+		if (obj->objectType == 0x1B) {
+			g_CCore->GetChat()->AddMessage("Deleting PED which is in pool");
+			// swap it
+			poolStart = poolEnd;
+			poolEnd--;
+			*(DWORD*)((*(DWORD*)0x0065115C) + 0x3C) -= 4;
+			g_CCore->GetGame()->DeletePed((DWORD)obj);
+		}
+		poolStart += 4;
+	}
+	*/
 }
 
 void CGame::ThrowAwayWeapon()
@@ -1602,6 +1621,15 @@ void CGame::DeletePed(DWORD PED)
 
 		g_CCore->GetGame()->DeleteAllWeapons(PED);
 
+		/*// testing - crashed, however, it surely works ingame - fucking ped spawning
+		_asm {
+			PUSH PED;  object to find(car / ped)
+				MOV EAX, DWORD PTR DS : [0x006F9464]	// static pool pointer
+				MOV ECX, EAX
+				MOV EAX, 0x005E3920
+				CALL EAX
+		}
+		return;*/
 
 		DWORD ped_frame = (DWORD)deletingPed->object.frame;
 		if (ped_frame)
@@ -1683,7 +1711,15 @@ void CGame::DeleteCar(DWORD PED)
 		g_CCore->GetGame()->KickPlayerFromCarFast((DWORD)localis);
 	}
 
-	_asm{
+	// Testing part
+	_asm {
+		PUSH PED;  object to find(car / ped)
+		MOV EAX, DWORD PTR DS : [0x006F9464]	// static pool pointer
+		MOV ECX, EAX
+		MOV EAX, 0x005E3920
+		CALL EAX 
+	}
+	/*_asm{
 		MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
 			PUSH PED
 			MOV EAX, 0x00425390
@@ -1701,7 +1737,7 @@ void CGame::DeleteCar(DWORD PED)
 			MOV ECX, EAX
 			MOV EAX, 0x005E3400
 			CALL EAX; Game.005E3400
-	}
+	}*/
 }
 
 DWORD CGame::FindFrame(char* frame)
@@ -2495,6 +2531,70 @@ void CGame::CarLock(DWORD vehicle, BYTE locked)
 			PUSH dwLocked
 			MOV EAX, 0x00470A60
 			CALL EAX
+	}
+}
+
+
+void CGame::SetPlayerPosition(DWORD ped, Vector3D position)
+{
+	OBJECT* pedObj = (OBJECT*) ped;
+	if (ped == NULL)
+		return;
+	if (pedObj->frame == NULL)
+		return;
+
+	DWORD pFrame = (DWORD)pedObj->frame;
+	Vector3D* objPos = &pedObj->position;
+	// set obj. position
+	pedObj->position = position;
+	Vector3D strangeVect;
+	strangeVect.x = 0.0f;
+	strangeVect.y = 1.0f;
+	strangeVect.z = 0.0f;
+
+	// used in code to store some temporary info
+	Vector3D result;
+	
+	_asm {
+		PUSH objPos
+			MOV ECX, pFrame
+			MOV EAX, 0x0045F000
+			CALL EAX; Game.0045F000;  SetFramePosition ?
+			MOV EAX, pFrame
+			MOV ECX, DWORD PTR DS : [EAX]
+			PUSH EAX
+			CALL DWORD PTR DS : [ECX + 0x18]; get frame vector
+			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			MOV EAX, pFrame
+			PUSH EAX
+			MOV EAX, 0x004253A0
+			CALL EAX; Game.004253A0;  GetSomeObject
+			MOV ECX, EAX
+			MOV EAX, 0x005C8600
+			CALL EAX; Game.005C8600;  UpdateObject ?
+
+
+			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			MOV EAX, 0x004253A0
+			CALL EAX; Game.004253A0
+			MOV EDI, EAX;  EDI = kind of object(class) ?
+			MOV EBX, DWORD PTR DS : [EDI]
+			// EAX contains vector {0,1.0,0}
+			LEA EAX, strangeVect
+			PUSH EAX; (vector2)
+			LEA EAX, result
+			PUSH EAX; (vector1)
+			MOV ECX, pFrame
+			MOV EAX, 0x00425200
+			CALL EAX; Game.00425200;  returns frame's vector
+			MOV ECX, EAX
+			MOV EAX, 0x00424FD0
+			CALL EAX; Game.00424FD0;  it does something with those 2 vectors vector1 = (ECX vector + vector2) // crashes here
+			PUSH EAX; 		// push finalised vector
+			MOV EAX, pFrame
+			PUSH EAX;  Frame
+			PUSH EDI;  that strange object(class or what)
+			CALL DWORD PTR DS : [EBX + 0xBC] // ebx class or what
 	}
 }
 

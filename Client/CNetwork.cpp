@@ -698,12 +698,16 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			if (ID == g_CCore->GetLocalPlayer()->GetOurID())
 			{
 				g_CCore->GetLocalPlayer()->SetLocalPos(pos);
+				g_CCore->GetGame()->SetPlayerPosition(g_CCore->GetLocalPlayer()->GetEntity(), pos);
 			}
 			else
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(ID);
 				if (ped != NULL)
+				{
 					ped->SetPosition(pos);
+					g_CCore->GetGame()->SetPlayerPosition(ped->GetEntity(), pos);
+				}
 				
 			}
 

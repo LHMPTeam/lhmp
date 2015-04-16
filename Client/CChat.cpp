@@ -240,12 +240,49 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->GetChat()->SetBackground(!this->IsBackgroundActive());
 	}
+	else if (strcmp(command, "loop") == 0)
+	{
+		DWORD poolStart = *(DWORD*)((*(DWORD*)0x0065115C) + 0x38);
+		DWORD poolEnd = *(DWORD*)((*(DWORD*)0x0065115C) + 0x3C);
+		char buff[500];
+		sprintf(buff, "0x%p 0x%p", poolStart, poolEnd);
+		g_CCore->GetChat()->AddMessage(buff);
+		while (poolStart != poolEnd)
+		{
+			OBJECT* obj = (OBJECT*) *(DWORD*)poolStart;
+			if (obj->objectType == 0x2)
+			{
+				g_CCore->GetChat()->AddMessage("We've got here localplayer");
+			}
+			else if (obj->objectType == 0x4) {
+					g_CCore->GetChat()->AddMessage("We've got here car");
+			}
+			else if (obj->objectType == 0x1B) {
+				g_CCore->GetChat()->AddMessage("We've got here PED");
+			}
+			/*//g_obj->objectType
+			g_CCore->GetChat()->AddMessage("Object type:" + obj->objectType);
+			*/
+			poolStart += 4;
+		}
+	}
 	else if (strcmp(command, "getpos") == 0)
 	{
 		char buffer[255] = "";
 		Vector3D pos = g_CCore->GetLocalPlayer()->GetLocalPos();
 		sprintf(buffer, "PlayerPos: [X: %f] [Y: %f] [Z: %f]", pos.x,pos.y,pos.z);
 		g_CCore->GetChat()->AddMessage(buffer);
+	}
+	else if (strcmp(command, "testpos") == 0)
+	{
+		ENGINE_STACK::PLAYER_SETPOS* data = new ENGINE_STACK::PLAYER_SETPOS();
+		data->ID = g_CCore->GetLocalPlayer()->GetOurID();
+		data->pos.x = -1900.0f;
+		data->pos.y = 20.0f;
+		data->pos.z = 100;
+
+		//g_CCore->GetEngineStack()->AddMessage(ES_PLAYERSETPOS, (DWORD)data);
+		g_CCore->GetGame()->SetPlayerPosition(g_CCore->GetLocalPlayer()->GetEntity(), data->pos);
 	}
 	else if (strcmp(command, "crash") == 0)
 	{
