@@ -29,7 +29,7 @@ void	CKeyboard::ProceedHoldingKeys()
 			g_CCore->GetGraphics()->mapScale *= 0.9f;
 		g_CCore->GetGraphics()->mapScale = Tools::Clamp(g_CCore->GetGraphics()->mapScale, 0.5f, 2.0f);
 	}
-	if (this->isHolding(VK_TAB))
+	if (this->isHolding(VK_TAB) && g_CCore->GetGame()->IsTabMapEnabled())
 	{
 		g_CCore->GetGraphics()->renderMap = 1;
 	}

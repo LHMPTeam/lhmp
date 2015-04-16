@@ -51,6 +51,8 @@ void CCore::Run()
 	byte drivebyshootfix[] = "\x3E\xD9\x5C\x24\x40\x90";
 
 
+	byte disableInventoryOnFoot[] = "\xE9\xF1\x00\x00\x00";
+	byte disableInventoryInVehicle[] = "\xE9\x9E\x00\x00\x00";
 
 	PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
 
@@ -59,6 +61,9 @@ void CCore::Run()
 	// TODO: seems to be useless as we have disabled ESC menu and any way to 
 	//PatchBytes(0x005FA171, nopEndGame);
 
+	/*------------------ DISAVLE INVENTORY ---------------*/
+	PatchBytes(0x004C7B04, disableInventoryOnFoot);
+	PatchBytes(0x004C99C8, disableInventoryInVehicle);
 	/*----------------- Prevent ESC menu trigger                      ----------------------------*/
 	PatchBytes(0x005F9709, disableESCmenu);
 
