@@ -66,7 +66,11 @@ void CNametags::Tick()
 						// now render player's nick (scaled using ratio)
 						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio) - barHeight - 5, screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
 							
-
+						//bool state = (*(byte*)(ped->GetEntity() + 0x5E0) == 1);
+						/*byte state = ped->GetState();
+						char buff[500];
+						sprintf(buff, "State: %x", state);
+						g_CCore->GetGraphics()->D3DDrawText(buff,screen.x,screen.y,0xFFFF0000,true);*/
 					}
 				}
 			}

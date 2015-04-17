@@ -347,7 +347,8 @@ enum CLIENT_ENGINESTACK
 	ES_DELETEPICKUP,
 	ES_SETPICKUPVISIBLE,
 	// intern
-	ES_SERVERRELOAD
+	ES_SERVERRELOAD,
+	ES_PLAYERSETPOS
 };
 namespace ENGINE_STACK
 {
@@ -419,6 +420,12 @@ namespace ENGINE_STACK
 		int ID;
 		int reason;
 		int part;
+	};
+
+	struct PLAYER_SETPOS
+	{
+		int ID;
+		Vector3D pos;
 	};
 }
 

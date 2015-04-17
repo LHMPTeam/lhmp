@@ -338,6 +338,14 @@ DWORD CGame::CreateCar(int skin, Vector3D position, Vector3D rotation)
 	DWORD entity = g_CCore->GetGame()->CreateCar(skin);
 	if (entity)
 	{
+		// add car to radar pool
+		_asm {
+			PUSH -1
+			PUSH ESI; car
+			MOV ECX, 0x00658330
+			MOV EAX,0x0054C630
+			CALL EAX
+		}
 		g_CCore->GetGame()->CarUpdate(entity, position , rotation);
 		return entity;
 	}

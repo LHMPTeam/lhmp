@@ -170,6 +170,10 @@ void CPed::UpdateGameObject()
 				else
 					ped->isAiming = 0;
 
+				// if he is not punching
+				if (!(this->state == 0xB9 || this->state == 0xBA || this->state == 0xBB || this->state == 0xBC))
+					*(byte*)(this->GetEntity() + 0x5E0) = 0x0;
+
 				/**(float*)(this->EntityBase + 0x644) = this->fHealth;
 				if (this->state != 163)
 				{

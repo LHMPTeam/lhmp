@@ -79,16 +79,16 @@ public:
 	{
 		DWORD   dwNumItems = INFINITE;
 		HRESULT hr = p_DID->GetDeviceState(size, data);
-		((BYTE *)data)[DIK_TAB] = 0x00;
+		//((BYTE *)data)[DIK_TAB] = 0x00;
 		if(g_CCore != NULL)
 		{
 			// Clear the buffer so the game won't get any events.
 			if ((g_CCore->GetChat()->IsTyping() || g_CCore->GetGame()->isControlLocked() || g_CCore->GetIngameMenu()->isActive()))
 			{
 				memset(data, 0, size);
-				p_DID->GetDeviceData(sizeof (DIDEVICEOBJECTDATA), NULL, &dwNumItems, 0);
+				//p_DID->GetDeviceData(sizeof (DIDEVICEOBJECTDATA), NULL, &dwNumItems, 0);
 
-				return NULL;
+				//return NULL;
 			}
 		}
 		return hr;

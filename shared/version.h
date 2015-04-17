@@ -11,7 +11,7 @@
 #define LHMP_VERSION_TYPE	VERSION_TEST
 
 // when LHMP is compiled as test version
-#define LHMP_VERSION_TEST_HASH "TEST11ca2a00f92eb23917628c3cd453"
+#define LHMP_VERSION_TEST_HASH "TEST12ca2a00f92eb23917628c3cd453"
 
 // protocol version (byte) 0-255
 #define LHMP_QUERY_PROTOCOL	0

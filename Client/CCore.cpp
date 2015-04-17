@@ -64,7 +64,8 @@ void CCore::Run()
 	/*------------------ DISAVLE INVENTORY ---------------*/
 	PatchBytes(0x004C7B04, disableInventoryOnFoot);
 	PatchBytes(0x004C99C8, disableInventoryInVehicle);
-	/*----------------- Prevent ESC menu trigger                      ----------------------------*/
+
+	/*----------------- Prevent ESC menu trigger  ----------------------------*/
 	PatchBytes(0x005F9709, disableESCmenu);
 
 	/*-----------------	Skip menu, load "Free italy" (jump into our CC)---------------------------*/

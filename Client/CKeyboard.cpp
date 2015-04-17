@@ -29,7 +29,7 @@ void	CKeyboard::ProceedHoldingKeys()
 			g_CCore->GetGraphics()->mapScale *= 0.9f;
 		g_CCore->GetGraphics()->mapScale = Tools::Clamp(g_CCore->GetGraphics()->mapScale, 0.5f, 2.0f);
 	}
-	if (this->isHolding(VK_TAB) && g_CCore->GetGame()->IsTabMapEnabled())
+	if (this->isHolding(VK_TAB))
 	{
 		g_CCore->GetGraphics()->renderMap = 1;
 	}
@@ -161,6 +161,7 @@ void	CKeyboard::ProccessMessage(LPMSG lpMsg)
 	LPBYTE lpb = new BYTE[dwSize];
 	if (lpb == NULL)
 	{
+		g_CCore->GetChat()->AddMessage("raw input error LOL");
 		return;
 	}
 
@@ -172,6 +173,7 @@ void	CKeyboard::ProccessMessage(LPMSG lpMsg)
 
 	if (raw->header.dwType == RIM_TYPEKEYBOARD)
 	{
+		//g_CCore->GetChat()->AddMessage("KeyPressed");
 
 		//g_CCore->GetChat()->AddMessage("key pressed");
 		// if key is up
@@ -187,6 +189,9 @@ void	CKeyboard::ProccessMessage(LPMSG lpMsg)
 
 			switch (raw->data.keyboard.VKey)
 			{
+				case VK_TAB:
+				case VK_MENU:
+					break;
 				default:
 					char key = this->ConvertToASCII(raw->data.keyboard.VKey);
 					if (key != NULL)

@@ -158,13 +158,8 @@ BOOL WINAPI hookPeekMessageW(
 	{
 		if (lpMsg->message == WM_INPUT)
 		{
-			bool shouldStop = false;
-			// check whether game should receive input from keyboard
-			if ((g_CCore->GetChat()->IsTyping() || g_CCore->GetGame()->isControlLocked() || g_CCore->GetIngameMenu()->isActive()))
-			{
-				shouldStop = true;
-			}
 			// WM_INPUT is used to get all keyboard input
+			//g_CCore->GetChat()->AddMessage("PeekMessage");
 			g_CCore->GetKeyboard()->ProccessMessage(lpMsg);
 
 			// If we should block input, then return NULL (block it)
@@ -172,6 +167,7 @@ BOOL WINAPI hookPeekMessageW(
 			//	return NULL;
 		}
 	}
+	//DefWindowProc(hWnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 	return result;
 }
 
