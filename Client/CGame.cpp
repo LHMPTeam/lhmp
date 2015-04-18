@@ -2751,6 +2751,13 @@ void CGame::SetMusicState(byte state)
 
 void CGame::ChangeMap(char map[], char* start)
 {
+	char mapBuff[512];
+	memset(mapBuff, 0x0, 512);
+	sprintf(mapBuff, map);
+
+	sprintf(mapBuff + 0x40, "none");
+
+	g_CCore->GetChat()->AddMessage("CHANGING MAP...");
 	g_CCore->GetGame()->PreRespawn();
 	for (int i = 0; i < MAX_VEHICLES; i++)
 	{
@@ -2767,56 +2774,64 @@ void CGame::ChangeMap(char map[], char* start)
 	_asm
 	{
 		sub ESP, 0x1000
-		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-		PUSH 1
-		MOV EAX, 0x00425390
-		CALL EAX; Game.00425390
-		MOV ECX, EAX
-		MOV EAX, 0x005C8C70
-		CALL EAX; Game.005C8C70
-		MOV ECX, ESI
-		MOV EDX, 0x006F9258
-		mov ESI, map
-		MOV EAX, ESI;  VAR - mission name
-		SUB EDX, ESI
+			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			PUSH 1
+			MOV EAX, 0x00425390
+			CALL EAX; Game.00425390
+			MOV ECX, EAX
+			MOV EAX, 0x005C8C70
+			CALL EAX; Game.005C8C70
+			MOV ECX, ESI
+			MOV EDX, 0x006F9258
+			LEA ESI, mapBuff
+			//mov ESI, map
+			MOV EAX, ESI;  VAR - mission name
+			SUB EDX, ESI; wtf ?
+		// --- following code copies mission name into 0x6F9258
 		jmp1:
 		MOV CL, BYTE PTR DS : [EAX];  copy mission string into global(? ) variable
 		MOV BYTE PTR DS : [EDX + EAX], CL
 		INC EAX
 		TEST CL, CL
 		JNZ SHORT jmp1
+		//---
 		LEA EAX, DWORD PTR DS : [ESI + 0x40];  mission frame
 		MOV EDX, 0x006F9234
-		MOV BYTE PTR DS : [0x6F9254], 0x1
+		MOV BYTE PTR DS : [0x6F9254], 0x1		// set something on - maybe map change = true ?
 		SUB EDX, EAX
+		
+		//--- copy string, this is the problem that we are not having anything at EAX address, just random bytes
+		//--- TODO fix it
 		jmp2:
 		MOV CL, BYTE PTR DS : [EAX]
 			MOV BYTE PTR DS : [EDX + EAX], CL
 			INC EAX
 			TEST CL, CL
 			JNZ SHORT jmp2
+			//---
 			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
 			MOV EAX, 0x005C8680
 			CALL EAX; Game.005C8680
 			MOV EDI, 0x006F9234
 			OR ECX, 0xFFFFFFFF
 			XOR EAX, EAX
-			MOV EDX, DWORD PTR DS : [ESI + 0x80]
+			MOV EDX, DWORD PTR DS : [ESI + 0x80]		// again string ?
 			REPNE SCAS BYTE PTR ES : [EDI]
 			NOT ECX
 			DEC ECX
-			MOV DWORD PTR DS : [0x6F9578], EDX
-			JE end
+			MOV DWORD PTR DS : [0x6F9578], EDX			// cmp string length of ESI+x040
+			// if string length = NULL
+			// TEST STUFF - JE end
 			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
 			MOV EAX, 0x00425390
-			CALL EAX; Game.00425390
+			CALL EAX; Game.00425390		// return a class handle ?
 			MOV ECX, EAX
 			MOV EAX, 0x00425530
-			CALL EAX; Game.00425530
+			CALL EAX; Game.00425530 // ECX+x0E4
 			MOV ESI, EAX
-			TEST ESI, ESI
+			TEST ESI, ESI		// if localplayer exists
 			JE SHORT jmp3
-			MOV ECX, ESI;  ESI = localPlayer
+			MOV ECX, ESI;  //ESI = localPlayer
 			mov EAX, 0x00425730
 			CALL EAX; Game.00425730;  IsLocalPlayerInCar
 		TEST EAX, EAX
@@ -2828,29 +2843,33 @@ void CGame::ChangeMap(char map[], char* start)
 		MOV DWORD PTR DS : [0x6F9570], EAX;  save car
 		MOV DWORD PTR DS : [0x6F9574], ESI;  save localPlayer
 		JMP SHORT jmp3
-		jmp4:
+	jmp4:
+		//no car case
 		MOV DWORD PTR DS : [0x6F9570], ESI;  noCarCase:
 		MOV DWORD PTR DS : [0x6F9574], 0;  don't save a car
 		jmp3:
 		MOV ESI, 0x006F9570
+		// a loop which, while ESI >= 0x0006F9578
 		jmp6 :
 			 MOV EAX, DWORD PTR DS : [ESI];  some object
 			 TEST EAX, EAX
 			 JE SHORT jmp5
 			 MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-			 PUSH EAX
+			 PUSH EAX	// push local player
 			 MOV EAX, 0x005FF5E0
 			 CALL EAX; Game.005FF5E0
 		jmp5:
 		ADD ESI, 0x4
-			CMP ESI, 0x006F9578
+			CMP ESI, 0x006F9578		// compare if localplayer is type of
 			JL SHORT jmp6
-			MOV EAX, DWORD PTR DS : [0x6F9570]
+			MOV EAX, DWORD PTR DS : [0x6F9570]	// returns local player ?
 			TEST EAX, EAX
 			JE end
 			PUSH 0x3F800000
 			PUSH 0
 			PUSH 0
+			// WTF is ESP +0x478 ? might be dangerous, in stack history
+			// TODO explore it, replace with our vector
 			LEA ECX, DWORD PTR SS : [ESP + 0x478]
 			MOV EAX, 0x004026C0
 			CALL EAX; Game.004026C0;  make a 3D vector structure in stack(returns  pointer)
