@@ -212,9 +212,9 @@ void	CNetworkManager::OnPlayerDisconnect(RakNet::Packet* packet)
 			}
 			char buff[255];
 			if (packet->data[0] == ID_CONNECTION_LOST)
-				sprintf(buff, "Player %s lost connection", player->GetNickname());
+				sprintf(buff, "#f31d2fPlayer #ffffff%s #f31d2ftimed out from the server.", player->GetNickname());
 			else
-				sprintf(buff, "Player %s disconnected", player->GetNickname());
+				sprintf(buff, "#f31d2fPlayer #ffffff%s #f31d2fdisconnected from the server.", player->GetNickname());
 			SendMessageToAll(buff);
 
 			if (packet->data[0] == ID_CONNECTION_LOST)
@@ -303,7 +303,7 @@ void CNetworkManager::Pulse()
 					peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,packet->systemAddress,true);
 					
 					char buff[255];
-					sprintf(buff, "Player %s connected to the server.", player->GetNickname());
+					sprintf(buff, "#00d717Player #ffffff%s #00d717connected to the server.", player->GetNickname());
 					this->SendMessageToAll(buff);
 					printf("Player %s connected to the server.\n", player->GetNickname());
 
@@ -357,7 +357,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				char buff2[255];
 				bsIn.Read(buff);
 
-				sprintf(buff2, "[%s] %s", player->GetNickname(), buff);
+				sprintf(buff2, "#528ccb%s#ffffff: %s", player->GetNickname(), buff);
 				if (g_CCore->GetScripts()->onPlayerText(ID, buff) == true)
 				{
 					BitStream bsOut;

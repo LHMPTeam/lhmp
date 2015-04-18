@@ -144,8 +144,8 @@ HRESULT CD3DFont::InitDeviceObjects( LPDIRECT3DDEVICE8 pd3dDevice )
     DWORD dwItalic = (m_dwFontFlags&D3DFONT_ITALIC) ? TRUE    : FALSE;
     HFONT hFont    = CreateFont( nHeight, 0, 0, 0, dwBold, dwItalic,
                           FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                          CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
-                          VARIABLE_PITCH, m_strFontName );
+						  CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
+                          VARIABLE_PITCH, m_strFontName ); // Changed to CLEARTYPE_QUALITY from ANTIALIASED_QUALITY
     if( NULL==hFont )
         return E_FAIL;
 

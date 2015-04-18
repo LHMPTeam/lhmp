@@ -47,24 +47,34 @@ void CNametags::Tick()
 
 
 						float ratio = (5 / Tools::GetDistanceBetween3DPoints(playerPosition, g_CCore->GetGame()->GetCameraPos()));
-						if (ratio < 1.0f)
+						//if (ratio < 1.0f)
 							ratio = 1.0f;
 
 						int barWidth = 100;
 						int barHeight = 10;
 						float healthPercentage = ped->GetHealth() / 200.0f;
-						DWORD healthBarColor = 0xFFFF0000; // red color
+
+						DWORD healthBarColor = 0xFFD90000; // red color
+						DWORD healthBarColorBg = 0xFFCC0000;
+
 						//if player has more than 50% of life
-						if (ped->GetHealth() > 50.0f)
-							healthBarColor = 0xFF00FF00; // green color
+						if (ped->GetHealth() > 100.0f) {
+							healthBarColor = 0xFF00D900; // green color
+							healthBarColorBg = 0xFF00CC00;
+						}
 
 						// render the health bar's background
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f) - 1.0f), (int)(screen.y - barHeight - 2), screen.z, barWidth + 2, barHeight + 2, D3DCOLOR_XRGB(0, 0, 0));
+						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int)(screen.y - barHeight - 1.0f), screen.z, barWidth, barHeight, healthBarColorBg);
+
 						// now render the health bar itself
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int)(screen.y - barHeight - 1.0f), screen.z, barWidth*healthPercentage, barHeight, healthBarColor);
 
+						/*g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - barHeight - 1), screen.z, barWidth, 2, D3DCOLOR_RGBA(255, 255, 255, 100));
+						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - 2), screen.z, barWidth, 2, D3DCOLOR_RGBA(0, 0, 0, 100));*/
+
 						// now render player's nick (scaled using ratio)
-						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio) - barHeight - 5, screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
+						//g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio) - barHeight - 5, screen.z, (desc.Width*ratio), (desc.Height*ratio), ped->nametag);
 							
 						//bool state = (*(byte*)(ped->GetEntity() + 0x5E0) == 1);
 						/*byte state = ped->GetState();

@@ -33,10 +33,12 @@ void	CFont::DrawText(char text[], int x, int y, D3DCOLOR color, bool shadow )
 {
 	if (shadow)
 	{
-		this->m_pFont->DrawTextA((float)(x - 1), (float)(y), 0xFF000000, text);
-		this->m_pFont->DrawTextA((float)(x + 1), (float)(y), 0xFF000000, text);
-		this->m_pFont->DrawTextA((float)(x), (float)(y - 1), 0xFF000000, text);
-		this->m_pFont->DrawTextA((float)(x), (float)(y + 1), 0xFF000000, text);
+		for (int i = 0; i < 4; i++) {
+			this->m_pFont->DrawTextA((float)(x + 1), (float)(y + 1), 0xFF000000, text);
+			this->m_pFont->DrawTextA((float)(x + 2), (float)(y + 2), 0x38000000, text);
+		}
+
+		//this->m_pFont->DrawTextA((float)(x + 2), (float)(y + 2), 0xFF000000, text);
 	}
 	this->m_pFont->DrawTextA((float)x, (float) y, color, text);
 }
@@ -47,28 +49,29 @@ void	CFont::DrawColoredText(CColoredText* text, int x, int y, bool shadow)
 	text->StartGetting();
 	while (CColoredStruct* strr = text->GetNext())
 	{
-		this->DrawTextA(strr->text,x + drawn, y, strr->color, true);
+		this->DrawTextA(strr->text, x + drawn, y, strr->color, true);
 		//this->m_pFont->DrawTextA(x + drawn, y, strr->color, strr->text);
 		drawn += strr->width;
 	}
 }
 
-void	CFont::DrawColoredText(char* text, int x, int y,DWORD color, bool shadow)
+void	CFont::DrawColoredText(char* text, int x, int y, DWORD color, bool shadow)
 {
 	/*int drawn = 0;
 	text->StartGetting();
 	while (CColoredStruct* strr = text->GetNext())
 	{
-		this->m_pFont->DrawTextA(x + drawn, y, strr->color, strr->text);
-		drawn += strr->width;
+	this->m_pFont->DrawTextA(x + drawn, y, strr->color, strr->text);
+	drawn += strr->width;
 	}*/
 	int drawn = 0;
 	int start = Tools::getFirstColorStamp(text);
 	if (start == -1)
 	{
-		this->DrawTextA(text,x + drawn, y, color, shadow);
+		this->DrawTextA(text, x + drawn, y, color, shadow);
 		//this->m_pFont->DrawTextA(x + drawn, y, color, text);
-	} else if (start == 0)
+	}
+	else if (start == 0)
 	{
 		color = Tools::GetARGBFromString(text + 1);
 		this->DrawColoredText(text + 7, x + drawn, y, color, shadow);
@@ -77,11 +80,11 @@ void	CFont::DrawColoredText(char* text, int x, int y,DWORD color, bool shadow)
 		text[start] = 0x0;
 		this->DrawTextA(text, x + drawn, y, color, shadow);
 		//this->m_pFont->DrawTextA(x + drawn, y, color, text);
-		SIZE size =  this->GetFontWidth(text);
+		SIZE size = this->GetFontWidth(text);
 		drawn = size.cx;
 		text[start] = '#';
 		color = Tools::GetARGBFromString(text + 1);
-		this->DrawColoredText(text+7, x+drawn, y, color, shadow);
+		this->DrawColoredText(text + 7, x + drawn, y, color, shadow);
 
 	}
 }

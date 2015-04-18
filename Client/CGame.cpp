@@ -554,7 +554,7 @@ _asm
 
 DWORD CGame::CreatePED()
 {
-	g_CCore->GetChat()->AddMessage("CreatePED is called now");
+	//g_CCore->GetChat()->AddMessage("#e3e3e3CreatePED is called now");
 	DWORD pedaddr, frameaddr;
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	//DWORD TommyEngineObj = (DWORD) ped->object.frame;
@@ -1643,7 +1643,7 @@ void CGame::DeletePed(DWORD PED)
 		if (ped_frame)
 		{
 			char buff[255];
-			sprintf(buff, "Deleting ped: %p [%p]", PED, ped_frame);
+			sprintf(buff, "#e3e3e3Deleting ped %p [%p]", PED, ped_frame);
 			g_CCore->GetChat()->AddMessage(buff);
 
 			/*// TESTING STUFF
