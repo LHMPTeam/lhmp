@@ -938,6 +938,9 @@ void	CChat::ClearChat()
 
 void	CChat::RenderTexture(IDirect3DDevice8* device)
 {
+	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
+	CHAT_WIDTH = screen.x / 2.25f;
+
 	if (chatTexture == NULL)
 	{
 		D3DXCreateTexture(device, 512, 512,
@@ -983,11 +986,11 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 	int howMany = elementCount;
 	if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
 		howMany = this->CHAT_LINES_PER_RENDER;
-	
+
 	CChatStack* stackPointer = this->ChatPoolStart;
 	for (int i = 0; i < howMany; i++)
 	{
-		int line_y = (20 * (howMany-i));
+		int line_y = (20 * (howMany - i));
 		//g_CCore->GetGraphics()->DrawTextA(stack, 20, line_y, 0xffffffff, true, true);
 		g_CCore->GetGraphics()->GetFont()->DrawColoredText(stackPointer->text, 20, line_y, true);
 		stackPointer = stackPointer->next;
@@ -1024,7 +1027,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 				if (this->IsBackgroundActive() == true)
 					g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
 				//g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
-				g_CCore->GetGraphics()->DrawTextA(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+				g_CCore->GetGraphics()->GetFont()->DrawTextA(buf, 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
 				index += howMuchWeNeed;
 				iRendered++;
 			}

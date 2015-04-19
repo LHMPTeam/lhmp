@@ -1635,7 +1635,7 @@ bool OnHitCallback(DWORD victim,DWORD reason, DWORD unk1, DWORD unk2, DWORD unk3
 	if (ped->object.objectType == OBJECT_ENEMY && g_CCore->GetGame()->ShouldKill == false)
 		return true;
 	
-	g_CCore->GetChat()->AddMessage("CHooks::OnHitCall");
+	//g_CCore->GetChat()->AddMessage("CHooks::OnHitCall");
 	
 	// Check whether player is already dead
 	bool isAlreadyDead = (ped->object.isActive == 0);
@@ -1783,7 +1783,7 @@ _declspec (naked) void Hook_OnChangePlayerCarRotation()
 
 void RestInPeace()
 {
-	g_CCore->GetChat()->AddMessage("TESTIQ - OK ROMCO");
+	//g_CCore->GetChat()->AddMessage("TESTIQ - OK ROMCO");
 
 	// Send info to server
 	RakNet::BitStream bsOut;

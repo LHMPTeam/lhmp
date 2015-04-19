@@ -27,7 +27,7 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 	bShowHud = true;
 	IsCamFreezed = false;
 	m_DirectDevice = pDxDevice;
-	m_chatfontAPI = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, 0, TEXT("arialbold"));  //arial bold, lucida console
+	m_chatfontAPI = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, 0, TEXT("Arial"));  //arial bold, lucida console
 	D3DXCreateFont(m_DirectDevice, m_chatfontAPI, &m_chatfont);
 	//D3DXCreateFont(m_DirectDevice,CreateFont(18,0,0,0,0,0,0,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,0,TEXT("Arial")),&m_chatfont);
 	if (SUCCEEDED(D3DXCreateSprite(m_DirectDevice, &m_sprite)))
@@ -55,7 +55,7 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 
 	textiq = new CColoredText("#ff0000aha, toto je #adefmarha#ccccccS#909090U#508090V#10EEBBE #ff00002#ff00ff0#ff0a0b1#ff90904 ");
 
-	m_cFont = new CFont("tahoma", 12);
+	m_cFont = new CFont("arial", 9, D3DFONT_BOLD);
 
 	m_d3dFont = new CD3DFont("arialbold", 18);
 	m_d3dFont->InitDeviceObjects(this->GetDevice());
@@ -346,7 +346,7 @@ void CGraphics::TakeScreenshot()
 	}
 	screen->Release();
 	char buff[255];
-	sprintf(buff, "#ff0000Screenshot ""%s""'s been taken.", filename);
+	sprintf(buff, "#f31d2fScreenshot #e3e3e3""%s""#f31d2f taken.", filename);
 	g_CCore->GetChat()->AddMessage(buff);
 }
 
@@ -702,6 +702,7 @@ void CGraphics::FillARGB(int x, int y, int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
 
 	my_vertex g_square_vertices[] = {
 		{ (float)x, (float)(y + h), 0.0f, 0.0f, color }, // x, y, z, rhw, color
@@ -759,6 +760,7 @@ void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
 
 	my_vertex g_square_vertices[] = {
 		{ (float)x, (float)(y + h), z, 0.0f, color }, // x, y, z, rhw, color
@@ -907,6 +909,8 @@ void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEX
 	//Now we're drawing a Triangle Strip, 4 vertices to draw 2 triangles.
 	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
+	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, TRUE);
+
 	// SetTexture NULL is important, it makes texture availables Release() function
 	m_DirectDevice->SetTexture(0,NULL);
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
@@ -998,10 +1002,10 @@ void CGraphics::RenderMap()
 	Vector3D playerRot;
 	// draw players
 	SetRect(&area, 71, 0, 107, 44);
-	scaling.x = 0.5f;
-	scaling.y = 0.5f;
-	D3DXMatrixTranslation(&center, -9, -11, 0);
-	D3DXMatrixScaling(&scale, 0.5, 0.5, 1);
+	scaling.x = 0.75f;
+	scaling.y = 0.75f;
+	D3DXMatrixTranslation(&center, -13, -15, 0);
+	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
 		CPed* ped = g_CCore->GetPedPool()->Return(i);
@@ -1041,8 +1045,9 @@ void CGraphics::RenderMap()
 		return;
 	SetRect(&area, 36, 0, 71, 44);
 	// center is needed to rotate sprite around its center
-	D3DXMatrixTranslation(&center, -17, -22, 0);
+	D3DXMatrixTranslation(&center, -13, -15, 0);
 	D3DXMatrixTranslation(&transform, (float)(screen.x / 2),(float) (screen.y / 2), 0.0f);
+	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
 
 	playerRot = g_CCore->GetLocalPlayer()->GetLocalRot();
 	double goalRot = acos(playerRot.z);
@@ -1050,6 +1055,7 @@ void CGraphics::RenderMap()
 		goalRot = 6.28 - goalRot;
 	D3DXMatrixRotationZ(&rot, (float)goalRot);
 	D3DXMatrixMultiply(&rot, &center, &rot);
+	D3DXMatrixMultiply(&rot, &scale, &rot);
 	D3DXMatrixMultiply(&result, &rot,&transform);
 	
 	g_CCore->GetGraphics()->GetSprite()->DrawTransform(m_mapGUI, &area,&result, D3DCOLOR_XRGB(255, 255, 255));

@@ -57,7 +57,7 @@ bool CNetworkManager::ConnectServer()
 
 void CNetworkManager::OnConnectionAccepted(RakNet::Packet* packet)
 {
-	g_CCore->GetChat()->AddMessage("Connection accepted.");
+	g_CCore->GetChat()->AddMessage("#ff8600Connection accepted.");
 	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID)ID_INITLHMP);
 	//bsOut.Write(NickName);
@@ -71,7 +71,7 @@ void	CNetworkManager::OnConnectionIsAboutFinish()
 	// send him CONNECTION FINAL
 	isConnected = true;
 
-	g_CCore->GetChat()->AddMessage("Almost there ...");
+	//g_CCore->GetChat()->AddMessage("#ff8600Almost there ...");
 
 	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID) ID_CONNECTION_FINISHED);
@@ -104,19 +104,19 @@ void CNetworkManager::Pulse()
 		case ID_CONNECTION_FINISHED:
 		{
 				g_CCore->GetChat()->ClearChat();
-				g_CCore->GetChat()->AddMessage("Lost Heaven Multiplayer started.");
+				g_CCore->GetChat()->AddMessage("#ff8600Lost Heaven Multiplayer started.");
 				char version[255];
 #if LHMP_VERSION_TYPE == 1
-				sprintf(version, "Version %d.%d", LHMP_VERSION_MAJOR,LHMP_VERSION_MINOR);
+				sprintf(version, "#fec606Version %d.%d", LHMP_VERSION_MAJOR,LHMP_VERSION_MINOR);
 				g_CCore->GetChat()->AddMessage(version);
 #else
 
-				sprintf(version, "Test hash: %s", LHMP_VERSION_TEST_HASH);
+				sprintf(version, "#ff8600Build hash: #e3e3e3%s", LHMP_VERSION_TEST_HASH);
 				g_CCore->GetChat()->AddMessage(version);
-				sprintf(version, "Build time %s %s", __DATE__, __TIME__);
+				sprintf(version, "#ff8600Build time:  #e3e3e3%s (%s)", __DATE__, __TIME__);
 				g_CCore->GetChat()->AddMessage(version);
 #endif
-				g_CCore->GetChat()->AddMessage("Connected to the server.");
+				//g_CCore->GetChat()->AddMessage("#71ba51Connected to the server.");
 				
 				RakNet::BitStream bsIn(packet->data+offset, packet->length-offset, false);
 				
@@ -150,21 +150,21 @@ void CNetworkManager::Pulse()
 			}
 			break;
 		case ID_GAME_BAD_VERSION:
-			g_CCore->GetChat()->AddMessage("[Server] Version dismatch");
+			g_CCore->GetChat()->AddMessage("#f31d2fConnection aborted, the server is running a different version.");
 				break;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
-				g_CCore->GetChat()->AddMessage("The server is full.");
+			g_CCore->GetChat()->AddMessage("#f31d2fConnection aborted, the server is full.");
 			//printf("The server is full.\n");
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
-			g_CCore->GetChat()->AddMessage("Disconnected from the server.");
+			g_CCore->GetChat()->AddMessage("#ff8600Disconnected from the server.");
 				//printf("We have been disconnected.\n");
 			break;
 		case ID_CONNECTION_LOST:
-			g_CCore->GetChat()->AddMessage("Connection with the server lost.");
+			g_CCore->GetChat()->AddMessage("#f31d2fConnection with the server lost.");
 			break;
 		case ID_CONNECTION_ATTEMPT_FAILED:
-			g_CCore->GetChat()->AddMessage("Connection attempt failed, trying to reconnect.");
+			g_CCore->GetChat()->AddMessage("#f31d2fConnection failed, trying to reconnect.");
 			ConnectServer();
 			break;
 		case ID_GAME_ALIVE:

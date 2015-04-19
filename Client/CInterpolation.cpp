@@ -40,6 +40,9 @@ void CInterpolation::SetUpInterpolation(Vector3D position) {
 	}*/
 
 	this->timeDiff = (this->timestamp) - (this->timeLastMessage);
+
+	if (this->timeDiff <= 0) this->timeDiff = 20;
+
 	this->timeLastMessage = this->timestamp;
 	this->interpolationTick = RakNet::GetTimeMS();
 
