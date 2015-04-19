@@ -621,13 +621,20 @@ DWORD CGame::CreatePED()
 			005C2900  |. 33C0           XOR EAX,EAX*/
 			; LEA EDX, objectname
 			; PUSH EDX
-			PUSH 0x0064FF98
+			
 			//005C2903  |. F2:AE          REPNE SCAS BYTE PTR ES:[EDI]
+			
+			// TEST ---------------------------------------------------------------------------
+			//
+			/*PUSH 0x0064FF98
 			MOV AX, WORD PTR DS : [0x64FFA4]
 			PUSH ESI
 			MOV WORD PTR DS : [EDI - 1], AX
 			MOV ECX, DWORD PTR DS : [ESI]
 			CALL DWORD PTR DS : [ECX + 0x28];  set duplicated object's name
+			*/
+
+			// TEST ---------------------------------------------------------------------------
 			MOV ECX, EBX
 			MOV EAX, 0x00528B70
 			CALL EAX;  do something with engine object(offset 120)
