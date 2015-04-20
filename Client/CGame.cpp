@@ -2023,7 +2023,7 @@ void CGame::SetCameraPos(Vector3D pos,float r1,float r2,float r3,float r4)
 
 Vector3D CGame::GetCameraPos()
 {
-	return *(Vector3D*)(0x006EFDAC);
+	return *(Vector3D*)(0x101C0C10);
 }
 
 void CGame::CameraUnlock()
