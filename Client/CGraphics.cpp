@@ -57,7 +57,7 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 
 	textiq = new CColoredText("#ff0000aha, toto je #adefmarha#ccccccS#909090U#508090V#10EEBBE #ff00002#ff00ff0#ff0a0b1#ff90904 ");
 
-	m_cFont = new CFont("arialbd", 9, D3DFONT_BOLD);
+	m_cFont = new CFont("arial", 9, D3DFONT_BOLD);
 
 	m_d3dFont = new CD3DFont("arial", 18);
 	m_d3dFont->InitDeviceObjects(this->GetDevice());
@@ -1010,7 +1010,7 @@ void CGraphics::RenderMap()
 	SetRect(&area, 71, 0, 107, 44);
 	scaling.x = 0.75f;
 	scaling.y = 0.75f;
-	D3DXMatrixTranslation(&center, -13, -17, 0);
+	D3DXMatrixTranslation(&center, -12, -15, 0);
 	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -1051,7 +1051,7 @@ void CGraphics::RenderMap()
 		return;
 	SetRect(&area, 36, 0, 71, 44);
 	// center is needed to rotate sprite around its center
-	D3DXMatrixTranslation(&center, -13, -17, 0);
+	D3DXMatrixTranslation(&center, -12, -15, 0);
 	D3DXMatrixTranslation(&transform, (float)(screen.x / 2),(float) (screen.y / 2), 0.0f);
 	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
 

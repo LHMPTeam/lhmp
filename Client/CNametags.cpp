@@ -17,7 +17,7 @@ void CNametags::Tick()
 			if (ped->GetEntity() == NULL)
 				continue;
 			Vector3D playerPosition = ped->GetPEDFramePosition();
-			playerPosition.y += 2.25;
+			playerPosition.y += 2.1;
 			if (ped->IsDucking())
 				playerPosition.y -= 1.0;
 			// check whether he is close to local player
@@ -29,7 +29,7 @@ void CNametags::Tick()
 				//if (ped->nametag == NULL)
 				//{
 				float distance = Tools::GetDistanceBetween3DPoints(playerPosition, g_CCore->GetGame()->GetCameraPos());
-				float maxDistance = 10;
+				float maxDistance = 17.5;
 
 				int alpha = 255 * (1.25 - (distance / maxDistance));
 				if (alpha > 255) alpha = 255;
@@ -112,9 +112,11 @@ void CNametags::RenderToTexture(int playerID, int alpha)
 		// at first, get size 
 		SIZE size = g_CCore->GetGraphics()->GetFont()->GetFontWidth(ped->GetName());
 
-		D3DXCreateTexture(g_CCore->GetGraphics()->GetDevice(), 256, 256,
-			1, D3DUSAGE_RENDERTARGET,
-			D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &ped->nametag);
+		if (ped->nametag == NULL) {
+			D3DXCreateTexture(g_CCore->GetGraphics()->GetDevice(), 256, 256,
+				1, D3DUSAGE_RENDERTARGET,
+				D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &ped->nametag);
+		}
 			
 		if (ped->nametag != NULL)
 		{
