@@ -1010,7 +1010,7 @@ void CGraphics::RenderMap()
 	SetRect(&area, 71, 0, 107, 44);
 	scaling.x = 0.75f;
 	scaling.y = 0.75f;
-	D3DXMatrixTranslation(&center, -13, -15, 0);
+	D3DXMatrixTranslation(&center, -13, -17, 0);
 	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -1051,7 +1051,7 @@ void CGraphics::RenderMap()
 		return;
 	SetRect(&area, 36, 0, 71, 44);
 	// center is needed to rotate sprite around its center
-	D3DXMatrixTranslation(&center, -13, -15, 0);
+	D3DXMatrixTranslation(&center, -13, -17, 0);
 	D3DXMatrixTranslation(&transform, (float)(screen.x / 2),(float) (screen.y / 2), 0.0f);
 	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
 
