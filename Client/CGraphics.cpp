@@ -1188,7 +1188,6 @@ __declspec(noinline) void CGraphics::OnLostDevice()
 	g_CCore->GetChat()->OnLostDevice();
 
 	g_CCore->GetIngameMenu()->OnLostDevice();
-	this->m_d3dFont->InvalidateDeviceObjects();
 	this->m_cFont->OnDeviceLost();
 
 	g_CCore->GetNametags()->OnLostDevice();
@@ -1227,7 +1226,6 @@ void CGraphics::OnResetDevice()
 
 	g_CCore->GetIngameMenu()->OnResetDevice();
 
-	this->m_d3dFont->RestoreDeviceObjects();
 	this->m_cFont->OnReset();
 }
 
@@ -1262,11 +1260,6 @@ void	CGraphics::DrawColoredText(CColoredText* text, int x, int y, bool ifShadow)
 	}
 }
 
-void	CGraphics::D3DDrawText(char text[], int x, int y , D3DCOLOR color, bool shadow)
-{
-	//m_d3dFont->
-	m_d3dFont->DrawTextA((float)x, (float)y, color, text);
-}
 
 
 CFont*	CGraphics::GetFont()
