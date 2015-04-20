@@ -1649,9 +1649,7 @@ void CGame::DeletePed(DWORD PED)
 		DWORD ped_frame = (DWORD)deletingPed->object.frame;
 		if (ped_frame)
 		{
-			char buff[255];
-			sprintf(buff, "#e3e3e3Deleting ped %p [%p]", PED, ped_frame);
-			g_CCore->GetChat()->AddMessage(buff);
+			g_CCore->GetChat()->AddDebugMessage("Deleting ped #00d717%p#e3e3e3 [#f31d2f%p#e3e3e3]", PED, ped_frame);
 
 			/*// TESTING STUFF
 			_asm {
@@ -2764,7 +2762,7 @@ void CGame::ChangeMap(char map[], char* start)
 
 	sprintf(mapBuff + 0x40, "none");
 
-	g_CCore->GetChat()->AddMessage("CHANGING MAP...");
+	g_CCore->GetChat()->AddDebugMessage("Changing map to %s..", mapBuff);
 	g_CCore->GetGame()->PreRespawn();
 	for (int i = 0; i < MAX_VEHICLES; i++)
 	{

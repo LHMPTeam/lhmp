@@ -95,10 +95,17 @@ Vector3D CInterpolation::Interpolate() {
 	RakNet::TimeMS tickDiff = (actualTime - this->interpolationTick);
 
 	float t = (float)tickDiff / (float)this->timeDiff;
+	float distance = Tools::GetDistanceBetween3DPoints(this->previousPos, this->actualPos);
+	float treshold = 7.5;
 
-	this->InterPosition.x = Lerp(this->previousPos.x, this->actualPos.x, t);
-	this->InterPosition.y = Lerp(this->previousPos.y, this->actualPos.y, t);
-	this->InterPosition.z = Lerp(this->previousPos.z, this->actualPos.z, t);
+	if (distance < treshold) {
+		this->InterPosition.x = Lerp(this->previousPos.x, this->actualPos.x, t);
+		this->InterPosition.y = Lerp(this->previousPos.y, this->actualPos.y, t);
+		this->InterPosition.z = Lerp(this->previousPos.z, this->actualPos.z, t);
+	}
+	else {
+		this->InterPosition = this->actualPos;
+	}
 
 	return (this->InterPosition);
 }

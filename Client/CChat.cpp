@@ -97,6 +97,22 @@ void CChat::AddMessage(std::string message)
 	}
 }
 
+void CChat::AddDebugMessage(char* format, ...) {
+	#if LHMP_VERSION_TYPE == 0
+		char buff[512] = "";
+		char endbuff[512] = "";
+
+		va_list args;
+		va_start(args, format);
+		vsprintf(buff, format, args);
+		va_end(args);
+
+		sprintf(endbuff, "#f31d2f>> #e3e3e3%s", buff);
+
+		AddMessage(endbuff);
+	#endif
+}
+
 void CChat::DoneMessage()
 {
 	if(ChatMessage != "")

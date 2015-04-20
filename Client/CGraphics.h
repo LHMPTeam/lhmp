@@ -40,6 +40,7 @@ private:
 	CD3DFont*			m_d3dFont;
 	CFont*				m_cFont;
 	IDirect3DVertexBuffer8*	m_vb;
+	RakNet::TimeMS		lastScreenshotTime;
 public:
 	CGraphics();
 	IDirect3DDevice8*	GetDevice();

@@ -15,6 +15,8 @@ CGraphics::CGraphics()
 	mapScale		= 1.0f;
 	m_bShowNameTags = true;
 	m_bUserShowNameTags = true;
+
+	lastScreenshotTime = RakNet::GetTimeMS();
 }
 
 IDirect3DDevice8*	CGraphics::GetDevice()
@@ -55,9 +57,9 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 
 	textiq = new CColoredText("#ff0000aha, toto je #adefmarha#ccccccS#909090U#508090V#10EEBBE #ff00002#ff00ff0#ff0a0b1#ff90904 ");
 
-	m_cFont = new CFont("arial", 9, D3DFONT_BOLD);
+	m_cFont = new CFont("arialbd", 9, D3DFONT_BOLD);
 
-	m_d3dFont = new CD3DFont("arialbold", 18);
+	m_d3dFont = new CD3DFont("arial", 18);
 	m_d3dFont->InitDeviceObjects(this->GetDevice());
 	m_d3dFont->RestoreDeviceObjects();
 
@@ -163,6 +165,9 @@ void CGraphics::Render()
 			g_CCore->GetNametags()->Tick();
 		}
 	}
+
+	// Debug as it fixes problem with font
+	FillARGB(0, 0, 1, 1, 0x00000000);
 
 	g_CCore->GetGame()->UpdatePeds();
 	g_CCore->GetGame()->UpdateCars();
@@ -310,6 +315,9 @@ Vector2D CGraphics::GetResolution()
 
 void CGraphics::TakeScreenshot()
 {
+	if (RakNet::GetTimeMS() - lastScreenshotTime < 200) return;
+	lastScreenshotTime = RakNet::GetTimeMS();
+
 	D3DDISPLAYMODE mode;
 	m_DirectDevice->GetDisplayMode(&mode);
 	HRESULT result;
@@ -702,7 +710,7 @@ void CGraphics::FillARGB(int x, int y, int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, TRUE);
 
 	my_vertex g_square_vertices[] = {
 		{ (float)x, (float)(y + h), 0.0f, 0.0f, color }, // x, y, z, rhw, color
@@ -760,7 +768,7 @@ void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
+	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, TRUE);
 
 	my_vertex g_square_vertices[] = {
 		{ (float)x, (float)(y + h), z, 0.0f, color }, // x, y, z, rhw, color
@@ -908,8 +916,6 @@ void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEX
 
 	//Now we're drawing a Triangle Strip, 4 vertices to draw 2 triangles.
 	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-
-	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, TRUE);
 
 	// SetTexture NULL is important, it makes texture availables Release() function
 	m_DirectDevice->SetTexture(0,NULL);
