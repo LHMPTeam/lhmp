@@ -357,7 +357,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				char buff2[255];
 				bsIn.Read(buff);
 
-				sprintf(buff2, "#528ccb%s#ffffff: %s", player->GetNickname(), buff);
+				sprintf(buff2, "#f31d2f%s#ffffff: %s", player->GetNickname(), buff);
 				if (g_CCore->GetScripts()->onPlayerText(ID, buff) == true)
 				{
 					BitStream bsOut;

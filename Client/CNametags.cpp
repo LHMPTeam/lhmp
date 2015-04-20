@@ -19,7 +19,7 @@ void CNametags::Tick()
 			Vector3D playerPosition = ped->GetPEDFramePosition();
 			playerPosition.y += 2.1;
 			if (ped->IsDucking())
-				playerPosition.y -= 1.0;
+				playerPosition.y -= 0.8;
 			// check whether he is close to local player
 			if (Tools::GetDistanceBetween3DPointsEx(position, playerPosition, 50.0f) < 2)
 			{
@@ -29,7 +29,7 @@ void CNametags::Tick()
 				//if (ped->nametag == NULL)
 				//{
 				float distance = Tools::GetDistanceBetween3DPoints(playerPosition, g_CCore->GetGame()->GetCameraPos());
-				float maxDistance = 17.5;
+				float maxDistance = 30;
 
 				int alpha = 255 * (1.25 - (distance / maxDistance));
 
@@ -37,6 +37,8 @@ void CNametags::Tick()
 				alpha = Tools::Clamp(alpha, 0, 255);
 				char textureAlpha = alpha;
 				int alpha2 = alpha * 0.5;
+				int alpha3 = alpha * 1.2;
+				if (alpha3 > 255) alpha3 = 255;
 				
 				if (ped->nametag == NULL)
 					this->RenderToTexture(i);
@@ -86,7 +88,7 @@ void CNametags::Tick()
 
 						// now render player's nick (scaled using ratio)
 						// alpha - 0-255
-						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width), screen.y - (desc.Height) - barHeight + 114, screen.z, desc.Width, desc.Height, ped->nametag);
+						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width), screen.y - (desc.Height) - barHeight + 114, screen.z, desc.Width, desc.Height, ped->nametag, alpha3);
 							
 					}
 				}
