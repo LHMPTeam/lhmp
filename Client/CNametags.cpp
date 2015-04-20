@@ -85,8 +85,8 @@ void CNametags::Tick()
 						// now render the health bar itself
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int)(screen.y - barHeight - 1.0f), screen.z, barWidth*healthPercentage, barHeight, healthBarColor);
 
-						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - barHeight - 1), screen.z, barWidth, 2, healthBarColorTop);
-						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - 2), screen.z, barWidth, 2, healthBarColorBottom);
+						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - barHeight - 1), screen.z, barWidth - 1, 2, healthBarColorTop);
+						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - 2), screen.z, barWidth - 1, 2, healthBarColorBottom);
 
 						// now render player's nick (scaled using ratio)
 						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width), screen.y - (desc.Height) - barHeight + 114, screen.z, desc.Width, desc.Height, ped->nametag);
