@@ -200,12 +200,6 @@ public:
 	}
 	STDMETHOD(SetTransform)(D3DTRANSFORMSTATETYPE State,const D3DMATRIX *pMatrix)
 	{
-		/*if(State == D3DTS_VIEW && g_CCore->GetGraphics()->IsCamFreezed == true)
-		{
-			D3DMATRIX m;
-			p_Dev->GetTransform(State,&m);
-			return p_Dev->SetTransform(State,&m);
-		}*/
 		return p_Dev->SetTransform(State,pMatrix);
 	}
 	STDMETHOD(GetTransform)(D3DTRANSFORMSTATETYPE State,D3DMATRIX *pMatrix)

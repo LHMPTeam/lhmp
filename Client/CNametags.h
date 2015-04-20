@@ -17,7 +17,7 @@ public:
 	// called on EndScene
 	void Tick();
 	// Render nick to texture
-	void RenderToTexture(int playerID, int alpha);
+	void RenderToTexture(int playerID);
 	// Render texture
 	void RenderNametag(LPDIRECT3DTEXTURE8 texture, float x, float y, float z, float scale);
 	// Delete all textures

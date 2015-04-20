@@ -21,14 +21,6 @@ bool	CKeyboard::isHolding(unsigned short vk)
 // this function proceeds all holding keys
 void	CKeyboard::ProceedHoldingKeys()
 {
-	if (g_CCore->GetGraphics()->renderMap)
-	{
-		if (this->isHolding(VK_OEM_PLUS))
-			g_CCore->GetGraphics()->mapScale *= 1.1f;
-		if (this->isHolding(VK_OEM_MINUS))
-			g_CCore->GetGraphics()->mapScale *= 0.9f;
-		g_CCore->GetGraphics()->mapScale = Tools::Clamp(g_CCore->GetGraphics()->mapScale, 0.5f, 2.0f);
-	}
 	if (this->isHolding(VK_TAB))
 	{
 		g_CCore->GetGraphics()->renderMap = 1;
@@ -52,6 +44,15 @@ void	CKeyboard::ProceedHoldingKeys()
 	if (this->isHolding(VK_F9))
 	{
 		g_CCore->GetGraphics()->TakeScreenshot();
+	}
+
+	if (g_CCore->GetGraphics()->renderMap)
+	{
+		if (this->isHolding(VK_OEM_PLUS) || this->isHolding(VK_ADD))
+			g_CCore->GetGraphics()->mapScale *= 1.1f;
+		if (this->isHolding(VK_OEM_MINUS) || this->isHolding(VK_SUBTRACT))
+			g_CCore->GetGraphics()->mapScale *= 0.9f;
+		g_CCore->GetGraphics()->mapScale = Tools::Clamp(g_CCore->GetGraphics()->mapScale, 0.5f, 2.0f);
 	}
 }
 

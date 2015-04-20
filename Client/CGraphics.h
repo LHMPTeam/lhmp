@@ -35,12 +35,17 @@ private:
 	IDirect3D8*			m_Direct3D;
 	LPDIRECT3DTEXTURE8	m_loadingscreen,m_nametag,m_gamemap,m_mapGUI;
 	LPD3DXFONT			m_chatfont;
-	HFONT				m_chatfontAPI;
 	bool				m_bShowNameTags;
 	CD3DFont*			m_d3dFont;
 	CFont*				m_cFont;
 	IDirect3DVertexBuffer8*	m_vb;
 	RakNet::TimeMS		lastScreenshotTime;
+
+	DWORD				m_dwRenderTextureBlock;
+	DWORD				m_dwRenderTextureBlockDeposit;
+
+
+	void				SetRenderTextureStateBlock();
 public:
 	CGraphics();
 	IDirect3DDevice8*	GetDevice();
@@ -86,10 +91,9 @@ public:
 	void				Clear(int, int, int, int, D3DCOLOR);
 	void				FillARGB(int x, int y, int w, int h, D3DCOLOR color);
 	void				FillARGB(int x, int y,float z, int w, int h, D3DCOLOR color);
-	void				RenderTexture(int x, int y, float z, int w, int h,LPDIRECT3DTEXTURE8 texture);
+	void				RenderTexture(int x, int y, float z, int w, int h,LPDIRECT3DTEXTURE8 texture,unsigned char alpha = 0xFF);
 
 	// states
-	bool				IsCamFreezed;
 	bool				renderMap;
 	bool				renderScoreboard;
 	bool				renderNetStat;
@@ -102,7 +106,6 @@ public:
 	CColoredText*		textiq;
 	CColoredText*		textiqSecond;
 
-	int					GetD3DSize(char[]);
 	void				D3DDrawText(char[], int, int, D3DCOLOR, bool shadow);
 
 	CFont*				GetFont();

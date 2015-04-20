@@ -32,12 +32,14 @@ void CNametags::Tick()
 				float maxDistance = 17.5;
 
 				int alpha = 255 * (1.25 - (distance / maxDistance));
-				if (alpha > 255) alpha = 255;
-				if (alpha <= 0) alpha = 0;
-				int alpha2 = alpha * 0.5;
 
-				this->RenderToTexture(i, alpha);
-				//}
+				// alpha be from interval <0,255>
+				alpha = Tools::Clamp(alpha, 0, 255);
+				char textureAlpha = alpha;
+				int alpha2 = alpha * 0.5;
+				
+				if (ped->nametag == NULL)
+					this->RenderToTexture(i);
 
 				if (ped->nametag != NULL)
 				{
@@ -47,15 +49,9 @@ void CNametags::Tick()
 					// if object is on screen
 					if (screen.z > 0.0f)
 					{
-						// sligtly push more forwards to local player
-						//screen.z -= 0.001f; 
 						// Retreive texture's size
 						D3DSURFACE_DESC desc;
 						ped->nametag->GetLevelDesc(0, &desc);
-
-						/*float ratio = (5 / Tools::GetDistanceBetween3DPoints(playerPosition, g_CCore->GetGame()->GetCameraPos()));
-						//if (ratio < 1.0f)
-							ratio = 1.0f;*/
 
 						int barWidth = 75;
 						int barHeight = 7;
@@ -89,13 +85,9 @@ void CNametags::Tick()
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - 2), screen.z, barWidth - 1, 2, healthBarColorBottom);
 
 						// now render player's nick (scaled using ratio)
+						// alpha - 0-255
 						g_CCore->GetGraphics()->RenderTexture(screen.x - (0.5f*desc.Width), screen.y - (desc.Height) - barHeight + 114, screen.z, desc.Width, desc.Height, ped->nametag);
 							
-						//bool state = (*(byte*)(ped->GetEntity() + 0x5E0) == 1);
-						/*byte state = ped->GetState();
-						char buff[500];
-						sprintf(buff, "State: %x", state);
-						g_CCore->GetGraphics()->D3DDrawText(buff,screen.x,screen.y,0xFFFF0000,true);*/
 					}
 				}
 			}
@@ -104,7 +96,7 @@ void CNametags::Tick()
 }
 
 
-void CNametags::RenderToTexture(int playerID, int alpha)
+void CNametags::RenderToTexture(int playerID)
 {
 	CPed* ped = g_CCore->GetPedPool()->Return(playerID);
 	if (ped)
@@ -142,11 +134,8 @@ void CNametags::RenderToTexture(int playerID, int alpha)
 			g_CCore->GetGraphics()->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
 			// now we are ready to render to texture
 
-			alpha = alpha * 2.33;
-			if (alpha > 255) alpha = 255;
-
-			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2) + 1, 128 - (size.cy / 2) + 1, D3DCOLOR_RGBA(0, 0, 0, alpha), false);
-			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2), 128 - (size.cy / 2), D3DCOLOR_RGBA(255, 255, 255, alpha), false);
+			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2) + 1, 128 - (size.cy / 2) + 1, D3DCOLOR_RGBA(0, 0, 0, 255), false);
+			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2), 128 - (size.cy / 2), D3DCOLOR_RGBA(255, 255, 255, 255), false);
 
 			// return D3D to previos stage and release unneeded resources
 			g_CCore->GetGraphics()->GetDevice()->SetRenderTarget(pOldTarget, oldStencil);

@@ -54,6 +54,9 @@ void CCore::Run()
 	byte disableInventoryOnFoot[] = "\xE9\xF1\x00\x00\x00";
 	byte disableInventoryInVehicle[] = "\xE9\x9E\x00\x00\x00";
 
+	byte preventIngameMap[] = "\xE9\xB8\x13\x00\x00\x90";
+
+	// TODO - probably unneeded since we are using DirectInput to block input
 	PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
 
 /*------ Is game loaded -> hook some code in game load, call our naked func IsGameLoaded ---------*/
@@ -67,6 +70,9 @@ void CCore::Run()
 
 	/*----------------- Prevent ESC menu trigger  ----------------------------*/
 	PatchBytes(0x005F9709, disableESCmenu);
+
+	/*----------------- Disable TAB ingame map -------------------------------*/
+	PatchBytes(0x0055131E, preventIngameMap);
 
 	/*-----------------	Skip menu, load "Free italy" (jump into our CC)---------------------------*/
 	PatchBytes(0x005F9C4B, jmpToFreeride);

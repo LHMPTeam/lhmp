@@ -14,9 +14,62 @@ CGraphics::CGraphics()
 	m_mapGUI		= NULL;
 	mapScale		= 1.0f;
 	m_bShowNameTags = true;
+	bShowHud = true;
 	m_bUserShowNameTags = true;
 
 	lastScreenshotTime = RakNet::GetTimeMS();
+	m_dwRenderTextureBlock = NULL;
+}
+
+
+void	CGraphics::SetRenderTextureStateBlock()
+{
+	for (int i = 0; i < 2; i++){
+		this->m_DirectDevice->BeginStateBlock();
+
+		m_DirectDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+		m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		m_DirectDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		m_DirectDevice->SetRenderState(D3DRS_ALPHAREF, 0x08);
+		m_DirectDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+		m_DirectDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		m_DirectDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		m_DirectDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+		m_DirectDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
+		m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
+		m_DirectDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
+		m_DirectDevice->SetRenderState(D3DRS_VERTEXBLEND, FALSE);
+		m_DirectDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
+		m_DirectDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+
+		//--- 
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+		//------
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+
+		//------ important for rendering as sprite---
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+		m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+		m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+
+		m_DirectDevice->SetRenderState(D3DRS_WRAP0, 0);
+
+		// now save it
+		if (i == 0)
+			this->m_DirectDevice->EndStateBlock(&this->m_dwRenderTextureBlock);
+		else
+			this->m_DirectDevice->EndStateBlock(&m_dwRenderTextureBlockDeposit);
+	}
 }
 
 IDirect3DDevice8*	CGraphics::GetDevice()
@@ -25,17 +78,14 @@ IDirect3DDevice8*	CGraphics::GetDevice()
 }
 void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 {
-	m_bShowNameTags = true;
-	bShowHud = true;
-	IsCamFreezed = false;
+	// the most important one
 	m_DirectDevice = pDxDevice;
-	m_chatfontAPI = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, 0, TEXT("Arial"));  //arial bold, lucida console
-	D3DXCreateFont(m_DirectDevice, m_chatfontAPI, &m_chatfont);
-	//D3DXCreateFont(m_DirectDevice,CreateFont(18,0,0,0,0,0,0,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,0,TEXT("Arial")),&m_chatfont);
+	// place it as first to prevent startup crashes
+	m_cFont = new CFont("arial", 9, D3DFONT_BOLD);
+
+	// initialize sprite system / our sprites(textures)
 	if (SUCCEEDED(D3DXCreateSprite(m_DirectDevice, &m_sprite)))
 	{
-		//D3DXCreateTextureFromFileA( d3ddev, "test.bmp", &pTexture);
-		//D3DXCreateTextureFromFileExA( d3ddev, "test.bmp", &pTexture);
 		D3DXCreateTextureFromFileExA(m_DirectDevice, "lhmp/loadingscreen.png", D3DX_DEFAULT, D3DX_DEFAULT,
 			1, 0, D3DFMT_X8R8G8B8,
 			D3DPOOL_DEFAULT, D3DX_FILTER_LINEAR,
@@ -53,17 +103,12 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 			NULL, NULL, &m_mapGUI);
 	}
 
+	HFONT font =  CreateFont(20, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, 0, TEXT("Arial"));  //arial bold, lucida console
+	D3DXCreateFont(m_DirectDevice, font, &m_chatfont);
+
 	g_CCore->GetIngameMenu()->Init();
 
-	textiq = new CColoredText("#ff0000aha, toto je #adefmarha#ccccccS#909090U#508090V#10EEBBE #ff00002#ff00ff0#ff0a0b1#ff90904 ");
-
-	m_cFont = new CFont("arial", 9, D3DFONT_BOLD);
-
-	m_d3dFont = new CD3DFont("arial", 18);
-	m_d3dFont->InitDeviceObjects(this->GetDevice());
-	m_d3dFont->RestoreDeviceObjects();
-
-
+	// Vertex buffer is used during quad rendering
 	HRESULT hr = this->GetDevice()->CreateVertexBuffer(6 * sizeof(my_vertex), //Size of memory to be allocated
 		//Number of vertices * size of a vertex
 		D3DUSAGE_WRITEONLY,  //We never need to read from it so
@@ -71,10 +116,7 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 		D3D8T_CUSTOMVERTEX,  //Our custom vertex specifier (coordinates & a colour)
 		D3DPOOL_MANAGED,     //Tell DirectX to manage the memory of this resource
 		&this->m_vb);              //Pointer to our Vertex Buffer, after this call
-	//It will point to a valid vertex buffer
-	/*if (FAILED(hr)){
-		FatalError("Error creating vertex buffer");
-	}*/
+
 
 }
 
@@ -121,8 +163,8 @@ void DebugWeapons()
 
 void CGraphics::Render()
 {
-	// TODO - remove this debug bullshits
-	/*if (g_CCore->GetChat()->chatTexture != NULL)
+	/*// TODO - remove this debug bullshits
+	if (g_CCore->GetChat()->chatTexture != NULL)
 	{
 		D3DSURFACE_DESC desc;
 		g_CCore->GetChat()->chatTexture->GetLevelDesc(0, &desc);
@@ -144,8 +186,9 @@ void CGraphics::Render()
 		//this->FillARGB(screen.x, screen.y, screen.z, 40, 40, 0xFFFF0000);
 		this->RenderTexture(screen.x - (0.5f*desc.Width*ratio), screen.y - (desc.Height*ratio) - 20 - 10, screen.z, (desc.Width*ratio), (desc.Height*ratio), g_CCore->GetChat()->chatTexture);
 
-		this->FillARGB(screen.x -(80*ratio), screen.y - 20, screen.z, 160*ratio, 20, D3DCOLOR_XRGB(0, 255, 0));
-	}
+		//this->FillARGB(screen.x -(80*ratio), screen.y - 20, screen.z, 160*ratio, 20, D3DCOLOR_XRGB(0, 255, 0));
+	}*/
+	/*
 
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	// Render debug - Local Playear isAlive
@@ -794,113 +837,33 @@ void CGraphics::FillARGB(int x, int y,float z,  int w, int h, D3DCOLOR color)
 
 }
 
-void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEXTURE8 texture)
+// Render texture with precalculated position
+void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEXTURE8 texture, unsigned char alpha)
 {
-#define OURVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1)
+	if (this->m_dwRenderTextureBlock == NULL)
+		this->SetRenderTextureStateBlock();
+
+	// save all current states
+	this->m_DirectDevice->CaptureStateBlock(m_dwRenderTextureBlockDeposit);
+	// apply states needed to correct render
+	this->m_DirectDevice->ApplyStateBlock(this->m_dwRenderTextureBlock);
+
+#define OURVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE)
 	struct thisVertex {
 		float x, y, z;
 		float rhw;
+		DWORD color;
 		float tu, tv;
 	};
 	this->GetDevice()->SetTexture(0, texture);
-
-	// TEST
-	m_DirectDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHAREF, 0x08);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-	m_DirectDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	m_DirectDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	m_DirectDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_VERTEXBLEND, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
-
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-
-	m_DirectDevice->SetRenderState(D3DRS_WRAP0, 0);
-	// TEST end
-
-	/*m_DirectDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	m_DirectDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHAREF, 0x08);
-	m_DirectDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-	m_DirectDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	m_DirectDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	m_DirectDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
-	m_DirectDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
-	m_DirectDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
-	m_DirectDevice->SetRenderState(D3DRS_COLORWRITEENABLE,
-		D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN |
-		D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);*/
-	/*m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-	m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-	m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);*/
-
-	/*m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);*/
-
 	
-	/*m_DirectDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);*/
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-	//m_DirectDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-	//m_DirectDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_NONE);
-	//m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_NONE);
-
 	// x, y, z, rhw, color
+	DWORD color = (alpha << 24);
 	thisVertex g_square_vertices[] = {
-		{ (float)x, (float)y, z, 1.0f, 0.0f, 0.0f },
-		{ (float)(x + w), (float)y, z, 1.0f, 1.0f, 0.0f },
-		{ (float)x, (float)(y + h), z, 1.0f, 0.0f, 1.0f }, 
-		{ (float)(x + w), (float)(y + h), z, 1.0f, 1.0f, 1.0f }
+		{ (float)x, (float)y, z, 1.0f,color, 0.0f, 0.0f },
+		{ (float)(x + w), (float)y, z, 1.0f, color, 1.0f, 0.0f },
+		{ (float)x, (float)(y + h), z, 1.0f, color, 0.0f, 1.0f },
+		{ (float)(x + w), (float)(y + h), z, 1.0f, color, 1.0f, 1.0f }
 	};
 
 	unsigned char*	buffer;
@@ -918,10 +881,13 @@ void CGraphics::RenderTexture(int x, int y, float z, int w, int h, LPDIRECT3DTEX
 	this->GetDevice()->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
 	// SetTexture NULL is important, it makes texture availables Release() function
-	m_DirectDevice->SetTexture(0,NULL);
-	m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+	/*m_DirectDevice->SetTexture(0,NULL);
+	/m_DirectDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
 	m_DirectDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+	*/
 
+	// in the end just reset the previous states
+	this->m_DirectDevice->ApplyStateBlock(m_dwRenderTextureBlockDeposit);
 
 }
 
@@ -1226,6 +1192,13 @@ __declspec(noinline) void CGraphics::OnLostDevice()
 	this->m_cFont->OnDeviceLost();
 
 	g_CCore->GetNametags()->OnLostDevice();
+
+	if (this->m_dwRenderTextureBlock)
+		this->m_DirectDevice->DeleteStateBlock(m_dwRenderTextureBlock);
+	if (m_dwRenderTextureBlockDeposit)
+		this->m_DirectDevice->DeleteStateBlock(m_dwRenderTextureBlockDeposit);
+	this->m_dwRenderTextureBlock = NULL;
+	this->m_dwRenderTextureBlockDeposit = NULL;
 }
 void CGraphics::OnResetDevice()
 {
@@ -1289,13 +1262,6 @@ void	CGraphics::DrawColoredText(CColoredText* text, int x, int y, bool ifShadow)
 	}
 }
 
-
-int		CGraphics::GetD3DSize(char text[])
-{
-	SIZE textSize;
-	m_d3dFont->GetTextExtent(text, &textSize);
-	return textSize.cx;
-}
 void	CGraphics::D3DDrawText(char text[], int x, int y , D3DCOLOR color, bool shadow)
 {
 	//m_d3dFont->

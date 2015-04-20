@@ -144,7 +144,9 @@ void	CColoredText::GetBlocksLength()
 	{
 		do
 		{
-			next->width = g_CCore->GetGraphics()->GetFontWidth(next->text);
+			//next->width = g_CCore->GetGraphics()->GetFontWidth(next->text);
+			SIZE size = g_CCore->GetGraphics()->GetFont()->GetFontWidth(next->text);
+			next->width = size.cx;
 			width += next->width;
 			next = next->next;
 		} while (next != NULL);
@@ -327,7 +329,10 @@ void	CColoredText::ReCalculate()
 		do
 		{
 			count++;
-			next->width = g_CCore->GetGraphics()->GetFontWidth(next->text);
+			//next->width = g_CCore->GetGraphics()->GetFontWidth(next->text);
+			SIZE size = g_CCore->GetGraphics()->GetFont()->GetFontWidth(next->text);
+			next->width = size.cx;
+
 			width += next->width;
 			length += strlen(next->text);
 			next = next->next;

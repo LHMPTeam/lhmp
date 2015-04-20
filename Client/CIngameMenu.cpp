@@ -114,7 +114,6 @@ void CIngameMenu::Render()
 		}
 	}
 
-	//g_CCore->GetGraphics()->D3DDrawText("Ahoj moj", 50, 100, 0xFF00adef, true);
 }
 
 
