@@ -924,6 +924,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				veh->SetActive(vehicle.isSpawned);
 				veh->SetPosition(vehicle.position);
 				veh->SetRotation(vehicle.rotation);
+				veh->SetTimeStamp(timestamp);
 				veh->SetUpInterpolation();
 				veh->SetDamage(vehicle.damage);
 				veh->ToggleRoof(vehicle.roofState);

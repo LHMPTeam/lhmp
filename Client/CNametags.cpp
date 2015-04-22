@@ -19,7 +19,7 @@ void CNametags::Tick()
 			Vector3D playerPosition = ped->GetPEDFramePosition();
 			playerPosition.y += 2.1;
 			if (ped->IsDucking())
-				playerPosition.y -= 0.8;
+				playerPosition.y -= 0.75;
 			// check whether he is close to local player
 			if (Tools::GetDistanceBetween3DPointsEx(position, playerPosition, 50.0f) < 2)
 			{

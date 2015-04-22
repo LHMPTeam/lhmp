@@ -548,6 +548,16 @@ void CChat::DoCommand(char str[])
 				*/
 			}
 		}
+	} else if (strcmp(command, "speed") == 0) {
+		if (g_CCore->GetLocalPlayer()->IDinCar != -1) {
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(g_CCore->GetLocalPlayer()->IDinCar);
+
+			if (veh != NULL) {
+				Vector3D speed = veh->GetSpeed();
+
+				g_CCore->GetChat()->AddDebugMessage("%f, %f, %f", speed.x, speed.y, speed.z);
+			}
+		}
 	}
 	else if (strcmp(command, "fas") == 0)
 	{

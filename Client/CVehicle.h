@@ -22,6 +22,7 @@ private:
 	Vector3D		actual, previous;
 	RakNet::TimeMS	timeLastMessage;
 	RakNet::TimeMS	timeDiff;
+	RakNet::TimeMS	idleStartTime;
 	Vector3D		interpolationVector; // metres per ms
 	Vector3D		tempVector;
 

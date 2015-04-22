@@ -47,6 +47,7 @@ CVehicle::CVehicle()
 
 	timeDiff = timeGetTime();
 	timeLastMessage = timeDiff;
+	idleStartTime = RakNet::GetTimeMS();
 
 	for (int i = 0; i < 4; i++)
 		this->Seat[i] = -1;
@@ -110,7 +111,7 @@ void CVehicle::UpdateGameObject()
 
 void CVehicle::SetUpInterpolation()
 {
-	this->interpolation.SetTimestamp(RakNet::GetTimeMS());
+	//this->interpolation.SetTimestamp(RakNet::GetTimeMS());
 	this->interpolation.SetUpInterpolation(this->playerPos);
 	this->interpolation.SetUpInterpolationRotVehicle(this->rotation, this->secondRot);
 }
@@ -130,7 +131,18 @@ void CVehicle::Interpolate()
 
 		DWORD entity = this->GetEntity();
 		float x = this->speed.x, y = this->speed.y, z = this->speed.z;
-		_asm
+
+		// Fix so you can get out of car if its stationary
+		if (abs(speed.x + speed.y) < 1) {
+			idleStartTime = RakNet::GetTimeMS();
+		}
+
+		// After 2 secs of idle, turn off engine
+		if (idleStartTime - RakNet::GetTimeMS() > 2000) {
+			g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
+		}
+
+		/*_asm
 		{
 			pushad
 			mov EDX,entity
@@ -141,7 +153,7 @@ void CVehicle::Interpolate()
 			mov EAX, z
 			MOV DWORD PTR DS : [EDX+0x1F84], EAX
 			popad
-		}
+		}*/
 		
 		if (hasDriver == false)
 		{
@@ -152,6 +164,10 @@ void CVehicle::Interpolate()
 			//if ((*(float*)(entity + 0x40C) - this->playerPos.x) > 0.3 || (*(float*)(entity + 0x410) - this->playerPos.y) > 0.3 || (*(float*)(entity + 0x414) - this->playerPos.z) > 0.3)
 		//	{
 				g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
+				
+				// Shut down engine if no driver so people can get out
+				g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
+
 				/*(float*)(entity + 0x40C) = this->playerPos.x;
 				*(float*)(entity + 0x410) = this->playerPos.y;
 				*(float*)(entity + 0x414) = this->playerPos.z;

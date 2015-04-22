@@ -860,12 +860,12 @@ void Launcher::ShowServerInfo() {
         ui->label_22->setText(ping);
         ui->label_23->setText(ping);
 
-        if (map == "freeride") {
+        if (map == "freeride" || map.contains("mesto", Qt::CaseInsensitive)) {
             ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/city.png);}");
 
             ui->label_6->setText("Lost Heaven (City)");
             ui->label_19->setText("Lost Heaven (City)");
-        } else if (map == "freekrajina") {
+        } else if (map == "freekrajina" || map.contains("krajina", Qt::CaseInsensitive)) {
             ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/countryside.png);}");
 
             ui->label_6->setText("Lost Heaven (Countryside)");
