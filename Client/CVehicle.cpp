@@ -134,12 +134,14 @@ void CVehicle::Interpolate()
 
 		// Fix so you can get out of car if its stationary
 		if (abs(speed.x + speed.y) < 1) {
-			idleStartTime = RakNet::GetTimeMS();
-		}
+			// After 2 secs of idle, turn off engine
+			if (idleStartTime - RakNet::GetTimeMS() > 2000) {
+				g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
 
-		// After 2 secs of idle, turn off engine
-		if (idleStartTime - RakNet::GetTimeMS() > 2000) {
-			g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
+				idleStartTime = RakNet::GetTimeMS();
+			}
+		} else {
+			g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 1);
 		}
 
 		/*_asm

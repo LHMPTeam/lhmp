@@ -831,7 +831,7 @@ void CGame::AfterRespawn()
 	//g_CCore->GetGame()->UpdateControls();		--- NO LONGER NEEDED
 	g_CCore->GetGame()->PoliceManager();
 
-	g_CCore->GetChat()->AddMessage("Respawned !");
+	//g_CCore->GetChat()->AddMessage("Respawned !");
 	g_CCore->GetGame()->DisableBridges();
 	for(int i = 0; i < MAX_PLAYERS;i++)
 	{
