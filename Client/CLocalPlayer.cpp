@@ -389,9 +389,9 @@ void	CLocalPlayer::ServerUpdateWeapon()
 
 void	CLocalPlayer::OnDeath(int killer, int reason, int part)
 {
-	char buff[250];
+	/*char buff[250];
 	sprintf(buff, "Attacker: %d Reason %d Part %d", killer, reason, part);
-	g_CCore->GetChat()->AddMessage(buff);
+	g_CCore->GetChat()->AddMessage(buff);*/
 
 	// Send info to server
 	RakNet::BitStream bsOut;

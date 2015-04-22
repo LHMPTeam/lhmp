@@ -57,7 +57,7 @@ bool CNetworkManager::ConnectServer()
 
 void CNetworkManager::OnConnectionAccepted(RakNet::Packet* packet)
 {
-	g_CCore->GetChat()->AddMessage("#ff8600Connection accepted.");
+	g_CCore->GetChat()->AddMessage("#00d717Connection accepted.");
 	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID)ID_INITLHMP);
 	//bsOut.Write(NickName);
@@ -157,7 +157,7 @@ void CNetworkManager::Pulse()
 			//printf("The server is full.\n");
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
-			g_CCore->GetChat()->AddMessage("#ff8600Disconnected from the server.");
+			g_CCore->GetChat()->AddMessage("#f31d2fDisconnected from the server.");
 				//printf("We have been disconnected.\n");
 			break;
 		case ID_CONNECTION_LOST:

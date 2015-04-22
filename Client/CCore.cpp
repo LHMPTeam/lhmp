@@ -56,6 +56,8 @@ void CCore::Run()
 
 	byte preventIngameMap[] = "\xE9\xB8\x13\x00\x00\x90";
 
+	byte disableCompas[] = "\xE9\xD0\xB6\x00\x00";
+
 	// TODO - probably unneeded since we are using DirectInput to block input
 	PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
 
@@ -158,6 +160,7 @@ void CCore::Run()
 	//PatchBytes(0x0049BB23, drivebyshootfix);
 	// now as a hook (check CHooks)
 
+	PatchBytes(0x005BC005, disableCompas);
 }
 
 void CCore::ShutdownClient()
