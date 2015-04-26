@@ -1045,7 +1045,7 @@ void CGraphics::RenderScoreboard()
 	int numLines = 2;
 	// Render title
 	FillARGB(x, y - 25, width, 25, 0xffdb0000);
-	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetServerName(), x + 10, y - 22, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText(g_CCore->GetNetwork()->GetServerName(), x + 8, y - 20, 0xffffffff, true);
 	//DrawText(g_CCore->GetNetwork()->GetServerName(),x+10,y-23,0xffffffff,true);
 	// Render content
 	for(int ID = 0; ID < MAX_PLAYERS;ID++)
@@ -1109,7 +1109,7 @@ void CGraphics::RenderStatistics()
 	int x = (screen.x - width) / 2, y = screen.y / 2;
 	// Title
 	FillARGB(x, y - 25, width, 25, 0xffdb0000);
-	g_CCore->GetGraphics()->GetFont()->DrawText("Statistics", x + 10, y - 22, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("Statistics", x + 8, y - 20, 0xffffffff, true);
 
 	FillARGB(x, y, width, 160, 0x60000000);
 	sprintf(buff, "Bytes Per Second Received: %.2f%sB", Tools::GetMetricUnitNum((float)uBytesPerSecondReceived), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)uBytesPerSecondReceived)]);

@@ -247,9 +247,9 @@ void CFileTransfer::Render()
 
 					// Title + container
 					g_CCore->GetGraphics()->FillARGB(x, y - 25, 384, 25, 0xffdb0000);
-					g_CCore->GetGraphics()->GetFont()->DrawText("Downloading resources", x + 10, y - 22, 0xffffffff, true);
+					g_CCore->GetGraphics()->GetFont()->DrawText("Downloading resources", x + 8, y - 20, 0xffffffff, true);
 
-					g_CCore->GetGraphics()->FillARGB(x, y, 384, 85, 0x60000000);
+					g_CCore->GetGraphics()->FillARGB(x, y, 384, 135, 0x60000000);
 
 					// file downloading status
 					char buff[255];
@@ -257,13 +257,14 @@ void CFileTransfer::Render()
 					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 20, y + 10, 0xffffffff);
 
 					float ratio = this->fileList[i]->GetAlreadyWritten() / (float)this->fileList[i]->GetSize();
-					g_CCore->GetGraphics()->FillARGB(x + 20, y + 35, 344, 15, 0xaa000000);
-					g_CCore->GetGraphics()->FillARGB(x + 20, y + 35, (int)(344 * ratio), 15, 0xFFff0000);
+					g_CCore->GetGraphics()->FillARGB(x + 20, y + 30, 344, 15, 0xaa000000);
+					g_CCore->GetGraphics()->FillARGB(x + 20, y + 30, (int)(344 * ratio), 15, 0xFFff0000);
 
 					sprintf(buff, "%.2f%sB / %.2f%sB", Tools::GetMetricUnitNum((float)this->fileList[i]->GetAlreadyWritten()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetAlreadyWritten())],
 						Tools::GetMetricUnitNum((float)this->fileList[i]->GetSize()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetSize())]);
-					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 215, y + 55, 0xffffffff);
 
+					int width = g_CCore->GetGraphics()->GetFont()->GetFontWidth(buff).cx;
+					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 364 - width, y + 50, 0xffffffff);
 
 					// overall (received/awaiting bytes)
 					//x = (int)((screen.x - 384) / 2), y = (int)(screen.y*0.4+90+40);
@@ -274,9 +275,20 @@ void CFileTransfer::Render()
 
 					g_CCore->GetGraphics()->FillARGB(x, y, 384, 60, 0x60000000);*/
 
+					sprintf(buff, "%.2f%sB / %.2f%sB", Tools::GetMetricUnitNum((float)this->receivedBytes), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->receivedBytes)],
+						Tools::GetMetricUnitNum((float)this->overallBytes), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->overallBytes)]);
+
+					g_CCore->GetGraphics()->GetFont()->DrawTextA("Total progress:", x + 20, y + 70, 0xffffffff);
+
+					width = g_CCore->GetGraphics()->GetFont()->GetFontWidth(buff).cx;
+					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 364 - width, y + 110, 0xffffffff);
+
 					float overallRatio = (float)this->receivedBytes / (float)this->overallBytes;
-					g_CCore->GetGraphics()->FillARGB(x, y + 85, 384, 20, 0xaa000000);
-					g_CCore->GetGraphics()->FillARGB(x, y + 85, (int)(384 * overallRatio), 20, 0xFFff0000);
+					/*g_CCore->GetGraphics()->FillARGB(x, y + 85, 384, 20, 0xaa000000);
+					g_CCore->GetGraphics()->FillARGB(x, y + 85, (int)(384 * overallRatio), 20, 0xFFff0000);*/
+
+					g_CCore->GetGraphics()->FillARGB(x + 20, y + 90, 344, 15, 0xaa000000);
+					g_CCore->GetGraphics()->FillARGB(x + 20, y + 90, (int)(344 * overallRatio), 15, 0xFFff0000);
 
 					return;
 				}
