@@ -3621,7 +3621,7 @@ void CGame::SetTrafficVisible(bool baf)
 	}
 }
 
-DWORD CGame::CreateSoundFrame(DWORD frame, char* filename, float volume, float radius)
+DWORD CGame::PlaySoundAtFrame(DWORD frame, char* filename, float volume, float radius)
 {
 	DWORD sound_id = NULL;
 
@@ -3667,6 +3667,25 @@ DWORD CGame::CreateSoundFrame(DWORD frame, char* filename, float volume, float r
 		CALL EAX
 			MOV sound_id, EAX
 			add ESP, 0x500
+	}
+}
+
+void CGame::StopSound(DWORD soundid)
+{
+	__asm
+	{
+		FLD DWORD PTR DS : [soundid]
+			PUSH 0x3A83126F
+			PUSH 0
+			MOV EAX, 0x06249F0
+			CALL EAX
+			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			PUSH EAX
+			MOV EAX, 0x00425390
+			CALL EAX
+			MOV ECX, EAX
+			MOV EAX, 0x005E8790
+			CALL EAX
 	}
 }
 

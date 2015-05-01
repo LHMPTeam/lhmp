@@ -199,8 +199,8 @@ public:
 	static void SetFrameModel(DWORD, char*);
 	static void SetFramePos(DWORD, float, float, float);
 
-	static DWORD CreateSoundFrame(DWORD, char*, float, float);
-	static void  RemoveSoundFrame(DWORD);
+	static DWORD PlaySoundAtFrame(DWORD, char*, float, float);
+	static void  StopSound(DWORD);
 
 	static DWORD CreateEmptyFrame();
 	static DWORD FindFrame(char*);
