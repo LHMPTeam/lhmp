@@ -143,8 +143,8 @@ namespace Tools
 	static Vector3D ComputeOffsetDegrees(float degree)
 	{
 		Vector3D ang;
-		ang.x = (float)(cos(degree*RADIAN));
-		ang.z = (float)(sin(degree*RADIAN));
+		ang.x = (float)(sin(degree*RADIAN));
+		ang.z = (float)(cos(degree*RADIAN));
 		return ang;
 	}
 
@@ -152,14 +152,14 @@ namespace Tools
 	// 180 means interval <-180,180>
 	static float RotationTo180(float x, float y)
 	{
-		return atan2(x, y);
+		return atan2f(x, y)*180.0f/3.14f;
 	}
 
 	// convert unit circle ratios (ingame rotation system) into 360 degree system
 	// interval <0,360>
 	static float RotationTo360(float x, float y)
 	{
-		float result = atan2(x, y)*(float)RADIAN;	// actually, this converts to degrees
+		float result = atan2f(x, y)*180.0f / 3.14f;	// actually, this converts to degrees
 		if (result < 0)
 		{
 			result = 360.0f - result*(-1);

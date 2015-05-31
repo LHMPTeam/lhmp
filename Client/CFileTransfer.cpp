@@ -141,9 +141,14 @@ void CFileTransfer::InitTransfer(RakNet::BitStream* stream)
 	out.Write((RakNet::MessageID) FILETRANSFER_INIT);
 	out.Write((int)this->fileList.size());
 
+	g_CCore->GetLog()->AddLog("Get files:");
 	for (unsigned int i = 0; i < this->fileList.size(); i++)
 	{
 		out.Write(this->fileList[i]->GetID());
+		char buff[200];
+		sprintf(buff, "---%s,%s", this->fileList[i]->GetName(), this->fileList[i]->GetCheckSum());
+		g_CCore->GetLog()->AddLog(buff);
+		
 	}
 	g_CCore->GetNetwork()->GetPeer()->Send(&out, HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_RAKNET_GUID, true);
 	if (this->fileList.size() > 0)
@@ -151,6 +156,18 @@ void CFileTransfer::InitTransfer(RakNet::BitStream* stream)
 };
 
 CFileTransfer::CFileTransfer()
+{
+	this->status = FILETRANSFER_STATE::NO_TRANSFER;
+	this->fileList.clear();
+	this->downloadingID = 0;
+
+	this->overallBytes = 0;
+	this->receivedBytes = 0;
+}
+
+
+
+void CFileTransfer::Reset()
 {
 	this->status = FILETRANSFER_STATE::NO_TRANSFER;
 	this->fileList.clear();
@@ -219,6 +236,12 @@ void CFileTransfer::HandlePacket(RakNet::BitStream* stream)
 								{
 									// Add to our file system
 									g_CCore->GetFileSystem()->AddFile(this->fileList[i]->GetName(), this->fileList[i]->GetCheckSum());
+
+									char log[300];
+									sprintf(log, "File: %s %s", this->fileList[i]->GetName(), this->fileList[i]->GetCheckSum());
+									g_CCore->GetLog()->AddLog(log);
+									sprintf(log, "File: size[%d]", this->fileList[i]->GetSize());
+									g_CCore->GetLog()->AddLog(log);
 									this->fileList[i]->CloseHandle();
 								}
 	}
@@ -246,7 +269,7 @@ void CFileTransfer::Render()
 					int x = (int)((screen.x - 384) / 2), y = (int)(screen.y*0.4);
 
 					// Title + container
-					g_CCore->GetGraphics()->FillARGB(x, y - 25, 384, 25, 0xffdb0000);
+					g_CCore->GetGraphics()->FillARGB(x, y - 25, 384, 25, 0xffdb0000);                    
 					g_CCore->GetGraphics()->GetFont()->DrawText("Downloading resources", x + 8, y - 20, 0xffffffff, true);
 
 					g_CCore->GetGraphics()->FillARGB(x, y, 384, 135, 0x60000000);
@@ -256,15 +279,16 @@ void CFileTransfer::Render()
 					sprintf(buff, "Resource: %s", this->fileList[i]->GetName());
 					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 20, y + 10, 0xffffffff);
 
-					float ratio = this->fileList[i]->GetAlreadyWritten() / (float)this->fileList[i]->GetSize();
+					float ratio = this->fileList[i]->GetAlreadyWritten() / (float)this->fileList[i]->GetSize();                    
 					g_CCore->GetGraphics()->FillARGB(x + 20, y + 30, 344, 15, 0xaa000000);
 					g_CCore->GetGraphics()->FillARGB(x + 20, y + 30, (int)(344 * ratio), 15, 0xFFff0000);
 
 					sprintf(buff, "%.2f%sB / %.2f%sB", Tools::GetMetricUnitNum((float)this->fileList[i]->GetAlreadyWritten()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetAlreadyWritten())],
 						Tools::GetMetricUnitNum((float)this->fileList[i]->GetSize()), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->fileList[i]->GetSize())]);
-
+					
 					int width = g_CCore->GetGraphics()->GetFont()->GetFontWidth(buff).cx;
 					g_CCore->GetGraphics()->GetFont()->DrawTextA(buff, x + 364 - width, y + 50, 0xffffffff);
+
 
 					// overall (received/awaiting bytes)
 					//x = (int)((screen.x - 384) / 2), y = (int)(screen.y*0.4+90+40);
@@ -274,7 +298,6 @@ void CFileTransfer::Render()
 					g_CCore->GetGraphics()->GetFont()->DrawText("Overall progress", x + 10, y - 22, 0xffffffff, true);
 
 					g_CCore->GetGraphics()->FillARGB(x, y, 384, 60, 0x60000000);*/
-
 					sprintf(buff, "%.2f%sB / %.2f%sB", Tools::GetMetricUnitNum((float)this->receivedBytes), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->receivedBytes)],
 						Tools::GetMetricUnitNum((float)this->overallBytes), Tools::MetricUnits[Tools::GetMetricUnitIndex((float)this->overallBytes)]);
 
@@ -289,6 +312,7 @@ void CFileTransfer::Render()
 
 					g_CCore->GetGraphics()->FillARGB(x + 20, y + 90, 344, 15, 0xaa000000);
 					g_CCore->GetGraphics()->FillARGB(x + 20, y + 90, (int)(344 * overallRatio), 15, 0xFFff0000);
+
 
 					return;
 				}

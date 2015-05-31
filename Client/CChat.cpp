@@ -999,63 +999,66 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 	
 	device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 255, 255), 1.0f, 0);
 	
-	if (this->IsBackgroundActive() == 1)
+	if (elementCount > 0)
 	{
+		if (this->IsBackgroundActive() == 1)
+		{
+			int howMany = elementCount;
+			if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
+				howMany = this->CHAT_LINES_PER_RENDER;
+			g_CCore->GetGraphics()->Clear(10, 10, 10 + CHAT_WIDTH, 20 + (howMany * 20), D3DCOLOR_ARGB(200, 0, 0, 0));
+		}
+		int iRendered = 0;
+
+		// Render chat lines
 		int howMany = elementCount;
 		if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
 			howMany = this->CHAT_LINES_PER_RENDER;
-		g_CCore->GetGraphics()->Clear(10, 10, 10 + CHAT_WIDTH, 20 + (howMany * 20), D3DCOLOR_ARGB(200, 0, 0, 0));
-	}
-	int iRendered = 0;
 
-	// Render chat lines
-	int howMany = elementCount;
-	if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
-		howMany = this->CHAT_LINES_PER_RENDER;
-
-	CChatStack* stackPointer = this->ChatPoolStart;
-	for (int i = 0; i < howMany; i++)
-	{
-		int line_y = (20 * (howMany - i));
-		//g_CCore->GetGraphics()->DrawTextA(stack, 20, line_y, 0xffffffff, true, true);
-		g_CCore->GetGraphics()->GetFont()->DrawColoredText(stackPointer->text, 20, line_y, true);
-		stackPointer = stackPointer->next;
-	}
-	iRendered = howMany;
-	// Render input with its background if it's needed
-	if (IsTyping())
-	{
-
-		int base_y = 30 + (20 * iRendered);
-		iRendered = 0;
-		if (ChatMessage == "")
+		CChatStack* stackPointer = this->ChatPoolStart;
+		for (int i = 0; i < howMany; i++)
 		{
-			if (this->IsBackgroundActive() == true)
-				g_CCore->GetGraphics()->Clear(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				//g_CCore->GetGraphics()->FillARGB(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-			//return;
-			g_CCore->GetGraphics()->GetFont()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
-			//g_CCore->GetGraphics()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+			int line_y = (20 * (howMany - i));
+			//g_CCore->GetGraphics()->DrawTextA(stack, 20, line_y, 0xffffffff, true, true);
+			g_CCore->GetGraphics()->GetFont()->DrawColoredText(stackPointer->text, 20, line_y, true);
+			stackPointer = stackPointer->next;
 		}
-		else
+		iRendered = howMany;
+		// Render input with its background if it's needed
+		if (IsTyping())
 		{
-			char buff[255];
-			sprintf(buff, "%s", ChatMessage.c_str());
-			int index = 0;
-			while (1)
+
+			int base_y = 30 + (20 * iRendered);
+			iRendered = 0;
+			if (ChatMessage == "")
 			{
-				int howMuchWeNeed = g_CCore->GetGraphics()->GetStrlenForWidth(CHAT_WIDTH - 10, buff + index);
-				std::string	farba = g_CCore->GetGraphics()->GetLastColorInText(buff, index);
-				if (howMuchWeNeed == 0) break;
-				char buf[255];
-				sprintf(buf, "%s%s", farba.c_str(), ChatMessage.substr(index, howMuchWeNeed).c_str());
-				int line_y = base_y + (30 * iRendered);
 				if (this->IsBackgroundActive() == true)
-					g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				//g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
-				g_CCore->GetGraphics()->GetFont()->DrawTextA(buf, 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
-				index += howMuchWeNeed;
-				iRendered++;
+					g_CCore->GetGraphics()->Clear(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
+				//g_CCore->GetGraphics()->FillARGB(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
+				//return;
+				g_CCore->GetGraphics()->GetFont()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+				//g_CCore->GetGraphics()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
+			}
+			else
+			{
+				char buff[255];
+				sprintf(buff, "%s", ChatMessage.c_str());
+				int index = 0;
+				while (1)
+				{
+					int howMuchWeNeed = g_CCore->GetGraphics()->GetStrlenForWidth(CHAT_WIDTH - 10, buff + index);
+					std::string	farba = g_CCore->GetGraphics()->GetLastColorInText(buff, index);
+					if (howMuchWeNeed == 0) break;
+					char buf[255];
+					sprintf(buf, "%s%s", farba.c_str(), ChatMessage.substr(index, howMuchWeNeed).c_str());
+					int line_y = base_y + (30 * iRendered);
+					if (this->IsBackgroundActive() == true)
+						g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
+					//g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+					g_CCore->GetGraphics()->GetFont()->DrawTextA(buf, 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+					index += howMuchWeNeed;
+					iRendered++;
+				}
 			}
 		}
 	}

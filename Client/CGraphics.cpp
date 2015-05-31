@@ -199,6 +199,9 @@ void CGraphics::Render()
 		this->DrawTextA(buff, 500, 100, 0xFFFF0000, true);
 	}*/
 
+	// at first, render using scripts, then move to UI
+	g_CCore->GetSquirrel()->onRender();
+
 	PED* ped = g_CCore->GetGame()->GetLocalPED();
 	// Render nametags
 	if (ped != NULL)

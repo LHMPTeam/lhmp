@@ -51,6 +51,8 @@ public:
 	CFileTransfer();
 	void HandlePacket(RakNet::BitStream* stream);
 	void Render();
+
+	void Reset();
 };
 
 #endif

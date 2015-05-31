@@ -1,6 +1,7 @@
 #include "CNetwork.h"
 #include "CLocalPlayer.h"
 #include "../shared/structures.h"
+#include "../shared/CBitArray.h"
 #include "CCore.h"
 #include "RakNetTime.h"
 #include <fstream>
@@ -22,7 +23,7 @@ CNetworkManager::CNetworkManager()
 
 	std::fstream nickname;
 	
-	nickname.open("lhmp/nickname.txt",std::ios::in);
+	/*nickname.open("lhmp/nickname.txt",std::ios::in);
 	if(nickname.is_open())
 	{
 		nickname	>> NickName;
@@ -30,6 +31,9 @@ CNetworkManager::CNetworkManager()
 	}
 	if(strlen(NickName) == 0)
 		sprintf(NickName,"Unknown");
+	*/
+	// Loads values from Windows Registry system (e.g. nicknamestring)
+	LoadRegistryConfig();
 	//g_CCore->GetLocalPlayer()->SetNickname(NickName);
 
 
@@ -211,7 +215,27 @@ void CNetworkManager::Pulse()
 			g_CCore->GetEngineStack()->AddMessage(ES_SERVERRELOAD, NULL);
 			// now just wait what will come next
 			g_CCore->GetFileSystem()->Reset();
+
+			g_CCore->GetFileTransfer()->Reset();
+			// Delete all current client scripts
+			g_CCore->GetSquirrel()->DeleteScripts();
 		}
+			break;
+		case ID_SCRIPSTLIST:
+			RakNet::BitStream bsIn(packet->data + offset, packet->length - offset, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			unsigned short count = 0;
+			char scriptname[256];
+			bsIn.Read(count);
+			for (int i = 0; i < count; i++)
+			{
+				bsIn.Read(scriptname);
+
+				// try to start script
+				//g_CCore->GetChat()->AddMessage(scriptname);
+				g_CCore->GetSquirrel()->LoadClientScript(scriptname);
+				//g_CCore->GetEngineStack()->AddMessage(ES_SCRIPT_RUN,NULL);
+			}
 			break;
 		
 		}
@@ -256,23 +280,22 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 					//sprintf(buffer,"%i",timestamp);
 					//g_CCore->GetLog()->AddLog(buffer);
 
-					Vector3D rot;
-					rot.x = syncData.degree;
-					rot.z = syncData.degree_second;
+					Vector3D rot = Tools::ComputeOffsetDegrees(syncData.rotation*360/MAX_USHORT);
 					ped->SetRotation(rot);
-					ped->SetState(syncData.status);
-					ped->SetHealth(syncData.health);
-					ped->SetDucking(syncData.isDucking);
-					ped->SetAiming(syncData.isAim);
-					ped->SetCarAnim(syncData.isCarAnim);
-					//ped->SetTimeStamp(timestamp + ped->GetPing());
+					ped->SetState(syncData.animStatus);
+					ped->SetHealth((float)syncData.health);
+					
+					CBitArray states(syncData.states);
+
+					ped->SetDucking(states.GetBit(ONFOOT_ISDUCKING));
+					ped->SetAiming(states.GetBit(ONFOOT_ISAIMING));
+					ped->SetCarAnim(states.GetBit(ONFOOT_ISCARANIM));
 					ped->SetTimeStamp(timestamp);
 					ped->SetPosition(syncData.position);
 					ped->SetUpInterpolation();
 					ped->UpdateGameObject();
 				}
 			}
-			//MessageBox(NULL,"2","omg",MB_OK);
 		}
 		break;
 		case LHMP_PLAYER_SENT_CAR_UPDATE:
@@ -1107,20 +1130,12 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			{
 				if (timestamp - veh->GetTimeStamp() > 0)
 				{
-					/*int ping = 0;
-
-					CPed* ped = g_CCore->GetPedPool()->Return(veh->GetSeat(0));
-
-					if (ped != NULL) {
-						ping = ped->GetPing();
-					}*/
-
+					
 					//veh->SetVehiclePosition(syncData.position);
 					veh->SetRotation(syncData.rotation);
 					veh->SetWheelsAngle(syncData.wheels);
 					veh->SetSpeed(syncData.speed);
 					veh->SetHornState(syncData.horn);
-					//veh->SetTimeStamp(timestamp + ping);
 					veh->SetTimeStamp(timestamp);
 					veh->SetSecondRot(syncData.secondRot);
 					veh->SetPosition(syncData.position);
@@ -1642,4 +1657,30 @@ void CNetworkManager::httpRequest(int type, char* url, void* callback)
 	request->callback = callback;
 
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&httpRequestSlave,request, 0, 0);
+}
+
+
+void CNetworkManager::LoadRegistryConfig()
+{
+	// load nickname
+	HKEY key;
+	HRESULT res = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\Lost Heaven Multiplayer\\Launcher"), &key);
+	if (res != ERROR_SUCCESS)
+	{
+		strcpy(this->NickName, "UnknownPlayer");
+	}
+	else {
+		DWORD size = 256;
+		char nickname[256];
+		DWORD type = REG_SZ;
+		if (RegQueryValueEx(key, "nickname", NULL, &type, (LPBYTE)&nickname, &size) == ERROR_SUCCESS)
+		{
+			strcpy(this->NickName, nickname);
+		}
+		else {
+			strcpy(this->NickName, "UnknownPlayer");
+		}
+		RegCloseKey(key);
+	}
+
 }

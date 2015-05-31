@@ -43,8 +43,8 @@ public:
 	void		SetPosition(Vector3D vect);
 	void		SetName(char[]);
 	void		SetHealth(float);
-	void		SetRotation(Vector3D);
-	Vector3D	GetRotation();
+	virtual void		SetRotation(Vector3D);
+	virtual Vector3D	GetRotation();
 	void		SetState(byte);
 	void		SetSkinId(int);
 	void		SetActive(bool);

@@ -33,7 +33,7 @@ public:
 	~CEntity();
 
 	void SetPosition(Vector3D);
-	void SetRotation(Vector3D);
+	virtual void SetRotation(Vector3D);
 	void SetHealth(float);
 	void SetStatus(byte);
 	void SetSkin(int);
@@ -41,7 +41,7 @@ public:
 	void SetIsActive(bool);
 
 	Vector3D		GetPosition();
-	Vector3D		GetRotation();
+	virtual  Vector3D		GetRotation();
 	//float	GetRotationSecond();
 	float			GetHealth();
 	byte			GetStatus();

@@ -161,6 +161,7 @@ void CCore::Run()
 	// now as a hook (check CHooks)
 
 	PatchBytes(0x005BC005, disableCompas);
+
 }
 
 void CCore::ShutdownClient()
@@ -292,4 +293,10 @@ CFileSystem*	CCore::GetFileSystem()
 CNametags*		CCore::GetNametags()
 {
 	return &this->m_cNametags;
+}
+
+
+CSquirrel*	CCore::GetSquirrel()
+{
+	return &this->m_cSquirrel;
 }

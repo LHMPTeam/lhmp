@@ -73,5 +73,8 @@ public:
 	char*	GetServerName();
 
 	void httpRequest(int type, char* url, void* callback);
+
+	// Used for loading nickname from Windows Registry system
+	void LoadRegistryConfig();
 };
 #endif

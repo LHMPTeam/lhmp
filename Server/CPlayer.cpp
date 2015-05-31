@@ -2,6 +2,7 @@
 
 #include "CPlayer.h"
 #include "../shared/tools.h"
+#include "../shared/CBitArray.h"
 
 extern CCore *g_CCore;
 
@@ -23,6 +24,16 @@ CPlayer::CPlayer()
 
 CPlayer::~CPlayer()
 {
+}
+
+
+void CPlayer::SetFloatRotation(float rot)
+{
+	this->floatRot = rot;
+}
+float CPlayer::GetFloatRotation()
+{
+	return this->floatRot;
 }
 
 char* CPlayer::GetNickname()
@@ -234,17 +245,18 @@ void	CPlayer::SetLocked(bool status)
 void	CPlayer::OnSync(SYNC::ON_FOOT_SYNC syncData, RakNet::TimeMS time)
 {
 	this->SetPosition(syncData.position);
-	Vector3D rot;
-	rot.x = syncData.degree;
-	rot.z = syncData.degree_second;
-	this->SetRotation(rot);
-	this->SetStatus(syncData.status);
-	this->SetHealth(syncData.health);
-	this->SetIsDucking(syncData.isDucking);
-	this->SetIsAim(syncData.isAim);
-	this->SetIsCarAnim(syncData.isCarAnim);
-	this->SetTimeStamp(time);
+	float rotation = syncData.rotation * 360.0f / MAX_USHORT;
 
+	this->SetFloatRotation(rotation);
+	this->SetHealth((float)syncData.health);
+	this->SetStatus(syncData.animStatus);
+
+	CBitArray states(syncData.states);
+	this->SetIsDucking(states.GetBit(ONFOOT_ISDUCKING));
+	this->SetIsCarAnim(states.GetBit(ONFOOT_ISCARANIM));
+	this->SetIsAim(states.GetBit(ONFOOT_ISAIMING));
+
+	this->SetTimeStamp(time);
 	g_CCore->GetPickupPool()->TestPlayer(g_CCore->GetPlayerPool()->GetID(this));
 }
 

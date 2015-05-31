@@ -20,7 +20,6 @@ void CNametags::Tick()
 			playerPosition.y += 2.1;
 			if (ped->IsDucking() && ped->InCar == -1)
 				playerPosition.y -= 0.75;
-
 			// check whether he is close to local player
 			if (Tools::GetDistanceBetween3DPointsEx(position, playerPosition, 60.0f) < 2)
 			{
@@ -30,8 +29,8 @@ void CNametags::Tick()
 				//if (ped->nametag == NULL)
 				//{
 				float distance = Tools::GetDistanceBetween3DPoints(playerPosition, g_CCore->GetGame()->GetCameraPos());
-				float maxDistance = 30;
-
+				float maxDistance = 30;                
+				
 				if (ped->InCar != -1) {
 					maxDistance = 60;
 				}

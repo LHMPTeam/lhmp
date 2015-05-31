@@ -31,11 +31,13 @@ void	CFont::OnReset()
 
 void	CFont::DrawText(char text[], int x, int y, D3DCOLOR color, bool shadow )
 {
+	DWORD alpha = color >> 24;
+
 	if (shadow)
 	{
 		for (int i = 0; i < 4; i++) {
-			this->m_pFont->DrawTextA((float)(x + 1), (float)(y + 1), 0xFF000000, text);
-			this->m_pFont->DrawTextA((float)(x + 2), (float)(y + 2), 0x38000000, text);
+			this->m_pFont->DrawTextA((float)(x + 1), (float)(y + 1), (alpha << 24), text);					// 0xFF000000 is base color
+			this->m_pFont->DrawTextA((float)(x + 2), (float)(y + 2), ((alpha/0xA) << 24), text);			// 0x38000000 is base color
 		}
 
 		//this->m_pFont->DrawTextA((float)(x + 2), (float)(y + 2), 0xFF000000, text);

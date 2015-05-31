@@ -73,19 +73,34 @@ bool CGameMode::LoadGameMode(char* name)
 					else if (strcmp(pointer, "CLIENT") == 0)
 					{
 						g_CCore->GetLog()->AddNormalLog("[!] Client script load %s", pointer + delim + 1);
+
+						char path[500];
 						char newname[255];
-						sprintf(newname, "%s.bak", pointer + delim + 1);
-						int result = this->CompileGameMode(pointer + delim + 1, newname);
-						//int result = 3;
+						// path to original .nut file
+						sprintf(path, "gamemodes/%s/%s", name, pointer + delim + 1);
+						// generate compiled .nut file name and store it into newname
+						sprintf(newname, "gamemodes/%s/%s", name, pointer + delim + 1);
+						//sprintf(newname, "gamemodes/%s/%s.bak", name, pointer + delim + 1);	// .bak file, not used
+						// try to compile .nut file
+						
+						//int result = this->CompileGameMode(path, newname);
+						int result = 0; // SUCCESS
+						// now store new file path
+						//sprintf(path, "gamemodes/%s/%s", name, newname);
+
+						// was compilation successful
 						if (result == 0)
 						{
-							char path[500];
-							sprintf(path, "gamemodes/%s/%s", name, newname);
-							FILE* pFile = fopen(path, "rb");
+							g_CCore->GetLog()->AddNormalLog("[!] FOPEN %s", newname);
+
+							FILE* pFile = fopen(newname, "rb");
+							// can we open the recently compiled file (required for file transfer) ?
 							if (pFile)
 							{
 								g_CCore->GetLog()->AddNormalLog("[!] Client script %s compiled / added to files pool", pointer + delim + 1);
+
 								g_CCore->GetFileTransfer()->AddFile(pointer + delim + 1, pFile);
+								this->AddClientScript(pointer + delim + 1);
 							}
 							else {
 								g_CCore->GetLog()->AddNormalLog("[!] Client script '%s' load failed to open", pointer + delim + 1);
@@ -210,4 +225,22 @@ void	CGameMode::AddClientScript(char* script)
 		pointer->next = new ClientScript(script);
 	}
 	this->clientPoolSize++;
+}
+
+
+// Send the whole list of client-side scripts to @client
+void CGameMode::SendClientScripts(RakNet::SystemAddress client)
+{
+	RakNet::BitStream bsOut; 
+	bsOut.Write((RakNet::MessageID)ID_SCRIPSTLIST);
+	bsOut.Write((unsigned short)this->clientPoolSize);
+	ClientScript* pointer = this->clientPool;
+
+	while (pointer != NULL)
+	{
+		printf("Sending script %s\n",pointer->name);
+		bsOut.Write(pointer->name);
+		pointer = pointer->next;
+	}
+	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, client, false);
 }

@@ -21,9 +21,14 @@ private:
 
 	bool			isLocked;
 
+	float			floatRot;
+
 public:
 	CPlayer();
 	~CPlayer();
+
+	void SetFloatRotation(float);
+	float GetFloatRotation();
 
 	void SetNickname(char[]);
 	void SetNickname(const char*);

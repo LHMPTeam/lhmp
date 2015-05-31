@@ -86,6 +86,9 @@ void	CCore::ChangeModeTo(char* newmode)
 	// reset the doors' pool
 	this->GetDoorPool()->Reset();
 
+	// reset all files
+	this->GetFileTransfer()->Reset();
+
 	// everything is set to default, now load gamemode
 	this->GetGameMode()->LoadGameMode(modeToLoad);
 

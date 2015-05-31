@@ -1,6 +1,7 @@
 #include "CLocalPlayer.h"
 //#include "structures.h"
 #include "../shared/structures.h"
+#include "../shared/CBitArray.h"
 #include "CNetwork.h"
 #include <fstream>
 #include "CCore.h"
@@ -137,20 +138,27 @@ void CLocalPlayer::Pulse()
 	{
 		if (this->IsOnFoot())
 		{
-			// Send on-foot sync
+			// prepare data
+			CBitArray status;
+			status.SetBit(ONFOOT_ISAIMING, this->GetIsAiming());
+			status.SetBit(ONFOOT_ISDUCKING, this->GetIsDucking());
+			status.SetBit(ONFOOT_ISCARANIM, this->GetIsCarAnim());
+
+			// convert rotation into 360 degree system and then map it into unsigned short 
+			Vector3D rotation = this->GetLocalRot();
+
+			unsigned short shortRot = Tools::RotationTo360(rotation.x, rotation.z)*MAX_USHORT/360;
+			
+			// now flow then into struct
 			SYNC::ON_FOOT_SYNC syncData;
 			syncData.position = this->GetLocalPos();
-			Vector3D rot = this->GetLocalRot();
-			syncData.degree = rot.x;
-			syncData.degree_second = rot.z;
-			syncData.degree_third = rot.x;
-			syncData.status = this->GetStatus();
-			syncData.health = this->GetHealth();
-			syncData.isDucking = this->GetIsDucking();
-			syncData.isAim = this->GetIsAiming();
-			syncData.isCarAnim = this->GetIsCarAnim();
+			syncData.rotation = shortRot;
+			syncData.animStatus = this->GetStatus();
+			// map float health into 65k states
+			syncData.health = (unsigned short) this->GetHealth();
+			syncData.states = status.ExportData();
 
-
+			// and just send it out
 			RakNet::BitStream bsOut;
 			bsOut.Write((RakNet::MessageID)ID_TIMESTAMP);
 			bsOut.Write(RakNet::GetTimeMS());
@@ -389,9 +397,9 @@ void	CLocalPlayer::ServerUpdateWeapon()
 
 void	CLocalPlayer::OnDeath(int killer, int reason, int part)
 {
-	/*char buff[250];
+	char buff[250];
 	sprintf(buff, "Attacker: %d Reason %d Part %d", killer, reason, part);
-	g_CCore->GetChat()->AddMessage(buff);*/
+	g_CCore->GetChat()->AddMessage(buff);
 
 	// Send info to server
 	RakNet::BitStream bsOut;

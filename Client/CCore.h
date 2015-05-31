@@ -29,6 +29,7 @@
 #include "CFileTransfer.h"
 #include "CFileSystem.h"
 #include "CNametags.h"
+#include "CSquirrel.h"
 #include <time.h>
 
 #include "../shared/tools.h"
@@ -57,6 +58,7 @@ private:
 	CIngameMenu				m_cIngameMenu;
 	CPickupPool				m_cPickuppool;
 	CNametags				m_cNametags;
+	CSquirrel				m_cSquirrel;
 
 
 public:
@@ -88,6 +90,7 @@ public:
 	CFileTransfer*			GetFileTransfer();
 	CFileSystem*			GetFileSystem();
 	CNametags*				GetNametags();
+	CSquirrel*				GetSquirrel();
 
 	bool					m_bIsGameLoaded;
 	bool					m_bIsRespawning;         

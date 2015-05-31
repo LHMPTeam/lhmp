@@ -17,6 +17,9 @@
 #include "RakNetTime.h"
 #include "GetTime.h"
 
+#define MAX_USHORT  (unsigned short) (-1)
+
+
 #ifndef _WIN32
 typedef unsigned char byte;
 #endif // _WIN32
@@ -90,7 +93,9 @@ enum GameMessages
 	// when whole server-client connecting is finished and client is finaly ready to play
 	ID_CONNECTION_FINISHED,
 	ID_FILETRANSFER,
-	ID_SERVERRELOAD
+	ID_SERVERRELOAD,
+	// indicates that server is sending the whole list of client-side scripts
+	ID_SCRIPSTLIST
 
 };
 
@@ -244,16 +249,20 @@ struct strPlayer
 namespace SYNC {
 	struct ON_FOOT_SYNC
 	{
+		// unicate slot ID of player
 		int				ID;
+		// vector of position (3 floats)
 		Vector3D		position;
-		float			degree;
-		float			degree_second;
-		float			degree_third;
-		byte			status;
-		float			health;
-		bool			isDucking;
-		bool			isAim;
-		bool			isCarAnim;
+		// rotation
+		// 0-360 mapped into 65k states (that's the capacity of WORD)
+		unsigned short	rotation;
+		// health
+		unsigned short	health;
+		// current animation by ID (jumping, walking, etc)
+		byte			animStatus;
+		// states - isDucking, isAimingWithGun
+		// check out PLAYERSTATES enum
+		unsigned char	states;
 	};
 
 	struct ON_FOOT_SYNC_SMALL
@@ -348,7 +357,10 @@ enum CLIENT_ENGINESTACK
 	ES_SETPICKUPVISIBLE,
 	// intern
 	ES_SERVERRELOAD,
-	ES_PLAYERSETPOS
+	ES_PLAYERSETPOS,
+
+	//---------------- SCRIPTS -----------------
+	ES_SCRIPT_RUN
 };
 namespace ENGINE_STACK
 {
@@ -476,80 +488,14 @@ enum SCRIPT_KEYBOARD {
 	KEY_ARROWRIGHT,
 };
 const char globalMap[500] = "verylongmapverylongmapverylongmapverylongmapverylongmapverylongmap";
-/*const char *mapNames[] = {
-	"freeride",
-	"00menu",
-	"intermezzo02",
-	"intermezzo03",
-	"mise01",
-	"mise02a-taxi",
-	"mise02-saliery",
-	"mise02-ulicka",
-	"mise03-saliery",
-	"mise03-morello",
-	"mise03-salierykonec",
-	"mise04-krajina",
-	"mise04-mesto",
-	"mise04-motorest",
-	"mise04-saliery",
-	"mise05-mesto",
-	"mise05-saliery",
-	"mise06-autodrom",
-	"mise06-mesto",
-	"mise06-oslava",
-	"mise06-saliery",
-	"mise07b-chuligani",
-	"mise07b-saliery",
-	"mise07-saliery",
-	"mise07-sara",
-	"mise08-hotel",
-	"mise08-kostel",
-	"mise08-mesto",
-	"mise09-krajina",
-	"mise09-mesto",
-	"mise09-prejimka",
-	"mise09-saliery",
-	"mise10-letiste",
-	"mise10-mesto",
-	"mise10-saliery",
-	"mise11-mesto",
-	"mise11-saliery",
-	"mise11-vila",
-	"mise12-saliery",
-	"mise12-garage",
-	"mise12-mesto",
-	"mise13-mesto",
-	"mise13-mesto2",
-	"mise13-restaurace",
-	"mise13-zradce",
-	"mise14-mesto",
-	"mise14-parnik",
-	"mise14-saliery",
-	"mise15-mesto",
-	"mise15-pristav",
-	"mise15-saliery",
-	"mise16-krajina",
-	"mise16-letiste",
-	"mise16-mesto",
-	"mise16-saliery",
-	"mise17-saliery",
-	"mise17-mesto",
-	"mise17-vezeni",
-	"mise18-mesto",
-	"mise18-pristav",
-	"mise18-saliery",
-	"mise19-banka",
-	"mise19-mesto",
-	"mise19-pauli",
-	"mise20-galery",
-	"mise20-mesto",
-	"mise20-pauli",
-	"freeridenoc",
-	"freeride",
-	"freekrajina",
-	"freekrajinanoc",
-	"carcyclopedia"
 
-};*/
-
+enum PLAYERSTATES
+{
+	//if player is ducking(crouching) state
+	ONFOOT_ISDUCKING,
+	//if player is aiming(pointing with weapon)
+	ONFOOT_ISAIMING,
+	//if player is in animation with car (entering/exiting/being bumped by car)
+	ONFOOT_ISCARANIM
+};
 #endif

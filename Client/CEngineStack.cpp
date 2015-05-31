@@ -804,6 +804,11 @@ void CEngineStack::DoMessage()
 			}
 		}
 			break;
+		case CLIENT_ENGINESTACK::ES_SCRIPT_RUN:
+		{
+			 g_CCore->GetSquirrel()->LoadClientScript("");
+		}
+			break;
 		default:
 			g_CCore->GetLog()->AddLog("Default ENGINE STACK");
 			//char buffer[255];

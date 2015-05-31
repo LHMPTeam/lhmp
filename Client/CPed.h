@@ -24,6 +24,8 @@ private:
 	byte		isCarAnim;
 	int			animId;
 
+	float		floatRot;
+
 	int			ping;
 	// interpolation
 	Vector3D			actual,previous;
@@ -34,6 +36,7 @@ private:
 public:
 	CPed();
 	~CPed();
+
 	LPDIRECT3DTEXTURE8		nametag;		// TODO move to private
 
 	void		SetIsOnFoot(bool);

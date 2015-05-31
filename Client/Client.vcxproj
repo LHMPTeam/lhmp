@@ -81,7 +81,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LHMPCORE_EXPORTS;_RAKNET_DLL;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\sdks\DirectX9SDK2007\Include;$(SolutionDir)\sdks\RakNet\;$(SolutionDir)\sdks\detours\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\sdks\DirectX9SDK2007\Include;$(SolutionDir)\sdks\RakNet\;$(SolutionDir)\sdks\detours\include;$(SolutionDir)\sdks\SQUIRREL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,7 +90,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\sdks\DirectX9SDK2007\Lib;$(SolutionDir)\sdks\dx8sdk\lib;$(SolutionDir)\sdks\detours\lib;$(SolutionDir)\sdks\CEGUI\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\sdks\DirectX9SDK2007\Lib;$(SolutionDir)\sdks\dx8sdk\lib;$(SolutionDir)\sdks\detours\lib;$(SolutionDir)\sdks\CEGUI\lib;$(SolutionDir)\sdks\SQUIRREL3\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -236,6 +236,7 @@
     <ClCompile Include="CPedPool.cpp" />
     <ClCompile Include="CPickup.cpp" />
     <ClCompile Include="CPickupPool.cpp" />
+    <ClCompile Include="CSquirrel.cpp" />
     <ClCompile Include="CVehicle.cpp" />
     <ClCompile Include="CVehiclePool.cpp" />
     <ClCompile Include="CLocalPlayer.cpp" />
@@ -407,7 +408,6 @@
     <ClInclude Include="..\shared\tools.h" />
     <ClInclude Include="..\shared\version.h" />
     <ClInclude Include="AntiCheat.h" />
-    <ClInclude Include="CCEGUI.h" />
     <ClInclude Include="CChat.h" />
     <ClInclude Include="CColoredText.h" />
     <ClInclude Include="CCore.h" />
@@ -434,6 +434,8 @@
     <ClInclude Include="CPickup.h" />
     <ClInclude Include="CPickupPool.h" />
     <ClInclude Include="CPool.h" />
+    <ClInclude Include="CScripts.h" />
+    <ClInclude Include="CSquirrel.h" />
     <ClInclude Include="CVehicle.h" />
     <ClInclude Include="CVehiclePool.h" />
     <ClInclude Include="directx8hook.h" />

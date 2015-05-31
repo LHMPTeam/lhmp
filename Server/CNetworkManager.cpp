@@ -5,6 +5,7 @@
 
 #include "../shared/limits.h"
 #include "../shared/gamestructures.h"
+#include "../shared/CBitArray.h"
 #include "../shared/version.h"
 
 #include "FileList.h"
@@ -311,10 +312,14 @@ void CNetworkManager::Pulse()
 					g_CCore->GetScripts()->onPlayerConnect(ID);
 					g_CCore->GetScripts()->onPlayerSpawn(ID);
 
+					// send all objects etc to client
 					SendHimOthers(ID);
 					SendHimCars(ID);
 					SendHimDoors(ID);
 					SendHimPickups(ID);
+
+					// also send him client-side scripts
+					g_CCore->GetGameMode()->SendClientScripts(packet->systemAddress);
 				}
 				break;
 				case ID_GAME_LHMP_PACKET:
@@ -879,26 +884,17 @@ void CNetworkManager::SendSYNC()
 				if(player->IsSpawned())
 				{
 					SYNC::ON_FOOT_SYNC syncData;
-					/*syncData.ID					= i;
-					syncData.position			= actual->position;
-					syncData.degree				= actual->degree;
-					syncData.degree_second		= actual->degree_second;
-					syncData.degree_third		= actual->degree_third;
-					syncData.status				= actual->status;
-					syncData.health				= actual->health;
-					syncData.isDucking			= actual->isDucking;
-					syncData.isAim				= actual->isAim;*/
 					syncData.ID					= i;
 					syncData.position			= player->GetPosition();
-					Vector3D rot				= player->GetRotation();
-					syncData.degree				= rot.x;
-					syncData.degree_second		= rot.z;
-					//syncData.degree_third		= actual->degree_third;
-					syncData.status				= player->GetStatus();
-					syncData.health				= player->GetHealth();
-					syncData.isDucking			= player->IsDucking();
-					syncData.isAim				= player->IsAim();
-					syncData.isCarAnim			= player->IsCarAnim();
+					syncData.rotation			= (unsigned short) (player->GetFloatRotation()*MAX_USHORT / 360);
+					syncData.animStatus				= player->GetStatus();
+					syncData.health				= (unsigned short) player->GetHealth();
+
+					CBitArray states;
+					states.SetBit(ONFOOT_ISDUCKING, player->IsDucking());
+					states.SetBit(ONFOOT_ISAIMING, player->IsAim());
+					states.SetBit(ONFOOT_ISCARANIM, player->IsCarAnim());
+					syncData.states = states.ExportData();
 
 					BitStream bsOut;
 					bsOut.Write((MessageID)ID_TIMESTAMP);

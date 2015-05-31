@@ -17,6 +17,7 @@ struct ClientScript
 	ClientScript(char* _input)
 	{
 		sprintf(name, "%s", _input);
+		this->next = NULL;
 	}
 };
 class CGameMode
@@ -33,6 +34,7 @@ public:
 	bool LoadGameMode(char* name);
 	bool UnloadGameMode();
 	void ReloadGameMode();
+
 	// Returns  0 - OK
 	//			1 - failed to compile
 	//			2 - failed to safe file
@@ -42,6 +44,9 @@ public:
 	void	LoadGameFiles();
 	void	SetName(char* name);
 	char*	GetName();
+
+	// Send out all client-script names to client
+	void SendClientScripts(RakNet::SystemAddress client);
 
 };
 

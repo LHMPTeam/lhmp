@@ -453,6 +453,9 @@
     <ClCompile Include="AntiCheat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CSquirrel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directx8hook.h">
@@ -1037,10 +1040,13 @@
     <ClInclude Include="CNametags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CCEGUI.h">
+    <ClInclude Include="AntiCheat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AntiCheat.h">
+    <ClInclude Include="CSquirrel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CScripts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
