@@ -76,6 +76,18 @@ CScript::CScript(const char *szScriptName)
 	//pPlugins->OnScriptLoad(pVM);
 
 	// script loaded successfully
+
+
+	// save script name without path
+	int len = strlen(szScriptName);
+	// i - character counter
+	int i;
+	for (i = len - 1; i >= 0; i--)
+	{
+		if (szScriptName[i] == '/' || szScriptName[i] == '\\')
+			break;
+	}
+	strcpy(this->m_szScriptName, szScriptName+i+1);
 	return;
 }
 

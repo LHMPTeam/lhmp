@@ -308,6 +308,31 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->GetGame()->KickPlayerFromCarFast(g_CCore->GetLocalPlayer()->GetBase());
 	}
+
+	else if (strcmp(command, "campoint") == 0)
+	{
+		Vector3D pos;
+		pos.x = -1985.966675f;
+		pos.y = -5.037054f;
+		pos.z = 4.284860f;
+
+		Vector3D ourpos = g_CCore->GetLocalPlayer()->GetLocalPos();
+		ourpos.y += 10.0f;
+		Vector3D backpos = ourpos;
+		ourpos.x = (pos.x - ourpos.x); 
+		ourpos.y = (pos.y - ourpos.y);
+		ourpos.z = (pos.z - ourpos.z);
+
+		int ratio = sqrtf(ourpos.x*ourpos.x + ourpos.y*ourpos.y + ourpos.z*ourpos.z);
+
+		ourpos.x /= ratio;
+		ourpos.y /= ratio;
+		ourpos.z /= ratio;
+
+		g_CCore->GetGame()->SetCameraPos(backpos, ourpos.x, ourpos.y, ourpos.z,0.0f);
+
+
+	}
 	else if (strcmp(command, "carsirene") == 0)
 	{
 		//g_CCore->GetGame()->KickPlayerFromCarFast(g_CCore->GetLocalPlayer()->GetBase());

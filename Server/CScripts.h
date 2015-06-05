@@ -63,5 +63,12 @@ public:
 	void onPlayerHit(int,int);
 	void onPickupTaken(int, int);
 	//void onPlayerTh(int);
+	
+	// call server-side func(server) from client-side (player)
+	void callServerFunc(int playerID, RakNet::BitStream* stream);
+
+	// call server func from server (script-to-script)
+	// Returns TRUE on success
+	bool callFunc(SQVM *vm);
 
 };

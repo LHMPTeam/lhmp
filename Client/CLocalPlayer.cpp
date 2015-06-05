@@ -413,3 +413,9 @@ void	CLocalPlayer::OnDeath(int killer, int reason, int part)
 	bsOut.Write(part);
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 }
+
+
+void	CLocalPlayer::SetSkin(int skin)
+{
+	this->ourSkin = skin;
+}

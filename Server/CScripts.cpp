@@ -1,4 +1,7 @@
+#include "CCore.h"
 #include "CScripts.h"
+
+extern CCore* g_CCore;
 
 CScripts::CScripts()
 {
@@ -832,4 +835,142 @@ void CScripts::onPickupTaken(int pickupID, int playerID)
 			sq_settop(pVM, iTop);
 		}
 	}
+}
+
+
+void CScripts::callServerFunc(int playerID, BitStream* bsIn)
+{
+	char script_name[500];
+	char func_name[500];
+
+	bsIn->Read(script_name);
+	bsIn->Read(func_name);
+
+	g_CCore->GetLog()->AddNormalLog("callServerFunc[%d] [%s][%s]", playerID, script_name, func_name);
+
+	CScript* pointer = NULL;
+	for (int i = 0; i < 10; i++)
+	{
+		if (this->m_pScripts[i] != NULL)
+		{
+			g_CCore->GetLog()->AddNormalLog("Comparing: %s %s", script_name, this->m_pScripts[i]->GetScriptName());
+			if (strcmp(this->m_pScripts[i]->GetScriptName(),script_name) == 0)
+			{
+				pointer = this->m_pScripts[i];
+				break;
+			}
+		}
+	}
+
+	
+
+	if (pointer)
+	{
+		// now get type of param and serialize it
+		SQInteger iPar;
+		SQFloat fPar;
+		char parString[500];
+		SQBool	bPar;
+
+		SQObjectType type;
+		bsIn->Read(type);
+
+		int len;
+
+		int iTop = sq_gettop(pointer->GetVM());
+		sq_pushroottable(pointer->GetVM());
+
+		// Push the function name onto the stack
+		sq_pushstring(pointer->GetVM(), func_name, -1);
+		// Get the closure for the function
+		if (SQ_SUCCEEDED(sq_get(pointer->GetVM(), -2))) {
+			// Push the root table onto the stack
+			sq_pushroottable(pointer->GetVM());
+			sq_pushinteger(pointer->GetVM(), playerID);
+			switch (type)
+			{
+			case OT_INTEGER:
+				bsIn->Read(iPar);
+				sq_pushinteger(pointer->GetVM(), iPar);
+				break;
+			case OT_FLOAT:
+				bsIn->Read(fPar);
+				sq_pushfloat(pointer->GetVM(), fPar);
+				break;
+			case OT_STRING:
+				bsIn->Read(parString);
+				len = strlen(parString);
+				sq_pushstring(pointer->GetVM(), parString, len);
+				break;
+			case OT_BOOL:
+				bsIn->Read(bPar);
+				sq_pushbool(pointer->GetVM(), bPar);
+				break;
+			case OT_NULL:
+				// if null, no extra data are sent
+				sq_pushnull(pointer->GetVM());
+			default:
+			case -1:
+				// in case bad type occurs, do nothing
+				break;
+			}
+
+			g_CCore->GetLog()->AddNormalLog("Calling func");
+			sq_call(pointer->GetVM(), 3, true, true);
+		}
+		sq_settop(pointer->GetVM(), iTop);
+	}
+	else {
+		g_CCore->GetLog()->AddNormalLog("NO SCRIPT FOUND");
+	}
+}
+
+bool CScripts::callFunc(SQVM *vm)
+{
+	const SQChar* script_name, *func_name;
+
+	sq_getstring(vm, -3, &script_name);
+	sq_getstring(vm, -2, &func_name);
+
+	CScript* pointer = NULL;
+	for (int i = 0; i < 10; i++)
+	{
+		if (this->m_pScripts[i] != NULL)
+		{
+			g_CCore->GetLog()->AddNormalLog("Comparing: %s %s", script_name, this->m_pScripts[i]->GetScriptName());
+			if (strcmp(this->m_pScripts[i]->GetScriptName(), script_name) == 0)
+			{
+				pointer = this->m_pScripts[i];
+				break;
+			}
+		}
+	}
+
+	if (pointer != NULL)
+	{
+		// save parameter from calling script
+		HSQOBJECT	objParam;
+		
+		sq_getstackobj(vm, -1, &objParam);
+
+		int iTop = sq_gettop(pointer->GetVM());
+		sq_pushroottable(pointer->GetVM());
+
+		// Push the function name onto the stack
+		sq_pushstring(pointer->GetVM(), func_name, -1);
+		// Get the closure for the function
+		if (SQ_SUCCEEDED(sq_get(pointer->GetVM(), -2))) {
+			// Push the root table onto the stack
+			sq_pushroottable(pointer->GetVM());
+			sq_pushobject(pointer->GetVM(), objParam);
+			sq_call(pointer->GetVM(), 2, true, true);
+		}
+		sq_settop(pointer->GetVM(), iTop);
+
+		return true;
+	}
+	else {
+		return false;
+	}
+
 }

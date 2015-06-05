@@ -47,9 +47,15 @@ public:
 	// Delete all scripts
 	void DeleteScripts();
 
+	void BlockInput(bool);
+	bool isInputBlocked();
+
 	/* --------------- Callbacks ------------*/
 	// called when game renders
 	void onRender();
+	void onKeyDown(unsigned int key);
+	void onSpawn();
+	void callClientFunc(char* scriptname,char* scriptfunc, BitStream* message);
 private:
 	// Register all native functions and constants
 	void PrepareMachine(SQVM* pVM);
@@ -64,15 +70,18 @@ private:
 	//std::vector <CScript> p_scriptPool;
 	CScript* p_scriptPool[100];
 
+	bool blockInput;
+
 };
 
 class CScript
 {
 public:
 	// Create new instance with @scriptname name and @pvm virtual machine instance
-	CScript(HSQUIRRELVM pvm)
+	CScript(HSQUIRRELVM INpvm,char* INname)
 	{
-		this->p_VM = pvm;
+		this->p_VM = INpvm;
+		strcpy(this->name, INname);
 	}
 	~CScript()
 	{
@@ -83,8 +92,13 @@ public:
 	{
 		return this->p_VM;
 	}
+	char* GetName()
+	{
+		return this->name;
+	}
 private:
 	HSQUIRRELVM p_VM;
+	char name[500];
 };
 
 #endif

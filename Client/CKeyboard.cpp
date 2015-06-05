@@ -142,6 +142,9 @@ void	CKeyboard::OnKeyDown(unsigned short VK_code)
 			bsOut.Write((RakNet::MessageID)LHMP_SCRIPT_ON_KEY_PRESSED);
 			bsOut.Write(VK_code);
 			g_CCore->GetNetwork()->SendServerMessage(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED);
+
+		// call client-side callback
+			g_CCore->GetSquirrel()->onKeyDown(VK_code);
 	}
 }
 

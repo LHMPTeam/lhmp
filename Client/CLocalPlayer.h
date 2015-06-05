@@ -59,6 +59,8 @@ public:
 	float			GetHealth();
 	float			GetCarAim();
 
+	void			SetSkin(int);
+
 	// Server
 	void			ServerUpdateWeapon();
 

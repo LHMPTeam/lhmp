@@ -865,6 +865,13 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			g_CCore->GetScripts()->onPlayerKeyPressed(this->GetIDFromSystemAddress(packet->systemAddress),key);
 		}
 			break;
+		case LHMP_SCRIPT_CALLFUNC:
+		{
+			g_CCore->GetLog()->AddNormalLog("CNetworkManager::LHMP_SCRIPT_CALLFUNC");
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			g_CCore->GetScripts()->callServerFunc(this->GetIDFromSystemAddress(packet->systemAddress),&bsIn);
+		}
+			break;
 
 	}
 }

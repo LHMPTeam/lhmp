@@ -929,6 +929,8 @@ void CGame::AfterRespawn()
 		poolStart += 4;
 	}
 	*/
+
+	g_CCore->GetSquirrel()->onSpawn();
 }
 
 void CGame::ThrowAwayWeapon()

@@ -94,3 +94,5 @@ SQInteger sq_iniSetParam(SQVM *vm);
 SQInteger sq_iniRemoveFile(SQVM *vm);
 SQInteger sq_iniCreateFile(SQVM *vm);
 
+SQInteger sq_callClientFunc(SQVM *vm);
+SQInteger sq_callFunc(SQVM *vm);

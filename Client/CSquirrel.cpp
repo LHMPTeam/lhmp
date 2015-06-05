@@ -16,6 +16,7 @@ CSquirrel::CSquirrel()
 	// NULL all pointers
 	for (int i = 0; i < 100; i++)
 		this->p_scriptPool[i] = NULL;
+	this->blockInput = false;
 }
 
 // default script printf function - goes to log
@@ -161,11 +162,13 @@ void CSquirrel::LoadClientScript(char* scriptname)
 		if (this->p_scriptPool[i] == NULL)
 		{
 			g_CCore->GetChat()->AddMessage("#00adefSlot founded !");
-			this->p_scriptPool[i] = new CScript(pVM);
+			this->p_scriptPool[i] = new CScript(pVM, scriptname);
 			break;
 		}
 	}
 	g_CCore->GetChat()->AddMessage("#ff0000Script loaded !");
+
+	this->onSpawn();
 
 	/*char buff[100];
 	sprintf(buff, "Origi %p", pVM);
@@ -291,7 +294,7 @@ void CSquirrel::LoadClientScript(char* scriptname)
 }
 */
 
-// Delete all scripts
+// Delete all scripts & restore default values
 void CSquirrel::DeleteScripts()
 {
 	for (int i = 0; i < 100; i++)
@@ -305,8 +308,21 @@ void CSquirrel::DeleteScripts()
 			this->p_scriptPool[i] = NULL;
 		}
 	}
+
+	// important
+	this->blockInput = false;
 }
 
+
+void CSquirrel::BlockInput(bool param)
+{
+	this->blockInput = param;
+}
+
+bool CSquirrel::isInputBlocked()
+{
+	return this->blockInput;
+}
 
 void CSquirrel::onRender()
 {
@@ -383,78 +399,135 @@ void CSquirrel::onRender()
 	}
 }
 
-/*------------------------- Natives ------------------------------- */
 
-// drawText - text, x, y, color
-SQInteger sq_drawText(SQVM *vm)
+void CSquirrel::onKeyDown(unsigned int key)
 {
-	SQInteger	coord_x, coord_y, color;
-	const SQChar* text;
-	sq_getstring(vm, -4, &text);
-	sq_getinteger(vm, -3, &coord_x);
-	sq_getinteger(vm, -2, &coord_y);
-	sq_getinteger(vm, -1, &color);
+	for (int i = 0; i < 100; i++) {
+		if (this->p_scriptPool[i] != NULL)
+		{
+			SQVM * pVM = this->p_scriptPool[i]->GetVirtualMachine();
+			if (pVM != NULL)
+			{
+				int iTop = sq_gettop(pVM);
+				sq_pushroottable(pVM);
 
-	g_CCore->GetGraphics()->GetFont()->DrawTextA((char*)text, coord_x, coord_y, color, true);
-	return 1;
+				// Push the function name onto the stack
+				sq_pushstring(pVM, "onKeyDown", -1);
+				// Get the closure for the function
+				if (SQ_SUCCEEDED(sq_get(pVM, -2))) {
+					// Push the root table onto the stack
+					sq_pushroottable(pVM);
+					sq_pushinteger(pVM, key);
+					sq_call(pVM, 2, true, true);
+				}
+				sq_settop(pVM, iTop);
+			}
+		}
+	}
+}
+void CSquirrel::onSpawn()
+{
+	for (int i = 0; i < 100; i++) {
+		if (this->p_scriptPool[i] != NULL)
+		{
+			SQVM * pVM = this->p_scriptPool[i]->GetVirtualMachine();
+			if (pVM != NULL)
+			{
+				int iTop = sq_gettop(pVM);
+				sq_pushroottable(pVM);
+
+				// Push the function name onto the stack
+				sq_pushstring(pVM, "onSpawn", -1);
+				// Get the closure for the function
+				if (SQ_SUCCEEDED(sq_get(pVM, -2))) {
+					// Push the root table onto the stack
+					sq_pushroottable(pVM);
+					sq_call(pVM, 1, true, true);
+				}
+				sq_settop(pVM, iTop);
+			}
+		}
+	}
 }
 
-// fillBox(startX,StartY,width,height,color)
-SQInteger sq_fillBox(SQVM *vm)
+void CSquirrel::callClientFunc(char* scriptname, char* scriptfunc, BitStream* message)
 {
-	SQInteger	coord_x, coord_y, width,height,color;
-	sq_getinteger(vm, -5, &coord_x);
-	sq_getinteger(vm, -4, &coord_y);
-	sq_getinteger(vm, -3, &width);
-	sq_getinteger(vm, -2, &height);
-	sq_getinteger(vm, -1, &color);
+	char buff[500];
+	sprintf(buff, "callClientFunc[%s][%s]", scriptname, scriptfunc);
+	g_CCore->GetChat()->AddMessage(buff);
 
-	g_CCore->GetGraphics()->FillARGB(coord_x, coord_y, width, height, color);
-	return 1;
+	CScript* pointer = NULL;
+	for (int i = 0; i < 100; i++)
+	{
+		if (this->p_scriptPool[i] != NULL)
+		{
+			if (strcmp(this->p_scriptPool[i]->GetName(), scriptname) == 0)
+			{
+				pointer = this->p_scriptPool[i];
+				break;
+			}
+		}
+	}
+
+	if (pointer)
+	{
+		// now get type of param and serialize it
+		SQInteger iPar;
+		SQFloat fPar;
+		char parString[500];
+		SQBool	bPar;
+
+		SQObjectType type;
+		message->Read(type);
+
+		int len;
+		
+		int iTop = sq_gettop(pointer->GetVirtualMachine());
+		sq_pushroottable(pointer->GetVirtualMachine());
+
+		// Push the function name onto the stack
+		sq_pushstring(pointer->GetVirtualMachine(), scriptfunc, -1);
+		// Get the closure for the function
+		if (SQ_SUCCEEDED(sq_get(pointer->GetVirtualMachine(), -2))) {
+			// Push the root table onto the stack
+			sq_pushroottable(pointer->GetVirtualMachine());
+
+			switch (type)
+			{
+			case OT_INTEGER:
+				message->Read(iPar);
+				sq_pushinteger(pointer->GetVirtualMachine(), iPar);
+				break;
+			case OT_FLOAT:
+				message->Read(fPar);
+				sq_pushfloat(pointer->GetVirtualMachine(), fPar);
+				break;
+			case OT_STRING:
+				message->Read(parString);
+				len = strlen(parString);
+				sq_pushstring(pointer->GetVirtualMachine(), parString, len);
+				break;
+			case OT_BOOL:
+				message->Read(bPar);
+				sq_pushbool(pointer->GetVirtualMachine(), bPar);
+				break;
+			case OT_NULL:
+				// if null, no extra data are sent
+				sq_pushnull(pointer->GetVirtualMachine());
+			default:
+			case -1:
+				// in case bad type occurs, do nothing
+				break;
+			}
+
+			sq_call(pointer->GetVirtualMachine(), 2, true, true);
+		}
+		sq_settop(pointer->GetVirtualMachine(), iTop);
+	}
+	else {
+
+	}
 }
-
-SQInteger sq_getScreenSize(SQVM *vm)
-{
-	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
-	sq_newarray(vm, 0);
-	sq_pushinteger(vm, screen.x);
-	sq_arrayappend(vm, -2);
-	sq_pushinteger(vm, screen.y);
-	sq_arrayappend(vm, -2);
-	sq_push(vm, -1);
-	return 1;
-}
-
-void RegisterFunction(HSQUIRRELVM pVM, char * szFunc, SQFUNCTION func, int params, const char * szTemplate);
-
-/*------------------------- /Natives ------------------------------- */
-// Register all native functions and constants
-void CSquirrel::PrepareMachine(SQVM* pVM)
-{
-	// TODO - put here all natives - functions, consts
-
-	// consts
-
-	RegisterVariable(pVM, "COLOR_WHITE", (int)0xFFFFFFFF);
-	RegisterVariable(pVM, "COLOR_RED", (int)0xFFFF0000);
-	RegisterVariable(pVM, "COLOR_GREEN", (int)0xFF00FF00);
-	RegisterVariable(pVM, "COLOR_BLUE", (int)0xFF0000FF);
-	RegisterVariable(pVM, "COLOR_BLACK", (int)0xFF000000);
-	RegisterVariable(pVM, "COLOR_GRAY", (int)0xFF555555);
-
-	// functions
-
-
-	// Returns size of screen in 2D vector (x,y)
-	RegisterFunction(pVM, "getScreenSize", (SQFUNCTION)sq_getScreenSize, 1, ".");
-
-	// Draws @text at @pos.x @pos.y with @color (hex)
-	RegisterFunction(pVM, "drawText", (SQFUNCTION)sq_drawText, 5, ".snnn");
-
-	// Draws colorbox at @pos.x @pos.y (@width, @height) with @color (hex)
-	RegisterFunction(pVM, "fillBox", (SQFUNCTION)sq_fillBox, 6, ".nnnnn");
-}
-
 
 /* ----------------------- Utils -----------------------------------*/
 
@@ -498,4 +571,306 @@ void CSquirrel::RegisterVariable(HSQUIRRELVM pVM, const char * szVarName, const 
 	sq_pushstring(pVM, szVarName, -1);
 	sq_pushstring(pVM, szValue, -1);
 	sq_createslot(pVM, -3);
+}
+
+/*------------------------- Natives ------------------------------- */
+
+// drawText - text, x, y, color
+SQInteger sq_drawText(SQVM *vm)
+{
+	SQInteger	coord_x, coord_y, color;
+	const SQChar* text;
+	sq_getstring(vm, -4, &text);
+	sq_getinteger(vm, -3, &coord_x);
+	sq_getinteger(vm, -2, &coord_y);
+	sq_getinteger(vm, -1, &color);
+
+	g_CCore->GetGraphics()->GetFont()->DrawTextA((char*)text, coord_x, coord_y, color, true);
+	return 1;
+}
+
+// fillBox(startX,StartY,width,height,color)
+SQInteger sq_fillBox(SQVM *vm)
+{
+	SQInteger	coord_x, coord_y, width, height, color;
+	sq_getinteger(vm, -5, &coord_x);
+	sq_getinteger(vm, -4, &coord_y);
+	sq_getinteger(vm, -3, &width);
+	sq_getinteger(vm, -2, &height);
+	sq_getinteger(vm, -1, &color);
+
+	g_CCore->GetGraphics()->FillARGB(coord_x, coord_y, width, height, color);
+	return 1;
+}
+
+SQInteger sq_getScreenSize(SQVM *vm)
+{
+	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
+	sq_newarray(vm, 0);
+	sq_pushinteger(vm, screen.x);
+	sq_arrayappend(vm, -2);
+	sq_pushinteger(vm, screen.y);
+	sq_arrayappend(vm, -2);
+	sq_push(vm, -1);
+
+	return 1;
+}
+
+SQInteger sq_blockInput(SQVM *vm)
+{
+	SQBool should;
+	sq_getbool(vm, -1, &should);
+	g_CCore->GetSquirrel()->BlockInput(should);
+	return 1;
+}
+
+SQInteger sq_isInputBlocked(SQVM *vm)
+{
+	SQBool status = g_CCore->GetSquirrel()->isInputBlocked();
+	sq_pushbool(vm, status);
+	return 1;
+}
+
+// set camera to look at @lookAt position from @cameraposition
+// cameraLookAtFrom(camerapos,lookAt)
+SQInteger sq_cameraLookAtFrom(SQVM *vm)
+{
+	Vector3D cameraPos, lookAtPoint;
+
+	sq_getfloat(vm, -1, &lookAtPoint.z);
+	sq_getfloat(vm, -2, &lookAtPoint.y);
+	sq_getfloat(vm, -3, &lookAtPoint.x);
+
+	sq_getfloat(vm, -4, &cameraPos.z);
+	sq_getfloat(vm, -5, &cameraPos.y);
+	sq_getfloat(vm, -6, &cameraPos.x);
+
+	// simple way how to calculate LookAt rotation (substraction of positions
+	// and dividing by the length of the vector in order to get UNIT circle (radius = 1)
+
+	Vector3D rotation;
+	rotation.x = lookAtPoint.x - cameraPos.x;
+	rotation.y = lookAtPoint.y - cameraPos.y;
+	rotation.z = lookAtPoint.z - cameraPos.z;
+
+	int ratio = sqrtf(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z);
+
+	rotation.x /= ratio;
+	rotation.y /= ratio;
+	rotation.z /= ratio;
+
+	g_CCore->GetGame()->SetCameraPos(cameraPos,rotation.x,rotation.y,rotation.z, 0.0f);
+	return 1;
+}
+
+SQInteger sq_restoreCamera(SQVM *vm)
+{
+	g_CCore->GetGame()->CameraUnlock();
+	return 1;
+}
+
+// set localplayer position
+SQInteger sq_setPosition(SQVM *vm)
+{
+	Vector3D position;
+	sq_getfloat(vm, -1, &position.z);
+	sq_getfloat(vm, -2, &position.y);
+	sq_getfloat(vm, -3, &position.x);
+
+	// if is on-foot
+	if (g_CCore->GetLocalPlayer()->IsOnFoot())
+	{
+		g_CCore->GetLocalPlayer()->SetLocalPos(position);
+	}
+	else {
+		// TODO
+	}
+	return 1;
+}
+
+SQInteger sq_setRotation(SQVM *vm)
+{
+	Vector3D rotation;
+	sq_getfloat(vm, -1, &rotation.z);
+	sq_getfloat(vm, -2, &rotation.y);
+	sq_getfloat(vm, -3, &rotation.x);
+
+	// if is on-foot
+	if (g_CCore->GetLocalPlayer()->IsOnFoot())
+	{
+		g_CCore->GetLocalPlayer()->SetLocalRot(rotation);
+	}
+	else {
+		// TODO
+	}
+	return 1;
+}
+
+SQInteger sq_changeSkin(SQVM *vm)
+{
+	SQInteger skin;
+	sq_getinteger(vm, -1, &skin);
+
+	g_CCore->GetLocalPlayer()->SetSkin(skin);
+	g_CCore->GetEngineStack()->AddMessage(ES_CHANGESKIN, g_CCore->GetLocalPlayer()->GetOurID());
+	return 1;
+}
+
+SQInteger sq_callServerFunc(SQVM *vm)
+{
+	const SQChar* script_name, *func_name;
+	const SQChar* param;
+	const SQChar* file;
+	const SQChar* value;
+
+	sq_getstring(vm, -3, &script_name);
+	sq_getstring(vm, -2, &func_name);
+
+	SQObjectType type_of_param = sq_gettype(vm, -1);
+
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_SCRIPT_CALLFUNC);
+	bsOut.Write(script_name);
+	bsOut.Write(func_name);
+
+	// now get type of param and serialize it
+	SQInteger iPar;
+	SQFloat fPar;
+	const SQChar* stringPar;
+	SQBool	bPar;
+
+	bsOut.Write(type_of_param);
+	switch (type_of_param)
+	{
+	case OT_INTEGER:
+		sq_getinteger(vm, -1, &iPar);
+		bsOut.Write(iPar);
+		break;
+	case OT_FLOAT:
+		sq_getfloat(vm, -1, &fPar);
+		bsOut.Write(fPar);
+		break;
+	case OT_STRING:
+		sq_getstring(vm, -1, &stringPar);
+		bsOut.Write(stringPar);
+		break;
+	case OT_BOOL:
+		sq_getbool(vm, -1, &bPar);
+		bsOut.Write(bPar);
+		break;
+	case OT_NULL:
+		// if null, no extra data are sent
+	default:
+	case -1:
+		// in case bad type occurs, do nothing
+		break;
+	}
+	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE);
+	return 1;
+}
+
+
+/*------------------------- /Natives ------------------------------- */
+// Register all native functions and constants
+void CSquirrel::PrepareMachine(SQVM* pVM)
+{
+	// TODO - put here all natives - functions, consts
+
+	// consts
+
+	RegisterVariable(pVM, "COLOR_WHITE", (int)0xFFFFFFFF);
+	RegisterVariable(pVM, "COLOR_RED", (int)0xFFFF0000);
+	RegisterVariable(pVM, "COLOR_GREEN", (int)0xFF00FF00);
+	RegisterVariable(pVM, "COLOR_BLUE", (int)0xFF0000FF);
+	RegisterVariable(pVM, "COLOR_BLACK", (int)0xFF000000);
+	RegisterVariable(pVM, "COLOR_GRAY", (int)0xFF555555);
+
+
+	// Virtual codes - for key strokes
+
+	RegisterVariable(pVM, "VK_BACK", (int)0x08);
+	RegisterVariable(pVM, "VK_TAB", (int)0x09);
+	RegisterVariable(pVM, "VK_RETURN", (int)0x0D);
+	RegisterVariable(pVM, "VK_SPACE", (int)0x20);
+	RegisterVariable(pVM, "VK_LEFT", (int)0x25);
+	RegisterVariable(pVM, "VK_RIGHT", (int)0x27);
+	RegisterVariable(pVM, "VK_UP", (int)0x26);
+	RegisterVariable(pVM, "VK_DOWN", (int)0x28);
+	RegisterVariable(pVM, "VK_NUM0", (int)0x30);
+	RegisterVariable(pVM, "VK_NUM1", (int)0x31);
+	RegisterVariable(pVM, "VK_NUM2", (int)0x32);
+	RegisterVariable(pVM, "VK_NUM3", (int)0x33);
+	RegisterVariable(pVM, "VK_NUM4", (int)0x34);
+	RegisterVariable(pVM, "VK_NUM5", (int)0x35);
+	RegisterVariable(pVM, "VK_NUM6", (int)0x36);
+	RegisterVariable(pVM, "VK_NUM7", (int)0x37);
+	RegisterVariable(pVM, "VK_NUM8", (int)0x38);
+	RegisterVariable(pVM, "VK_NUM9", (int)0x39);
+	RegisterVariable(pVM, "VK_A", (int)0x41);
+	RegisterVariable(pVM, "VK_B", (int)0x42);
+	RegisterVariable(pVM, "VK_C", (int)0x43);
+	RegisterVariable(pVM, "VK_D", (int)0x44);
+	RegisterVariable(pVM, "VK_E", (int)0x45);
+	RegisterVariable(pVM, "VK_F", (int)0x46);
+	RegisterVariable(pVM, "VK_G", (int)0x47);
+	RegisterVariable(pVM, "VK_H", (int)0x48);
+	RegisterVariable(pVM, "VK_I", (int)0x49);
+	RegisterVariable(pVM, "VK_J", (int)0x4A);
+	RegisterVariable(pVM, "VK_K", (int)0x4B);
+	RegisterVariable(pVM, "VK_L", (int)0x4C);
+	RegisterVariable(pVM, "VK_M", (int)0x4D);
+	RegisterVariable(pVM, "VK_N", (int)0x4E);
+	RegisterVariable(pVM, "VK_O", (int)0x4F);
+	RegisterVariable(pVM, "VK_P", (int)0x50);
+	RegisterVariable(pVM, "VK_Q", (int)0x51);
+	RegisterVariable(pVM, "VK_R", (int)0x52);
+	RegisterVariable(pVM, "VK_S", (int)0x53);
+	RegisterVariable(pVM, "VK_T", (int)0x54);
+	RegisterVariable(pVM, "VK_U", (int)0x55);
+	RegisterVariable(pVM, "VK_V", (int)0x56);
+	RegisterVariable(pVM, "VK_W", (int)0x57);
+	RegisterVariable(pVM, "VK_X", (int)0x58);
+	RegisterVariable(pVM, "VK_Y", (int)0x59);
+	RegisterVariable(pVM, "VK_Z", (int)0x5A);
+
+	// functions
+
+
+	// Returns size of screen in 2D vector (x,y)
+	RegisterFunction(pVM, "getScreenSize", (SQFUNCTION)sq_getScreenSize, 1, ".");
+
+	// Draws @text at @pos.x @pos.y with @color (hex)
+	RegisterFunction(pVM, "drawText", (SQFUNCTION)sq_drawText, 5, ".snnn");
+
+	// Draws colorbox at @pos.x @pos.y (@width, @height) with @color (hex)
+	RegisterFunction(pVM, "fillBox", (SQFUNCTION)sq_fillBox, 6, ".nnnnn");
+
+	// Block or unblock user in-game input
+	RegisterFunction(pVM, "blockInput", (SQFUNCTION)sq_blockInput, 2, ".b");
+
+	// returns TRUE when input is blocked
+	RegisterFunction(pVM, "isInputBlocked", (SQFUNCTION)sq_isInputBlocked, 1, ".");
+
+	// set camera at position to look at another position
+	RegisterFunction(pVM, "cameraLookAtFrom", (SQFUNCTION)sq_cameraLookAtFrom, 7, ".ffffff");
+
+	// restore original camera position
+	RegisterFunction(pVM, "restoreCamera", (SQFUNCTION)sq_restoreCamera, 1, ".");
+
+	// set localplayer position
+	// Params: x, y, z
+	RegisterFunction(pVM, "setPosition", (SQFUNCTION)sq_setPosition, 4, ".fff");
+
+	// set localplayer rotation
+	// Params: x, y, z
+	RegisterFunction(pVM, "setRotation", (SQFUNCTION)sq_setRotation, 4, ".fff");
+
+	// set localplayer skin
+	// Params: skinID
+	RegisterFunction(pVM, "changeSkin", (SQFUNCTION)sq_changeSkin, 2, ".n");
+
+	// Call function located at server-side in a script
+	// Params: scriptname, functionname, param(int, float, bool, string)
+	RegisterFunction(pVM, "callServerFunc", (SQFUNCTION)sq_callServerFunc, 4, ".ss.");
 }

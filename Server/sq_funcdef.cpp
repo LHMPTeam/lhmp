@@ -1571,3 +1571,75 @@ SQInteger sq_iniCreateFile(SQVM *vm)
 }
 
 
+SQInteger sq_callClientFunc(SQVM *vm)
+{
+	SQInteger	playerID;
+	const SQChar* script_name,*func_name;
+	const SQChar* param;
+	const SQChar* file;
+	const SQChar* value;
+
+	sq_getinteger(vm, -4, &playerID);
+	sq_getstring(vm, -3, &script_name);
+	sq_getstring(vm, -2, &func_name);
+
+	SQObjectType type_of_param = sq_gettype(vm, -1);
+
+	// check if player exists
+	CPlayer* player = g_CCore->GetPlayerPool()->Return(playerID);
+	if (player != NULL)
+	{
+		// if does, serialize a message 
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_SCRIPT_CALLFUNC);
+		bsOut.Write(script_name);
+		bsOut.Write(func_name);
+
+		// now get type of param and serialize it
+		SQInteger iPar;
+		SQFloat fPar;
+		const SQChar* stringPar;
+		SQBool	bPar;
+
+		bsOut.Write(type_of_param);
+		switch (type_of_param)
+		{
+		case OT_INTEGER:
+			sq_getinteger(vm, -1, &iPar);
+			bsOut.Write(iPar);
+			break;		
+		case OT_FLOAT:
+			sq_getfloat(vm, -1, &fPar);
+			bsOut.Write(fPar);
+			break;
+		case OT_STRING:
+			sq_getstring(vm, -1, &stringPar);
+			bsOut.Write(stringPar);
+			break; 
+		case OT_BOOL:
+			sq_getbool(vm, -1, &bPar);
+			bsOut.Write(bPar);
+			break;
+		case OT_NULL:
+			// if null, no extra data are sent
+		default:
+		case -1:
+			// in case bad type occurs, do nothing
+			break;
+		}
+
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(playerID), false);
+	}
+
+	
+	return 1;
+}
+
+SQInteger sq_callFunc(SQVM *vm)
+{
+	bool result = g_CCore->GetScripts()->callFunc(vm);
+	sq_pushbool(vm, result);
+	return 1;
+}
+

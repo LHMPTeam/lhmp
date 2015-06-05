@@ -83,7 +83,7 @@ public:
 		if(g_CCore != NULL)
 		{
 			// Clear the buffer so the game won't get any events.
-			if ((g_CCore->GetChat()->IsTyping() || g_CCore->GetGame()->isControlLocked() || g_CCore->GetIngameMenu()->isActive()))
+			if ((g_CCore->GetChat()->IsTyping() || g_CCore->GetGame()->isControlLocked() || g_CCore->GetIngameMenu()->isActive() || g_CCore->GetSquirrel()->isInputBlocked()))
 			{
 				memset(data, 0, size);
 				//p_DID->GetDeviceData(sizeof (DIDEVICEOBJECTDATA), NULL, &dwNumItems, 0);

@@ -1403,6 +1403,18 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		}
 			break;
 
+		case LHMP_SCRIPT_CALLFUNC:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			char script_name[500];
+			char func_name[500];
+
+			bsIn.Read(script_name);
+			bsIn.Read(func_name);
+			g_CCore->GetSquirrel()->callClientFunc(script_name, func_name, &bsIn);
+		}
+			break;
+
 		case LHMP_PICKUP_CREATE:
 		{
 

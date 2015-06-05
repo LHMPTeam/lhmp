@@ -99,6 +99,10 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "iniRemoveFile", (SQFUNCTION)sq_iniRemoveFile, 2, ".s");
 	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s");
 
+
+	RegisterFunction(vM, "callClientFunc", (SQFUNCTION)sq_callClientFunc, 5, ".nss.");
+	RegisterFunction(vM, "callFunc", (SQFUNCTION)sq_callFunc, 4, ".ss.");
+	
 	// part of human body
 	RegisterVariable(vM, "PLAYER_RIGHHAND", 1);
 	RegisterVariable(vM, "PLAYER_LEFTHAND", 2);
