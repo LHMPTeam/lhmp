@@ -289,6 +289,13 @@ void CChat::DoCommand(char str[])
 		sprintf(buffer, "PlayerPos: [X: %f] [Y: %f] [Z: %f]", pos.x,pos.y,pos.z);
 		g_CCore->GetChat()->AddMessage(buffer);
 	}
+	else if (strcmp(command, "savepos") == 0) {
+		char buffer[255] = "";
+		Vector3D pos = g_CCore->GetLocalPlayer()->GetLocalPos();
+		sprintf(buffer, "PlayerPos: [X: %f] [Y: %f] [Z: %f]", pos.x, pos.y, pos.z);
+		g_CCore->GetChat()->AddMessage(buffer);
+		g_CCore->GetLog()->AddLog(buffer);
+	}
 	else if (strcmp(command, "testpos") == 0)
 	{
 		ENGINE_STACK::PLAYER_SETPOS* data = new ENGINE_STACK::PLAYER_SETPOS();
