@@ -1526,7 +1526,7 @@ SQInteger sq_iniFileExists(SQVM *vm)
 	char filepath[256] = "";
 	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
 
-	std::ifstream infile(file);
+	std::ifstream infile(filepath);
 	sq_pushbool(vm, infile.good());
 	return 1;
 }
