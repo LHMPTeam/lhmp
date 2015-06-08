@@ -37,7 +37,7 @@ void	CNetworkManager::UpdateConsoleName()
 #endif
 }
 
-bool CNetworkManager::Init(int port, int players,std::string startpos,std::string mode)
+bool CNetworkManager::Init(int port, int players,std::string startpos,std::string mode, char* password)
 {
 	m_pServerMaxPlayers = players;
 	m_pServerPort		= port;
@@ -45,16 +45,27 @@ bool CNetworkManager::Init(int port, int players,std::string startpos,std::strin
 	peer	= RakNet::RakPeerInterface::GetInstance();
 	sd		= new SocketDescriptor(port,0);
 	slot = new Slot[players];
+	// Makes all slots ready for conections
 	for(int i  = 0; i < players; i++)
 	{
 		slot[i].sa = UNASSIGNED_SYSTEM_ADDRESS;
 		slot[i].isUsed = false;
 	}
-
+	// Start up the RakNet instance
 	if (peer->Startup(100, sd, 1) != RAKNET_STARTED)
 	{
 		g_CCore->GetLog()->AddNormalLog("Startup failed !");
 		return false;
+	}
+	
+	// if passwod is specified, lock up the server with it
+	if (strlen(password) == 0)
+	{
+		this->m_bisLocked = false;
+	}
+	else {
+		this->m_bisLocked = true;
+		peer->SetIncomingPassword(password, strlen(password));
 	}
 	peer->SetMaximumIncomingConnections(players);
 	return true;
@@ -143,6 +154,11 @@ unsigned int	CNetworkManager::GetPlayerCount()
 unsigned int	CNetworkManager::GetMaxPlayerCount()
 {
 	return this->GetPeer()->GetMaximumIncomingConnections();
+}
+
+bool	CNetworkManager::IsLocked()
+{
+	return this->m_bisLocked;
 }
 
 void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)

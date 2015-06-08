@@ -29,20 +29,25 @@ void CCore::OnSecondElapsed()
 {
 	m_cNetworkManager.SendPingUpdate();
 	m_cPickupPool.Tick();
+
+	// update console's title
+	m_cNetworkManager.UpdateConsoleName();
+
 }
 
-int CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible,char* website)
+int CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible,char* website,char* password)
 {
-	if (m_cNetworkManager.Init(port, players, startpos, mode) == false)
+	if (m_cNetworkManager.Init(port, players, startpos, mode,password) == false)
 		return STARTUP_NETWORK_FAILED;
-	if (m_cQueryServer.StartServer(port + 1) == false)
-		return STARTUP_QUERY_FAILED;
 	m_cNetworkManager.SetServerName(svrname);
 	m_cNetworkManager.SetWebsite(website);
-	//if (visible == 1)
-//		m_cNetworkManager.PostMasterlist(true);
-
+	// Update console's title with name and players count
+	m_cNetworkManager.UpdateConsoleName();
+	// Init server console (handling input from system)
 	m_cConsole.Init();
+	// Try to query masterlist
+	if (m_cQueryServer.StartServer(port + 1) == false)
+		return STARTUP_QUERY_FAILED;
 	return STARTUP_SUCCESS;
 }
 
@@ -105,7 +110,6 @@ void	CCore::ChangeModeTo(char* newmode)
 		}
 	}
 }
-
 
 CNetworkManager*	CCore::GetNetworkManager()
 {

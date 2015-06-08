@@ -1049,5 +1049,8 @@
     <ClInclude Include="CScripts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CSQImages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

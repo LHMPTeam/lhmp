@@ -1,5 +1,6 @@
 #include "CCore.h"
-
+#include <time.h>
+extern CCore* g_CCore;
 CBanSystem::CBanSystem()
 {
 
@@ -30,63 +31,115 @@ void CBanSystem::LoadBanlist()
 		while (pointer != NULL)
 		{
 			// parse line
-			this->ParseLineFromFile(pointer);
+			this->ParseLineFromFile(pointer,++lineNumber);
 			pointer = strtok(NULL, "\r\n\0");
 		}
 		// close file
 		fclose(file);
 	}
+	g_CCore->GetLog()->AddNormalLog("Banlist loaded.");
 }
 
 void CBanSystem::AddBan(char* IPaddres, char* reason, unsigned int duration)
 {
-	
+	// Add ban to network bad list
+	g_CCore->GetNetworkManager()->GetPeer()->AddToBanList(IPaddres, duration);
+	// Write a new ban down into banlist.txt
+	this->AddBanToFile(IPaddres,duration, reason);
 }
 
 // ---------------------- PRIVATE ------------------------//
 
-void CBanSystem::ParseLineFromFile(char line[255])
+void CBanSystem::ParseLineFromFile(char* line,int lineID)
 {
-	char newInput[1024];
+	time_t  timev;
+	time(&timev);
+	unsigned int banTime;
+	//g_CCore->GetLog()->AddNormalLog("Line: %s", line);
+	// four items with max length 200
+	// items: (compulsory) IP, (compulsory) lasting, (optional) reason_for_ban,(optional) special_note
+	// reason and special note might be empty
+	char items[4][200];
+	// fill all strings with ZEROs, useful for floating ending chars
+	memset(items, 0x0, 4 * 200);
 
-	int len = strlen(line);
-	int state = 0;
-	for (int i = 0; i < len; i++)
+	// example line
+	// "127.0.0.1"	"1420302218"	"dovod na ban"	""
+
+	// find first ,", occurence
+	int length = strlen(line);
+	int pointer = 0,count = 0;
+	while (count <= 3)
 	{
-		if (line[i] == ';')
+		// whether we found the first or second "
+		bool bracesToggle = false;
+		// holds the first occurence of "
+		int firstBrace = 0;
+		for (; pointer < length; pointer++)
 		{
-			break;
-		}
-		else if (line[i] == ' ' || line[i] == '	')
-		{
-			if (newInput[state - 1] != ' ')
+			if (line[pointer] == ';')
 			{
-				newInput[state] = ' ';
-				state++;
+				if (bracesToggle == false)
+					//g_CCore->GetLog()->AddNormalLog("[Error] Banlist, line %d - missing \" to seperate data. Found ';'", lineID);
+				// anyway, break here
+				break;
+			} else if (line[pointer] == '"')
+			{
+				// if found the second brace, then copy and jump into next round
+				if (bracesToggle)
+				{
+					memcpy(items[count], line + firstBrace, pointer - firstBrace);
+					bracesToggle = !bracesToggle;
+					pointer++;
+					break;
+				}
+				else {
+					// we found the first one, so toggle the switch
+					firstBrace = pointer+1;
+					bracesToggle = !bracesToggle;
+				}
 			}
 		}
-		else {
-			newInput[state] = line[i];
-			state++;
-		}
+		// if we have found first brace, but second is missing, show an error
+		if (bracesToggle == true)
+			g_CCore->GetLog()->AddNormalLog("[Error] Banlist, line %d:%d - missing \" to seperate data.", lineID,firstBrace);
+		count++;
+		// break if a comment was found
+		if (line[pointer] == ';')
+			break;
 	}
 
-	// newInput now contains optimal input (no multiple whitespaces & TABs)
+	// lets see
+	//g_CCore->GetLog()->AddNormalLog("Read data: A'%s' | B'%s' | C'%s' | D'%s'", items[0], items[1], items[2], items[3]);
 
-	if (strlen(newInput) == 0)
-		return;
-
-	for (unsigned int i = 0; i < strlen(newInput); i++)
+	if (strlen(items[0]) > 0 && strlen(items[1]) > 0)
 	{
-		if (newInput[i] == ' ')
+		sscanf(items[1], "%u", &banTime);
+		if (banTime > timev)
 		{
-
+			banTime -= timev;
+			g_CCore->GetNetworkManager()->GetPeer()->AddToBanList(items[0], banTime);
+			g_CCore->GetLog()->AddNormalLog(">>>Adding ban - %s.",items[0]);
 		}
 	}
-	
 }
 
-void CBanSystem::AddBanToFile(char* IPaddres, unsigned int duration, char* reason)
-{
 
+void CBanSystem::AddBanToFile(char* IPaddres, unsigned int duration, char* reason,char* note)
+{
+	FILE* file = fopen("banlist.txt", "a+");
+	if (file != NULL)
+	{
+
+		char line[500];
+		char timestamp[20];
+		time_t  timev;
+		time(&timev);
+		sprintf(timestamp, "%u", timev + duration);
+		
+		sprintf(line, "\"%s\" \"%s\" \"%s\" \"%s\"\n", IPaddres, timestamp, reason, note);
+		fwrite(line,1,strlen(line),file);
+
+		fclose(file);
+	}
 }

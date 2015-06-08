@@ -104,8 +104,7 @@ void CQueryServer::OverallPacket(UDPPacket* packet)
 	buffPointer++;
 	len++;
 	// --------- Add hasPassword - 1 byte
-	// TODO - implement passwords
-	*(unsigned char*)buffPointer = (unsigned char)0;
+	*(unsigned char*)buffPointer = (unsigned char) g_CCore->GetNetworkManager()->IsLocked();
 	buffPointer++;
 	len++;
 	// --------- Add player's count - 2 bytes

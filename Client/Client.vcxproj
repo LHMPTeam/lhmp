@@ -435,6 +435,7 @@
     <ClInclude Include="CPickupPool.h" />
     <ClInclude Include="CPool.h" />
     <ClInclude Include="CScripts.h" />
+    <ClInclude Include="CSQImages.h" />
     <ClInclude Include="CSquirrel.h" />
     <ClInclude Include="CVehicle.h" />
     <ClInclude Include="CVehiclePool.h" />

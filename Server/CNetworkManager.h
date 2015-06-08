@@ -35,10 +35,11 @@ private:
 	int							m_pServerMaxPlayers;
 	std::string					m_pServerMode;
 	char						website[512];
+	bool						m_bisLocked;
 public:
 	CNetworkManager();
 	~CNetworkManager();
-	bool						Init(int port,int players, std::string,std::string);
+	bool						Init(int port,int players, std::string,std::string,char*);
 	int							GetIDFromSystemAddress(SystemAddress);
 	SystemAddress				GetSystemAddressFromID(int);
 	Slot*						GetSlotID(int ID);
@@ -56,6 +57,9 @@ public:
 
 	unsigned int				GetPlayerCount();
 	unsigned int				GetMaxPlayerCount();
+
+	// returns whether server is locked by password (pass is required to connect)
+	bool						IsLocked();
 
 	// Tick callback
 	void						Pulse();
