@@ -1413,7 +1413,7 @@ SQInteger sq_pickupCreate(SQVM *vm)
 }
 
 // real inigetParam
-void iniGetParam(const char* file, const char* param, char* value)
+void iniGetParam(const char* file, const char* param, char* value, const char* defaultValue)
 {
 	char filepath[256] = "";
 	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
@@ -1441,7 +1441,7 @@ void iniGetParam(const char* file, const char* param, char* value)
 			}
 		}
 	}
-	sprintf(value, "");
+	sprintf(value, "%s", defaultValue);
 	return;
 }
 
@@ -1449,14 +1449,16 @@ SQInteger sq_iniGetParam(SQVM *vm)
 {
 	const SQChar* param;
 	const SQChar* file;
+	const SQChar* def;
 
-	sq_getstring(vm, -1, &param);
-	sq_getstring(vm, -2, &file);
+	sq_getstring(vm, -1, &def);
+	sq_getstring(vm, -2, &param);
+	sq_getstring(vm, -3, &file);
 
 	SQChar out[256];
 
 	//g_CCore->GetFileSystem()->iniGetParam(file, param, out);
-	iniGetParam(file, param, out);
+	iniGetParam(file, param, out, def);
 
 	sq_pushstring(vm, _SC(out), -1);
 
@@ -1512,6 +1514,21 @@ void iniSetParam(const char* file, const char* param, const char* value)
 	}
 
 	return;
+}
+
+SQInteger sq_iniFileExists(SQVM *vm)
+{
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &file);
+	
+
+	char filepath[256] = "";
+	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
+
+	std::ifstream infile(file);
+	sq_pushbool(vm, infile.good());
+	return 1;
 }
 
 SQInteger sq_iniSetParam(SQVM *vm)
