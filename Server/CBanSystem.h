@@ -10,6 +10,6 @@ public:
 	// @duration in seconds
 	void AddBan(char* IPaddres,char* reason,unsigned int duration);
 private:
-	void ParseLineFromFile(char line[]);
-	void AddBanToFile(char* IPaddres,unsigned int duration, char* reason = "");
+	void ParseLineFromFile(char line[],int lineID);
+	void AddBanToFile(char* IPaddres, unsigned int duration, char* reason = "", char* note = "");
 };

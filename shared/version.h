@@ -20,3 +20,9 @@ enum versionTypes
 	VERSION_TEST,
 	VERSION_PUBLIC
 };
+
+#ifdef _WIN32
+#define LHMP_PLATFORM "Win32"
+#else
+#define LHMP_PLATFORM "Linux"
+#endif

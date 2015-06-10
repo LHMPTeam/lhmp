@@ -52,7 +52,10 @@ RakNet::RakPeerInterface* CNetworkManager::GetPeer()
 
 bool CNetworkManager::ConnectServer()
 {
-	peer->Connect(CONNECT_IP,CONNECT_PORT,0,0);
+	if (strlen(CONNECT_PASSWORD) > 0)
+		peer->Connect(CONNECT_IP, CONNECT_PORT, CONNECT_PASSWORD, strlen(CONNECT_PASSWORD));
+	else
+		peer->Connect(CONNECT_IP,CONNECT_PORT,0,0);
 	char buffer[255];
 	sprintf(buffer,"Connecting %s:%d",CONNECT_IP,CONNECT_PORT);
 	g_CCore->GetChat()->AddMessage(buffer);	
@@ -158,11 +161,9 @@ void CNetworkManager::Pulse()
 				break;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
 			g_CCore->GetChat()->AddMessage("#f31d2fConnection aborted, the server is full.");
-			//printf("The server is full.\n");
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
 			g_CCore->GetChat()->AddMessage("#f31d2fDisconnected from the server.");
-				//printf("We have been disconnected.\n");
 			break;
 		case ID_CONNECTION_LOST:
 			g_CCore->GetChat()->AddMessage("#f31d2fConnection with the server lost.");
@@ -170,6 +171,12 @@ void CNetworkManager::Pulse()
 		case ID_CONNECTION_ATTEMPT_FAILED:
 			g_CCore->GetChat()->AddMessage("#f31d2fConnection failed, trying to reconnect.");
 			ConnectServer();
+			break;
+		case ID_INVALID_PASSWORD:
+			g_CCore->GetChat()->AddMessage("#ff0000Password rejected.");
+			break;
+		case ID_CONNECTION_BANNED:
+			g_CCore->GetChat()->AddMessage("#ff0000Connection refused - we are banned.");
 			break;
 		case ID_GAME_ALIVE:
 		case ID_GAME_SYNC:
@@ -1486,8 +1493,7 @@ void CNetworkManager::GetConnectInfo()
 	{
 		pch = strtok(commandLine," ");
 		pch = strtok(NULL," ");
-	} else
-	{
+	} else {
 		char buffer[255];
 		pch = strtok(commandLine,"\"");
 		//MessageBoxA(NULL,pch,"1",MB_OK);
@@ -1497,19 +1503,32 @@ void CNetworkManager::GetConnectInfo()
 		pch = strtok(buffer," ");
 		//MessageBoxA(NULL,pch,"3",MB_OK);
 	}
+
+	// is there any IP as argument
 	if(pch != NULL)
 	{
 		sprintf(CONNECT_IP,"%s",pch);
 		pch = strtok(NULL," ");
+		// is there any PORT as argument
 		if(pch != NULL)
 		{
 			CONNECT_PORT = atoi(pch);
+			pch = strtok(NULL, " ");
+			if (pch != NULL)
+			{
+				// password argument
+				sprintf(CONNECT_PASSWORD, "%s", pch);
+			}
+			else {
+				sprintf(CONNECT_PASSWORD, "%s", "");
+			}
 		} else
 		{
 			CONNECT_PORT = 27015;
 		}
 	} else
 	{
+		// if there aren't any arguments, use default ones
 		sprintf(CONNECT_IP,"%s","127.0.0.1");
 		CONNECT_PORT = 27015;
 	}

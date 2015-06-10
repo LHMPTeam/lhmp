@@ -41,6 +41,7 @@ private:
 	RakNet::SocketDescriptor	sd;
 	char						CONNECT_IP[100];
 	int							CONNECT_PORT;
+	char						CONNECT_PASSWORD[100];
 	char						NickName[100];
 	char						m_pServerName[255];
 

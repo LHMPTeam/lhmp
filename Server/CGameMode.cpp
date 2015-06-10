@@ -14,6 +14,7 @@ CGameMode::CGameMode()
 
 bool CGameMode::LoadGameMode(char* name)
 {
+	unsigned int successfulFiles = 0;
 	this->clientPoolSize = 0;
 	this->clientPool = 0;
 	SetName("default");
@@ -64,6 +65,7 @@ bool CGameMode::LoadGameMode(char* name)
 						if (Tools::fileExists(path))
 						{
 							g_CCore->GetScripts()->LoadScript(path);
+							successfulFiles++;
 						}
 						else
 						{
@@ -72,7 +74,7 @@ bool CGameMode::LoadGameMode(char* name)
 					}
 					else if (strcmp(pointer, "CLIENT") == 0)
 					{
-						g_CCore->GetLog()->AddNormalLog("[!] Client script load %s", pointer + delim + 1);
+						//g_CCore->GetLog()->AddNormalLog("[!] Loading client script '%s'", pointer + delim + 1);
 
 						char path[500];
 						char newname[255];
@@ -91,16 +93,17 @@ bool CGameMode::LoadGameMode(char* name)
 						// was compilation successful
 						if (result == 0)
 						{
-							g_CCore->GetLog()->AddNormalLog("[!] FOPEN %s", newname);
+							//g_CCore->GetLog()->AddNormalLog("[!] FOPEN %s", newname);
 
 							FILE* pFile = fopen(newname, "rb");
 							// can we open the recently compiled file (required for file transfer) ?
 							if (pFile)
 							{
-								g_CCore->GetLog()->AddNormalLog("[!] Client script %s compiled / added to files pool", pointer + delim + 1);
+								//g_CCore->GetLog()->AddNormalLog("[!] Client script %s compiled / added to files pool", pointer + delim + 1);
 
 								g_CCore->GetFileTransfer()->AddFile(pointer + delim + 1, pFile);
 								this->AddClientScript(pointer + delim + 1);
+								successfulFiles++;
 							}
 							else {
 								g_CCore->GetLog()->AddNormalLog("[!] Client script '%s' load failed to open", pointer + delim + 1);
@@ -118,6 +121,7 @@ bool CGameMode::LoadGameMode(char* name)
 						{
 							g_CCore->GetLog()->AddNormalLog("[!] File '%s has been added to file transfer", pointer + delim + 1);
 							g_CCore->GetFileTransfer()->AddFile(pointer + delim + 1, pFile);
+							successfulFiles++;
 						}
 						else {
 							g_CCore->GetLog()->AddNormalLog("[!] File '%s' has been skipped...", pointer + delim + 1);
@@ -143,7 +147,7 @@ bool CGameMode::LoadGameMode(char* name)
 		return false;
 	}
 	SetName(name);
-	g_CCore->GetLog()->AddNormalLog("Gamemode's been successfully loaded.");
+	g_CCore->GetLog()->AddNormalLog("Gamemode '%s' been successfully loaded. \n%d file(s) processed",name,successfulFiles++);
 	return true;
 }
 
