@@ -456,6 +456,12 @@
     <ClCompile Include="CSquirrel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CSQImages.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSQFonts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directx8hook.h">
@@ -1050,6 +1056,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CSQImages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSQFonts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

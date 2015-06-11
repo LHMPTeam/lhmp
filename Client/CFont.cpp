@@ -95,18 +95,26 @@ void	CFont::DrawColoredText(char* text, int x, int y, DWORD color, bool shadow)
 
 SIZE	CFont::GetFontWidth(char text[], int len)
 {
-	char backup;
-	if (len != -1)
-	{
-		backup = text[len];
-		text[len] = 0x0;
-	}
 	SIZE textSize;
-	this->m_pFont->GetTextExtent(text, &textSize);
-
-	if (len != -1)
+	if (this->m_pFont)
 	{
-		text[len] = backup;
+		char backup;
+		if (len != -1)
+		{
+			backup = text[len];
+			text[len] = 0x0;
+		}
+
+		this->m_pFont->GetTextExtent(text, &textSize);
+
+		if (len != -1)
+		{
+			text[len] = backup;
+		}
+	}
+	else {
+		textSize.cx = 0;
+		textSize.cy = 0;
 	}
 	return textSize;
 }

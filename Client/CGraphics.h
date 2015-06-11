@@ -44,8 +44,9 @@ private:
 	DWORD				m_dwRenderTextureBlock;
 	DWORD				m_dwRenderTextureBlockDeposit;
 
-
 	void				SetRenderTextureStateBlock();
+
+	Vector2D			resolution;
 public:
 	CGraphics();
 	IDirect3DDevice8*	GetDevice();

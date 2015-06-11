@@ -30,6 +30,8 @@
 #include "CFileSystem.h"
 #include "CNametags.h"
 #include "CSquirrel.h"
+#include "CSQImages.h"
+#include "CSQFonts.h"
 #include <time.h>
 
 #include "../shared/tools.h"
@@ -59,6 +61,9 @@ private:
 	CPickupPool				m_cPickuppool;
 	CNametags				m_cNametags;
 	CSquirrel				m_cSquirrel;
+	CSQImages				m_cSquirrelImages;
+	CSQFonts				m_cSquirrelFonts;
+
 
 
 public:
@@ -91,6 +96,8 @@ public:
 	CFileSystem*			GetFileSystem();
 	CNametags*				GetNametags();
 	CSquirrel*				GetSquirrel();
+	CSQImages*				GetSquirrelImages();
+	CSQFonts*				GetSquirrelFonts();
 
 	bool					m_bIsGameLoaded;
 	bool					m_bIsRespawning;         

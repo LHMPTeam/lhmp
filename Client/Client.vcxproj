@@ -236,6 +236,8 @@
     <ClCompile Include="CPedPool.cpp" />
     <ClCompile Include="CPickup.cpp" />
     <ClCompile Include="CPickupPool.cpp" />
+    <ClCompile Include="CSQFonts.cpp" />
+    <ClCompile Include="CSQImages.cpp" />
     <ClCompile Include="CSquirrel.cpp" />
     <ClCompile Include="CVehicle.cpp" />
     <ClCompile Include="CVehiclePool.cpp" />
@@ -434,6 +436,7 @@
     <ClInclude Include="CPickup.h" />
     <ClInclude Include="CPickupPool.h" />
     <ClInclude Include="CPool.h" />
+    <ClInclude Include="CSQFonts.h" />
     <ClInclude Include="CScripts.h" />
     <ClInclude Include="CSQImages.h" />
     <ClInclude Include="CSquirrel.h" />

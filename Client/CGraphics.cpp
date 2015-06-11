@@ -351,12 +351,26 @@ void CGraphics::RenderNametags()
 
 Vector2D CGraphics::GetResolution()
 {
-	D3DVIEWPORT8 viewport;
+	if (this->resolution.x == NULL)
+	{
+		IDirect3DSurface8* pSurface;
+		m_DirectDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pSurface);
+		D3DSURFACE_DESC SurfaceDesc;
+		pSurface->GetDesc(&SurfaceDesc);
+		
+		this->resolution.x = SurfaceDesc.Width;
+		this->resolution.y = SurfaceDesc.Height;
+		SAFE_RELEASE(pSurface);
+	}
+
+	return this->resolution;
+	/*D3DVIEWPORT8 viewport;
 	m_DirectDevice->GetViewport(&viewport);
 	Vector2D screen;
 	screen.x = viewport.Width;
 	screen.y = viewport.Height;
 	return screen;
+	*/
 }
 
 void CGraphics::TakeScreenshot()
@@ -1201,6 +1215,10 @@ __declspec(noinline) void CGraphics::OnLostDevice()
 		this->m_DirectDevice->DeleteStateBlock(m_dwRenderTextureBlockDeposit);
 	this->m_dwRenderTextureBlock = NULL;
 	this->m_dwRenderTextureBlockDeposit = NULL;
+
+	g_CCore->GetSquirrelFonts()->OnLostDevice();
+
+	g_CCore->GetSquirrelImages()->OnLostDevice();
 }
 void CGraphics::OnResetDevice()
 {
@@ -1230,6 +1248,11 @@ void CGraphics::OnResetDevice()
 	g_CCore->GetIngameMenu()->OnResetDevice();
 
 	this->m_cFont->OnReset();
+
+
+	g_CCore->GetSquirrelFonts()->OnResetDevice();
+
+	g_CCore->GetSquirrelImages()->OnResetDevice();
 }
 
 

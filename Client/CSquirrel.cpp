@@ -770,6 +770,186 @@ SQInteger sq_callServerFunc(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_createTexture(SQVM *vm)
+{
+	const SQChar* textureName;
+	sq_getstring(vm, -1, &textureName);
+
+	char* realName = g_CCore->GetFileSystem()->GetFileAliasFromName((char*)textureName);
+
+	char szScriptPath[512];
+	sprintf(szScriptPath, "lhmp/files/%s", realName);
+
+	CSQImage* image = g_CCore->GetSquirrelImages()->createTexture((char*)szScriptPath);
+	/*if (image != NULL)
+	{
+		// on success, returns the handle to image(texture)
+		sq_pushuserpointer(vm, image);
+	}
+	else {
+		sq_pushbool(vm, false);
+	}*/
+	// on success, it returns handle, otherwise NULL
+	sq_pushuserpointer(vm, image);
+	return 1;
+}
+
+SQInteger sq_getTextureSize(SQVM *vm)
+{
+	CSQImage* image;
+	sq_getuserpointer(vm, -1, (SQUserPointer*)&image);
+
+	D3DSURFACE_DESC descript;
+	image->GetTexture()->GetLevelDesc(0, &descript);
+	
+	sq_newarray(vm, 0);
+	sq_pushinteger(vm, descript.Width);
+	sq_arrayappend(vm, -2);
+	sq_pushinteger(vm, descript.Height);
+	sq_arrayappend(vm, -2);
+	sq_push(vm, -1);
+
+	return 1;
+}
+
+SQInteger sq_drawTexture(SQVM* vm)
+{
+	CSQImage*		image;
+	D3DXVECTOR2		position;
+	D3DXVECTOR2		scaling;
+
+	sq_getuserpointer(vm, -5, (SQUserPointer*) &image);
+	if (image != NULL)
+	{
+		sq_getfloat(vm, -4, &position.x);
+		sq_getfloat(vm, -3, &position.y);
+		sq_getfloat(vm, -2, &scaling.x);
+		sq_getfloat(vm, -1, &scaling.y);
+
+		g_CCore->GetGraphics()->GetSprite()->Draw(image->GetTexture(), NULL,&scaling,NULL,0.0f, &position, 0xFFFFFFFF);
+	}
+	else {
+		g_CCore->GetChat()->AddMessage("[Err] drawImage - image doesn't exists");
+	}
+	return 1;
+}
+
+SQInteger sq_drawTextureEx(SQVM* vm)
+{
+	CSQImage*		image;
+	D3DXVECTOR2		position;
+	D3DXVECTOR2		scaling;
+	float			rotation;
+	RECT			sourceRect;
+
+
+	sq_getuserpointer(vm, -10, (SQUserPointer*)&image);
+	if (image != NULL)
+	{
+		sq_getfloat(vm, -9, &position.x);
+		sq_getfloat(vm, -8, &position.y);
+		sq_getfloat(vm, -7, &scaling.x);
+		sq_getfloat(vm, -6, &scaling.y);
+
+		sq_getinteger(vm, -5, (int*)&sourceRect.left);
+		sq_getinteger(vm, -4, (int*)&sourceRect.top);
+		sq_getinteger(vm, -3, (int*)&sourceRect.right);
+		sq_getinteger(vm, -2, (int*)&sourceRect.bottom);
+
+		sq_getfloat(vm, -1, &rotation);
+
+		g_CCore->GetGraphics()->GetSprite()->Draw(image->GetTexture(), &sourceRect, &scaling, NULL, rotation, &position, 0xFFFFFFFF);
+	}
+	else {
+		g_CCore->GetChat()->AddMessage("[Err] drawImageEx - image doesn't exists");
+	}
+	return 1;
+}
+
+SQInteger sq_createFont(SQVM *vm)
+{
+	const SQChar* name_font;
+	int size;
+	sq_getstring(vm, -2, &name_font);
+	sq_getinteger(vm, -1, &size);
+
+	CSQFont* font = g_CCore->GetSquirrelFonts()->createFont((char*)name_font,size);
+	
+	char buff[500];
+	sprintf(buff, "createFont: %p", font);
+	g_CCore->GetChat()->AddMessage(buff);
+	sq_pushuserpointer(vm, font);
+	return 1;
+}
+
+SQInteger sq_drawFontText(SQVM *vm)
+{
+	const SQChar* text;
+	int x, y;
+	CSQFont* font;
+	int color;
+	sq_getstring(vm, -5, &text);
+	sq_getinteger(vm, -4, &x);
+	sq_getinteger(vm, -3, &y);
+	sq_getinteger(vm, -2, &color);
+	sq_getuserpointer(vm, -1,(SQUserPointer*) &font);
+
+	if (font)
+	{
+		font->GetFont()->DrawTextA((char*)text, x, y, color);
+	}
+	return 1;
+}
+
+SQInteger sq_getFontWidthOfText(SQVM *vm)
+{
+	const SQChar* text;
+	CSQFont* font;
+	sq_getstring(vm, -2, &text);
+	sq_getuserpointer(vm, -1, (SQUserPointer*)&font);
+
+	if (font)
+	{
+		if (font->GetFont())
+		{
+			SIZE size = font->GetFont()->GetFontWidth((char*)text);
+			sq_newarray(vm, 0);
+			sq_pushinteger(vm, size.cx);
+			sq_arrayappend(vm, -2);
+			sq_pushinteger(vm, size.cy);
+			sq_arrayappend(vm, -2);
+			sq_push(vm, -1);
+			return 1;
+		}
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_ColorRGB(SQVM *vm)
+{
+	int r, g, b;
+	sq_getinteger(vm, -3, &r);
+	sq_getinteger(vm, -2, &g);
+	sq_getinteger(vm, -1, &b);
+
+	Tools::Clamp(r, 0, 256);
+	Tools::Clamp(g, 0, 256);
+	Tools::Clamp(b, 0, 256);
+
+	DWORD color = 0xFF000000;
+
+	// push color fragmets into one 4-byte value (using bitwise OR)
+	DWORD helpVar = (r << 16);
+	color |= helpVar;
+	helpVar = (g << 8);
+	color |= helpVar;
+	helpVar = (b);
+	color |= helpVar;
+	// return color
+	sq_pushinteger(vm, color);
+	return 1;
+}
 
 /*------------------------- /Natives ------------------------------- */
 // Register all native functions and constants
@@ -873,4 +1053,30 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	// Call function located at server-side in a script
 	// Params: scriptname, functionname, param(int, float, bool, string)
 	RegisterFunction(pVM, "callServerFunc", (SQFUNCTION)sq_callServerFunc, 4, ".ss.");
+
+	// Creates a texture(image)
+	// Returns pointer or FALSE (on fail)
+	RegisterFunction(pVM, "createTexture", (SQFUNCTION)sq_createTexture, 2, ".s");
+
+	// Returns the size of texture (width/height) as an array
+	RegisterFunction(pVM, "getTextureSize", (SQFUNCTION)sq_getTextureSize, 2, ".p");
+
+	// Draws image(created in 'createTexture') at X and Y and scaling width and height
+	RegisterFunction(pVM, "drawTexture", (SQFUNCTION)sq_drawTexture, 6, ".pnnnn");
+
+	// Draws image(created in 'createTexture') at X and Y, scaling width and height, source rect(x1,y1,x2,y2),rotation(0-360f)
+	RegisterFunction(pVM, "drawTextureEx", (SQFUNCTION)sq_drawTexture, 11, ".pnnnnnnnnn");
+
+	// Creates a new font 
+	RegisterFunction(pVM, "createFont", (SQFUNCTION)sq_createFont, 3, ".sn");
+
+	// draw @test at @x/y with @color and @font
+	RegisterFunction(pVM, "drawFontText", (SQFUNCTION)sq_drawFontText, 6, ".snnnp");
+
+	// returns width and height of text if it's rendered with current font
+	RegisterFunction(pVM, "getTextWidth", (SQFUNCTION)sq_getFontWidthOfText, 3, ".sp");
+
+	// Returns RGB color as DWORD (useful for all Color params, drawtext/fillbox)
+	RegisterFunction(pVM, "ColorRGB", (SQFUNCTION)sq_ColorRGB, 4, ".nnn");
+
 }

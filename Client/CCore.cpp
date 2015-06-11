@@ -300,3 +300,14 @@ CSquirrel*	CCore::GetSquirrel()
 {
 	return &this->m_cSquirrel;
 }
+
+
+CSQImages*	CCore::GetSquirrelImages()
+{
+	return &this->m_cSquirrelImages;
+}
+
+CSQFonts*	CCore::GetSquirrelFonts()
+{
+	return &this->m_cSquirrelFonts;
+}

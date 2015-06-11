@@ -30,7 +30,7 @@ public:
 
 	// calculations
 
-	SIZE	GetFontWidth(char[],int len = -1);
+	__declspec(noinline) SIZE	GetFontWidth(char[], int len = -1);
 	int		GetColoredTextWidth(char[]);
 	int		GetStrlenForWidth(int, char*);
 
