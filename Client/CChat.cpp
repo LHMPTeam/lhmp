@@ -30,6 +30,8 @@ CChat::CChat()
 	
 	this->ChatPoolStart = NULL;
 	this->elementCount = 0;
+	this->lastInputNext = 0;
+	this->lastInputPointer = 0;
 }
 CChat::~CChat()
 {
@@ -1187,4 +1189,34 @@ bool	CChat::shouldWeRerender()
 void	CChat::SetRerenderState(bool state)
 {
 	this->shouldReRender = state;
+}
+
+//-------------------- Handles chat history things ----------------
+
+void	CChat::AddNewLastMessage(std::string message)
+{
+	this->lastInputs[this->lastInputNext] = message;
+	this->lastInputNext++;
+	if (this->lastInputNext > 9)
+		this->lastInputNext = 0;
+	this->lastInputPointer = this->lastInputNext;
+
+}
+std::string	CChat::GetNextLast()
+{
+	this->lastInputPointer++;
+	if (lastInputPointer > 9)
+		lastInputPointer = 0;
+	return this->lastInputs[lastInputPointer];
+}
+std::string	CChat::GetPreviousLast()
+{
+	if (this->lastInputPointer <= 0)
+	{
+		this->lastInputPointer = 9;
+	}
+	else {
+		this->lastInputPointer--;
+	}
+	return this->lastInputs[lastInputPointer];
 }

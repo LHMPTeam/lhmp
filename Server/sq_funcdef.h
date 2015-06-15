@@ -44,6 +44,7 @@ SQInteger sq_playerClearObjective(SQVM *vm);
 SQInteger sq_playerConsoleAddText(SQVM *vm);
 SQInteger sq_playerLockControls(SQVM *vm);
 SQInteger sq_playerIsLocked(SQVM *vm);
+SQInteger sq_playerSetNickColor(SQVM *vm);
 SQInteger sq_allPlaySound(SQVM *vm);
 SQInteger sq_guiToggleNametag(SQVM *vm);
 
@@ -89,10 +90,12 @@ SQInteger sq_timerDelete(SQVM *vm);
 SQInteger sq_pickupCreate(SQVM *vm);
 SQInteger sq_pickupDelete(SQVM *vm);
 
+SQInteger sq_iniFileExists(SQVM *vm);
 SQInteger sq_iniGetParam(SQVM *vm);
 SQInteger sq_iniSetParam(SQVM *vm);
 SQInteger sq_iniRemoveFile(SQVM *vm);
-SQInteger sq_iniCreateFile(SQVM *vm);
+SQInteger sq_iniCreateFile(SQVM *vm); 
 SQInteger sq_iniFileExists(SQVM *vm);
+
 SQInteger sq_callClientFunc(SQVM *vm);
 SQInteger sq_callFunc(SQVM *vm);

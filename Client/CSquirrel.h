@@ -50,6 +50,10 @@ public:
 	void BlockInput(bool);
 	bool isInputBlocked();
 
+	void HideChat(bool);
+	bool isChatHidden();
+	
+
 	/* --------------- Callbacks ------------*/
 	// called when game renders
 	void onRender();
@@ -71,6 +75,7 @@ private:
 	CScript* p_scriptPool[100];
 
 	bool blockInput;
+	bool hideChat;
 
 };
 

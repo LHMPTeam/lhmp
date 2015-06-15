@@ -461,6 +461,21 @@ Vector3D	CPed::GetPEDFramePosition()
 	return Vector3D();
 }
 
+
+void		CPed::SetNickColor(unsigned int color)
+{
+	this->nickColor = color;
+	if(this->nametag != NULL)
+	{
+		this->nametag->Release();
+		this->nametag = NULL;
+	}
+}
+unsigned int CPed::GetNickColor()
+{
+	return this->nickColor;
+}
+
 void CPed::OnThrowGranade()
 {
 	for (int i = 0; i < 8; i++)

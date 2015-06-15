@@ -141,7 +141,8 @@ void CNametags::RenderToTexture(int playerID)
 			// now we are ready to render to texture
 
 			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2) + 1, 128 - (size.cy / 2) + 1, D3DCOLOR_RGBA(0, 0, 0, 255), false);
-			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2), 128 - (size.cy / 2), D3DCOLOR_RGBA(255, 255, 255, 255), false);
+			// original color: D3DCOLOR_RGBA(255, 255, 255, 255)
+			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2), 128 - (size.cy / 2), ped->GetNickColor(), false);
 
 			// return D3D to previos stage and release unneeded resources
 			g_CCore->GetGraphics()->GetDevice()->SetRenderTarget(pOldTarget, oldStencil);

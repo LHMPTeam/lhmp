@@ -291,7 +291,7 @@ SQInteger sq_playerChangeSkin(SQVM *vm)
 	if (skinID > 303)
 		return 1;
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
-	if (player != NULL && player->InCar)
+	if (player != NULL && player->GetCurrentCar())
 	{
 		/*player->SetSkin(skinID);
 		//	BitStream bsOut;
@@ -441,7 +441,7 @@ SQInteger sq_playerInVehicleID(SQVM *vm)
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 	if (player != NULL)
 	{
-		sq_pushinteger(vm, player->InCar);
+		sq_pushinteger(vm, player->GetCurrentCar());
 		return 1;
 	}
 	sq_pushnull(vm);
@@ -503,9 +503,9 @@ SQInteger sq_playerSetHealth(SQVM *vm)
 			bsOut.Write((int)6);
 			bsOut.Write((int)0);
 			g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-			if (player->InCar != -1)
+			if (player->GetCurrentCar() != NO_CAR)
 			{
-				g_CCore->GetVehiclePool()->Return(player->InCar)->PlayerExit(ID);
+				g_CCore->GetVehiclePool()->Return(player->GetCurrentCar())->PlayerExit(ID);
 			}
 		}
 		sq_pushbool(vm, true);
@@ -714,6 +714,22 @@ SQInteger sq_playerGetName(SQVM *vm)
 	{
 		char* nick = player->GetNickname();
 		sq_pushstring(vm, nick, strlen(nick));
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_playerSetNickColor(SQVM *vm)
+{
+	SQInteger	ID, color;
+	sq_getinteger(vm, -2, &ID);
+	sq_getinteger(vm, -1, &color);
+
+	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+	if (player != NULL)
+	{
+		player->net_ChangeNickColor(color);
 		return 1;
 	}
 	sq_pushnull(vm);
@@ -1412,6 +1428,21 @@ SQInteger sq_pickupCreate(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_pickupDelete(SQVM *vm)
+{
+	SQInteger pickupID;
+	sq_getinteger(vm, -1, &pickupID);
+	CPickup* pickup = g_CCore->GetPickupPool()->Return(pickupID);
+	if (pickup != NULL)
+	{
+		g_CCore->GetPickupPool()->Delete(pickupID);
+		sq_pushbool(vm, true);
+		return 1;
+	}
+	sq_pushbool(vm, false);
+	return 1;
+}
+
 // real inigetParam
 void iniGetParam(const char* file, const char* param, char* value, const char* defaultValue)
 {
@@ -1455,13 +1486,28 @@ SQInteger sq_iniGetParam(SQVM *vm)
 	sq_getstring(vm, -2, &param);
 	sq_getstring(vm, -3, &file);
 
+
 	SQChar out[256];
 
 	//g_CCore->GetFileSystem()->iniGetParam(file, param, out);
 	iniGetParam(file, param, out, def);
-
 	sq_pushstring(vm, _SC(out), -1);
 
+	return 1;
+}
+
+SQInteger sq_iniFileExists(SQVM *vm)
+{
+	const SQChar* file;
+
+	sq_getstring(vm, -1, &file);
+
+
+	char filepath[256] = "";
+	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
+
+	std::ifstream infile(filepath);
+	sq_pushbool(vm, infile.good());
 	return 1;
 }
 
@@ -1514,21 +1560,6 @@ void iniSetParam(const char* file, const char* param, const char* value)
 	}
 
 	return;
-}
-
-SQInteger sq_iniFileExists(SQVM *vm)
-{
-	const SQChar* file;
-
-	sq_getstring(vm, -1, &file);
-	
-
-	char filepath[256] = "";
-	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
-
-	std::ifstream infile(filepath);
-	sq_pushbool(vm, infile.good());
-	return 1;
 }
 
 SQInteger sq_iniSetParam(SQVM *vm)

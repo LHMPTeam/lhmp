@@ -27,6 +27,7 @@ private:
 	float		floatRot;
 
 	int			ping;
+	unsigned int nickColor;
 	// interpolation
 	Vector3D			actual,previous;
 	// weapons
@@ -63,6 +64,9 @@ public:
 
 	virtual Vector3D GetPosition();
 	Vector3D	GetPEDFramePosition();
+
+	void		SetNickColor(unsigned int);
+	unsigned int GetNickColor();
 
 	// Weapon actions
 	SWeapon* GetWeapon(int);

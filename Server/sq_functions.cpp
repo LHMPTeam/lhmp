@@ -39,6 +39,7 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "playerLockControls", (SQFUNCTION)sq_playerLockControls, 3, ".nb");
 	RegisterFunction(vM, "playerIsLocked", (SQFUNCTION)sq_playerIsLocked, 2, ".n");
 	RegisterFunction(vM, "playerToggleCityMusic", (SQFUNCTION)sq_playerToggleCityMusic, 3, ".nn");
+	RegisterFunction(vM, "playerSetNickColor", (SQFUNCTION)sq_playerSetNickColor, 3, ".nn");
 	RegisterFunction(vM, "guiToggleNametag", (SQFUNCTION)sq_guiToggleNametag, 3, ".nn");
 
 	RegisterFunction(vM, "playerSetCameraPos", (SQFUNCTION)sq_playerSetCameraPos, 8, ".nffffff");
@@ -93,9 +94,10 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "timerDelete", (SQFUNCTION)sq_timerDelete, 2, ".n");
 
 	RegisterFunction(vM, "pickupCreate", (SQFUNCTION)sq_pickupCreate, 7, ".snffff");
+	RegisterFunction(vM, "pickupDelete", (SQFUNCTION)sq_pickupDelete, 2, ".n");
 
-	RegisterFunction(vM, "iniGetParam", (SQFUNCTION)sq_iniGetParam, 4, ".sss");
 	RegisterFunction(vM, "iniFileExists", (SQFUNCTION)sq_iniFileExists, 2, ".s");
+	RegisterFunction(vM, "iniGetParam", (SQFUNCTION)sq_iniGetParam, 3, ".ss");
 	RegisterFunction(vM, "iniSetParam", (SQFUNCTION)sq_iniSetParam, 4, ".sss");
 	RegisterFunction(vM, "iniRemoveFile", (SQFUNCTION)sq_iniRemoveFile, 2, ".s");
 	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s");

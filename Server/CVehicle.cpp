@@ -73,7 +73,7 @@ void CVehicle::PlayerEnter(int pID, int seatID)
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(pID);
 	if (player != NULL)
 	{
-		player->InCar = g_CCore->GetVehiclePool()->ReturnId(this);
+		player->SetCurrentCar(g_CCore->GetVehiclePool()->ReturnId(this));
 	}
 }
 void CVehicle::PlayerExit(int pID)
@@ -91,7 +91,7 @@ void CVehicle::PlayerExit(int pID)
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(pID);
 	if (player != NULL)
 	{
-		player->InCar = -1;
+		player->SetCurrentCar(NO_CAR);
 	}
 }
 

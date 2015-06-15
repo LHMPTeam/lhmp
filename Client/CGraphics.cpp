@@ -232,7 +232,7 @@ void CGraphics::Render()
 		if(g_CCore->m_bIsGameLoaded == false || g_CCore->m_bIsRespawning == true)
 			RenderLoadingScreen();
 		
-		if (g_CCore->IsRunning())
+		if (g_CCore->IsRunning() && g_CCore->GetSquirrel()->isChatHidden() == false)
 		{
 
 			g_CCore->GetChat()->Render(m_DirectDevice, m_chatfont);

@@ -338,11 +338,13 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			
 			char buff[255];
 			int PlayerId,skinId;
+			unsigned int color;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 
 			bsIn.Read(PlayerId);
 			bsIn.Read(buff); // nickname
 			bsIn.Read(skinId); // nickname
+			bsIn.Read(color); // nick/nametag color
 			g_CCore->GetPedPool()->New(PlayerId);
 			g_CCore->GetLog()->AddLog("LHMP_CONNECTORCREATEPED");
 			CPed* ped = g_CCore->GetPedPool()->Return(PlayerId);
@@ -350,6 +352,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			{
 				ped->SetName(buff);
 				ped->SetSkinId(skinId);
+				ped->SetNickColor(color);
 			}
 		}
 		break;
@@ -691,6 +694,26 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			g_CCore->GetLocalPlayer()->SetMoney(money);
 		}
 			break;
+		case LHMP_PLAYER_SET_NICKCOLOR:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+
+			int ID;
+			unsigned int color;
+			bsIn.Read(ID);
+			bsIn.Read(color);
+
+			char buff[255];
+			sprintf(buff, "[Nm] SET Color %p", color);
+
+			CPed* player = g_CCore->GetPedPool()->Return(ID);
+			if (player)
+			{
+				player->SetNickColor(color);
+			}
+		}
+			break;
+			
 		case LHMP_PLAYER_ENABLE_MONEY:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);

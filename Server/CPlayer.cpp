@@ -8,9 +8,10 @@ extern CCore *g_CCore;
 
 CPlayer::CPlayer()
 {
-	this->InCar		= -1;
+	this->SetCurrentCar(NO_CAR);
 	this->isActive  = 1;
 	this->SetNickname("Player");
+	this->SetNickColor(0xFFFFFFFF);
 	this->health	= 200.0f;
 	this->isSpawned = 1;
 
@@ -238,6 +239,23 @@ void	CPlayer::SetLocked(bool status)
 	this->isLocked = status;
 }
 
+void	CPlayer::SetCurrentCar(int status)
+{
+	this->playerInCarID = status;
+}
+int		CPlayer::GetCurrentCar()
+{
+	return this->playerInCarID;
+}
+
+void	CPlayer::SetNickColor(unsigned int color)
+{
+	this->nickColor = color;
+}
+unsigned int CPlayer::GetNickColor()
+{
+	return this->nickColor;
+}
 
 //------------ Network
 
@@ -287,9 +305,9 @@ void	CPlayer::OnRespawn()
 {
 	int ID = g_CCore->GetPlayerPool()->GetID(this);
 	this->ResetWeapons();
-	if (this->InCar != -1)
+	if (this->GetCurrentCar() != NO_CAR)
 	{
-		g_CCore->GetVehiclePool()->Return(this->InCar)->PlayerExit(ID);
+		g_CCore->GetVehiclePool()->Return(this->GetCurrentCar())->PlayerExit(ID);
 	}
 
 	g_CCore->GetNetworkManager()->SendHimDoors(ID);
@@ -388,4 +406,17 @@ void	CPlayer::OnPlayerThrowGranade(Vector3D position, bool shouldSendHim)
 	
 	this->OnThrowGranade();
 	g_CCore->GetScripts()->onPlayerShoot(ID, this->GetCurrentWeapon());
+}
+
+
+void	CPlayer::net_ChangeNickColor(unsigned int color)
+{
+	this->SetNickColor(color);
+	int ID = g_CCore->GetPlayerPool()->GetID(this);
+	BitStream bsOut;
+	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+	bsOut.Write((MessageID)LHMP_PLAYER_SET_NICKCOLOR);
+	bsOut.Write(ID);
+	bsOut.Write(color);
+	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
 }

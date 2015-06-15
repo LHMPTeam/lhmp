@@ -222,9 +222,9 @@ void	CNetworkManager::OnPlayerDisconnect(RakNet::Packet* packet)
 		{
 			g_CCore->GetScripts()->onPlayerDisconnect(ID);
 
-			if (player->InCar != -1)
+			if (player->GetCurrentCar() != NO_CAR)
 			{
-				CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->InCar);
+				CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->GetCurrentCar());
 				veh->PlayerDisconnect(ID);
 			}
 			char buff[255];
@@ -579,10 +579,10 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			if (player)
 			{
 				// if he is in a car
-				if (player->InCar != -1)
+				if (player->GetCurrentCar() != NO_CAR)
 				{
 					// get him out of car (at least at server side)
-					CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->InCar);
+					CVehicle* veh = g_CCore->GetVehiclePool()->Return(player->GetCurrentCar());
 					if (veh)
 					{
 						veh->PlayerExit(ID);
@@ -898,7 +898,7 @@ void CNetworkManager::SendSYNC()
 	{
 		CPlayer* player = g_CCore->GetPlayerPool()->Return(i);
 		if(player == NULL) continue;
-		if (player->InCar == -1)
+		if (player->GetCurrentCar() == NO_CAR)
 		{
 			if (player->ShouldUpdate())
 			{
@@ -998,6 +998,7 @@ void CNetworkManager::SendHimOthers(int he)
 			bsOut.Write(i);
 			bsOut.Write(player->GetNickname());
 			bsOut.Write(player->GetSkin());
+			bsOut.Write(player->GetNickColor());
 			//bsOut.Write(actual->nickname);
 			//bsOut.Write(actual->skinID);
 			peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,sa,false);

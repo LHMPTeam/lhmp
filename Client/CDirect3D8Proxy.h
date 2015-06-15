@@ -100,8 +100,6 @@ public:
 		{
 			*ppReturnedDeviceInterface = new CDirect3DDevice8Proxy ( *ppReturnedDeviceInterface );
 			g_CCore->GetGraphics()->hwnAppWindow = pPresentationParameters->hDeviceWindow;
-
-
 		}
 		return result;
 	}

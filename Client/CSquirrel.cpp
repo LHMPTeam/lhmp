@@ -17,6 +17,7 @@ CSquirrel::CSquirrel()
 	for (int i = 0; i < 100; i++)
 		this->p_scriptPool[i] = NULL;
 	this->blockInput = false;
+	this->hideChat = false;
 }
 
 // default script printf function - goes to log
@@ -311,6 +312,7 @@ void CSquirrel::DeleteScripts()
 
 	// important
 	this->blockInput = false;
+	this->hideChat = false;
 }
 
 
@@ -322,6 +324,16 @@ void CSquirrel::BlockInput(bool param)
 bool CSquirrel::isInputBlocked()
 {
 	return this->blockInput;
+}
+
+
+void CSquirrel::HideChat(bool status)
+{
+	this->hideChat = status;
+}
+bool CSquirrel::isChatHidden()
+{
+	return this->hideChat;
 }
 
 void CSquirrel::onRender()
@@ -631,8 +643,23 @@ SQInteger sq_isInputBlocked(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_hideChat(SQVM *vm)
+{
+	SQBool should;
+	sq_getbool(vm, -1, &should);
+	g_CCore->GetSquirrel()->HideChat(should);
+	return 1;
+}
+
+SQInteger sq_isChatHidden(SQVM *vm)
+{
+	SQBool status = g_CCore->GetSquirrel()->isChatHidden();
+	sq_pushbool(vm, status);
+	return 1;
+}
+
 // set camera to look at @lookAt position from @cameraposition
-// cameraLookAtFrom(camerapos,lookAt)
+// cameraLookAtFrom(camerapos,lookA)
 SQInteger sq_cameraLookAtFrom(SQVM *vm)
 {
 	Vector3D cameraPos, lookAtPoint;
@@ -950,6 +977,36 @@ SQInteger sq_ColorRGB(SQVM *vm)
 	sq_pushinteger(vm, color);
 	return 1;
 }
+SQInteger sq_ColorARGB(SQVM *vm)
+{
+	int a,r, g, b;
+
+	sq_getinteger(vm, -4, &r);
+	sq_getinteger(vm, -3, &r);
+	sq_getinteger(vm, -2, &g);
+	sq_getinteger(vm, -1, &b);
+
+
+	Tools::Clamp(a, 0, 255);
+	Tools::Clamp(r, 0, 255);
+	Tools::Clamp(g, 0, 255);
+	Tools::Clamp(b, 0, 255);
+
+	DWORD color = 0x0;
+
+	// push color fragmets into one 4-byte value (using bitwise OR)
+	DWORD helpVar = (a << 24);
+	color |= helpVar;
+	helpVar = (r << 16);
+	color |= helpVar;
+	helpVar = (g << 8);
+	color |= helpVar;
+	helpVar = (b);
+	color |= helpVar;
+	// return color
+	sq_pushinteger(vm, color);
+	return 1;
+}
 
 /*------------------------- /Natives ------------------------------- */
 // Register all native functions and constants
@@ -1032,6 +1089,12 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	// returns TRUE when input is blocked
 	RegisterFunction(pVM, "isInputBlocked", (SQFUNCTION)sq_isInputBlocked, 1, ".");
 
+	// Block or unblock user in-game input
+	RegisterFunction(pVM, "hideChat", (SQFUNCTION)sq_hideChat, 2, ".b");
+
+	// returns TRUE when input is blocked
+	RegisterFunction(pVM, "isChatHidden", (SQFUNCTION)sq_isChatHidden, 1, ".");
+
 	// set camera at position to look at another position
 	RegisterFunction(pVM, "cameraLookAtFrom", (SQFUNCTION)sq_cameraLookAtFrom, 7, ".ffffff");
 
@@ -1078,5 +1141,8 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 
 	// Returns RGB color as DWORD (useful for all Color params, drawtext/fillbox)
 	RegisterFunction(pVM, "ColorRGB", (SQFUNCTION)sq_ColorRGB, 4, ".nnn");
+
+	// Returns RGB color as DWORD (useful for all Color params, drawtext/fillbox)
+	RegisterFunction(pVM, "ColorARGB", (SQFUNCTION)sq_ColorARGB, 4, ".nnnn");
 
 }

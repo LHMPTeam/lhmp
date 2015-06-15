@@ -41,10 +41,17 @@ private:
 	int						animation;
 
 	bool					shouldReRender;
+
+	std::string				lastInputs[10];
+	unsigned short			lastInputPointer;
+	unsigned short			lastInputNext;
 public:
+	void					AddNewLastMessage(std::string);
+	std::string				GetNextLast();
+	std::string				GetPreviousLast();
 	std::string				ChatMessage;
 	std::string				LastInput;
-public:
+
 	CChat();
 	~CChat();
 	// Dx callbacks

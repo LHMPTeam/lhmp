@@ -19,6 +19,9 @@
 
 #define MAX_USHORT  (unsigned short) (-1)
 
+#define NO_CAR		(int) -1
+#define NO_PLAYER	(int) -1
+
 
 #ifndef _WIN32
 typedef unsigned char byte;
@@ -135,6 +138,7 @@ enum LHMPNetMessages
 	LHMP_PLAYER_SET_CAMERA,
 	LHMP_PLAYER_SET_CAMERA_DEFAULT,
 	LHMP_PLAYER_SET_NAMETAG,
+	LHMP_PLAYER_SET_NICKCOLOR,
 	LHMP_PLAYER_SET_MONEY,
 	LHMP_PLAYER_ENABLE_MONEY,
 	LHMP_PLAYER_TOGGLE_CITY_MUSIC,

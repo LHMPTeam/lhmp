@@ -65,13 +65,19 @@ void	CKeyboard::OnKeyDown(unsigned short VK_code)
 		
 		if (VK_code == VK_UP)
 		{
-			g_CCore->GetChat()->ChatMessage = g_CCore->GetChat()->LastInput;
+			g_CCore->GetChat()->ChatMessage = g_CCore->GetChat()->GetPreviousLast();
+		}
+		else if (VK_code == VK_DOWN)
+		{
+			g_CCore->GetChat()->ChatMessage = g_CCore->GetChat()->GetNextLast();
 		}
 
 		else if (VK_code == VK_RETURN)	// if ENTER
 		{
 			if (g_CCore->GetChat()->ChatMessage != "")
-				g_CCore->GetChat()->LastInput = g_CCore->GetChat()->ChatMessage;
+			{
+				g_CCore->GetChat()->AddNewLastMessage(g_CCore->GetChat()->ChatMessage);
+			}
 			g_CCore->GetChat()->DoneMessage();
 			g_CCore->GetChat()->SetTyping(false);
 		}
@@ -89,6 +95,43 @@ void	CKeyboard::OnKeyDown(unsigned short VK_code)
 		{
 			g_CCore->GetChat()->SetTyping(false);
 			g_CCore->GetChat()->ChatMessage = "";
+		}
+		else if (VK_code == 0x56)
+		{
+			if (this->isHolding(VK_CONTROL))
+			{
+				// CTR-V case
+				// Credits: stackoverflow 
+				// Try opening the clipboard
+				if (!OpenClipboard(nullptr))
+					return;
+
+					// Get handle of clipboard object for ANSI text
+					HANDLE hData = GetClipboardData(CF_TEXT);
+				if (hData == nullptr)
+					return;
+
+					// Lock the handle to get the actual text pointer
+					char * pszText = static_cast<char*>(GlobalLock(hData));
+				if (pszText == nullptr)
+					return;
+
+					// Save text in a string class instance
+					std::string text(pszText);
+
+				// Release the lock
+				GlobalUnlock(hData);
+
+				// Release the clipboard
+				CloseClipboard();
+
+				// add text to chat
+				g_CCore->GetChat()->ChatMessage += text;
+				if (g_CCore->GetChat()->ChatMessage.length() < MAX_CHAT_MESSAGE_LENGTH - 10)
+				{
+					g_CCore->GetChat()->ChatMessage.resize(MAX_CHAT_MESSAGE_LENGTH - 10);
+				}
+			}
 		}
 	}
 	else	// no typing
