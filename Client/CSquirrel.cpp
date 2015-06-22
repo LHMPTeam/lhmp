@@ -139,6 +139,7 @@ void CSquirrel::LoadClientScript(char* scriptname)
 	sqstd_register_stringlib(sqvm);
 	sqstd_register_mathlib(sqvm);
 	sqstd_register_systemlib(sqvm);
+	sqstd_register_iolib(sqvm);
 	
 	/* ------------------ Register our natives */
 	this->PrepareMachine(sqvm);

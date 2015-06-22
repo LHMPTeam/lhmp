@@ -42,6 +42,8 @@ CScript::CScript(const char *szScriptName)
 	sqstd_register_mathlib(pVM);
 
 	sqstd_register_systemlib(pVM);
+
+	sqstd_register_iolib(pVM);
 	//sqstd_register_stringlib(pVM);
 
 	// register the blob library
