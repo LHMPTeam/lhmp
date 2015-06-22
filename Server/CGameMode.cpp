@@ -17,7 +17,7 @@ bool CGameMode::LoadGameMode(char* name)
 	unsigned int successfulFiles = 0;
 	this->clientPoolSize = 0;
 	this->clientPool = 0;
-	SetName("default");
+	SetName(name);
 	char resource[255];
 	sprintf(resource, "gamemodes/%s/resources.txt",name);
 	if (Tools::fileExists(resource))

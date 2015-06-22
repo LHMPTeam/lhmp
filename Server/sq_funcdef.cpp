@@ -1604,15 +1604,10 @@ SQInteger sq_include(SQVM *vm)
 {
 	const SQChar* file;
 
-	sq_getstring(vm, -1, &file);
-
+	sq_getstring(vm, -1, &file);	
 	char path[256];
 	sprintf(path, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
-
-	printf("including: %s", path);
-
 	sqstd_dofile(vm, path, SQFalse, SQTrue);
-	//lets try it only serverside currently
 	return 1;
 }
 
