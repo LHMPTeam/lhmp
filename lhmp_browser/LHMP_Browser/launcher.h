@@ -59,7 +59,7 @@ private:
     bool RefreshServerList();
     bool AskPatchPermission();
     void PopulateServerList();
-    bool JoinGame(QString address);
+    bool JoinGame(QString address, QString password);
     void SetMafiaPath();
     void ShowServerInfo();
     QString FileChecksum(QString path);

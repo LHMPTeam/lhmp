@@ -12,6 +12,8 @@ struct ServerInfo {
     QString map;
 
     QString playerList;
+
+    bool password;
 };
 
 struct UpdateFile {
@@ -43,6 +45,7 @@ void queryCallback(unsigned int serverID, void* data, unsigned char reasonID)
         queryResultServers[packet->ID].map = packet->mapname;
         queryResultServers[packet->ID].players = packet->players;
         queryResultServers[packet->ID].maxPlayer = packet->maxPlayer;
+        queryResultServers[packet->ID].password = packet->hasPassword;
 
         queryCount++;
     } else if (reasonID == QUERY_PLAYERLIST){
@@ -144,6 +147,7 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent), ui(new Ui::Launcher) 
     ui->tableWidget->setColumnHidden(4, true);
     ui->tableWidget->setColumnHidden(5, true);
     ui->tableWidget->setColumnHidden(6, true);
+    ui->tableWidget->setColumnHidden(7, true);
 
     // 2nd table settings
     ui->tableWidget_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -226,6 +230,11 @@ void Launcher::PopulateServerList() {
             ui->tableWidget->setItem(rowCount, 4, new QTableWidgetItem(queryResultServers[i].address));
             ui->tableWidget->setItem(rowCount, 5, new QTableWidgetItem(queryResultServers[i].map));
             ui->tableWidget->setItem(rowCount, 6, new QTableWidgetItem(queryResultServers[i].playerList));
+
+            QString password = "No";
+            if (queryResultServers[i].password) password = "Yes";
+
+            ui->tableWidget->setItem(rowCount, 7, new QTableWidgetItem(password));
 
             ui->tableWidget->item(rowCount, 2)->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget->item(rowCount, 3)->setTextAlignment(Qt::AlignCenter);
@@ -321,7 +330,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
                 // Download and update
                 if (hashLocal.isEmpty() || hashLocal != hash) {
-                    //manager->get(QNetworkRequest(QString("%1%2").arg(filesURL).arg(name)));
+                    manager->get(QNetworkRequest(QString("%1%2").arg(filesURL).arg(name)));
 
                     needsUpdatingCount++;
 
@@ -334,6 +343,9 @@ void Launcher::replyFinished(QNetworkReply *reply)
             } else {
                 ui->label_3->setText("Downloading new updates...");
             }
+
+            //debug
+            //updated = true;
 
             RefreshServerList();
         } else {
@@ -685,7 +697,16 @@ void Launcher::on_pushButton_4_clicked()
 
 void Launcher::on_btnPlay_clicked()
 {
-    JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text());
+    QString password = ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 7)->text();
+
+    if (password == "Yes") {
+        bool ok;
+        QString text = QInputDialog::getText(this, tr("Password"), tr("Password:"), QLineEdit::Normal, "", &ok);
+
+        if (ok && !text.isEmpty()) JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text(), text);
+    } else {
+        JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text(), "");
+    }
 }
 
 void Launcher::on_pushButton_6_clicked()
@@ -694,7 +715,7 @@ void Launcher::on_pushButton_6_clicked()
     QString address = QInputDialog::getText(this, tr("Connect to server"), tr("Server address to connect to (IP:PORT):"), QLineEdit::Normal, tr("127.0.0.1:27015"), &result);
 
     if (result && !address.isEmpty() && updated) {
-        JoinGame(address);
+        JoinGame(address, "");
     }
 }
 
@@ -761,10 +782,11 @@ void Launcher::SetMafiaPath() {
     }
 }
 
-bool Launcher::JoinGame(QString address) {
+bool Launcher::JoinGame(QString address, QString password) {
     if (address.isEmpty()) return false;
 
     QStringList addressSplit = address.split(":");
+    addressSplit.append(password);
 
     QString pathExecutable = mafiaPath;
             pathExecutable.append("/Game.exe");
@@ -782,6 +804,8 @@ bool Launcher::JoinGame(QString address) {
         process->setWorkingDirectory(mafiaPath);
 
         process->start(pathLoader, addressSplit);
+
+        qDebug() << process;
     } else {
         QMessageBox::critical(this, tr("Lost Heaven Multiplayer"), tr("Unable to launch Mafia and/or launcher executable."));
     }
@@ -798,7 +822,7 @@ void Launcher::ShowServerInfo() {
     }
 
     if (serverCount > 0 && !refreshing) {
-        QString name, gamemode, players, address, ping, map, playerList;
+        QString name, gamemode, players, address, ping, map, playerList, password;
         int rowCount = 0;
 
         if (updated) ui->btnPlay->setEnabled(true);
@@ -813,6 +837,7 @@ void Launcher::ShowServerInfo() {
         address = ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text();
         map = ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 5)->text();
         playerList = ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 6)->text();
+        password = ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 7)->text();
 
         if (playerlist) {
             ui->tableWidget_2->setColumnWidth(0, 25);
@@ -855,6 +880,11 @@ void Launcher::ShowServerInfo() {
             ui->tableWidget_2->insertRow(rowCount);
             ui->tableWidget_2->setItem(rowCount, 0, new QTableWidgetItem("Address"));
             ui->tableWidget_2->setItem(rowCount, 1, new QTableWidgetItem(address));
+
+            rowCount = ui->tableWidget_2->rowCount();
+            ui->tableWidget_2->insertRow(rowCount);
+            ui->tableWidget_2->setItem(rowCount, 0, new QTableWidgetItem("Password"));
+            ui->tableWidget_2->setItem(rowCount, 1, new QTableWidgetItem(password));
        }
 
         ui->label_22->setText(ping);
@@ -900,7 +930,16 @@ void Launcher::on_pushButton_5_clicked()
 void Launcher::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
     if (!masterDown && !noPlayers && updated) {
-        JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text());
+        QString password = ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 7)->text();
+
+        if (password == "Yes") {
+            bool ok;
+            QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"), tr("Password:"), QLineEdit::Normal, "", &ok);
+
+            if (ok && !text.isEmpty()) JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text(), text);
+        } else {
+            JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text(), "");
+        }
     }
 }
 

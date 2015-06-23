@@ -1134,7 +1134,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <number>0</number>
        </property>
        <property name="columnCount">
-        <number>7</number>
+        <number>8</number>
        </property>
        <attribute name="horizontalHeaderVisible">
         <bool>true</bool>
@@ -1205,6 +1205,11 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        <column>
         <property name="text">
          <string>Map</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Password</string>
         </property>
        </column>
       </widget>
