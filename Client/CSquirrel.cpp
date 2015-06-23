@@ -840,6 +840,65 @@ SQInteger sq_getTextureSize(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_getPosition(SQVM *vm) {
+	Vector3D pos = g_CCore->GetLocalPlayer()->GetLocalPos();
+	sq_newarray(vm, 0);
+	sq_pushfloat(vm, pos.x);
+	sq_arrayappend(vm, -2);
+	sq_pushfloat(vm, pos.y);
+	sq_arrayappend(vm, -2);
+	sq_pushfloat(vm, pos.z);
+	sq_arrayappend(vm, -2);
+	sq_push(vm, -1);
+	
+	return 1;
+}
+
+SQInteger sq_getRotation(SQVM *vm) {
+	Vector3D pos = g_CCore->GetLocalPlayer()->GetLocalRot();
+	sq_newarray(vm, 0);
+	sq_pushfloat(vm, pos.x);
+	sq_arrayappend(vm, -2);
+	sq_pushfloat(vm, pos.y);
+	sq_arrayappend(vm, -2);
+	sq_pushfloat(vm, pos.z);
+	sq_arrayappend(vm, -2);
+	sq_push(vm, -1);
+
+	return 1;
+}
+
+SQInteger sq_getDistanceBetween3DPoints(SQVM *vm) {
+	Vector3D pointA, pointB;
+	sq_getfloat(vm, -6, &pointA.x);
+	sq_getfloat(vm, -5, &pointA.y);
+	sq_getfloat(vm, -4, &pointA.z);
+	sq_getfloat(vm, -3, &pointB.x);
+	sq_getfloat(vm, -2, &pointB.y);
+	sq_getfloat(vm, -1, &pointB.z);
+
+	float c = (pointA.x - pointB.x)*(pointA.x - pointB.x) + (pointA.y - pointB.x)*(pointA.y - pointB.y)
+		+ (pointA.z - pointB.z)*(pointA.z - pointB.z);
+
+	c = sqrt(c);
+	sq_pushfloat(vm, c);
+	return 1;
+}
+
+SQInteger sq_getDistanceBetween2DPoints(SQVM *vm) {
+	float pointAx, pointAy, pointBx, pointBy;
+	sq_getfloat(vm, -6, &pointAx);
+	sq_getfloat(vm, -5, &pointAy);
+	sq_getfloat(vm, -3, &pointBx);
+	sq_getfloat(vm, -2, &pointBy);
+
+	float c = (pointAx - pointBx)*(pointAx - pointBx) + (pointAy - pointBx)*(pointAy - pointBy);
+
+	c = sqrt(c);
+	sq_pushfloat(vm, c);
+	return 1;
+}
+
 SQInteger sq_drawTexture(SQVM* vm)
 {
 	CSQImage*		image;
@@ -1110,6 +1169,12 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	// Params: x, y, z
 	RegisterFunction(pVM, "setRotation", (SQFUNCTION)sq_setRotation, 4, ".fff");
 
+	// Get localplayer position
+	RegisterFunction(pVM, "getPosition", (SQFUNCTION)sq_getPosition, 1, ".");
+
+	// Get localplayer rotation
+	RegisterFunction(pVM, "getRotation", (SQFUNCTION)sq_getRotation, 1, ".");
+
 	// set localplayer skin
 	// Params: skinID
 	RegisterFunction(pVM, "changeSkin", (SQFUNCTION)sq_changeSkin, 2, ".n");
@@ -1146,4 +1211,6 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	// Returns RGB color as DWORD (useful for all Color params, drawtext/fillbox)
 	RegisterFunction(pVM, "ColorARGB", (SQFUNCTION)sq_ColorARGB, 4, ".nnnn");
 
+	RegisterFunction(pVM, "getDistanceBetween3DPoints", (SQFUNCTION)sq_getDistanceBetween3DPoints, 7, ".ffffff");
+	RegisterFunction(pVM, "getDistanceBetween2DPoints", (SQFUNCTION)sq_getDistanceBetween2DPoints, 5, ".ffff");
 }
