@@ -60,7 +60,7 @@ void CCore::ReloadGamemode()
 
 void	CCore::ChangeModeTo(char* newmode)
 {
-
+	this->GetLog()->AddNormalLog("===============================================================================");
 	this->GetLog()->AddNormalLog("Changing mode to: '%s'", newmode);
 	// it's neccessary to backup, @newmode might be rewritten during Unloadgamemode()
 	char modeToLoad[512];

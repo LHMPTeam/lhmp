@@ -187,7 +187,7 @@ void	CKeyboard::OnKeyDown(unsigned short VK_code)
 			g_CCore->GetNetwork()->SendServerMessage(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED);
 
 		// call client-side callback
-			g_CCore->GetSquirrel()->onKeyDown(VK_code);
+			g_CCore->GetEngineStack()->AddMessage(ES_SCRIPT_ONKEYDOWN,VK_code);
 	}
 }
 

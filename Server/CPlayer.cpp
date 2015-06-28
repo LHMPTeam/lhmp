@@ -412,11 +412,4 @@ void	CPlayer::OnPlayerThrowGranade(Vector3D position, bool shouldSendHim)
 void	CPlayer::net_ChangeNickColor(unsigned int color)
 {
 	this->SetNickColor(color);
-	int ID = g_CCore->GetPlayerPool()->GetID(this);
-	BitStream bsOut;
-	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((MessageID)LHMP_PLAYER_SET_NICKCOLOR);
-	bsOut.Write(ID);
-	bsOut.Write(color);
-	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
 }

@@ -633,7 +633,7 @@ SQInteger sq_blockInput(SQVM *vm)
 {
 	SQBool should;
 	sq_getbool(vm, -1, &should);
-	g_CCore->GetSquirrel()->BlockInput(should);
+	g_CCore->GetSquirrel()->BlockInput((should == 1));
 	return 1;
 }
 
@@ -648,7 +648,7 @@ SQInteger sq_hideChat(SQVM *vm)
 {
 	SQBool should;
 	sq_getbool(vm, -1, &should);
-	g_CCore->GetSquirrel()->HideChat(should);
+	g_CCore->GetSquirrel()->HideChat((should == 1));
 	return 1;
 }
 
@@ -681,7 +681,7 @@ SQInteger sq_cameraLookAtFrom(SQVM *vm)
 	rotation.y = lookAtPoint.y - cameraPos.y;
 	rotation.z = lookAtPoint.z - cameraPos.z;
 
-	int ratio = sqrtf(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z);
+	int ratio = (int) sqrtf(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z);
 
 	rotation.x /= ratio;
 	rotation.y /= ratio;
@@ -747,9 +747,6 @@ SQInteger sq_changeSkin(SQVM *vm)
 SQInteger sq_callServerFunc(SQVM *vm)
 {
 	const SQChar* script_name, *func_name;
-	const SQChar* param;
-	const SQChar* file;
-	const SQChar* value;
 
 	sq_getstring(vm, -3, &script_name);
 	sq_getstring(vm, -2, &func_name);
@@ -840,6 +837,28 @@ SQInteger sq_getTextureSize(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_drawTexture(SQVM* vm)
+{
+	CSQImage*		image;
+	D3DXVECTOR2		position;
+	D3DXVECTOR2		scaling;
+
+	sq_getuserpointer(vm, -5, (SQUserPointer*) &image);
+	if (image != NULL)
+	{
+		sq_getfloat(vm, -4, &position.x);
+		sq_getfloat(vm, -3, &position.y);
+		sq_getfloat(vm, -2, &scaling.x);
+		sq_getfloat(vm, -1, &scaling.y);
+
+		g_CCore->GetGraphics()->GetSprite()->Draw(image->GetTexture(), NULL,&scaling,NULL,0.0f, &position, 0xFFFFFFFF);
+	}
+	else {
+		g_CCore->GetChat()->AddMessage("[Err] drawImage - image doesn't exists");
+	}
+	return 1;
+}
+
 SQInteger sq_getPosition(SQVM *vm) {
 	Vector3D pos = g_CCore->GetLocalPlayer()->GetLocalPos();
 	sq_newarray(vm, 0);
@@ -850,7 +869,7 @@ SQInteger sq_getPosition(SQVM *vm) {
 	sq_pushfloat(vm, pos.z);
 	sq_arrayappend(vm, -2);
 	sq_push(vm, -1);
-	
+
 	return 1;
 }
 
@@ -905,27 +924,6 @@ SQInteger sq_getDistanceBetween2DPoints(SQVM *vm) {
 	return 1;
 }
 
-SQInteger sq_drawTexture(SQVM* vm)
-{
-	CSQImage*		image;
-	D3DXVECTOR2		position;
-	D3DXVECTOR2		scaling;
-
-	sq_getuserpointer(vm, -5, (SQUserPointer*) &image);
-	if (image != NULL)
-	{
-		sq_getfloat(vm, -4, &position.x);
-		sq_getfloat(vm, -3, &position.y);
-		sq_getfloat(vm, -2, &scaling.x);
-		sq_getfloat(vm, -1, &scaling.y);
-
-		g_CCore->GetGraphics()->GetSprite()->Draw(image->GetTexture(), NULL,&scaling,NULL,0.0f, &position, 0xFFFFFFFF);
-	}
-	else {
-		g_CCore->GetChat()->AddMessage("[Err] drawImage - image doesn't exists");
-	}
-	return 1;
-}
 
 SQInteger sq_drawTextureEx(SQVM* vm)
 {
@@ -1219,4 +1217,5 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 
 	RegisterFunction(pVM, "getDistanceBetween3DPoints", (SQFUNCTION)sq_getDistanceBetween3DPoints, 7, ".ffffff");
 	RegisterFunction(pVM, "getDistanceBetween2DPoints", (SQFUNCTION)sq_getDistanceBetween2DPoints, 5, ".ffff");
+
 }

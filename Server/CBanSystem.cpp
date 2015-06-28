@@ -117,7 +117,7 @@ void CBanSystem::ParseLineFromFile(char* line,int lineID)
 		sscanf(items[1], "%u", &banTime);
 		if (banTime > timev)
 		{
-			banTime -= timev;
+			banTime -= (unsigned int)timev;
 			g_CCore->GetNetworkManager()->GetPeer()->AddToBanList(items[0], banTime);
 			g_CCore->GetLog()->AddNormalLog(">>>Adding ban - %s.",items[0]);
 		}

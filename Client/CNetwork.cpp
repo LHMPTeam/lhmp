@@ -418,9 +418,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bsIn.Read(ID);
 			bsIn.Read(animString);
 
-			ENGINE_STACK::PLAYER_PLAYANIM* pw = new ENGINE_STACK::PLAYER_PLAYANIM[1];
-			pw->ID = ID;
-			sprintf(pw->name, "%s", animString);
+			ENGINE_STACK::PLAYER_PLAYANIM* pw = new ENGINE_STACK::PLAYER_PLAYANIM(ID,animString);
 			g_CCore->GetEngineStack()->AddMessage(ES_PLAYANIM_STRING, (DWORD)pw);
 		}
 			break;
@@ -430,8 +428,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				char sound[255];
 				bsIn.Read(sound);
 
-				ENGINE_STACK::PLAYER_PLAYSOUND* pw = new ENGINE_STACK::PLAYER_PLAYSOUND[1];
-				sprintf(pw->name, "%s", sound);
+				ENGINE_STACK::PLAYER_PLAYSOUND* pw = new ENGINE_STACK::PLAYER_PLAYSOUND(sound);
 				g_CCore->GetEngineStack()->AddMessage(ES_PLAYSOUND_STRING, (DWORD)pw);
 			}
 				break;
@@ -486,12 +483,12 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_ADDWEAPON:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//int ID;
-			ENGINE_STACK::PLAYER_ADDWEAPON* pw = new ENGINE_STACK::PLAYER_ADDWEAPON[1];
-			bsIn.Read(pw->ID);
-			bsIn.Read(pw->wepID);
-			bsIn.Read(pw->wepLoaded);
-			bsIn.Read(pw->wepHidden);
+			int ID,wepID,wepLoaded,wepHidden;
+			bsIn.Read(ID);
+			bsIn.Read(wepID);
+			bsIn.Read(wepLoaded);
+			bsIn.Read(wepHidden);
+			ENGINE_STACK::PLAYER_ADDWEAPON* pw = new ENGINE_STACK::PLAYER_ADDWEAPON(ID,wepID,wepLoaded,wepHidden);
 			if(g_CCore->GetLocalPlayer()->GetOurID() != pw->ID)
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -514,10 +511,10 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_DELETEWEAPON:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//int ID;
-			ENGINE_STACK::PLAYER_DELETEWEAPON* pw = new ENGINE_STACK::PLAYER_DELETEWEAPON[1];
-			bsIn.Read(pw->ID);
-			bsIn.Read(pw->wepID);
+			int ID,wepID;
+			bsIn.Read(ID);
+			bsIn.Read(wepID);
+			ENGINE_STACK::PLAYER_DELETEWEAPON* pw = new ENGINE_STACK::PLAYER_DELETEWEAPON(ID,wepID);
 			if(g_CCore->GetLocalPlayer()->GetOurID() != pw->ID)
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -530,10 +527,10 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_SWITCHWEAPON:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//int ID;
-			ENGINE_STACK::PLAYER_SWITCHWEAPON* pw = new ENGINE_STACK::PLAYER_SWITCHWEAPON[1];
-			bsIn.Read(pw->ID);
-			bsIn.Read(pw->wepID);
+			int ID,wepID;
+			bsIn.Read(ID);
+			bsIn.Read(wepID);
+			ENGINE_STACK::PLAYER_SWITCHWEAPON* pw = new ENGINE_STACK::PLAYER_SWITCHWEAPON(ID,wepID);
 			if(g_CCore->GetLocalPlayer()->GetOurID() != pw->ID)
 			{
 				CPed* ped = g_CCore->GetPedPool()->Return(pw->ID);
@@ -549,16 +546,12 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_SHOOT:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			//int ID;
-			//Vector3D pos;
-			//int ID;
-			ENGINE_STACK::PLAYER_SHOOT* pw = new ENGINE_STACK::PLAYER_SHOOT[1];
-			bsIn.Read(pw->ID);
-			bsIn.Read(pw->pos.x);
-			bsIn.Read(pw->pos.y);
-			bsIn.Read(pw->pos.z);
-			int currentID;
+			int ID, currentID;
+			Vector3D pos;
+			bsIn.Read(ID);
+			bsIn.Read(pos);
 			bsIn.Read(currentID);
+			ENGINE_STACK::PLAYER_SHOOT* pw = new ENGINE_STACK::PLAYER_SHOOT(ID,pos);
 			char buff[255];
 			sprintf(buff,"[NM] Shot %i %f %f %f %d",pw->ID,pw->pos.x,pw->pos.y, pw->pos.z,currentID);
 			if(g_CCore->GetLocalPlayer()->GetOurID() != pw->ID)
@@ -583,9 +576,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bsIn.Read(ID);
 			bsIn.Read(position);
 
-			ENGINE_STACK::PLAYER_SHOOT* pw = new ENGINE_STACK::PLAYER_SHOOT[1];
-			pw->ID = ID;
-			pw->pos = position;
+			ENGINE_STACK::PLAYER_SHOOT* pw = new ENGINE_STACK::PLAYER_SHOOT(ID,position);
 			g_CCore->GetEngineStack()->AddMessage(ES_THROWGRANADE, (DWORD)pw);
 
 		} 
@@ -600,12 +591,8 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			char buff[255];
 			sprintf(buff, "[NM] PlayerDeath %i", ID);
 			g_CCore->GetLog()->AddLog(buff);
-			//g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATH, (DWORD)ID);
 
-			ENGINE_STACK::KILL_PED_EX* pw = new ENGINE_STACK::KILL_PED_EX[1];
-			pw->ID = ID;
-			pw->part = part;
-			pw->reason = reason;
+			ENGINE_STACK::KILL_PED_EX* pw = new ENGINE_STACK::KILL_PED_EX(ID,part,reason);
 			g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATHEX, (DWORD)pw);
 
 		}
@@ -649,10 +636,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 					ped->SetIsOnFoot(false);
 					veh->PlayerEnter(ID, seatID);
 				}
-				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH[1];
-				data->pID = ID;
-				data->seatID = seatID;
-				data->vehID = carID;
+				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH(ID, seatID, carID);
 				g_CCore->GetEngineStack()->AddMessage(ES_PLAYER_PUT_TO_VEH, (DWORD)data);
 			}
 
@@ -694,26 +678,6 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			g_CCore->GetLocalPlayer()->SetMoney(money);
 		}
 			break;
-		case LHMP_PLAYER_SET_NICKCOLOR:
-		{
-			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-
-			int ID;
-			unsigned int color;
-			bsIn.Read(ID);
-			bsIn.Read(color);
-
-			char buff[255];
-			sprintf(buff, "[Nm] SET Color %p", color);
-
-			CPed* player = g_CCore->GetPedPool()->Return(ID);
-			if (player)
-			{
-				player->SetNickColor(color);
-			}
-		}
-			break;
-			
 		case LHMP_PLAYER_ENABLE_MONEY:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
@@ -793,15 +757,16 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PLAYER_SET_CAMERA:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			ENGINE_STACK::CAMERA_SET* data = new ENGINE_STACK::CAMERA_SET[1];
-			bsIn.Read(data->pos);
-			bsIn.Read(data->rot);
+			Vector3D pos, rot;
+			bsIn.Read(pos);
+			bsIn.Read(rot);
+			ENGINE_STACK::CAMERA_SET* data = new ENGINE_STACK::CAMERA_SET(pos,rot);
 			g_CCore->GetEngineStack()->AddMessage(ES_CAMERASETPOS, (DWORD)data);
 		}
 		break;
 		case LHMP_PLAYER_SET_CAMERA_DEFAULT:
 		{
-			g_CCore->GetEngineStack()->AddMessage(ES_CAMERAUNLOCK,0);
+			g_CCore->GetEngineStack()->AddMessage(ES_CAMERAUNLOCK,NULL);
 		}
 		break;
 		case LHMP_PLAYER_SET_CAMERA_SWING:
@@ -1087,11 +1052,8 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				{
 					ped->InCar = vehId;
 					veh->PlayerEnter(Id, seatId);
-					ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH[1];
-					data->pID = Id;
-					data->seatID = seatId;
-					data->vehID = vehId;
-					g_CCore->GetEngineStack()->AddMessage(ES_PLAYER_ENTER_VEH, (DWORD)data);
+					ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH(Id,vehId,seatId);
+					g_CCore->GetEngineStack()->AddMessage(ES_PLAYER_ENTER_VEH,(DWORD)data);
 					ped->SetIsOnFoot(false);
 				}
 			}
@@ -1114,9 +1076,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			{
 				ped->InCar = -1;
 				veh->PlayerExit(Id);
-				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH[1];
-				data->pID = Id;
-				data->vehID = vehId;
+				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH(Id,vehId,NULL);
 				g_CCore->GetEngineStack()->AddMessage(ES_PLAYER_EXIT_VEH, (DWORD)data);
 				ped->SetIsOnFoot(true);
 			}
@@ -1211,10 +1171,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 
 				}
 				veh->PlayerExit(veh->GetSeat(seatId));
-				ENGINE_STACK::VEH_JACK* data = new ENGINE_STACK::VEH_JACK[1];
-				data->pID = Id;
-				data->vehID = vehId;
-				data->seatID = seatId;
+				ENGINE_STACK::VEH_JACK* data = new ENGINE_STACK::VEH_JACK(Id,vehId,seatId);
 				g_CCore->GetEngineStack()->AddMessage(ES_VEHICLE_JACK, (DWORD)data);
 			}
 		}
@@ -1227,10 +1184,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			CVehicle* veh = g_CCore->GetVehiclePool()->Return(Id);
 			if (veh != NULL)
 			{
-				ENGINE_STACK::VEH_DELETEVEH* data = new ENGINE_STACK::VEH_DELETEVEH[1];
-				data->vehID = Id;
-				data->base = veh->GetEntity();
-				//data->
+				ENGINE_STACK::VEH_DELETEVEH* data = new ENGINE_STACK::VEH_DELETEVEH(Id,veh->GetEntity());
 				g_CCore->GetEngineStack()->AddMessage(ES_DELETECAR, (DWORD)data);
 				g_CCore->GetVehiclePool()->Delete(Id);
 			}
@@ -1395,10 +1349,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			if (strlen(name) > 0)
 			{
 
-				ENGINE_STACK::DOOR_SET_STATE* data = new ENGINE_STACK::DOOR_SET_STATE[1];
-				sprintf(data->buff, name);
-				data->state = state;
-				data->facing = facing;
+				ENGINE_STACK::DOOR_SET_STATE* data = new ENGINE_STACK::DOOR_SET_STATE(name,state,facing);
 				g_CCore->GetEngineStack()->AddMessage(ES_DOOR_SET_STATE, (DWORD)data);
 			}
 			

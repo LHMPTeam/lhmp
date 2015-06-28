@@ -860,10 +860,7 @@ SQInteger sq_getDistanceBetween3DPoints(SQVM *vm)
 	float c = (pointA.x - pointB.x)*(pointA.x - pointB.x) + (pointA.y - pointB.x)*(pointA.y - pointB.y) 
 			+ (pointA.z - pointB.z)*(pointA.z - pointB.z);
 	
-	c = sqrt(c);
-
-	if (c != c) c = 0;
-
+	c = sqrt(abs(c));
 	sq_pushfloat(vm,c);
 	return 1;
 }
@@ -878,10 +875,7 @@ SQInteger sq_getDistanceBetween2DPoints(SQVM *vm)
 
 	float c = (pointAx - pointBx)*(pointAx - pointBx) + (pointAy - pointBx)*(pointAy - pointBy);
 
-	c = sqrt(c);
-
-	if (c != c) c = 0;
-
+	c = sqrt(abs(c));
 	sq_pushfloat(vm, c);
 	return 1;
 }
@@ -919,7 +913,7 @@ SQInteger sq_vehicleSpawn(SQVM *vm)
 		vehicle_data.damage = veh->GetDamage();
 		vehicle_data.shotdamage = veh->GetShotDamage();
 		vehicle_data.roofState = veh->GetRoofState();
-		vehicle_data.engineState = veh->GetEngineState();
+		vehicle_data.engineState = (veh->GetEngineState() == 1);
 		vehicle_data.siren = veh->GetSirenState();
 
 		vehicle_data.ID = ID;
@@ -1610,7 +1604,7 @@ SQInteger sq_include(SQVM *vm)
 {
 	const SQChar* file;
 
-	sq_getstring(vm, -1, &file);	
+	sq_getstring(vm, -1, &file);
 	char path[256];
 	sprintf(path, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
 	sqstd_dofile(vm, path, SQFalse, SQTrue);
@@ -1639,9 +1633,6 @@ SQInteger sq_callClientFunc(SQVM *vm)
 {
 	SQInteger	playerID;
 	const SQChar* script_name,*func_name;
-	const SQChar* param;
-	const SQChar* file;
-	const SQChar* value;
 
 	sq_getinteger(vm, -4, &playerID);
 	sq_getstring(vm, -3, &script_name);

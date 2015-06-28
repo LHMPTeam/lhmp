@@ -994,7 +994,7 @@ void CGraphics::RenderMap()
 	scaling.x = 0.75f;
 	scaling.y = 0.75f;
 	D3DXMatrixTranslation(&center, -12, -15, 0);
-	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
+	D3DXMatrixScaling(&scale, 0.7f, 0.7f, 1.0f);
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
 		CPed* ped = g_CCore->GetPedPool()->Return(i);
@@ -1036,7 +1036,7 @@ void CGraphics::RenderMap()
 	// center is needed to rotate sprite around its center
 	D3DXMatrixTranslation(&center, -12, -15, 0);
 	D3DXMatrixTranslation(&transform, (float)(screen.x / 2),(float) (screen.y / 2), 0.0f);
-	D3DXMatrixScaling(&scale, 0.7, 0.7, 1);
+	D3DXMatrixScaling(&scale, 0.7f, 0.7f, 1.0f);
 
 	playerRot = g_CCore->GetLocalPlayer()->GetLocalRot();
 	double goalRot = acos(playerRot.z);
@@ -1074,7 +1074,7 @@ void CGraphics::RenderScoreboard()
 	}
 	FillARGB(x, y, width, 20 + (20 * numLines), 0x60000000);
 	// Render navigation
-	g_CCore->GetGraphics()->GetFont()->DrawText("ID", x + (width * 0.02), y + 10, 0xffffffff, true);
+	g_CCore->GetGraphics()->GetFont()->DrawText("ID", x + (width * 0.02f), y + 10, 0xffffffff, true);
 	g_CCore->GetGraphics()->GetFont()->DrawText("Nickname", x + (width * 0.10), y + 10, 0xffffffff, true);
 	g_CCore->GetGraphics()->GetFont()->DrawText("Ping", x + (width * 0.87), y + 10, 0xffffffff, true);
 	// Render local player

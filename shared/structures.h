@@ -36,12 +36,25 @@ struct Vector3D{
 	float x;
 	float y;
 	float z;
-	Vector3D()
+	Vector3D(float _x = 0.0f,float _y = 0.0f, float _z = 0.0f)
 	{
-		x = 0.0f;
-		y = 0.0f;
-		z = 0.0f;
+		x = _x;
+		y = _y;
+		z = _z;
 	}
+	Vector3D operator+(const Vector3D& a) const
+	{
+		return Vector3D(a.x + x, a.y + y,a.z+z);
+	}
+
+	Vector3D& operator=(const Vector3D&a)
+	{
+		x = a.x;
+		y = a.y;
+		z = a.z;
+		return *this;
+	}
+
 };
 
 struct Vector4D{
@@ -138,7 +151,6 @@ enum LHMPNetMessages
 	LHMP_PLAYER_SET_CAMERA,
 	LHMP_PLAYER_SET_CAMERA_DEFAULT,
 	LHMP_PLAYER_SET_NAMETAG,
-	LHMP_PLAYER_SET_NICKCOLOR,
 	LHMP_PLAYER_SET_MONEY,
 	LHMP_PLAYER_ENABLE_MONEY,
 	LHMP_PLAYER_TOGGLE_CITY_MUSIC,
@@ -365,75 +377,156 @@ enum CLIENT_ENGINESTACK
 	ES_PLAYERSETPOS,
 
 	//---------------- SCRIPTS -----------------
-	ES_SCRIPT_RUN
+	ES_SCRIPT_RUN,
+	ES_SCRIPT_ONKEYDOWN
 };
 namespace ENGINE_STACK
 {
 	struct PLAYER_ADDWEAPON
 	{
+		PLAYER_ADDWEAPON(int _ID, int _wepID,int _wepLoaded, int _wepHidden)
+		{
+			this->ID = _ID;
+			this->wepID = _wepID;
+			this->wepLoaded = _wepLoaded;
+			this->wepHidden = _wepHidden;
+		}
 		int ID,wepID,wepLoaded,wepHidden;
 	};
 	struct PLAYER_DELETEWEAPON
 	{
+		PLAYER_DELETEWEAPON(int _ID, int _wepID)
+		{
+			this->ID = _ID;
+			this->wepID = _wepID;
+		}
 		int ID, wepID;
 	};
 	struct PLAYER_SWITCHWEAPON
 	{
+		PLAYER_SWITCHWEAPON(int _ID, int _wepID)
+		{
+			this->ID = _ID;
+			this->wepID = _wepID;
+		}
 		int ID, wepID;
 	};
 	struct PLAYER_SHOOT
 	{
+		PLAYER_SHOOT(int _ID, Vector3D _pos)
+		{
+			this->ID = _ID;
+			this->pos = _pos;
+		}
 		int ID;
 		Vector3D pos;
 	};	
 	struct PLAYER_THROWGRANADE
 	{
+		PLAYER_THROWGRANADE(int _ID, Vector3D _pos)
+		{
+			this->ID = _ID;
+			this->pos = _pos;
+		}
 		int ID;
 		Vector3D pos;
 	};
 	struct PLAYER_ENTER_VEH
 	{
+		PLAYER_ENTER_VEH(int _pID, int _vehID, int _seatID)
+		{
+			this->pID = _pID;
+			this->vehID = _vehID;
+			this->seatID = _seatID;
+		}
 		int pID, vehID, seatID;
 	};
 	struct PLAYER_EXIT_VEH
 	{
+		PLAYER_EXIT_VEH(int _pID, int _vehID)
+		{
+			this->pID = _pID;
+			this->vehID = _vehID;
+		}
 		int pID, vehID;
 	};
 	struct PLAYER_PLAYANIM
 	{
+		PLAYER_PLAYANIM(int _ID, char* _name)
+		{
+			this->ID = _ID;
+			strcpy(name, _name);
+		}
 		int ID;
 		char name[255];
 	};
 	struct PLAYER_PLAYSOUND
 	{
+		PLAYER_PLAYSOUND(char* _name)
+		{
+			strcpy(name, _name);
+		}
 		char name[255];
 	};
 	struct VEH_CREATE
 	{
+		VEH_CREATE(int _vehID, int _skinID)
+		{
+			this->vehID = _vehID;
+			this->skinID = _skinID;
+		}
 		int vehID, skinID;
 	};
 	struct VEH_JACK
 	{
+		VEH_JACK(int _pID, int _vehID, int _seatID)
+		{
+			this->pID = _pID;
+			this->vehID = _vehID;
+			this->seatID = _seatID;
+		}
 		int pID, vehID,seatID;
 	};
 
 	struct CAMERA_SET
 	{
+		CAMERA_SET(Vector3D _pos, Vector3D _rot)
+		{
+			this->pos = _pos;
+			this->rot = _rot;
+		}
 		Vector3D pos, rot;
 	};
 	struct VEH_DELETEVEH
 	{
+		VEH_DELETEVEH(int _vehID, unsigned int _base)
+		{
+			this->vehID = _vehID;
+			this->base = _base;
+		}
 		int vehID;
 		unsigned int base;
 	};
 	struct DOOR_SET_STATE
 	{
+		DOOR_SET_STATE(char* _buff, bool _state, bool _facing)
+		{
+			strcpy(buff, _buff);
+			this->state = _state;
+			this->facing = _facing;
+		}
 		char buff[200];
 		bool state;
 		bool facing;
 	};
 	struct KILL_PED_EX
 	{
+		KILL_PED_EX(int _ID, int _reason, int _part)
+		{
+			this->ID = _ID;
+			this->reason = _reason;
+			this->part = _part;
+		}
 		int ID;
 		int reason;
 		int part;
@@ -441,6 +534,11 @@ namespace ENGINE_STACK
 
 	struct PLAYER_SETPOS
 	{
+		PLAYER_SETPOS(int _ID,Vector3D _pos)
+		{
+			this->ID = _ID;
+			this->pos = _pos;
+		}
 		int ID;
 		Vector3D pos;
 	};

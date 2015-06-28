@@ -804,6 +804,11 @@ void CEngineStack::DoMessage()
 			}
 		}
 			break;
+		case CLIENT_ENGINESTACK::ES_SCRIPT_ONKEYDOWN:
+		{
+			g_CCore->GetSquirrel()->onKeyDown(start->data);
+		}
+			break;
 		case CLIENT_ENGINESTACK::ES_SCRIPT_RUN:
 		{
 			 g_CCore->GetSquirrel()->LoadClientScript("");

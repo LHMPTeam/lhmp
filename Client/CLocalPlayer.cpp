@@ -419,3 +419,4 @@ void	CLocalPlayer::SetSkin(int skin)
 {
 	this->ourSkin = skin;
 }
+

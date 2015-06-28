@@ -340,7 +340,6 @@
 		<Unit filename="CEntity.h" />
 		<Unit filename="CFileTransfer.cpp" />
 		<Unit filename="CFileTransfer.h" />
-		<Unit filename="CFileTransferPool.h" />
 		<Unit filename="CGameMode.cpp" />
 		<Unit filename="CGameMode.h" />
 		<Unit filename="CLog.cpp" />
@@ -363,8 +362,6 @@
 		<Unit filename="CScript.h" />
 		<Unit filename="CScripts.cpp" />
 		<Unit filename="CScripts.h" />
-		<Unit filename="CTCP.cpp" />
-		<Unit filename="CTCP.h" />
 		<Unit filename="CTickManager.cpp" />
 		<Unit filename="CTickManager.h" />
 		<Unit filename="CTimer.cpp" />

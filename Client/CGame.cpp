@@ -3844,3 +3844,25 @@ int CGame::GetGameVersion()
 	// if we haven't detected any version
 	return 0;
 }
+
+
+Vector3D	CGame::GetPEDNeckPosition(PED* ped)
+{
+	Vector3D pos;
+	// if ped exists
+	if (ped)
+	{
+		// then sum up PED's base position (world position) with neck position (model relative position)
+		// Neck position is related from model origin -> doesn't represent world coords and must be sum up 
+		Vector3D neckPos = *(Vector3D*)((DWORD) (ped->frm_neck) + 0x40);
+		/*Vector3D pedPos = ped->object.position;
+		pos.x = neckPos.x + pedPos.x;
+		pos.y = neckPos.y + pedPos.y;
+		pos.z = neckPos.z + pedPos.z;
+		return pos;
+		*/
+		return neckPos;
+	}
+	// if PED doesn't exist, returns empty Vector3D
+	return Vector3D();
+}

@@ -372,4 +372,14 @@ namespace Tools
 		}
 		return -1;
 	}
+
+	// Generates text stamp for @color, process @input with at least 6 chars
+	// Example result: 00adef
+	static void GenerateColor(char* input, unsigned int color)
+	{
+		char stamp[9];
+		sprintf(stamp,"%p",color);
+		memcpy(input, stamp+2, 6);
+		input[6] = 0x0;
+	}
 }

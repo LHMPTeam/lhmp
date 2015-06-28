@@ -22,6 +22,13 @@ private:
 	unsigned int		messageCount;
 	EngineStackMessage*	start;
 	EngineStackMessage* end;
+
+	// used for deleting messages
+	template<class T>
+	void DeleteData(T *p)
+	{
+		delete p;
+	}
 public:
 	CEngineStack();
 	~CEngineStack();

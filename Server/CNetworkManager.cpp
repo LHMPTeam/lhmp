@@ -7,6 +7,7 @@
 #include "../shared/gamestructures.h"
 #include "../shared/CBitArray.h"
 #include "../shared/version.h"
+#include "../shared/tools.h"
 
 #include "FileList.h"
 #include "FileListTransfer.h"
@@ -378,7 +379,10 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 				char buff2[255];
 				bsIn.Read(buff);
 
-				sprintf(buff2, "#f31d2f%s#ffffff: %s", player->GetNickname(), buff);
+				char color[10];
+				Tools::GenerateColor(color,player->GetNickColor());
+				printf("Debug color: #%s", color);
+				sprintf(buff2, "#%s%s#ffffff: %s", color, player->GetNickname(), buff);
 				if (g_CCore->GetScripts()->onPlayerText(ID, buff) == true)
 				{
 					BitStream bsOut;
@@ -630,7 +634,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			vehicle_data.damage = veh->GetDamage();
 			vehicle_data.shotdamage = veh->GetShotDamage();
 			vehicle_data.roofState = veh->GetRoofState();
-			vehicle_data.engineState = veh->GetEngineState();
+			vehicle_data.engineState = (veh->GetEngineState() == 1);
 
 			vehicle_data.siren = veh->GetSirenState();
 			vehicle_data.ID = ID;
@@ -861,10 +865,10 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			bsIn.Read(name);
 			bsIn.Read(state);
 			bsIn.Read(facing);
-			g_CCore->GetDoorPool()->Push(name,(bool)state,facing);
+			g_CCore->GetDoorPool()->Push(name,(state == 1),facing);
 			BitStream bsOut;
 
-			bool stateOut = state;
+			bool stateOut = (state == 10);
 			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 			bsOut.Write((MessageID)LHMP_DOOR_SET_STATE);
 			bsOut.Write(name);
@@ -1086,7 +1090,7 @@ void CNetworkManager::SendHimCars(int ID)
 				vehicle.damage		= veh->GetDamage();
 				vehicle.shotdamage	= veh->GetShotDamage();
 				vehicle.roofState	= veh->GetRoofState();
-				vehicle.engineState = veh->GetEngineState();
+				vehicle.engineState = (veh->GetEngineState() == 1);
 				//std::cout << "Damage: " << vehicle.damage << std::endl;
 				for (int i = 0; i < 4; i++)
 					vehicle.seat[i] = veh->GetSeat(i);

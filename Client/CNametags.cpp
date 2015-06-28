@@ -16,10 +16,17 @@ void CNametags::Tick()
 		{
 			if (ped->GetEntity() == NULL)
 				continue;
-			Vector3D playerPosition = ped->GetPEDFramePosition();
-			playerPosition.y += 2.1;
+			
+			Vector3D playerPosition = g_CCore->GetGame()->GetPEDNeckPosition((PED*)ped->GetEntity());
+			playerPosition.y += 0.3f;
+			//--------------------------------------------------------
+			/*Vector3D playerPosition = ped->GetPEDFramePosition();
+			playerPosition.y += 2.1f;
 			if (ped->IsDucking() && ped->InCar == -1)
 				playerPosition.y -= 0.75;
+			*/
+			//--------------------------------------------------------
+
 			// check whether he is close to local player
 			if (Tools::GetDistanceBetween3DPointsEx(position, playerPosition, 60.0f) < 2)
 			{
@@ -63,7 +70,7 @@ void CNametags::Tick()
 						int barHeight = 7;
 						float healthPercentage = ped->GetHealth() / 200.0f;
 
-						alpha = alpha * 0.85;
+						alpha = (int)(alpha * 0.85f);
 
 						D3DCOLOR healthBarColor = D3DCOLOR_RGBA(217, 0, 0, alpha);
 						D3DCOLOR healthBarColorBg = D3DCOLOR_RGBA(166, 0, 0, alpha);
@@ -142,7 +149,7 @@ void CNametags::RenderToTexture(int playerID)
 
 			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2) + 1, 128 - (size.cy / 2) + 1, D3DCOLOR_RGBA(0, 0, 0, 255), false);
 			// original color: D3DCOLOR_RGBA(255, 255, 255, 255)
-			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2), 128 - (size.cy / 2), ped->GetNickColor(), false);
+			g_CCore->GetGraphics()->GetFont()->DrawTextA(ped->GetName(), 128 - (size.cx / 2), 128 - (size.cy / 2), 0xFFFFFFFF, false);
 
 			// return D3D to previos stage and release unneeded resources
 			g_CCore->GetGraphics()->GetDevice()->SetRenderTarget(pOldTarget, oldStencil);

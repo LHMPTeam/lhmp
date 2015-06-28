@@ -258,6 +258,38 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->GetChat()->SetBackground(!this->IsBackgroundActive());
 	}
+	else if (strcmp(command, "fadeit") == 0)
+	{
+		PED* local = g_CCore->GetGame()->GetLocalPED();
+		if (local)
+		{
+			if (local->playersCar)
+			{
+				DWORD car = (DWORD) local->playersCar;
+				_asm{
+					MOV ECX, car;
+						MOV EAX, 0x3E4CCCCD
+						PUSH EAX; 0x3E4CCCCD; / Arg1 = 3E4CCCCD
+						MOV EAX, 0x0046A450
+						CALL EAX; Game.0046A450; \maybe it's this ?
+				}
+			}
+		}
+	}
+	else if (strcmp(command, "fadehim") == 0)
+	{
+		DWORD ped = (DWORD) g_CCore->GetGame()->GetLocalPED();
+		if (ped)
+		{
+			_asm{
+				MOV ECX, ped
+					MOV EDX, 0x3e99999a
+					PUSH EDX;  new alpha
+					MOV EAX, 0x004CD7A0
+					CALL EAX; Game.004CD7A0
+			}
+		}
+	}
 	else if (strcmp(command, "loop") == 0)
 	{
 		DWORD poolStart = *(DWORD*)((*(DWORD*)0x0065115C) + 0x38);
@@ -298,16 +330,12 @@ void CChat::DoCommand(char str[])
 		g_CCore->GetChat()->AddMessage(buffer);
 		g_CCore->GetLog()->AddLog(buffer);
 	}
-	else if (strcmp(command, "testpos") == 0)
+	else if (strcmp(command, "debugneck") == 0)
 	{
-		ENGINE_STACK::PLAYER_SETPOS* data = new ENGINE_STACK::PLAYER_SETPOS();
-		data->ID = g_CCore->GetLocalPlayer()->GetOurID();
-		data->pos.x = -1900.0f;
-		data->pos.y = 20.0f;
-		data->pos.z = 100;
-
-		//g_CCore->GetEngineStack()->AddMessage(ES_PLAYERSETPOS, (DWORD)data);
-		g_CCore->GetGame()->SetPlayerPosition(g_CCore->GetLocalPlayer()->GetEntity(), data->pos);
+		Vector3D pos = g_CCore->GetGame()->GetPEDNeckPosition(g_CCore->GetGame()->GetLocalPED());
+		char buff[500];
+		sprintf(buff,"Neck: %f %f %f",pos.x,pos.y,pos.z);
+		g_CCore->GetChat()->AddMessage(buff);
 	}
 	else if (strcmp(command, "crash") == 0)
 	{
@@ -999,7 +1027,7 @@ void	CChat::ClearChat()
 void	CChat::RenderTexture(IDirect3DDevice8* device)
 {
 	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
-	CHAT_WIDTH = screen.x / 2.25f;
+	CHAT_WIDTH = (int) (screen.x / 2.25f);
 
 	if (chatTexture == NULL)
 	{

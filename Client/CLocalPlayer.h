@@ -60,7 +60,6 @@ public:
 	float			GetCarAim();
 
 	void			SetSkin(int);
-
 	// Server
 	void			ServerUpdateWeapon();
 

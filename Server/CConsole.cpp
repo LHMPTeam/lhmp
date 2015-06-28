@@ -38,7 +38,9 @@ void CConsole::Tick()
 
 	// split input into command - variables
 	char command[256];
+	memset(command, 0x0, 256);
 	char varlist[512] = "";
+	memset(varlist, 0x0, 512);
 	char *pch;
 	pch = strchr(buff, ' ');
 	if (pch == NULL)
@@ -50,7 +52,6 @@ void CConsole::Tick()
 		command[(pch - buff)] = '\0';
 		memcpy(varlist, pch + 1, strlen(pch));
 	}
-
 	// if 'exit'/'quit'
 	if (strcmp(command, "exit") == 0 || strcmp(command, "quit") == 0)
 	{
@@ -67,6 +68,9 @@ void CConsole::Tick()
 		g_CCore->GetLog()->AddNormalLog("List of commands:");
 		g_CCore->GetLog()->AddNormalLog("-> help:\t this help");
 		g_CCore->GetLog()->AddNormalLog("-> kick:\t kick player");
+		g_CCore->GetLog()->AddNormalLog("-> msg:\t\t send a message to all players");
+		g_CCore->GetLog()->AddNormalLog("-> load:\t load a new gamemode");
+		g_CCore->GetLog()->AddNormalLog("-> reload:\t reload current gamemode");
 		g_CCore->GetLog()->AddNormalLog("-> exit:\t shutdown server");
 		g_CCore->GetLog()->AddNormalLog("-> quit:\t shutdown server");
 	} else if (strcmp(command, "kick") == 0)

@@ -97,11 +97,13 @@ typedef struct _PED {
 	bool		isAiming;			//	01E5-01E6
 	_pad(_unk4, 0x16);
 	bool		isReloading;		//	01FC-01FD
-	_pad(_unk5, 0x2A3);
+	_pad(_unk5, 0x11B);
+	FRAME*		frm_neck;			//	0318-031C
+	_pad(_unk6, 0x184);
 	INVENTARY	inventary;			//	04A0-0520
-	_pad(_unk6, 0xD4);
+	_pad(_unk7, 0xD4);
 	float		inCarRotation;		//	05F4-05F8
-	_pad(_unk7, 0x4C);
+	_pad(_unk8, 0x4C);
 	float		health;				//	0644-0648
 } PED;
 
@@ -194,6 +196,7 @@ public:
 	static void KillPedEx(DWORD ped, DWORD reason, DWORD part);
 	static void FixAfterDeath(DWORD ped);
 	static void SetOn(DWORD, bool);
+	Vector3D	GetPEDNeckPosition(PED* ped);
 
 	// frames
 	static void SetFrameModel(DWORD, char*);
