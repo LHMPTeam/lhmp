@@ -1072,6 +1072,16 @@ SQInteger sq_ColorARGB(SQVM *vm)
 	return 1;
 }
 
+SQInteger sq_playAnimation(SQVM *vm) {
+	SQInteger anim;
+	sq_getinteger(vm, -1, &anim);
+
+	g_CCore->GetLocalPlayer()->ourAnim = anim;
+	g_CCore->GetEngineStack()->AddMessage(ES_PLAYANIM, anim);
+
+	return 1;
+}
+
 /*------------------------- /Natives ------------------------------- */
 // Register all native functions and constants
 void CSquirrel::PrepareMachine(SQVM* pVM)
@@ -1178,6 +1188,9 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 
 	// Get localplayer rotation
 	RegisterFunction(pVM, "getRotation", (SQFUNCTION)sq_getRotation, 1, ".");
+
+	// Play anim
+	RegisterFunction(pVM, "playAnimation", (SQFUNCTION)sq_playAnimation, 1, ".n");
 
 	// set localplayer skin
 	// Params: skinID
