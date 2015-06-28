@@ -40,6 +40,7 @@ public:
 	void			SetPedStatus(int);
 	void			SetPing(int);
 	void			SetMoney(int);
+	int				GetMoney();
 	void			EnableMoney(int);
 	int				ourSkin;
 	int				ourAnim;

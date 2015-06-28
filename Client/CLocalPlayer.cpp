@@ -41,6 +41,11 @@ void CLocalPlayer::SetMoney(int money)
 	}
 }
 
+int CLocalPlayer::GetMoney()
+{
+	return *(DWORD*)0x06DE6590;
+}
+
 void CLocalPlayer::EnableMoney(int enable)
 {
 	g_CCore->GetLog()->AddLog("CLocalPlayer::EnableMoney", LOG_ALL);
