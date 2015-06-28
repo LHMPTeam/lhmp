@@ -209,6 +209,8 @@ public:
 	static DWORD FindFrame(char*);
 	static DWORD FindActor(char*);
 
+	static void	DeleteObj(DWORD obj);
+
 	static char* GetFrameName(FRAME* frame);
 
 	//collisions

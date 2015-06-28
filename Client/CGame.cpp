@@ -339,13 +339,14 @@ DWORD CGame::CreateCar(int skin, Vector3D position, Vector3D rotation)
 	if (entity)
 	{
 		// add car to radar pool
-		_asm {
+		// DEPRECATED - causes problems
+		/*_asm {
 			PUSH -1
 			PUSH ESI; car
 			MOV ECX, 0x00658330
 			MOV EAX,0x0054C630
 			CALL EAX
-		}
+		}*/
 		g_CCore->GetGame()->CarUpdate(entity, position , rotation);
 		return entity;
 	}
@@ -817,6 +818,18 @@ void CGame::PreRespawn()
 	if (g_CCore->GetGame()->GetLocalPED() != NULL)
 	{
 		g_CCore->GetGame()->DeleteAllWeapons((DWORD)g_CCore->GetGame()->GetLocalPED());
+	}
+
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
+		if (pickup != NULL)
+		{
+			//g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
+			//delete pickup;
+			g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
+			g_CCore->GetPickupPool()->Delete(i);
+		}
 	}
 }
 void CGame::Respawn()
@@ -1969,6 +1982,17 @@ DWORD CGame::FindActor(char* frame)
 		
 	}
 	return res;
+}
+
+void CGame::DeleteObj(DWORD obj)
+{
+	_asm
+	{
+		mov eax, obj
+			push eax
+			mov ecx, [eax]
+			call dword ptr ds : [ecx]
+	}
 }
 
 char* CGame::GetFrameName(FRAME* frm)

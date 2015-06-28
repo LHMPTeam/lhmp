@@ -1399,7 +1399,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		case LHMP_PICKUP_CREATE:
 		{
 
-								   //g_CCore->GetChat()->AddMessage("pickup lol");
+			g_CCore->GetLog()->AddLog("[NM] Pickup create");
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			int ID;
 			char model[250];

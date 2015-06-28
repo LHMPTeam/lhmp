@@ -738,6 +738,7 @@ void CEngineStack::DoMessage()
 					g_CCore->GetGame()->SetFrameScale(pickup->GetEntity(), pickup->GetSize(), pickup->GetSize(), pickup->GetSize());
 					g_CCore->GetGame()->SetFramePos(pickup->GetEntity(), pickup->GetPosition().x, pickup->GetPosition().y, pickup->GetPosition().z);
 					
+					g_CCore->GetLog()->AddLog("ES_CREATEPICKUP");
 					//g_CCore->GetGame()->SetFrameRot(pickup->GetEntity(),0,0,0,0);
 
 					//char buff[200];
@@ -756,13 +757,7 @@ void CEngineStack::DoMessage()
 				DWORD entity = pickup->GetEntity();
 				if (entity)
 				{
-					_asm
-					{
-						mov eax, entity
-							push eax
-							mov ecx, [eax]
-							call dword ptr ds : [ecx]
-					}
+					g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
 					pickup->SetEntity(NULL);
 				}
 			}

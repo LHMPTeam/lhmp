@@ -89,3 +89,16 @@ void	CPickupPool::Tick()
 		}
 	}
 }
+
+
+void	CPickupPool::Reset()
+{
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		if (pool[i])
+		{
+			delete pool[i];
+			pool[i] = NULL;
+		}
+	}
+}

@@ -157,6 +157,27 @@ bool CGameMode::UnloadGameMode()
 	g_CCore->GetScripts()->UnloadAll();
 	g_CCore->GetFileTransfer()->Reset();
 	g_CCore->SetDefaultMap("freeride");
+
+	// Delete all players
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		g_CCore->GetPlayerPool()->Delete(i);
+	}
+
+	// Delete all vehicles
+	for (int i = 0; i < MAX_VEHICLES; i++)
+	{
+		g_CCore->GetVehiclePool()->Delete(i);
+	}
+
+	// reset the doors' pool
+	g_CCore->GetDoorPool()->Reset();
+
+	// reset all files
+	g_CCore->GetFileTransfer()->Reset();
+
+	// reset pickup pool
+	g_CCore->GetPickupPool()->Reset();
 	return true;
 }
 

@@ -14,5 +14,7 @@ public:
 	int			ReturnId(CPickup*);
 	void		TestPlayer(int ID);
 	void		Tick();
-	//void		DeleteVehicle(int);
+
+	// Deletes all pickups & returns to default state
+	void		Reset();
 };

@@ -76,7 +76,7 @@ void	CCore::ChangeModeTo(char* newmode)
 	this->GetGameMode()->UnloadGameMode();
 
 
-	// Delete all players
+	/*// Delete all players
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
 		this->GetPlayerPool()->Delete(i);
@@ -92,7 +92,7 @@ void	CCore::ChangeModeTo(char* newmode)
 	this->GetDoorPool()->Reset();
 
 	// reset all files
-	this->GetFileTransfer()->Reset();
+	this->GetFileTransfer()->Reset();*/
 
 	// everything is set to default, now load gamemode
 	this->GetGameMode()->LoadGameMode(modeToLoad);
