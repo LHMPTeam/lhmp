@@ -1072,13 +1072,114 @@ SQInteger sq_ColorARGB(SQVM *vm)
 	return 1;
 }
 
-SQInteger sq_playAnimation(SQVM *vm) {
+SQInteger sq_playAnimation(SQVM *vm) 
+{
 	SQInteger anim;
 	sq_getinteger(vm, -1, &anim);
 
 	g_CCore->GetLocalPlayer()->ourAnim = anim;
 	g_CCore->GetEngineStack()->AddMessage(ES_PLAYANIM, anim);
+	return 1;
+}
 
+
+//Sound Functions
+SQInteger sq_Play3DSound(SQVM* vm)
+{
+
+	Vector3D position;
+	const SQChar* soundname;
+	SQFloat distance, volume;
+
+	sq_getfloat(vm, -1, &position.z);
+	sq_getfloat(vm, -2, &position.y);
+	sq_getfloat(vm, -3, &position.x);
+	sq_getfloat(vm, -4, &volume);
+	sq_getfloat(vm, -5, &distance);
+	sq_getstring(vm, -6, &soundname);
+
+	DWORD createdFrame = g_CCore->GetGame()->CreateEmptyFrame();
+	if (createdFrame != NULL)
+	{
+		g_CCore->GetGame()->SetFramePos(createdFrame, position.x, position.y, position.z);
+		DWORD soundID = g_CCore->GetGame()->PlaySoundAtFrame(createdFrame, (char*)soundname, volume, distance);
+		sq_pushinteger(vm, (int)soundID);
+		return 1;
+
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_Remove3DSound(SQVM* vm)
+{
+	SQInteger soundid;
+	sq_getinteger(vm, -1, &soundid);
+
+	g_CCore->GetGame()->StopSound((DWORD)soundid);
+	sq_pushnull(vm);
+	return 1;
+}
+
+//Particles Functions
+SQInteger sq_CreateParticle(SQVM* vm)
+{
+
+	Vector3D position;
+	SQInteger particleid;
+
+
+	sq_getfloat(vm, -1, &position.z);
+	sq_getfloat(vm, -2, &position.y);
+	sq_getfloat(vm, -3, &position.x);
+	sq_getinteger(vm, -4, &particleid);
+
+	DWORD createdFrame = g_CCore->GetGame()->CreateEmptyFrame();
+	if (createdFrame != NULL)
+	{
+		g_CCore->GetGame()->SetFramePos(createdFrame, position.x, position.y, position.z);
+		DWORD particleID = g_CCore->GetGame()->CreateParticle(createdFrame, particleid);
+		sq_pushinteger(vm, (int)particleID);
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_RemoveParticle(SQVM* vm)
+{
+	SQInteger particleid;
+	sq_getinteger(vm, -1, &particleid);
+
+	g_CCore->GetGame()->RemoveParticle((DWORD)particleid);
+	sq_pushnull(vm);
+	return 1;
+}
+
+
+//Money Functions
+SQInteger sq_GetMoney(SQVM* vm)
+{
+	int playerMoney = g_CCore->GetLocalPlayer()->GetMoney();
+	sq_pushinteger(vm, playerMoney);
+	return 1;
+}
+
+SQInteger sq_SetMoney(SQVM* vm)
+{
+	SQInteger money;
+	sq_getinteger(vm, -1, &money);
+	g_CCore->GetLocalPlayer()->SetMoney(money);
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_EnableMoney(SQVM* vm)
+{
+	SQInteger enable;
+	sq_getinteger(vm, -1, &enable);
+	g_CCore->GetLocalPlayer()->EnableMoney(enable);
+	sq_pushnull(vm);
 	return 1;
 }
 
@@ -1228,7 +1329,28 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	// Returns RGB color as DWORD (useful for all Color params, drawtext/fillbox)
 	RegisterFunction(pVM, "ColorARGB", (SQFUNCTION)sq_ColorARGB, 4, ".nnnn");
 
+	//Create 3D sound at specific coordinates	
+	RegisterFunction(pVM, "create3DSound", (SQFUNCTION)sq_Play3DSound, 7, ".sfffff");
+
+	//Remove 3D sound
+	RegisterFunction(pVM, "remove3DSound", (SQFUNCTION)sq_Remove3DSound, 2, ".n");
+
+	//Create animated particle at specific coordinates	
+	RegisterFunction(pVM, "createParticle", (SQFUNCTION)sq_CreateParticle, 5, ".nfff");
+
+	//Remove particle
+	RegisterFunction(pVM, "removeParticle", (SQFUNCTION)sq_RemoveParticle, 2, ".n");
+
+	//Money Functions
+	RegisterFunction(pVM, "enableMoney", (SQFUNCTION)sq_EnableMoney, 2, ".n");
+
+	RegisterFunction(pVM, "setMoney", (SQFUNCTION)sq_SetMoney, 2, ".n");
+
+	RegisterFunction(pVM, "getMoney", (SQFUNCTION)sq_GetMoney, 1, ".");
+
+	//Tools Functions
 	RegisterFunction(pVM, "getDistanceBetween3DPoints", (SQFUNCTION)sq_getDistanceBetween3DPoints, 7, ".ffffff");
+
 	RegisterFunction(pVM, "getDistanceBetween2DPoints", (SQFUNCTION)sq_getDistanceBetween2DPoints, 5, ".ffff");
 
 }

@@ -41,6 +41,23 @@ void CLocalPlayer::SetMoney(int money)
 	}
 }
 
+int CLocalPlayer::GetMoney()
+{
+	int getedmoney = 0;
+
+	__asm
+	{
+		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+		MOV EAX, 0x00425390
+		CALL EAX
+		MOV ECX, EAX
+		MOV EAX, 0x00425580
+		CALL EAX
+		MOV getedmoney, EAX
+	}
+	return getedmoney;
+}
+
 void CLocalPlayer::EnableMoney(int enable)
 {
 	g_CCore->GetLog()->AddLog("CLocalPlayer::EnableMoney", LOG_ALL);
