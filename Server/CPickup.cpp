@@ -102,27 +102,35 @@ void	CPickup::SetVisible(bool should)
 
 bool	CPickup::IsTakingPickup(int ID)
 {
-	if ((int)(timeGetTime()-respawnTime) > interval || interval == -1)
+	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+	if (player)
 	{
-		Vector3D pos, playerpos = g_CCore->GetPlayerPool()->Return(ID)->GetPosition(), pickuppos = this->GetPosition();;
-		pos.x = abs(pickuppos.x - playerpos.x);
-		pos.y = abs(pickuppos.y - playerpos.y);
-		pos.z = abs(pickuppos.z - playerpos.z);
-		if (pos.x < 2.0 && pos.z < 2.0)
+		// if player is alive
+		if (player->GetHealth() > 0.0f)
 		{
-			// take pickup
-			int pickupID = g_CCore->GetPickupPool()->ReturnId(this);
-			g_CCore->GetScripts()->onPickupTaken(pickupID, ID);
-			if (interval == -1)
+			if ((int)(timeGetTime() - respawnTime) > interval || interval == -1)
 			{
-				g_CCore->GetPickupPool()->Delete(pickupID);
-			}
-			else {
-				respawnTime = timeGetTime();
+				Vector3D pos, playerpos = g_CCore->GetPlayerPool()->Return(ID)->GetPosition(), pickuppos = this->GetPosition();;
+				pos.x = abs(pickuppos.x - playerpos.x);
+				pos.y = abs(pickuppos.y - playerpos.y);
+				pos.z = abs(pickuppos.z - playerpos.z);
+				if (pos.x < 2.0 && pos.z < 2.0)
+				{
+					// take pickup
+					int pickupID = g_CCore->GetPickupPool()->ReturnId(this);
+					g_CCore->GetScripts()->onPickupTaken(pickupID, ID);
+					if (interval == -1)
+					{
+						g_CCore->GetPickupPool()->Delete(pickupID);
+					}
+					else {
+						respawnTime = timeGetTime();
 
-				this->SendVisible(-1, false);
+						this->SendVisible(-1, false);
+					}
+					return true;
+				}
 			}
-			return true;
 		}
 	}
 	return false;
