@@ -24,7 +24,7 @@ CLHMPQuery* query;
 
 ServerInfo queryResultServers[1024];
 UpdateFile files[128];
-int queryCount, queryCountMax, serverCount, playerCount, allowPatch = -1, needsUpdatingCount = 0;
+int queryCount, queryCountMax, serverCount, playerCount, allowPatch = -1, needsUpdatingCount = 0, shouldUpdate = -1;
 bool refreshing = false, playerlist = false, masterDown = false, noPlayers = false, patchQuestionRan = false, updated = false;
 
 void queryCallback(unsigned int serverID, void* data, unsigned char reasonID)
@@ -287,10 +287,15 @@ void Launcher::replyFinished(QNetworkReply *reply)
             serversURL = item["servers"].toString();
 
             if (launcherVersion != version) {
-                // Self update
-                manager->get(QNetworkRequest(QString("%1setup.exe").arg(filesURL)));
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::question(this, "New update available!", "There is a new update available!<br/><br/>Do you want to download it and update your installation?", QMessageBox::Yes|QMessageBox::No);
 
-                ui->label_3->setText("Downloading new launcher update...");
+                if (reply == QMessageBox::Yes) {
+                    // Self update
+                    manager->get(QNetworkRequest(QString("%1setup.exe").arg(filesURL)));
+
+                    ui->label_3->setText("Downloading new launcher update...");
+                }
             } else {
                 ui->label_3->setText("You are running the latest version.");
             }
@@ -330,11 +335,24 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
                 // Download and update
                 if (hashLocal.isEmpty() || hashLocal != hash) {
-                    manager->get(QNetworkRequest(QString("%1%2").arg(filesURL).arg(name)));
+                    if (shouldUpdate == -1) {
+                        QMessageBox::StandardButton reply;
+                        reply = QMessageBox::question(this, "New update available!", "There is a new update available!<br/><br/>Do you want to download it and update your installation?", QMessageBox::Yes|QMessageBox::No);
 
-                    needsUpdatingCount++;
+                        if (reply == QMessageBox::Yes) {
+                            shouldUpdate = 1;
+                        } else {
+                            shouldUpdate = 0;
+                        }
+                    }
 
-                    qDebug() << location << name << hashLocal << hash << QString("%1%2").arg(filesURL).arg(name);
+                    if (shouldUpdate == 1) {
+                        manager->get(QNetworkRequest(QString("%1%2").arg(filesURL).arg(name)));
+
+                        needsUpdatingCount++;
+
+                        qDebug() << location << name << hashLocal << hash << QString("%1%2").arg(filesURL).arg(name);
+                    }
                 }
             }
 
@@ -471,7 +489,11 @@ void Launcher::replyFinished(QNetworkReply *reply)
     if (needsUpdatingCount == 0) {
         updated = true;
 
-        ui->label_3->setText("You are running the latest version.");
+        if (shouldUpdate == 1) {
+            ui->label_3->setText("You are running the latest version.");
+        } else {
+            ui->label_3->setText("New update available!");
+        }
     }
 
     reply->deleteLater();
@@ -785,8 +807,11 @@ void Launcher::SetMafiaPath() {
 bool Launcher::JoinGame(QString address, QString password) {
     if (address.isEmpty()) return false;
 
-    QStringList addressSplit = address.split(":");
-    addressSplit.append(password);
+    qDebug() << password;
+
+    QStringList params = address.split(":");
+
+    if (!password.isEmpty()) params << password;
 
     QString pathExecutable = mafiaPath;
             pathExecutable.append("/Game.exe");
@@ -803,7 +828,7 @@ bool Launcher::JoinGame(QString address, QString password) {
         QProcess *process = new QProcess(this);
         process->setWorkingDirectory(mafiaPath);
 
-        process->start(pathLoader, addressSplit);
+        process->start(pathLoader, params);
 
         qDebug() << process;
     } else {
@@ -890,7 +915,7 @@ void Launcher::ShowServerInfo() {
         ui->label_22->setText(ping);
         ui->label_23->setText(ping);
 
-        if (map == "freeride" || map.contains("mesto", Qt::CaseInsensitive) || map == "EXTREME") {
+        if (map == "freeride" || map.contains("mesto", Qt::CaseInsensitive) || map == "EXTREME" || map == "mise03-morello") {
             ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/city.png);}");
 
             ui->label_6->setText("Lost Heaven (City)");
@@ -934,7 +959,7 @@ void Launcher::on_tableWidget_doubleClicked(const QModelIndex &index)
 
         if (password == "Yes") {
             bool ok;
-            QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"), tr("Password:"), QLineEdit::Normal, "", &ok);
+            QString text = QInputDialog::getText(this, tr("Password"), tr("Password:"), QLineEdit::Normal, "", &ok);
 
             if (ok && !text.isEmpty()) JoinGame(ui->tableWidget->item(ui->tableWidget->currentIndex().row(), 4)->text(), text);
         } else {
