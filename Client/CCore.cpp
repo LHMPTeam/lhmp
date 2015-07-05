@@ -138,14 +138,15 @@ void CCore::Run()
 
 	// disable scripts
 	//PatchBytes(0x005AF836, disableScripts);
-
+	// disables script process calling
+	//-----------------Tools::Nop(0x0047AA65, 0xC);
 	// disable AddScore 
 	PatchBytes(0x005C695E, disableScriptAddScore);
 
-	//disable Adding score from breaked cars 
+	//disable adding game score for each destroyed car by player
 	PatchBytes(0x00468D73, disableCarBreakScore);
 
-	//disable Adding score from Mafians
+	//disable adding game score for each killed mobster
 	PatchBytes(0x00497465, disableScoreFromKilledMafians);
 
 
@@ -162,6 +163,64 @@ void CCore::Run()
 
 	PatchBytes(0x005BC005, disableCompas);
 
+	/* Block script functions*/
+	// NOTE: items in white list must be in ascending order (from the lowest to the highest one)
+
+	//return;
+
+	// 0x81 - the most important one for map reloading
+
+	//unsigned short whitelistID[] = { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0x10, 0x11, 0x1F, 0x20, 0x4A,0x4D,0x4E, 0x7D, 0x7E,0x81,0x12D};
+	unsigned short whitelistID[] = { 0x1, 0x81, 0x186};
+	int listLen = sizeof(whitelistID) / sizeof(*whitelistID);
+
+	DWORD* switchTable = (DWORD*)0x5C7700;
+	DWORD lpflOldProtect;
+
+	// unprotect the goal memory in order to avoid 'access violations'
+	VirtualProtect((void*)switchTable, 4*390, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+
+	for (int i = 1; i < listLen; i++)
+	{
+		for (int e = whitelistID[i-1] + 1; e < whitelistID[i]; e++)
+		{
+			if (e > 0)
+				switchTable[e - 1] = 0x005C76DA;
+		}
+	}
+	
+	return;
+
+	/*int startID = 0;
+	DWORD copyStart = 0, copyLength = 0;
+	for (int i = 0; i < len; i++)
+	{
+		if (whitelistID[i] != startID )
+		{
+			copyStart = (DWORD) switchTable + ((startID-1) * 4);
+			copyLength = (whitelistID[i] - startID) * 4;
+			//memset((void*)copyStart, 0x005C76DA, copyLength);
+			for (int i = 0; i < copyLength; i = i + 4)
+			{
+				*(DWORD*)(copyStart + i) = 0x005C76DA;
+			}
+		}
+			
+		startID = whitelistID[i] + 1;
+	}
+
+	// do the rest
+	copyStart = (DWORD)switchTable + ((startID - 1) * 4);
+	copyLength = (380 - startID) * 4;
+	//memset((void*)copyStart, 0x005C76DA, copyLength);
+	for (int i = 0; i < copyLength; i = i + 4)
+	{
+		*(DWORD*)(copyStart + i) = 0x005C76DA;
+	}
+
+	// restore old protection
+	*/
+	VirtualProtect((void*)switchTable, 4 * 390, lpflOldProtect, &lpflOldProtect);
 }
 
 void CCore::ShutdownClient()

@@ -2802,241 +2802,194 @@ void CGame::ChangeMap(char map[], char* start)
 			}
 		}
 	}
-	_asm
+	DWORD returnValue;
+	DWORD localPed = (DWORD) g_CCore->GetGame()->GetLocalPED();
+
+	// if localPed is spawned
+	if (localPed)
 	{
-		sub ESP, 0x1000
-			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+		_asm {
+			MOV ECX, 0x006552A8; Game.006552A8
+				MOV EAX, 0x00447820
+				CALL EAX; Game.00447820
+			// clean remain 3 bytes in EAX 
+			AND EAX, 0xF
+			MOV returnValue,EAX
+		}
+		// if result is not null, then end the whole map changing
+		if (returnValue != NULL)
+		{
+			return;
+		}
+	}
+
+	// this snippet toggles something, it's probably 'isMapLoading' boolen or what
+	_asm {
+		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
 			PUSH 1
 			MOV EAX, 0x00425390
 			CALL EAX; Game.00425390
 			MOV ECX, EAX
 			MOV EAX, 0x005C8C70
-			CALL EAX; Game.005C8C70
-			MOV ECX, ESI
-			MOV EDX, 0x006F9258
-			LEA ESI, mapBuff
-			//mov ESI, map
-			MOV EAX, ESI;  VAR - mission name
-			SUB EDX, ESI; wtf ?
-		// --- following code copies mission name into 0x6F9258
-		jmp1:
-		MOV CL, BYTE PTR DS : [EAX];  copy mission string into global(? ) variable
-		MOV BYTE PTR DS : [EDX + EAX], CL
-		INC EAX
-		TEST CL, CL
-		JNZ SHORT jmp1
-		//---
-		LEA EAX, DWORD PTR DS : [ESI + 0x40];  mission frame
-		MOV EDX, 0x006F9234
-		MOV BYTE PTR DS : [0x6F9254], 0x1		// set something on - maybe map change = true ?
-		SUB EDX, EAX
-		
-		//--- copy string, this is the problem that we are not having anything at EAX address, just random bytes
-		//--- TODO fix it
-		jmp2:
-		MOV CL, BYTE PTR DS : [EAX]
-			MOV BYTE PTR DS : [EDX + EAX], CL
-			INC EAX
-			TEST CL, CL
-			JNZ SHORT jmp2
-			//---
-			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-			MOV EAX, 0x005C8680
-			CALL EAX; Game.005C8680
-			MOV EDI, 0x006F9234
-			OR ECX, 0xFFFFFFFF
-			XOR EAX, EAX
-			MOV EDX, DWORD PTR DS : [ESI + 0x80]		// again string ?
-			REPNE SCAS BYTE PTR ES : [EDI]
-			NOT ECX
-			DEC ECX
-			MOV DWORD PTR DS : [0x6F9578], EDX			// cmp string length of ESI+x040
-			// if string length = NULL
-			// TEST STUFF - JE end
-			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-			MOV EAX, 0x00425390
-			CALL EAX; Game.00425390		// return a class handle ?
-			MOV ECX, EAX
-			MOV EAX, 0x00425530
-			CALL EAX; Game.00425530 // ECX+x0E4
-			MOV ESI, EAX
-			TEST ESI, ESI		// if localplayer exists
-			JE SHORT jmp3
-			MOV ECX, ESI;  //ESI = localPlayer
-			mov EAX, 0x00425730
-			CALL EAX; Game.00425730;  IsLocalPlayerInCar
-		TEST EAX, EAX
-		// JE to JMP	---
-		JMP SHORT jmp4
-		MOV ECX, ESI;  CarCase:
-		MOV EAX, 0x00425730
-		CALL EAX; Game.00425730;  GetPlayerCar
-		MOV DWORD PTR DS : [0x6F9570], EAX;  save car
-		MOV DWORD PTR DS : [0x6F9574], ESI;  save localPlayer
-		JMP SHORT jmp3
-	jmp4:
-		//no car case
-		MOV DWORD PTR DS : [0x6F9570], ESI;  noCarCase:
-		MOV DWORD PTR DS : [0x6F9574], 0;  don't save a car
-		jmp3:
-		MOV ESI, 0x006F9570
-		// a loop which, while ESI >= 0x0006F9578
-		jmp6 :
-			 MOV EAX, DWORD PTR DS : [ESI];  some object
-			 TEST EAX, EAX
-			 JE SHORT jmp5
-			 MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-			 PUSH EAX	// push local player
-			 MOV EAX, 0x005FF5E0
-			 CALL EAX; Game.005FF5E0
-		jmp5:
-		ADD ESI, 0x4
-			CMP ESI, 0x006F9578		// compare if localplayer is type of
-			JL SHORT jmp6
-			MOV EAX, DWORD PTR DS : [0x6F9570]	// returns local player ?
-			TEST EAX, EAX
-			JE end
-			PUSH 0x3F800000
-			PUSH 0
-			PUSH 0
-			// WTF is ESP +0x478 ? might be dangerous, in stack history
-			// TODO explore it, replace with our vector
-			LEA ECX, DWORD PTR SS : [ESP + 0x478]
-			MOV EAX, 0x004026C0
-			CALL EAX; Game.004026C0;  make a 3D vector structure in stack(returns  pointer)
-			MOV ECX, DWORD PTR DS : [EAX]
-			PUSH 0
-			MOV DWORD PTR DS : [0x6F9210], ECX
-			MOV EDX, DWORD PTR DS : [EAX + 0x4]
-			MOV DWORD PTR DS : [0x6F9214], EDX
-			MOV EAX, DWORD PTR DS : [EAX + 0x8]
-			PUSH 0x3F800000
-			PUSH 0
-			LEA ECX, DWORD PTR SS : [ESP + 0x31C]
-			MOV DWORD PTR DS : [0x6F9218], EAX
-			MOV EAX, 0x004026C0
-			CALL EAX; Game.004026C0;  again some structure
-			MOV ECX, DWORD PTR DS : [EAX]
-			MOV DWORD PTR DS : [0x6F921C], ECX
-			MOV EDX, DWORD PTR DS : [EAX + 0x4]
-			MOV ECX, DWORD PTR DS : [0x6F9570];  getSomeCar
-			MOV DWORD PTR DS : [0x6F9220], EDX
-			MOV EAX, DWORD PTR DS : [EAX + 0x8]
-			MOV DWORD PTR DS : [0x6F9224], EAX
-			MOV EAX, 0x00425410
-			CALL EAX; Game.00425410;  GetFrame
-			MOV ECX, EAX
-			mov eax, 0x004F46C0
-			CALL EAX; Game.004F46C0
-			MOV ECX, 0x10
-			MOV ESI, EAX
-			LEA EDI, DWORD PTR SS : [ESP + 0x1A0]
-			PUSH 0x2
-			REP MOVS DWORD PTR ES : [EDI], DWORD PTR DS : [ESI]
-			PUSH 0x3
-			LEA ECX, DWORD PTR SS : [ESP + 0x1A8]
-			mov eax, 0x005A14F0
-			CALL EAX; Game.005A14F0
-			PUSH 0x1
-			PUSH 0x3
-			LEA ECX, DWORD PTR SS : [ESP + 0x1A8]
-			MOV DWORD PTR DS : [EAX], 0
-			MOV EAX, 0x005A14F0
-			CALL EAX; Game.005A14F0
-			PUSH 0x0
-			PUSH 0x3
-			LEA ECX, DWORD PTR SS : [ESP + 0x1A8]
-			MOV DWORD PTR DS : [EAX], 0
-			mov eax, 0x005A14F0
-			CALL EAX; Game.005A14F0
-			LEA ECX, DWORD PTR SS : [ESP + 0x1A0]
-			MOV DWORD PTR DS : [EAX], 0
-			PUSH ECX;
-		mov EAX, 0x006F9210
-			PUSH EAX; Game.006F9210
-			mov EAX, 0x00624310
-			CALL EAX; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
-				LEA EDX, DWORD PTR SS : [ESP + 0x1A0]		// mozno toto
-				PUSH EDX
-				PUSH 0x006F921C
-				mov EAX, 0x00624310
-				CALL EAX; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
-				//MOV ECX, DWORD PTR SS : [EBP + 0x44]
-				//MOV EAX, 0x00425410
-				//CALL EAX; Game.00425410
-				//MOV ECX, EAX					// bad EAX - wtf
-				//MOV EAX, 0x004F46C0
-			//	CALL EAX; Game.004F46C0
-				//MOV ECX, 0x10
-				//MOV ESI, EAX
-				LEA EDI, DWORD PTR SS : [ESP + 0x1A0]
-				PUSH 0x2
-				//REP MOVS DWORD PTR ES : [EDI], DWORD PTR DS : [ESI]
-				PUSH 0x3
-				LEA ECX, DWORD PTR SS : [ESP + 0x1A8]
-				MOV EAX, 0x005A14F0
-				CALL EAX; Game.005A14F0
-				PUSH 0x1
-				PUSH 0x3
-				LEA ECX, DWORD PTR SS : [ESP + 0x1A8]
-				MOV DWORD PTR DS : [EAX], 0
-				MOV EAX, 0x005A14F0
-				CALL EAX; Game.005A14F0
-				PUSH 0x0
-				PUSH 0x3
-				LEA ECX, DWORD PTR SS : [ESP + 0x1A8]
-				MOV DWORD PTR DS : [EAX], 0
-				MOV EAX, 0x005A14F0
-				CALL EAX; Game.005A14F0
-				MOV DWORD PTR DS : [EAX], 0
-				LEA EAX, DWORD PTR SS : [ESP + 0x1A0]
-				PUSH EAX; / Arg1
-				MOV EAX, 0x005C8030
-				CALL EAX; Game.005C8030; \Game.005C8030
-				LEA ECX, DWORD PTR SS : [ESP + 0x1A0]
-				PUSH ECX
-				PUSH 0x006F9210
-				mov EAX, 0x00624310
-				CALL EAX; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
-				LEA EDX, DWORD PTR SS : [ESP + 0x1A0]
-				PUSH EDX
-				PUSH 0x006F921C
-				mov EAX, 0x00624310
-				CALL EAX; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
-				//MOV ECX, DWORD PTR SS : [EBP + 0x44]
-				//MOV EAX, 0x00425410
-				//CALL EAX; Game.00425410
-				//MOV ECX, EAX
-				//MOV EAX, 0x004F46C0
-				//CALL EAX; Game.004F46C0	// omg zasa
-				//MOV ESI, EAX
-				MOV ECX, 0x10
-				LEA EDI, DWORD PTR SS : [ESP + 0x1A0]
-				LEA EAX, DWORD PTR SS : [ESP + 0x1A0]
-				//REP MOVS DWORD PTR ES : [EDI], DWORD PTR DS : [ESI]
-				//PUSH EAX; / Arg1
-				//MOV EAX, 0x005C8030
-				//CALL EAX; Game.005C8030; \Game.005C8030
-				MOV ECX, DWORD PTR DS : [0x6F9570]
-				MOV EAX, 0x00425410
-				CALL EAX; Game.00425410
-				MOV ECX, EAX
-				MOV EAX, 0x00425200
-				CALL EAX; Game.00425200
-		MOV ECX, DWORD PTR DS : [EAX]
-		MOV DWORD PTR DS : [0x6F9228], ECX
-		MOV EDX, DWORD PTR DS : [EAX + 0x4]
-		LEA ECX, DWORD PTR SS : [ESP + 0x1A0]
-		MOV DWORD PTR DS : [0x6F922C], EDX
-		MOV EAX, DWORD PTR DS : [EAX + 0x8]
-		PUSH ECX
-		PUSH 0x006F9228
-		MOV DWORD PTR DS : [0x6F9230], EAX
-		mov EAX, 0x00624310
-		CALL EAX; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
-	end:
+			CALL EAX; Game.005C8C70;  IMP - SetLoadingMap
+	}
 
-			add ESP, 0x1000
+	// now copy our map name to global string (0x6F9258)
+
+	unsigned int len = strlen(map);
+	memcpy((void*)0x6F9258, map, len);
+
+	// again, some bool toggling
+//	005BC7C1 | .C605 54926F00>MOV BYTE PTR DS : [6F9254], 1;  IMP - SetReloadingOn
+
+	// SetReloadingOn ???
+	*(byte*)(0x6F9254) = true;
+
+	// copy the name of object where our ped is spawned to global buffer
+	// NOTE: we don't have that name, we just pass either empty or 'none'
+	// TEST whether it works
+
+	sprintf((char*)0x6F9234, "none");
+
+	// UNKNOWN, but important
+	// it swaps value at ECX+0x70 with ..+0x74 and set 0x70 to 0
+	_asm {
+		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			MOV EAX, 0x005C8680
+			CALL EAX;  Game.005C8680;  IMP -
+	}
+
+	// set car's speed on spawn 
+	// not neccessary for us, what ever
+	*(float*)(0x6F9578) = 0.0f;
+
+	// objPool which saves handles of both localPed and his car for reloading 
+	DWORD* objPool = (DWORD*)0x6F9570;
+	// if localPed is spawned
+	if (localPed)
+	{
+		// check whether he is in car
+		DWORD car = (DWORD)*(DWORD*)(localPed + 0x98);
+		if (car)
+		{
+			// if car exists, then save it
+			objPool[0] = car;
+			objPool[1] = localPed;
+		}
+		else {
+			objPool[0] = localPed;
+			objPool[1] = NULL;
+		}
+	}
+
+	// loop through objects
+	for (int i = 0; i < 2; i++)
+	{
+		if (objPool[i])
+		{
+			DWORD obj = objPool[i];
+			// delete obj from object pool
+			_asm {
+				MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+				MOV EAX, obj
+				PUSH obj
+				MOV EAX, 0x005FF5E0
+				CALL EAX; Game.005FF5E0;  DeleteObjectFromPool
+			}
+		}
+	}
+	
+	/*
+			FOLLOWING CODE IS ABOUT MATRIX
+			it's preparing for matrix copying/multiplying/whatever
+			0x06F9210 is probably a kind of global Game matrix
+	*/
+	// regular 4x4 matrix
+	float matrix[16];
+	// vectors
+	Vector3D v1 = Vector3D(0.0f, 0.0f, 1.0f);
+	Vector3D v2 = Vector3D(0.0f, 1.0f, 1.0f);
+	// pointer to car's/player's frame area
+	DWORD frameExtra = (DWORD)(*(DWORD*)(objPool[0] + 0x68) + 0x10);
+
+	// copy vectors
+	memcpy((void*)0x6F9210, &v1, sizeof(Vector3D));
+	memcpy((void*)0x6F921C, &v2, sizeof(Vector3D));
+	// matrix is filled up with data from player's/car's frame
+	memcpy(matrix, (void*)frameExtra, 16 * sizeof(float));
+	// set 3 floats starting at offset 0x30 to NULL
+	memset(matrix + 0x30, NULL, sizeof(Vector3D));
+	// now build the matrix ???
+	_asm {
+		LEA ECX, matrix
+		PUSH ECX
+		PUSH 0x006F9210
+		MOV EAX, 0x00624310; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
+		CALL EAX
+		LEA EDX, matrix
+		PUSH EDX
+		PUSH 0x006F921C
+		MOV EAX, 0x00624310
+		CALL EAX
+	}
+
+	/*
+			DO THE SAME, but add another func
+			IDK what's going on
+	*/
+
+	// copy vectors
+	memcpy((void*)0x6F9210, &v1, sizeof(Vector3D));
+	memcpy((void*)0x6F921C, &v2, sizeof(Vector3D));
+	// matrix is filled up with data from player's/car's frame
+	memcpy(matrix, (void*)frameExtra, 16 * sizeof(float));
+	// set 3 floats starting at offset 0x30 to NULL
+	memset(matrix + 0x30, NULL, sizeof(Vector3D));
+	
+	// this function is elementary for map reloading, otherwise wrong position is set on spawn
+	_asm {
+		LEA EAX, matrix
+			PUSH EAX;
+		MOV EAX, 0x005C8030
+			CALL EAX;
+	}
+	// now build the matrix ???
+	_asm {
+		LEA ECX, matrix
+			PUSH ECX
+			PUSH 0x006F9210
+			MOV EAX, 0x00624310; <JMP.&ls3df. ? ? XS_vector@@QAGAAU0@AB>
+			CALL EAX
+			LEA EDX, matrix
+			PUSH EDX
+			PUSH 0x006F921C
+			MOV EAX, 0x00624310
+			CALL EAX
+	}
+
+	/*
+		AGAIN
+		TODO - check whether it's neccessary to keep this code, maybe it's useless to run it again
+	*/
+	memcpy(matrix, (void*)frameExtra, 16 * sizeof(float));
+	// this function is elementary for map reloading, otherwise wrong position is set on spawn
+	_asm {
+		LEA EAX, matrix
+			PUSH EAX;
+		MOV EAX, 0x005C8030
+			CALL EAX;
+	}
+
+	DWORD position = (DWORD)(*(DWORD*)(objPool[0] + 0x68) + 0x40);
+	memcpy((void*)0x6F9228, (void*)position, sizeof(Vector3D));
+
+	// again, something with matrixes
+	_asm {
+		LEA ECX, matrix
+			PUSH ECX
+			PUSH 0x006F9228
+			MOV EAX, 0x00624310
+			CALL EAX;  0x00624310
 	}
 }
 
