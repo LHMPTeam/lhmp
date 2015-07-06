@@ -347,13 +347,13 @@ void OnShoot(DWORD testPed, float x, float y, float z)
 		sprintf(buff, "On Shot: %f %f %f", x, y, z);
 		g_CCore->GetLog()->AddLog(buff);
 
+		Vector3D position = Vector3D(x, y, z);
+
 		RakNet::BitStream bsOut;
 		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_SHOOT);
 		bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
-		bsOut.Write(x);
-		bsOut.Write(y);
-		bsOut.Write(z);
+		bsOut.Write(position);
 
 		PED* ped =(PED*) g_CCore->GetLocalPlayer()->GetBase();
 		bsOut.Write(ped->inventary.slot[0].weaponType);
@@ -1990,8 +1990,6 @@ void SetHooks()
 	//---------------------- Fix deleting car
 
 	Tools::InstallJmpHook(0x005D4AA1, (DWORD)&Fix_CarDeleting);
-
-
 	Tools::InstallJmpHook(0x0048DC7E, (DWORD)&Fix_CarDeletingSecond);
 
 	//Veh Engine Start
@@ -2129,7 +2127,7 @@ void SetHooks()
 	/*Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoad);
 	Tools::InstallJmpHook(0x005AF86F, (DWORD)&OnScriptDeload);	// fix for some Win7 PCs (e.g. Robville one)
 	*/
-	Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoadFinal);
+	//Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoadFinal);
 
 	Tools::InstallJmpHook(0x005F93C4, (DWORD)&Hook_Respawn01);	
 

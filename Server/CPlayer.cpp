@@ -370,7 +370,7 @@ void	CPlayer::OnSwitchWeapon(int wepID, bool shouldSendHim)
 		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, MEDIUM_PRIORITY, RELIABLE, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), true);	// else, when it arrives from player
 }
 
-void	CPlayer::OnPlayerShoot(float x,float y,float z, bool shouldSendHim)
+void	CPlayer::OnPlayerShoot(Vector3D position, bool shouldSendHim)
 {
 	int ID = g_CCore->GetPlayerPool()->GetID(this);
 	this->OnShoot();
@@ -378,9 +378,7 @@ void	CPlayer::OnPlayerShoot(float x,float y,float z, bool shouldSendHim)
 	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((MessageID)LHMP_PLAYER_SHOOT);
 	bsOut.Write(ID);
-	bsOut.Write(x);
-	bsOut.Write(y);
-	bsOut.Write(z);
+	bsOut.Write(position);
 	bsOut.Write(this->GetCurrentWeapon());
 	if (shouldSendHim)
 		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_SYSTEM_ADDRESS, true);	// send this message everybody including this player - when using Squirrel

@@ -323,6 +323,39 @@ void CChat::DoCommand(char str[])
 		sprintf(buffer, "PlayerPos: [X: %f] [Y: %f] [Z: %f]", pos.x,pos.y,pos.z);
 		g_CCore->GetChat()->AddMessage(buffer);
 	}
+	else if (strcmp(command, "active") == 0)
+	{
+		DWORD ped = g_CCore->GetLocalPlayer()->GetEntity();
+		_asm
+		{
+			MOV ECX, ped
+			PUSH 0
+			MOV EAX, 0x0044C750
+			call EAX
+		}
+	}
+	else if (strcmp(command, "pasive") == 0)
+	{
+		DWORD ped = g_CCore->GetLocalPlayer()->GetEntity();
+		_asm
+		{
+			MOV ECX, ped
+				PUSH 1
+				MOV EAX, 0x0044C750
+				call EAX
+		}
+	}
+	else if (strcmp(command, "pasiveoff") == 0)
+	{
+		DWORD ped = g_CCore->GetLocalPlayer()->GetEntity();
+		_asm
+		{
+			MOV ECX, ped
+				PUSH 2
+				MOV EAX, 0x0044C750
+				call EAX
+		}
+	}
 	else if (strcmp(command, "savepos") == 0) {
 		char buffer[255] = "";
 		Vector3D pos = g_CCore->GetLocalPlayer()->GetLocalPos();
