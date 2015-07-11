@@ -58,7 +58,7 @@ public:
 	void	OnAddWeapon(int,int,int,bool = false);
 	void	OnDeleteWeapon(int, bool = false);
 	void	OnSwitchWeapon(int, bool = false);
-	void	OnPlayerShoot(float, float, float, bool = false);
+	void	OnPlayerShoot(Vector3D position, bool = false);
 	void	OnPlayerThrowGranade(Vector3D, bool = false);
 
 	void	net_ChangeNickColor(unsigned int color);
