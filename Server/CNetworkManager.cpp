@@ -521,14 +521,12 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		break;
 		case LHMP_PLAYER_SHOOT:
 		{
-			float x, y, z;
+			Vector3D position;
 			int ID;
 			int weapon;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			bsIn.Read(ID);
-			bsIn.Read(x);
-			bsIn.Read(y);
-			bsIn.Read(z);
+			bsIn.Read(position);
 			bsIn.Read(weapon);
 
 			ID = GetIDFromSystemAddress(packet->systemAddress);
@@ -537,7 +535,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			if (player != NULL)
 			{
 				player->SetCurrentWeapon(weapon);
-				player->OnPlayerShoot(x, y, z);
+				player->OnPlayerShoot(position);
 			}
 
 		}
