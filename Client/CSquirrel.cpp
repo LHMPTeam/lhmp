@@ -1291,7 +1291,7 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	RegisterFunction(pVM, "getRotation", (SQFUNCTION)sq_getRotation, 1, ".");
 
 	// Play anim
-	RegisterFunction(pVM, "playAnimation", (SQFUNCTION)sq_playAnimation, 1, ".n");
+	RegisterFunction(pVM, "playAnimation", (SQFUNCTION)sq_playAnimation, 2, ".n");
 
 	// set localplayer skin
 	// Params: skinID
