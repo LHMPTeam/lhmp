@@ -11,7 +11,6 @@ typedef unsigned long DWORD;
 #include <unistd.h>
 #include <time.h>
 #include <pthread.h>
-pthread_t tid;
 static void Sleep(unsigned int ms)
 {
 	//usleep(ms);

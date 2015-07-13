@@ -38,7 +38,7 @@ unsigned int GetTickCount()
 #endif
 #include <stdio.h>
 
-#include "CLHMPQuery.h"
+#include "clhmpquery.h"
 
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")

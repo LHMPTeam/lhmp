@@ -1,5 +1,4 @@
 #include "CCore.h"
-#include "CTCP.h"
 #include <sys/types.h>
 #include <stdio.h>
 #include "TCPInterface.h"
