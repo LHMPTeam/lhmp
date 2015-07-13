@@ -28,7 +28,7 @@ void CNametags::Tick()
 			//--------------------------------------------------------
 
 			// check whether he is close to local player
-			if (Tools::GetDistanceBetween3DPointsEx(position, playerPosition, 60.0f) < 2)
+			if (Tools::GetDistanceBetween3DPointsEx(position, playerPosition, 80.0f) < 2)
 			{
 				// ok, remote player is close enough
 				// now check whether his nametag texture exists - TODO
@@ -36,10 +36,12 @@ void CNametags::Tick()
 				//if (ped->nametag == NULL)
 				//{
 				float distance = Tools::GetDistanceBetween3DPoints(playerPosition, g_CCore->GetGame()->GetCameraPos());
-				float maxDistance = 30;                
+				float maxDistance = 50;                
 				
 				if (ped->InCar != -1) {
-					maxDistance = 60;
+					maxDistance = 80;
+
+					playerPosition.y += 0.3f;
 				}
 
 				int alpha = 255 * (1.25 - (distance / maxDistance));
