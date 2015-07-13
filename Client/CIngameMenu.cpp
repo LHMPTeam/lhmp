@@ -52,7 +52,7 @@ void CIngameMenu::Render()
 	g_CCore->GetGraphics()->DrawTextA("MP", 140, screen.y - 260, 0xffff0000, false, ahojmoj);
 
 
-	g_CCore->GetGraphics()->DrawTextA("Version 0.1", 250, screen.y - 212, 0xffffffff, false);
+	g_CCore->GetGraphics()->DrawTextA("Version 1.0", 250, screen.y - 212, 0xffffffff, false);
 
 	if (this->itemSelect == 0)
 	{
@@ -84,10 +84,10 @@ void CIngameMenu::Render()
 	//g_CCore->GetGraphics()->DrawTextA(buff, screen.x - 250, 20, 0xffffffff, false, menuitem);
 
 
-	g_CCore->GetGraphics()->DrawTextA(this->ZeroFormat(timeinfo->tm_hour, buff), screen.x - 250, 20, 0xffffffff, false, menuitem);
-	g_CCore->GetGraphics()->DrawTextA(":", screen.x - 210, 20, 0xffff0000, false, menuitem);
-	g_CCore->GetGraphics()->DrawTextA(this->ZeroFormat(timeinfo->tm_min, buff), screen.x - 200, 20, 0xffffffff, false, menuitem);
-	g_CCore->GetGraphics()->DrawTextA(sec, screen.x - 160, 32, 0xffffffff, false, clock);
+	g_CCore->GetGraphics()->DrawTextA(this->ZeroFormat(timeinfo->tm_hour, buff), screen.x - 150, 20, 0xffffffff, false, menuitem);
+	g_CCore->GetGraphics()->DrawTextA(":", screen.x - 110, 20, 0xffff0000, false, menuitem);
+	g_CCore->GetGraphics()->DrawTextA(this->ZeroFormat(timeinfo->tm_min, buff), screen.x - 100, 20, 0xffffffff, false, menuitem);
+	g_CCore->GetGraphics()->DrawTextA(sec, screen.x - 60, 32, 0xffffffff, false, clock);
 	//g_CCore->GetGraphics()->DrawTextA(sec, screen.x - 160, 32, 0xffffffff, false, clock);
 
 	// news
@@ -102,9 +102,9 @@ void CIngameMenu::Render()
 			memcpy(buff, start, pch - start);
 			buff[pch - start] = 0x0;
 			if (count % 2 == 0)
-				g_CCore->GetGraphics()->DrawTextA(buff, screen.x - 250, 100+(count*20), 0xffffffff, false);
+				g_CCore->GetGraphics()->DrawTextA(buff, 50, 50+(count*20), 0xffffffff, false);
 			else
-				g_CCore->GetGraphics()->DrawTextA(buff, screen.x - 250, 100 + (count * 20), 0xffff0000, false);
+				g_CCore->GetGraphics()->DrawTextA(buff, 50, 50 + (count * 20), 0xffff0000, false);
 			start = ++pch;
 			count++;
 		}
