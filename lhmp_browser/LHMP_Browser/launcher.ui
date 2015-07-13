@@ -226,6 +226,7 @@ QToolTip {
       <string notr="true">#frame_2 {
 	background: url(:/data/bg1.png);
 
+	border: 0;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
 }</string>
@@ -334,7 +335,9 @@ QToolTip {
        </property>
        <property name="styleSheet">
         <string notr="true">#frame_9 {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 50), stop:1 rgba(0, 0, 0, 0))
+	background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 50), stop:1 rgba(0, 0, 0, 0));
+
+	border: 0;
 }</string>
        </property>
        <property name="frameShape">
@@ -372,14 +375,15 @@ padding-top: -2px;</string>
        <widget class="QFrame" name="frame_10">
         <property name="geometry">
          <rect>
-          <x>5</x>
-          <y>5</y>
-          <width>20</width>
+          <x>6</x>
+          <y>6</y>
+          <width>18</width>
           <height>18</height>
          </rect>
         </property>
         <property name="styleSheet">
-         <string notr="true">background: url(:/data/icon.png)</string>
+         <string notr="true">background: url(:/data/icon.png);
+border: 0;</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -414,6 +418,9 @@ border: 0;</string>
           <height>31</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">border: 0;</string>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -435,6 +442,8 @@ border: 0;</string>
       <property name="styleSheet">
        <string notr="true">#frame_3 {
 	background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.006, stop:0 rgba(0, 0, 0, 200), stop:0.943182 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 97));
+
+	border: 0;
 }</string>
       </property>
       <property name="frameShape">
@@ -826,7 +835,8 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.002, stop:0 rgba(
       </property>
       <property name="styleSheet">
        <string notr="true">background: url(:/data/bg2.png);
-background-repeat: no-repeat;</string>
+background-repeat: no-repeat;
+border: 0;</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -1137,7 +1147,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <number>8</number>
        </property>
        <attribute name="horizontalHeaderVisible">
-        <bool>true</bool>
+        <bool>false</bool>
        </attribute>
        <attribute name="horizontalHeaderCascadingSectionResizes">
         <bool>false</bool>
@@ -1248,6 +1258,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        <property name="styleSheet">
         <string notr="true">#frame_5 {
 	background: rgba(0, 0, 0, 50);
+
+	border: 0;
 }</string>
        </property>
        <property name="frameShape">
@@ -1267,6 +1279,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         </property>
         <property name="styleSheet">
          <string notr="true">#frame_13 {
+	border: 0;
 	border-bottom: 1px solid rgba(0, 0, 0, 150);
 
 	background: url(:/data/unknown.jpg);
@@ -1444,7 +1457,9 @@ border: 0;</string>
           </rect>
          </property>
          <property name="styleSheet">
-          <string notr="true">background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 175), stop:1 rgba(0, 0, 0, 0));</string>
+          <string notr="true">background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 175), stop:1 rgba(0, 0, 0, 0));
+
+border: 0;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
@@ -2155,6 +2170,9 @@ QTableWidget::item:focus {
         <property name="text">
          <string>Join Game</string>
         </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -2378,6 +2396,7 @@ color: #fff;</string>
       <string notr="true">#frame_11 {
 	background-color: qlineargradient(spread:pad, x1:0.006, y1:1, x2:0, y2:0, stop:0.0113636 rgba(100, 0, 0, 190), stop:1 rgba(200, 0, 0, 190));
 
+	border: 0;
 	border-top: 1px solid rgba(255, 67, 70, 150);
 	border-bottom: 1px solid rgb(0, 0, 0);
 }</string>
@@ -2398,7 +2417,9 @@ color: #fff;</string>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 100), stop:0.568182 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 100))</string>
+       <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 100), stop:0.568182 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 100));
+
+border: 0;</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>

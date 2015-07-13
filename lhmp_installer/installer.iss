@@ -26,6 +26,8 @@ OutputBaseFilename=lhmp_setup
 SetupIconFile=D:\DEV\LHMP\Repository\lhmp_installer\icon.ico
 Compression=lzma
 SolidCompression=yes
+WizardImageFile=left.bmp
+WizardSmallImageFile=right.bmp
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

@@ -492,7 +492,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
         if (shouldUpdate == 1) {
             ui->label_3->setText("You are running the latest version.");
         } else {
-            ui->label_3->setText("New update available!");
+            ui->label_3->setText("You are running an outdated version.");
         }
     }
 
