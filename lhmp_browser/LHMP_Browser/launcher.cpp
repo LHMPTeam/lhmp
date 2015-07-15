@@ -288,13 +288,15 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
             if (launcherVersion != version) {
                 QMessageBox::StandardButton reply;
-                reply = QMessageBox::question(this, "New update available!", "There is a new update available!<br/><br/>Do you want to download it and update your installation?", QMessageBox::Yes|QMessageBox::No);
+                reply = QMessageBox::question(this, "New update available", "There is a new update available!<br/><br/>Do you want to download it and update your installation?", QMessageBox::Yes|QMessageBox::No);
 
                 if (reply == QMessageBox::Yes) {
                     // Self update
                     manager->get(QNetworkRequest(QString("%1setup.exe").arg(filesURL)));
 
                     ui->label_3->setText("Downloading new launcher update...");
+                } else {
+                    ui->label_3->setText("You are running an outdated version.");
                 }
             } else {
                 ui->label_3->setText("You are running the latest version.");
@@ -327,7 +329,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
                 QString location = QString("%1%2").arg(path).arg(name);
 
-                if (name == "loader.exe" || name == "Game.exe" || name == "LS3DF.dll") {
+                if (name == "loader.exe" || name == "Game.exe" || name == "LS3DF.dll" || name == "CrashHandler.exe") {
                     location = QString("%1/%2").arg(mafiaPath).arg(name);
                 }
 
@@ -339,7 +341,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
                 if (hashLocal.isEmpty() || hashLocal != hash) {
                     if (shouldUpdate == -1) {
                         QMessageBox::StandardButton reply;
-                        reply = QMessageBox::question(this, "New update available!", "There is a new update available!<br/><br/>Do you want to download it and update your installation?", QMessageBox::Yes|QMessageBox::No);
+                        reply = QMessageBox::question(this, "New update available", "There is a new update available!<br/><br/>Do you want to download it and update your installation?", QMessageBox::Yes|QMessageBox::No);
 
                         if (reply == QMessageBox::Yes) {
                             shouldUpdate = 1;
@@ -375,7 +377,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
             // If launcher
             if (fileName == "setup.exe") {
-                QString path = QString("%1/setup.exe").arg(QDir::currentPath());
+                QString path = QString("%1/setup.exe").arg(QDir::tempPath());
 
                 QFile *file = new QFile(path);
 
@@ -393,7 +395,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
                 QProcess *process = new QProcess();
 
-                process->startDetached(QString("%1/setup.exe").arg(path));
+                process->startDetached(QString("%1/setup.exe").arg(QDir::tempPath()));
 
                 exit(0);
             } else if (fileName == "Game.exe") {
