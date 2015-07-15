@@ -916,8 +916,6 @@ void CGraphics::Clear(int x, int y, int w, int h, D3DCOLOR color)
 
 void CGraphics::RenderMap()
 {
-	if (!g_CCore->GetGame()->IsTabMapEnabled())
-		return;
 	if (g_CCore->m_bIsRespawning)
 		return;
 	renderMap = 0;
