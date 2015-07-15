@@ -334,6 +334,8 @@ void Launcher::replyFinished(QNetworkReply *reply)
                 hashLocal = FileChecksum(location);
 
                 // Download and update
+                qDebug() << hashLocal.isEmpty() << (hashLocal != hash);
+
                 if (hashLocal.isEmpty() || hashLocal != hash) {
                     if (shouldUpdate == -1) {
                         QMessageBox::StandardButton reply;
@@ -491,7 +493,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
         if (shouldUpdate == 1) {
             ui->label_3->setText("You are running the latest version.");
-        } else {
+        } else if (shouldUpdate == 0) {
             ui->label_3->setText("You are running an outdated version.");
         }
     }
