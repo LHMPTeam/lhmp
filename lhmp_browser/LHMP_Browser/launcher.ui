@@ -727,6 +727,17 @@ border: 0;</string>
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
+      <widget class="QWidget" name="gridLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>480</x>
+         <y>0</y>
+         <width>160</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout"/>
+      </widget>
      </widget>
     </widget>
     <widget class="QFrame" name="frame_4">

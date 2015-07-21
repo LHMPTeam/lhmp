@@ -143,6 +143,7 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent), ui(new Ui::Launcher) 
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
     ui->tableWidget->horizontalHeader()->setHighlightSections(false);
+    ui->tableWidget->horizontalHeader()->setVisible(true);
 
     ui->tableWidget->setColumnHidden(4, true);
     ui->tableWidget->setColumnHidden(5, true);
@@ -880,7 +881,9 @@ void Launcher::ShowServerInfo() {
                 ui->tableWidget_2->setItem(rowCount + i, 1, new QTableWidgetItem(playersListSplit[i]));
             };
 
-            if (playersListSplit.count()) {
+            qDebug() << playersListSplit.count();
+
+            if (playersListSplit.count() <= 1) {
                 ui->tableWidget_2->setColumnWidth(0, 150);
 
                 ui->tableWidget_2->insertRow(rowCount);
@@ -919,7 +922,7 @@ void Launcher::ShowServerInfo() {
         ui->label_22->setText(ping);
         ui->label_23->setText(ping);
 
-        if (map == "freeride" || map.contains("mesto", Qt::CaseInsensitive) || map == "EXTREME" || map == "mise03-morello") {
+        if (map.contains("freeride", Qt::CaseInsensitive) || map.contains("mesto", Qt::CaseInsensitive) || map == "EXTREME" || map == "mise03-morello") {
             ui->frame_13->setStyleSheet("#frame_13 {border-bottom: 1px solid rgba(0, 0, 0, 150); background: url(:/data/city.png);}");
 
             ui->label_6->setText("Lost Heaven (City)");

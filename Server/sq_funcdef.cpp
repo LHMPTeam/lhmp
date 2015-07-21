@@ -861,6 +861,9 @@ SQInteger sq_getDistanceBetween3DPoints(SQVM *vm)
 			+ (pointA.z - pointB.z)*(pointA.z - pointB.z);
 	
 	c = sqrt(abs(c));
+
+	if (c != c) c = 0;
+
 	sq_pushfloat(vm,c);
 	return 1;
 }
@@ -876,6 +879,9 @@ SQInteger sq_getDistanceBetween2DPoints(SQVM *vm)
 	float c = (pointAx - pointBx)*(pointAx - pointBx) + (pointAy - pointBx)*(pointAy - pointBy);
 
 	c = sqrt(abs(c));
+
+	if (c != c) c = 0;
+
 	sq_pushfloat(vm, c);
 	return 1;
 }
