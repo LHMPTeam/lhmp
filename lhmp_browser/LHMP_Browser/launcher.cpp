@@ -1,6 +1,7 @@
 #include "launcher.h"
 #include "ui_launcher.h"
 #include "CLHMPQuery.h"
+#include "settings.h"
 
 struct ServerInfo {
     int ID;
@@ -836,6 +837,39 @@ bool Launcher::JoinGame(QString address, QString password) {
         process->start(pathLoader, params);
 
         qDebug() << process;
+
+        // Start
+        QSettings settings("Lost Heaven Multiplayer", "Launcher");
+
+        int screen = settings.value("screen", 0).toInt();
+        if (screen != 1) return ok;
+
+        HWND hWnd = NULL;
+
+        int loops = 0;
+
+        while (hWnd == NULL && loops < 10000) {
+            hWnd = FindWindow(NULL, TEXT("Mafia"));
+
+            if (hWnd == NULL) {
+                hWnd = FindWindow(NULL, TEXT("Mafia ..zzZZ"));
+            }
+
+            Sleep(1);
+
+            loops++;
+        }
+
+        //Sleep(1000);
+
+        LONG style = GetWindowLong(hWnd, GWL_STYLE);
+        style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
+        SetWindowLong(hWnd, GWL_STYLE, style);
+
+        style = GetWindowLong(hWnd, GWL_EXSTYLE);
+        style &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+        SetWindowLong(hWnd, GWL_EXSTYLE, style);
+        SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED | SWP_SHOWWINDOW);
     } else {
         QMessageBox::critical(this, tr("Lost Heaven Multiplayer"), tr("Unable to launch Mafia and/or launcher executable."));
     }
@@ -986,4 +1020,11 @@ void Launcher::on_label_21_linkActivated(const QString &link)
     }
 
     ShowServerInfo();
+}
+
+void Launcher::on_pushButton_7_clicked()
+{
+    Settings settings;
+    settings.setModal(true);
+    settings.exec();
 }

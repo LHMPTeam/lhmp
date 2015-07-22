@@ -101,7 +101,7 @@ static void squirrel_error_function(HSQUIRRELVM sqvm, const SQChar *format, ...)
 
 void CSquirrel::LoadClientScript(char* scriptname)
 {
-	g_CCore->GetChat()->AddMessage(scriptname);
+	//g_CCore->GetChat()->AddMessage(scriptname);
 	// Need to get the correct filename as all client files 
 	// from server are stored with their MD5 checksum as name
 	char* realName = g_CCore->GetFileSystem()->GetFileAliasFromName(scriptname);
@@ -109,11 +109,12 @@ void CSquirrel::LoadClientScript(char* scriptname)
 	char szScriptPath[512];
 	sprintf(szScriptPath, "lhmp/files/%s", realName);
 
-	char buff[300];
+	/*char buff[300];
 	sprintf(buff, "Script: %s", szScriptPath);
-	g_CCore->GetChat()->AddMessage(buff);
+	//g_CCore->GetChat()->AddMessage(buff);
+	*/
 
-	g_CCore->GetChat()->AddMessage("Adding script 1...");
+	//g_CCore->GetChat()->AddMessage("Adding script 1...");
 	HSQUIRRELVM sqvm = sq_open(1024);
 	SQVM * pVM = sqvm;
 
@@ -123,7 +124,7 @@ void CSquirrel::LoadClientScript(char* scriptname)
 	sq_seterrorhandler(sqvm); // NEW!
 
 	//const SQChar *program = "::print(\"Hello World, I'm back!\\n\");::print(\"Fuck this\");";
-	const SQChar *program = "function onRender(){ drawText(\"This text is rendered with Squirrel :)\", 300, 300, COLOR_RED);}";
+	//const SQChar *program = "function onRender(){ drawText(\"This text is rendered with Squirrel :)\", 300, 300, COLOR_RED);}";
 	//const SQChar *program = "function onRender(){ ::print(\"This text is rendered with Squirrel :)\");}";
 	/*if (SQ_FAILED(sq_compilebuffer(sqvm, program,
 		sizeof(SQChar)* strlen(program),
@@ -155,7 +156,7 @@ void CSquirrel::LoadClientScript(char* scriptname)
 		return;
 	}
 
-	g_CCore->GetChat()->AddMessage("Add script");
+	//g_CCore->GetChat()->AddMessage("Add script");
 	// add script into pool
 	//this->p_scriptPool.push_back(CScript(pVM));
 
@@ -163,12 +164,12 @@ void CSquirrel::LoadClientScript(char* scriptname)
 	{
 		if (this->p_scriptPool[i] == NULL)
 		{
-			g_CCore->GetChat()->AddMessage("#00adefSlot founded !");
+			//g_CCore->GetChat()->AddMessage("#00adefSlot founded !");
 			this->p_scriptPool[i] = new CScript(pVM, scriptname);
 			break;
 		}
 	}
-	g_CCore->GetChat()->AddMessage("#ff0000Script loaded !");
+	//g_CCore->GetChat()->AddMessage("#ff0000Script loaded !");
 
 	this->onSpawn();
 
@@ -465,9 +466,9 @@ void CSquirrel::onSpawn()
 
 void CSquirrel::callClientFunc(char* scriptname, char* scriptfunc, BitStream* message)
 {
-	char buff[500];
+	/*char buff[500];
 	sprintf(buff, "callClientFunc[%s][%s]", scriptname, scriptfunc);
-	g_CCore->GetChat()->AddMessage(buff);
+	g_CCore->GetChat()->AddMessage(buff);*/
 
 	CScript* pointer = NULL;
 	for (int i = 0; i < 100; i++)
@@ -966,9 +967,11 @@ SQInteger sq_createFont(SQVM *vm)
 
 	CSQFont* font = g_CCore->GetSquirrelFonts()->createFont((char*)name_font,size);
 	
-	char buff[500];
+	/*char buff[500];
 	sprintf(buff, "createFont: %p", font);
 	g_CCore->GetChat()->AddMessage(buff);
+	*/
+
 	sq_pushuserpointer(vm, font);
 	return 1;
 }

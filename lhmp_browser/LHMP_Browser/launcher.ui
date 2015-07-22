@@ -727,17 +727,6 @@ border: 0;</string>
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="QWidget" name="gridLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>480</x>
-         <y>0</y>
-         <width>160</width>
-         <height>80</height>
-        </rect>
-       </property>
-       <layout class="QGridLayout" name="gridLayout"/>
-      </widget>
      </widget>
     </widget>
     <widget class="QFrame" name="frame_4">
@@ -2391,6 +2380,40 @@ color: #fff;</string>
       </property>
       <property name="text">
        <string>Server Information</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="geometry">
+       <rect>
+        <x>850</x>
+        <y>20</y>
+        <width>16</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="palette">
+       <palette>
+        <active/>
+        <inactive/>
+        <disabled/>
+       </palette>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Settings&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">#pushButton_7 {
+	background: url(:/data/settings.png);
+	
+	border: 0;
+}
+
+#pushButton_7:hover {
+	background: url(:/data/settings_hover.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>

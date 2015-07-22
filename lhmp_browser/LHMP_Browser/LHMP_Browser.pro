@@ -16,13 +16,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         launcher.cpp \
     clhmpquery.cpp \
-    udpwrapper.cpp
+    udpwrapper.cpp \
+    settings.cpp
 
 HEADERS  += launcher.h \
     clhmpquery.h \
-    udpwrapper.h
+    udpwrapper.h \
+    settings.h
 
-FORMS    += launcher.ui
+FORMS    += launcher.ui \
+    settings.ui
 
 RESOURCES += \
     resources.qrc
@@ -33,3 +36,6 @@ DISTFILES += \
     launcher.rc
 
 RC_FILE = launcher.rc
+
+win32:LIBS += -luser32
+QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01

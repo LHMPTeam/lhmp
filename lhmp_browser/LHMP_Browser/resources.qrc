@@ -21,5 +21,7 @@
         <file>data/bg3.png</file>
         <file>data/bg1.png</file>
         <file>data/unknown.png</file>
+        <file>data/settings.png</file>
+        <file>data/settings_hover.png</file>
     </qresource>
 </RCC>
