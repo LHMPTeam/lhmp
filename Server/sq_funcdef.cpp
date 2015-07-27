@@ -266,6 +266,7 @@ SQInteger sq_sendPlayerMessage(SQVM *vm)
 	BitStream bsOut;
 	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((MessageID)LHMP_PLAYER_CHAT_MESSAGE);
+	bsOut.Write((unsigned short)strlen(pMessage));
 	bsOut.Write(pMessage);
 	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID), false);
 	return 1;
@@ -277,6 +278,7 @@ SQInteger sq_sendAllMessage(SQVM *vm)
 	BitStream bsOut;
 	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((MessageID)LHMP_PLAYER_CHAT_MESSAGE);
+	bsOut.Write((unsigned short)strlen(pMessage));
 	bsOut.Write(pMessage);
 	g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 	return 1;

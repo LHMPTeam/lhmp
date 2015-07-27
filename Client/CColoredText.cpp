@@ -192,49 +192,21 @@ __declspec(noinline) CColoredText* CColoredText::SplitText(unsigned int width, b
 					char*		textEnd = NULL;
 					int len = strlen(point->text);
 					textEnd = point->text;
-					for (int i = len - 1; i >= 0;i--)
-					{
-						currentWidth += g_CCore->GetGraphics()->GetLetterWidth(point->text[i]);
-						if (currentWidth > wantedWidth)
-						{
-							textEnd = point->text+i;
-							break;
-						}
-					}
-					// now lets find space before and after (let's find a word)
-					int wordLen = textEnd - point->text;
-					char* word = NULL;
-					for (int i = wordLen - 1; i >= 0; i--)
+
+					int enoughCharacters = g_CCore->GetGraphics()->GetFont()->GetStrlenForWidth(width - desiredLength, point->text);
+
+					for (int i = enoughCharacters; i > 0; i--)
 					{
 						if (point->text[i] == ' ')
 						{
-							word = point->text+i+1;
+							enoughCharacters = i;
 							break;
 						}
 					}
-					if (word != NULL)
-					{
-						char* nextWord = strchr(word,' ');
-						unsigned int anotherWidth = 0;
-						if (nextWord != NULL)
-						{
-							wordLen = nextWord - word;
-						}
-						else {
-							wordLen = strlen(word);
-						}
-						currentWidth = 0;
-							
-						for (int i = 0; i < wordLen; i++)
-						{
-							anotherWidth += g_CCore->GetGraphics()->GetLetterWidth(word[i]);
-							currentWidth = anotherWidth;
-						}
-						if (currentWidth < width)
-						{
-							textEnd = word;
-						}
-					}
+
+					textEnd = point->text + enoughCharacters;
+
+
 
 					// now we must do something :D
 					// TODO: split block, create new instance, push blocks to new instance
@@ -245,7 +217,6 @@ __declspec(noinline) CColoredText* CColoredText::SplitText(unsigned int width, b
 						CColoredStruct* block = new CColoredStruct();
 						int newLen = strlen(textEnd);
 						block->text = new char[newLen + 1];
-						//strncpy(block->text, textEnd,newLen);
 						strcpy(block->text, textEnd);
 						block->color = point->color;
 						block->width = currentWidth;

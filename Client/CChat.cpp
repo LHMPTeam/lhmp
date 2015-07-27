@@ -16,7 +16,7 @@ extern CCore *g_CCore;
 
 CChat::CChat()
 {
-	CHAT_WIDTH				=	370;
+	CHAT_WIDTH				=	0;
 	CHAT_MAX_LINES			=	100;
 	CHAT_LINES_PER_RENDER	=	12;
 	CHAT_POINTER			=	0;
@@ -61,10 +61,9 @@ void CChat::Render(IDirect3DDevice8* pInterface,LPD3DXFONT font)
 	}
 }
 
+// add message process and add message into chat log
 void CChat::AddMessage(std::string message)
 {
-	//--- get num of chat messages, set reRender on
-
 	if (message.length() > 0)
 	{
 		if (elementCount > (unsigned int) CHAT_LINES_PER_RENDER-1)
@@ -77,8 +76,8 @@ void CChat::AddMessage(std::string message)
 		this->ChatPoolStart = newStack;
 		elementCount++;
 	
-		CColoredText* nextText = NULL;
-		while (nextText = newText->SplitText(CHAT_WIDTH, true))
+		CColoredText* nextText = newText->SplitText(CHAT_WIDTH - 10, true);
+		while (nextText != NULL)
 		{
 			if (nextText->GetElementCount() == 0)
 			{
@@ -92,8 +91,11 @@ void CChat::AddMessage(std::string message)
 				newStack->text = nextText;
 				newStack->next = this->ChatPoolStart;
 				this->ChatPoolStart = newStack;
+				// this line is important
+				newText = nextText;
 				elementCount++;
 			}
+			nextText = newText->SplitText(CHAT_WIDTH - 10, true);
 		}
 		shouldReRender = true;
 	}
@@ -130,11 +132,10 @@ void CChat::DoneMessage()
 		} else
 		{
 			RakNet::BitStream bsOut;
-			char buffer[255];
-			sprintf_s(buffer,"%s",ChatMessage.c_str());
 			bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 			bsOut.Write((RakNet::MessageID)LHMP_PLAYER_CHAT_MESSAGE);
-			bsOut.Write(buffer);
+			bsOut.Write((unsigned short)ChatMessage.length());
+			bsOut.Write(ChatMessage.c_str());
 			g_CCore->GetNetwork()->SendServerMessage(&bsOut,HIGH_PRIORITY,RELIABLE_ORDERED);
 		}
 		ChatMessage	= "";
@@ -168,9 +169,29 @@ void CChat::DoCommand(char str[])
 	{
 		g_CCore->ShutdownClient();
 	}
+	else if (strcmp(command, "testmessage") == 0)
+	{
+		this->AddMessage("Lorem Ipsum je fiktívny text, používaný pri návrhu tlaèovín a typografie."\
+			"Lorem Ipsum je štandardným výplòovým textom už od 16. storoèia, keï neznámy tlaèiar zobral"\
+			"sadzobnicu plnú tlaèových znakov a pomiešal ich, aby tak vytvoril vzorkovú knihu.Prežil nielen"\
+			"pä storoèí, ale aj skok do elektronickej sadzby, a pritom zostal v podstate nezmenený.Spopulari"\
+			"zovaný bol v 60 - tych rokoch 20.storoèia, vydaním hárkov Letraset, ktoré obsahovali pasáže Lorem Ipsum,"\
+			"a neskôr aj publikaèným softvérom ako Aldus PageMaker, ktorý obsahoval verzie Lorem Ipsum."\
+			"Lorem Ipsum je štandardným výplòovým textom už od 16. storoèia, keï neznámy tlaèiar zobral"\
+			"sadzobnicu plnú tlaèových znakov a pomiešal ich, aby tak vytvoril vzorkovú knihu.Prežil nielen"\
+			"pä storoèí, ale aj skok do elektronickej sadzby, a pritom zostal v podstate nezmenený.Spopulari"\
+			"zovaný bol v 60 - tych rokoch 20.storoèia, vydaním hárkov Letraset, ktoré obsahovali pasáže Lorem Ipsum,"\
+			"a neskôr aj publikaèným softvérom ako Aldus PageMaker, ktorý obsahoval verzie Lorem Ipsum.");
+	}
 	else if (strcmp(command, "clearchat") == 0)
 	{
 		this->ClearChat();
+	}
+	else if (strcmp(command, "getwidth") == 0)
+	{
+		char buff[255];
+		sprintf(buff,"Chat width: %d",CHAT_WIDTH);
+		g_CCore->GetChat()->AddMessage(buff);
 	}
 	else if (strcmp(command, "setwidth") == 0)
 	{
@@ -1059,12 +1080,16 @@ void	CChat::ClearChat()
 
 void	CChat::RenderTexture(IDirect3DDevice8* device)
 {
-	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
-	CHAT_WIDTH = (int) (screen.x / 2.25f);
+	// init chat width if it hasn't been yet
+	if (CHAT_WIDTH == 0)
+	{
+		Vector2D screen = g_CCore->GetGraphics()->GetResolution();
+		CHAT_WIDTH = (int)(screen.x / 2.25f);
+	}
 
 	if (chatTexture == NULL)
 	{
-		D3DXCreateTexture(device, 512, 512,
+		D3DXCreateTexture(device, CHAT_WIDTH, 700,
 			1, D3DUSAGE_RENDERTARGET,
 			D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &chatTexture);
 	}
@@ -1105,7 +1130,7 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 		}
 		int iRendered = 0;
 
-		// Render chat lines
+		// ------------------------------	Render chat lines
 		int howMany = elementCount;
 		if (elementCount > (unsigned int)this->CHAT_LINES_PER_RENDER)
 			howMany = this->CHAT_LINES_PER_RENDER;
@@ -1114,45 +1139,44 @@ void	CChat::RenderTexture(IDirect3DDevice8* device)
 		for (int i = 0; i < howMany; i++)
 		{
 			int line_y = (20 * (howMany - i));
-			//g_CCore->GetGraphics()->DrawTextA(stack, 20, line_y, 0xffffffff, true, true);
 			g_CCore->GetGraphics()->GetFont()->DrawColoredText(stackPointer->text, 20, line_y, true);
 			stackPointer = stackPointer->next;
 		}
 		iRendered = howMany;
-		// Render input with its background if it's needed
+		// ------------------------------	Render input with its background if it's needed
 		if (IsTyping())
 		{
 
 			int base_y = 30 + (20 * iRendered);
 			iRendered = 0;
-			if (ChatMessage == "")
+			// if there hasn't been any text on the input yet
+			if (ChatMessage.length() == 0)
 			{
 				if (this->IsBackgroundActive() == true)
 					g_CCore->GetGraphics()->Clear(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				//g_CCore->GetGraphics()->FillARGB(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-				//return;
 				g_CCore->GetGraphics()->GetFont()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
-				//g_CCore->GetGraphics()->DrawTextA(">", 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true, true);
 			}
 			else
 			{
-				char buff[255];
-				sprintf(buff, "%s", ChatMessage.c_str());
 				int index = 0;
-				while (1)
+				int howMuchWeNeed = g_CCore->GetGraphics()->GetStrlenForWidth(CHAT_WIDTH - 10, (char*) ChatMessage.c_str() + index);
+				while (howMuchWeNeed > 0)
 				{
-					int howMuchWeNeed = g_CCore->GetGraphics()->GetStrlenForWidth(CHAT_WIDTH - 10, buff + index);
-					std::string	farba = g_CCore->GetGraphics()->GetLastColorInText(buff, index);
-					if (howMuchWeNeed == 0) break;
-					char buf[255];
-					sprintf(buf, "%s%s", farba.c_str(), ChatMessage.substr(index, howMuchWeNeed).c_str());
-					int line_y = base_y + (30 * iRendered);
+					std::string	colour = g_CCore->GetGraphics()->GetLastColorInText((char*)ChatMessage.c_str(), index);
+					// let's presume there will never be more than 512 characters per line
+					// TODO - buffer overflow warning
+					char buf[512];
+					sprintf(buf, "%s%s", colour.c_str(), ChatMessage.substr(index, howMuchWeNeed).c_str());
+					// if background filling is enabled, then render the background
 					if (this->IsBackgroundActive() == true)
-						g_CCore->GetGraphics()->Clear(10, line_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
-					//g_CCore->GetGraphics()->GetFont()->DrawColoredText(buf, 21, line_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+						g_CCore->GetGraphics()->Clear(10, base_y, 10 + CHAT_WIDTH, 30, D3DCOLOR_ARGB(200, 50, 0, 0));
+					// draw the text
 					g_CCore->GetGraphics()->GetFont()->DrawTextA(buf, 21, base_y + 5, D3DCOLOR_XRGB(200, 200, 200), true);
+					// sum up the position pointer with the already drawn text
 					index += howMuchWeNeed;
-					iRendered++;
+					// add up pixels for rendered line
+					base_y += 20;
+					howMuchWeNeed = g_CCore->GetGraphics()->GetStrlenForWidth(CHAT_WIDTH - 10, (char*)ChatMessage.c_str() + index);
 				}
 			}
 		}

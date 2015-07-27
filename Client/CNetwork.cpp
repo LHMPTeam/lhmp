@@ -265,8 +265,10 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 	{
 	case LHMP_PLAYER_CHAT_MESSAGE:
 		{
-			char buff[500];
 			RakNet::BitStream bsIn(packet->data+offset+1, packet->length-offset-1, false);
+			unsigned short messageLen;
+			bsIn.Read(messageLen);
+			char* buff = new char[messageLen + 100];
 			bsIn.Read(buff);
 			g_CCore->GetChat()->AddMessage(buff);
 		}

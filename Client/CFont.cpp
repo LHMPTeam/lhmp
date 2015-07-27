@@ -52,6 +52,11 @@ void	CFont::DrawColoredText(CColoredText* text, int x, int y, bool shadow)
 	while (CColoredStruct* strr = text->GetNext())
 	{
 		this->DrawTextA(strr->text, x + drawn, y, strr->color, true);
+
+		//TODO remove
+		//char test[255];
+		//sprintf(test, "%d", strr->width);
+		//this->DrawTextA(test, x + drawn, y, 0xFFFF0000, true);
 		//this->m_pFont->DrawTextA(x + drawn, y, strr->color, strr->text);
 		drawn += strr->width;
 	}
@@ -151,11 +156,13 @@ int		CFont::GetStrlenForWidth(int size, char* text)
 {
 	int curSize = 0;
 	int len = strlen(text);
-	for (int i = 0; i < len; i++)
+	int i;
+	for (i = 0; i < len; i++)
 	{
 		SIZE size2 =  this->GetFontWidth(text + i, 1);
 		curSize += size2.cx;
 		if (curSize > size)
 			return i;
 	}
+	return i;
 }

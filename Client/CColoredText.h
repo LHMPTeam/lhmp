@@ -2,10 +2,10 @@
 	Lost Heaven Multiplayer
 
 	Purpose: a class used in chat to precalculate colored
-	* text and thus save performace during its render 
+	* text and cache it and thus save performace during its rendering
 
 	@author Romop5
-	@version 1.0 1/9/14
+	@version 1.0 25/7/15
 */
 
 #ifndef __CCOLOREDTEXT_H
@@ -23,6 +23,17 @@ struct CColoredStruct
 		color = NULL;
 		width = NULL;
 		text = NULL;
+	}
+	CColoredStruct(CColoredStruct* _next, unsigned int _color, unsigned int _width, char* _text)
+	{
+		next = _next;
+		color = _color;
+		width =_width;
+		// copy the text
+		unsigned int len = strlen(_text);
+		text = new char[len+1];
+		strcpy(text, _text);
+		text[len] = '\0';
 	}
 };
 

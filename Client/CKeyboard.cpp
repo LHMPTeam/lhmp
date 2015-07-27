@@ -127,7 +127,7 @@ void	CKeyboard::OnKeyDown(unsigned short VK_code)
 
 				// add text to chat
 				g_CCore->GetChat()->ChatMessage += text;
-				if (g_CCore->GetChat()->ChatMessage.length() < MAX_CHAT_MESSAGE_LENGTH - 10)
+				if (g_CCore->GetChat()->ChatMessage.length() > MAX_CHAT_MESSAGE_LENGTH - 10)
 				{
 					g_CCore->GetChat()->ChatMessage.resize(MAX_CHAT_MESSAGE_LENGTH - 10);
 				}

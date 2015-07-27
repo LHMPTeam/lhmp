@@ -375,20 +375,22 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			{
 				RakString rs;
 				RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-				char buff[255];
-				char buff2[255];
+				unsigned short messageLength;
+				bsIn.Read(messageLength);
+				char* buff = new char[messageLength + 1];
+				char* output = new char[messageLength + 250];
 				bsIn.Read(buff);
 
 				char color[10];
 				Tools::GenerateColor(color,player->GetNickColor());
-				printf("Debug color: #%s", color);
-				sprintf(buff2, "#%s%s#ffffff: %s", color, player->GetNickname(), buff);
+				sprintf(output, "#%s%s#ffffff: %s", color, player->GetNickname(), buff);
 				if (g_CCore->GetScripts()->onPlayerText(ID, buff) == true)
 				{
 					BitStream bsOut;
 					bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 					bsOut.Write((MessageID)LHMP_PLAYER_CHAT_MESSAGE);
-					bsOut.Write(buff2);
+					bsOut.Write((unsigned short)strlen(output));
+					bsOut.Write(output);
 					printf("[PlayerMessage] ID: %d %s \n", ID, buff);
 
 					for (int i = 0; i < m_pServerMaxPlayers; i++)
@@ -397,6 +399,8 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 							peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, slot[i].sa, false);
 					}
 				}
+				delete[] buff;
+				delete[] output;
 			}
 		}
 		break;
@@ -970,14 +974,9 @@ void CNetworkManager::SendMessageToAll(char * message)
 	BitStream bsOut;
 	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((MessageID)LHMP_PLAYER_CHAT_MESSAGE);
+	bsOut.Write((unsigned short)strlen(message));
 	bsOut.Write(message);
 	peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,RakNet::UNASSIGNED_RAKNET_GUID,true);
-	/*		for(int i = 0; i < m_pServerMaxPlayers;i++)
-			{
-				if(slot[i].isUsed == true)
-					peer->Send(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED,0,slot[i].sa,false);
-			}
-			*/
 }
 
 void CNetworkManager::SendHimOthers(int he)
