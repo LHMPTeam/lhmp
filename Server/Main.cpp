@@ -21,7 +21,7 @@ int main()
 	CConfig* cfg = new CConfig();
 	char*	server_name	= cfg->GetCString("servername", "Default Lost Heaven Server");
 	int		server_port = cfg->GetInt("server_port", 27015);
-	int		tick_delay = cfg->GetInt("tick_delay", 10);
+	int		tick_delay = cfg->GetInt("tick_delay", 0);
 	int		max_players = cfg->GetInt("maxplayers", 16);
 	char*	gamemode	= cfg->GetCString("gamemode", "default");
 	char*	mode		= cfg->GetCString("mode", "Default mode");

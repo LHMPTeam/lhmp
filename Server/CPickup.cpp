@@ -123,7 +123,7 @@ bool	CPickup::IsTakingPickup(int ID)
 					{
 						g_CCore->GetPickupPool()->Delete(pickupID);
 					}
-					else {
+					else if (interval > 1) {
 						respawnTime = timeGetTime();
 
 						this->SendVisible(-1, false);

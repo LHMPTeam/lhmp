@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Lost Heaven Multiplayer"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "Lost Heaven Multiplayer"
 #define MyAppURL "http://lh-mp.eu/"
 #define MyAppExeName "launcher.exe"

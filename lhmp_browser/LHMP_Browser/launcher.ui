@@ -850,7 +850,7 @@ border: 0;</string>
          <x>0</x>
          <y>0</y>
          <width>611</width>
-         <height>385</height>
+         <height>314</height>
         </rect>
        </property>
        <property name="palette">
@@ -1222,6 +1222,26 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <string>Password</string>
         </property>
        </column>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>312</y>
+         <width>611</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#pushButton {
+	border: 1px solid #000;
+
+	background: #000;
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
       </widget>
      </widget>
      <widget class="QFrame" name="frame_8">

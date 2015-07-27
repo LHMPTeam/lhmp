@@ -28,6 +28,8 @@ UpdateFile files[128];
 int queryCount, queryCountMax, serverCount, playerCount, allowPatch = -1, needsUpdatingCount = 0, shouldUpdate = -1;
 bool refreshing = false, playerlist = false, masterDown = false, noPlayers = false, patchQuestionRan = false, updated = false;
 
+QString image = "", image_link = "";
+
 void queryCallback(unsigned int serverID, void* data, unsigned char reasonID)
 {
     if (reasonID == QUERY_OVERALL) {
@@ -287,6 +289,8 @@ void Launcher::replyFinished(QNetworkReply *reply)
             url = item["url"].toString();
             filesURL = item["files"].toString();
             serversURL = item["servers"].toString();
+            image = item["image"].toString();
+            image_link = item["image_link"].toString();
 
             if (launcherVersion != version) {
                 QMessageBox::StandardButton reply;
@@ -303,6 +307,9 @@ void Launcher::replyFinished(QNetworkReply *reply)
             } else {
                 ui->label_3->setText("You are running the latest version.");
             }
+
+            manager->get(QNetworkRequest(image));
+            qDebug() << image;
 
             // Check client version
             value = object.value("client");
@@ -465,6 +472,25 @@ void Launcher::replyFinished(QNetworkReply *reply)
                 delete file;
 
                 needsUpdatingCount--;
+
+            } else if (reply->url().toString() == image) {
+                QString path = QString("%1/lhmp_launcher_image.png").arg(QDir::tempPath());
+
+                QFile *file = new QFile(path);
+
+                if(file->open(QFile::WriteOnly)) {
+                    file->write(reply->readAll());
+
+                    file->flush();
+                    file->close();
+                }
+
+                delete file;
+                QString style = QString("#pushButton {border: 1px solid #000000; background: url(%1);}").arg(path);
+
+                qDebug() << style;
+
+                ui->pushButton->setStyleSheet(style);
             } else {
                 QString path = QString("%1/%2/%3").arg(mafiaPath).arg(filesPath).arg(fileName);
 
@@ -490,7 +516,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
         qDebug() << reply->errorString();
     }
 
-    qDebug() << reply->url();
+    qDebug() << reply->url().toString();
 
     if (needsUpdatingCount == 0) {
         updated = true;
@@ -1041,4 +1067,9 @@ void Launcher::on_pushButton_7_clicked()
     Settings settings;
     settings.setModal(true);
     settings.exec();
+}
+
+void Launcher::on_pushButton_clicked()
+{
+    if (!image_link.isEmpty()) QDesktopServices::openUrl(QUrl(image_link));
 }
