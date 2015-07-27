@@ -842,7 +842,7 @@ bool Launcher::JoinGame(QString address, QString password) {
         QSettings settings("Lost Heaven Multiplayer", "Launcher");
 
         int screen = settings.value("screen", 0).toInt();
-        if (screen != 1) return ok;
+        if (screen == 0) return ok;
 
         HWND hWnd = NULL;
 
@@ -861,14 +861,28 @@ bool Launcher::JoinGame(QString address, QString password) {
         }
 
         if (hWnd != NULL) {
-            LONG style = GetWindowLong(hWnd, GWL_STYLE);
-            style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
-            SetWindowLong(hWnd, GWL_STYLE, style);
+            if (screen == 1) {
+                LONG style = GetWindowLong(hWnd, GWL_STYLE);
+                style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
+                SetWindowLong(hWnd, GWL_STYLE, style);
 
-            style = GetWindowLong(hWnd, GWL_EXSTYLE);
-            style &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-            SetWindowLong(hWnd, GWL_EXSTYLE, style);
-            SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                style = GetWindowLong(hWnd, GWL_EXSTYLE);
+                style &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+                SetWindowLong(hWnd, GWL_EXSTYLE, style);
+                SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            } else {
+                RECT rect;
+
+                if(GetWindowRect(hWnd, &rect)) {
+                  int width = rect.right - rect.left;
+                  int height = rect.bottom - rect.top;
+
+                  int x = (GetSystemMetrics(SM_CXSCREEN) / 2) - (width / 2);
+                  int y = (GetSystemMetrics(SM_CYSCREEN) / 2 ) - (height / 2);
+
+                  SetWindowPos(hWnd, HWND_TOP, x, y, 0, 0, SWP_NOSIZE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                }
+            }
         }
     } else {
         QMessageBox::critical(this, tr("Lost Heaven Multiplayer"), tr("Unable to launch Mafia and/or launcher executable."));
