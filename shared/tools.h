@@ -379,7 +379,13 @@ namespace Tools
 	{
 		char stamp[9];
 		sprintf(stamp,"%p",color);
+#ifdef _WIN32
 		memcpy(input, stamp+2, 6);
+#elif
+		// surprisingly, Linux implementation adds '0x' prefix
+		// thus we need to skip 2 extra chars
+		memcpy(input, stamp + 4, 6);
+#endif
 		input[6] = 0x0;
 	}
 }
