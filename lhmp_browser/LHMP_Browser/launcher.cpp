@@ -860,16 +860,16 @@ bool Launcher::JoinGame(QString address, QString password) {
             loops++;
         }
 
-        //Sleep(1000);
+        if (hWnd != NULL) {
+            LONG style = GetWindowLong(hWnd, GWL_STYLE);
+            style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
+            SetWindowLong(hWnd, GWL_STYLE, style);
 
-        LONG style = GetWindowLong(hWnd, GWL_STYLE);
-        style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
-        SetWindowLong(hWnd, GWL_STYLE, style);
-
-        style = GetWindowLong(hWnd, GWL_EXSTYLE);
-        style &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-        SetWindowLong(hWnd, GWL_EXSTYLE, style);
-        SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            style = GetWindowLong(hWnd, GWL_EXSTYLE);
+            style &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+            SetWindowLong(hWnd, GWL_EXSTYLE, style);
+            SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+        }
     } else {
         QMessageBox::critical(this, tr("Lost Heaven Multiplayer"), tr("Unable to launch Mafia and/or launcher executable."));
     }

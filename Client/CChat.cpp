@@ -111,7 +111,7 @@ void CChat::AddDebugMessage(char* format, ...) {
 
 		sprintf(endbuff, "#f31d2f>> #e3e3e3%s", buff);
 
-		AddMessage(endbuff);
+		//AddMessage(endbuff);
 	#endif
 }
 
