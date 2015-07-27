@@ -117,7 +117,6 @@ void CGraphics::Init(IDirect3DDevice8* pDxDevice)
 		D3DPOOL_MANAGED,     //Tell DirectX to manage the memory of this resource
 		&this->m_vb);              //Pointer to our Vertex Buffer, after this call
 
-
 }
 
 void DebugWeapons()
@@ -916,6 +915,8 @@ void CGraphics::Clear(int x, int y, int w, int h, D3DCOLOR color)
 
 void CGraphics::RenderMap()
 {
+	if (!g_CCore->GetGame()->IsTabMapEnabled())
+		return;
 	if (g_CCore->m_bIsRespawning)
 		return;
 	renderMap = 0;
