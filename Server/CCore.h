@@ -91,6 +91,8 @@ public:
 	CQueryServer*		GetQueryServer();
 	CMasterList*		GetMasterServer();
 
+	int					tickDelay = 0;
+
 	void				SetDefaultMap(char*);
 	char*				GetDefaultMap();
 };

@@ -73,6 +73,7 @@ void CConsole::Tick()
 		g_CCore->GetLog()->AddNormalLog("-> reload:\t reload current gamemode");
 		g_CCore->GetLog()->AddNormalLog("-> exit:\t shutdown server");
 		g_CCore->GetLog()->AddNormalLog("-> quit:\t shutdown server");
+		g_CCore->GetLog()->AddNormalLog("-> tickdelay:\t set timeout between server ticks in ms");
 	} else if (strcmp(command, "kick") == 0)
 	{
 		if (strlen(varlist) == 0 || Tools::isStringNumeric(varlist) == false)
@@ -108,7 +109,7 @@ void CConsole::Tick()
 
 	else if (strcmp(command, "load") == 0)
 	{
-		g_CCore->GetLog()->AddNormalLog("Varlist[%d]: '%s'",strlen(varlist),varlist);
+		//g_CCore->GetLog()->AddNormalLog("Varlist[%d]: '%s'",strlen(varlist),varlist);
 		if (strlen(varlist) == 0)
 		{
 			g_CCore->GetLog()->AddNormalLog("Usage: load <gamemode>");
@@ -116,6 +117,21 @@ void CConsole::Tick()
 		else
 		{
 			g_CCore->ChangeModeTo(varlist);
+		}
+	}
+
+
+	else if (strcmp(command, "tickdelay") == 0)
+	{
+		//g_CCore->GetLog()->AddNormalLog("Varlist[%d]: '%s'", strlen(varlist), varlist);
+		
+		if (strlen(varlist) == 0)
+		{
+			g_CCore->GetLog()->AddNormalLog("Current tick delay is %ims", g_CCore->tickDelay);
+		}
+		else
+		{
+			g_CCore->tickDelay = atoi(varlist);
 		}
 	}
 

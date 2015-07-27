@@ -22,6 +22,8 @@ void CCore::Pulse()
 	m_cTickManager.Pulse();
 	m_cTimerPool.Tick();
 	m_cMaster.Pulse();
+
+	RakSleep(tickDelay);
 }
 
 // pulse every 1000ms
