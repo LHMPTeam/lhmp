@@ -45,7 +45,7 @@ int main()
 	g_CCore->GetLog()->AddNormalLog("Server Name: %s", server_name);
 	g_CCore->GetLog()->AddNormalLog("Server Port: %d\t\t\tMax.Players: %d", server_port, max_players);
 	g_CCore->GetLog()->AddNormalLog("Gamemode:    %s\t\t\tURL:         %s", gamemode, websiteurl);
-	g_CCore->GetLog()->AddNormalLog("Password:    %s\t\t\tTick delay:  %i", (strlen(password) > 0) ? "yes" : "no", tick_delay);
+	g_CCore->GetLog()->AddNormalLog("Password:    %s\t\t\t\tTick delay:  %i", (strlen(password) > 0) ? "yes" : "no", tick_delay);
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
 	// run CCore instance
