@@ -21,7 +21,7 @@ int main()
 	CConfig* cfg = new CConfig();
 	char*	server_name	= cfg->GetCString("servername", "Default Lost Heaven Server");
 	int		server_port = cfg->GetInt("server_port", 27015);
-	int		tick_delay = cfg->GetInt("tick_delay", 0);
+	int		tick_count = cfg->GetInt("tick_count", 30);
 	int		max_players = cfg->GetInt("maxplayers", 16);
 	char*	gamemode	= cfg->GetCString("gamemode", "default");
 	char*	mode		= cfg->GetCString("mode", "Default mode");
@@ -45,7 +45,7 @@ int main()
 	g_CCore->GetLog()->AddNormalLog("Server Name: %s", server_name);
 	g_CCore->GetLog()->AddNormalLog("Server Port: %d\t\t\tMax.Players: %d", server_port, max_players);
 	g_CCore->GetLog()->AddNormalLog("Gamemode:    %s\t\t\tURL:         %s", gamemode, websiteurl);
-	g_CCore->GetLog()->AddNormalLog("Password:    %s\t\t\t\tTick delay:  %i", (strlen(password) > 0) ? "yes" : "no", tick_delay);
+	g_CCore->GetLog()->AddNormalLog("Password:    %s\t\t\t\tTick count:  %i", (strlen(password) > 0) ? "yes" : "no", tick_count);
 	g_CCore->GetLog()->AddNormalLog("===============================================================================");
 
 	// run CCore instance
@@ -55,10 +55,9 @@ int main()
 	int startupResult;
 	if ((startupResult = CCore.Init(server_port, max_players, startpos, server_name, mode, visible, websiteurl, password)) == STARTUP_SUCCESS)
 	{
+		g_CCore->GetTickManager()->SetTickCount(tick_count);
 		g_CCore->GetLog()->AddNormalLog("Core has been initilaized successfully.");
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
-
-		g_CCore->tickDelay = tick_delay;
 
 		// now try to load gamemode
 		if (CCore.GetGameMode()->LoadGameMode(gamemode) == false)

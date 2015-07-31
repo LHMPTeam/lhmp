@@ -8,6 +8,7 @@ CMasterList::CMasterList()
 {
 	this->client = NULL;
 	this->isPending = false;
+	
 }
 
 void CMasterList::AddServerToMaster()
@@ -50,7 +51,7 @@ void CMasterList::Pulse()
 						this->timestampStart = GetTickCount();
 						break;
 					case '2':
-						// server has been registred successfully
+						// server has already been registered
 						this->HandleMasterResponse(MASTERLIST_OK); 
 						this->isPending = false;
 						return;
@@ -64,6 +65,8 @@ void CMasterList::Pulse()
 					}
 				}
 			}
+			// dellocates dynamical memory in order to prevent any memory leak
+			this->client->DellocatePacket(pack);
 		}
 
 		unsigned int time = GetTickCount();

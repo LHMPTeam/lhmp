@@ -8,17 +8,19 @@
 
 #include "../shared/linux.h"
 
-
-#define SERVER_TICK	20
-#define SERVER_TICK_SLEEP (1000/SERVER_TICK)
 class CTickManager
 {
 private:
 	DWORD lastSecond;
 	DWORD lastRunTickCount;
-	DWORD tickCount;
+	// the count of MS that system should elapsed this second
+	DWORD shouldElapsed;
+
+	unsigned short tickCount;
+	unsigned short milisecPerTick;
 public:
 	CTickManager();
+	void	SetTickCount(unsigned short);
 	void	Pulse();
 	unsigned int GetLastTickCount();
 	unsigned int GetTime();

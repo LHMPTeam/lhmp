@@ -7,19 +7,22 @@ extern CCore *g_CCore;
 
 CTickManager::CTickManager()
 {
-	lastSecond = timeGetTime();
-	lastRunTickCount = timeGetTime();
+	lastSecond = RakNet::GetTimeMS();
+	lastRunTickCount = RakNet::GetTimeMS();
 	tickCount = 0;
-
+	shouldElapsed = 0;
+	this->SetTickCount(30);
 }
 void	CTickManager::Pulse()
 {
+	shouldElapsed += this->milisecPerTick;
 	tickCount++;
-	DWORD	actualTics = timeGetTime();
+	DWORD	actualTics = RakNet::GetTimeMS();
 	if((actualTics - lastSecond) >= 1000)
 	{
-		//printf("TicksCount: %d \n",tickCount);
+		//printf("TicksCount: %u \n",tickCount);
 		tickCount = 0;
+		shouldElapsed = 0;
 		lastSecond = actualTics;
 		g_CCore->GetScripts()->onServerTickSecond(tickCount);
 		g_CCore->OnSecondElapsed();
@@ -28,14 +31,22 @@ void	CTickManager::Pulse()
 	{
 		g_CCore->GetScripts()->onServerTick(tickCount);
 	}
-	DWORD ticksSinceLastRun = actualTics - lastRunTickCount;
-	if(SERVER_TICK_SLEEP >= ticksSinceLastRun)
+
+	actualTics = RakNet::GetTimeMS();
+	DWORD ticksSinceLastRun = actualTics - lastSecond;
+	if (ticksSinceLastRun < shouldElapsed)
 	{
-		//printf("%d\n",ticksSinceLastRun);
-		//printf("%d \n",(SERVER_TICK_SLEEP-ticksSinceLastRun));
-		RakSleep((SERVER_TICK_SLEEP-ticksSinceLastRun));
+		DWORD sleep = (shouldElapsed - ticksSinceLastRun);
+		//printf("Sleep %u (%u-%u)\n", sleep, shouldElapsed,ticksSinceLastRun);
+		RakSleep(sleep);
 	}
 	lastRunTickCount = actualTics;
+}
+
+void	CTickManager::SetTickCount(unsigned short count)
+{
+	this->tickCount = count;
+	this->milisecPerTick = (1000 / count);
 }
 
 unsigned int CTickManager::GetLastTickCount()
@@ -46,5 +57,5 @@ unsigned int CTickManager::GetLastTickCount()
 
 unsigned int CTickManager::GetTime()
 {
-	return timeGetTime();
+	return RakNet::GetTimeMS();
 }

@@ -58,6 +58,7 @@ void CNetwork::Pulse()
 				}
 			}
 		}
+		this->server->DellocatePacket(packet);
 	}
 }
 

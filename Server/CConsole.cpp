@@ -120,21 +120,6 @@ void CConsole::Tick()
 		}
 	}
 
-
-	else if (strcmp(command, "tickdelay") == 0)
-	{
-		//g_CCore->GetLog()->AddNormalLog("Varlist[%d]: '%s'", strlen(varlist), varlist);
-		
-		if (strlen(varlist) == 0)
-		{
-			g_CCore->GetLog()->AddNormalLog("Current tick delay is %ims", g_CCore->tickDelay);
-		}
-		else
-		{
-			g_CCore->tickDelay = atoi(varlist);
-		}
-	}
-
 	if (strcmp(command, "pl") == 0)
 	{
 		// get real player count

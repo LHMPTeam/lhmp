@@ -59,6 +59,9 @@ public:
 	// if no data is available, returns NULL
 	UDPPacket* Receive();
 
+	// a user-friendly way how to delete packet
+	void DellocatePacket(UDPPacket* packet);
+
 	// stop connection and free all resources
 	void CleanUP();
 private:

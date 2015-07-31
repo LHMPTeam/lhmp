@@ -114,6 +114,15 @@ UDPPacket* UDPWrapper::Receive()
 	return NULL;
 }
 
+void UDPWrapper::DellocatePacket(UDPPacket* packet)
+{
+	if (packet)
+	{
+		delete[] packet->data;
+		delete packet;
+	}
+}
+
 void UDPWrapper::CleanUP()
 {
 	
