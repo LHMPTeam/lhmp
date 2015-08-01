@@ -132,8 +132,9 @@ void CVehicle::Interpolate()
 		DWORD entity = this->GetEntity();
 		float x = this->speed.x, y = this->speed.y, z = this->speed.z;
 
+		// TODO - test if it's neccessary
 		// Fix so you can get out of car if its stationary
-		if (abs(speed.x + speed.y) < 1) {
+		/*if (abs(speed.x + speed.y) < 1) {
 			// After 2 secs of idle, turn off engine
 			if (idleStartTime - RakNet::GetTimeMS() > 2000) {
 				g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
@@ -143,7 +144,7 @@ void CVehicle::Interpolate()
 		} else {
 			g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 1);
 		}
-
+		*/
 		/*_asm
 		{
 			pushad
@@ -168,7 +169,7 @@ void CVehicle::Interpolate()
 				g_CCore->GetGame()->CarUpdate(this->GetEntity(), this->playerPos, this->rotation);
 				
 				// Shut down engine if no driver so people can get out
-				g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
+				//g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), 0);
 
 				/*(float*)(entity + 0x40C) = this->playerPos.x;
 				*(float*)(entity + 0x410) = this->playerPos.y;
@@ -388,7 +389,8 @@ void CVehicle::ToggleEngine(byte state)
 {
 	if (this->GetEntity() != NULL)
 	{
-		g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), state);
+		//g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), state);
+		g_CCore->GetGame()->SetCarEngineState(this->GetEntity(), state);
 	}
 	this->engineState = state;
 

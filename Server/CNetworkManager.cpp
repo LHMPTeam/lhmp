@@ -755,7 +755,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 		case LHMP_VEHICLE_TOGGLE_ENGINE:
 		{
 			int vehID;
-			BYTE state;
+			bool state;
 
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			bsIn.Read(vehID);
@@ -766,6 +766,11 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
 			if (veh != NULL)
 			{
+				if (veh->GetEngineState() == state)
+				{
+					// if nothing has changed, stop streaming the message
+					break;
+				}
 				veh->ToggleEngine(state);
 			}
 
@@ -773,8 +778,9 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 			bsOut.Write((MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
 			bsOut.Write(vehID);
-			bsOut.Write(state);
-			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+			bsOut.Write((bool)state);
+			peer->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+
 		}
 		break;
 

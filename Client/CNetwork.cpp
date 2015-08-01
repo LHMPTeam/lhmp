@@ -960,7 +960,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			int ID;
-			BYTE state;
+			bool state;
 
 			bsIn.Read(ID);
 			bsIn.Read(state);

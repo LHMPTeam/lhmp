@@ -1809,6 +1809,10 @@ _declspec (naked) void Hook_RestInPeace()
 	}
 }
 
+/* TODO
+- radar rendering is disabled -> all radar hooks are obsolete
+*/
+
 int ChangeRadarRendering()
 {
 	float radarwidth = *(float*)0x0063D29C;
@@ -1985,6 +1989,95 @@ __declspec(naked) void Fix_CarDeletingSecond()
 	}
 }
 
+void Hook_Car_ProcessEngineStateChange(DWORD car, DWORD shouldStartOrSwitchOff)
+{
+	/*TODO - remove debug text
+	g_CCore->GetChat()->AddMessage("Hook_Car_ProcessEngineStateChange tick");*/
+	int ID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(car);
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
+	if (veh)
+	{
+		if (veh->GetSeat(0) == g_CCore->GetLocalPlayer()->GetOurID())
+		{
+			// stream it
+			/*TODO - remove debug strings
+			
+			char buff[500];
+			sprintf(buff, "ProcessEngineState %x %u", car, shouldStartOrSwitchOff);
+			g_CCore->GetChat()->AddMessage(buff);
+			*/
+			// if it's streamed, then allow the changes & call engine function
+			g_CCore->GetGame()->SetCarEngineState(car, (bool)shouldStartOrSwitchOff);
+			// network sync
+			RakNet::BitStream bsOut;
+			bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+			bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
+			bsOut.Write(g_CCore->GetLocalPlayer()->IDinCar);
+			bsOut.Write((bool)(shouldStartOrSwitchOff > 0));
+			g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+		}
+		else if (veh->GetEngineState() == shouldStartOrSwitchOff)
+		{
+			// at least call engine func
+			g_CCore->GetGame()->SetCarEngineState(car, (bool)shouldStartOrSwitchOff);
+		}
+	}
+}
+
+_declspec(naked) void Hook_Car_EngineChangeStatus01()
+{
+	// jmp from 00517991, back to 00517999
+	// ECX = 0/1	# new engine status (off/on)
+	// ESI = car+0x70
+	_asm {
+		PUSHAD
+		SUB ESI, 0x70
+		PUSH ECX
+		PUSH ESI
+		CALL Hook_Car_ProcessEngineStateChange
+		ADD ESP, 0x8
+		POPAD
+		PUSH 0x00517999
+		RET
+	}
+}
+
+_declspec(naked) void Hook_Car_EngineChangeStatus02()
+{
+	// jmp from 0052C5B8, back to 0x0052C5C1
+	// ON
+	// ESI = car+0x70
+	_asm {
+		PUSHAD
+			SUB ESI, 0x70
+			PUSH 0x1
+			PUSH ESI
+			CALL Hook_Car_ProcessEngineStateChange
+			ADD ESP, 0x8
+			POPAD
+			PUSH 0x0052C5C1
+			RET
+	}
+}
+
+_declspec(naked) void Hook_Car_EngineChangeStatus03()
+{
+	// jmp from 0052D31B, back 0052D324
+	// OFF
+	// ESI = car+0x70
+	_asm {
+		PUSHAD
+			SUB ESI, 0x70
+			PUSH 0
+			PUSH ESI
+			CALL Hook_Car_ProcessEngineStateChange
+			ADD ESP, 0x8
+			POPAD
+			PUSH 0x0052D324
+			RET
+	}
+}
+
 void SetHooks()
 {
 	//---------------------- Fix deleting car
@@ -1992,20 +2085,20 @@ void SetHooks()
 	Tools::InstallJmpHook(0x005D4AA1, (DWORD)&Fix_CarDeleting);
 	Tools::InstallJmpHook(0x0048DC7E, (DWORD)&Fix_CarDeletingSecond);
 
-	//Veh Engine Start
-	//004CC9F7 | .E8 E4AE0400    CALL Game.005178E0
+	/*TODO - delete old vehicle hooks*/
+	//---Tools::InstallJmpHook(0x005384BB, (DWORD)&Hook_OnPlayerStartedVehicleEngine);
+	//---Tools::InstallJmpHook(0x00538595, (DWORD)&Hook_OnPlayerStoppedVehicleEngine);
 
-
-	Tools::InstallJmpHook(0x005384BB, (DWORD)&Hook_OnPlayerStartedVehicleEngine);
-
-	//Veh Engine Stop
-	Tools::InstallJmpHook(0x00538595, (DWORD)&Hook_OnPlayerStoppedVehicleEngine);
+	Tools::InstallJmpHook(0x00517991, (DWORD)&Hook_Car_EngineChangeStatus01);
+	Tools::InstallJmpHook(0x0052C5B8, (DWORD)&Hook_Car_EngineChangeStatus02);
+	Tools::InstallJmpHook(0x0052D31B, (DWORD)&Hook_Car_EngineChangeStatus03);
 
 	// Fixes drive-by rotation
 	Tools::InstallJmpHook(0x0049BB23, (DWORD)&Hook_OnChangePlayerCarRotation);
 
+	/*TODO - remove radar rendering hooks*/
 	//change radar position on screen
-	Tools::InstallJmpHook(0x0054FDB6, (DWORD)&Hook_ChangeRadarRendering);
+	//Tools::InstallJmpHook(0x0054FDB6, (DWORD)&Hook_ChangeRadarRendering);
 
 	Tools::InstallCallHook(0x004940C0, (DWORD)&Hook_RestInPeace);
 

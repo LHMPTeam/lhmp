@@ -3698,6 +3698,22 @@ void CGame::LockCarDoor(DWORD car, int seat, bool status)
 	}
 }
 
+
+void CGame::SetCarEngineState(DWORD vehicle, bool shouldBeOn)
+{
+	g_CCore->GetLog()->AddLog("SetCarEngineState");
+	DWORD param = (DWORD) shouldBeOn;
+	_asm
+	{
+		MOV EAX, param
+		PUSH EAX
+		MOV ECX, vehicle
+		ADD ECX, 0x70
+		MOV EAX, 0x00538220
+		CALL EAX;  engine func
+	}
+}
+
 void CGame::SetFrameRot(DWORD frame, float w, float x, float y, float z)
 {
 	Vector4D rot;

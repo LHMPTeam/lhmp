@@ -154,6 +154,7 @@ public:
 	static void CarJack(DWORD, DWORD, int);
 	static void ExplodeCar(DWORD);
 	static void LockCarDoor(DWORD, int, bool);
+	static void SetCarEngineState(DWORD, bool);
 	// else
 	static byte IsTabMapEnabled();
 	static void PlayGameSound(char[]);
