@@ -62,6 +62,13 @@ void CCore::Run()
 
 	byte disableCompas[] = "\xE9\xD0\xB6\x00\x00";
 
+	//004CC9F0     /EB 1D         JMP SHORT Game.004CCA0F
+	byte fixLeavingCarWhenEngineIsOn[] = "\xEB\x1D";
+
+	// Fix player leaving from car when engine's on
+
+	PatchBytes(0x004CC9F0, fixLeavingCarWhenEngineIsOn);
+
 	// TODO - probably unneeded since we are using DirectInput to block input
 	PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
 

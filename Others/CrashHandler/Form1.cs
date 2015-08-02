@@ -47,8 +47,8 @@ namespace CrashHandler
 
             label5.Text += "0x"+data.Split('|')[0] + " at Module: " + data.Split('|')[2] + "\n" + ("EAX: " + data.Split('|')[1].Split('@')[0] + " ECX: " + data.Split('|')[1].Split('@')[1]
                  + " EDX: " + data.Split('|')[1].Split('@')[2]
-                  + " EBX: " + data.Split('|')[1].Split('@')[3]
-                   + " ESP: " + data.Split('|')[1].Split('@')[4]+"\n"
+                  + " EBX: " + data.Split('|')[1].Split('@')[3] + "\n"
+                   + " ESP: " + data.Split('|')[1].Split('@')[4]
                     + "EBP: " + data.Split('|')[1].Split('@')[5]
                      + " ESI: " + data.Split('|')[1].Split('@')[6]
                       + " EDI: " + data.Split('|')[1].Split('@')[7]);
@@ -86,6 +86,16 @@ namespace CrashHandler
         private void timer1_Tick(object sender, EventArgs e)
         {
             Application.ExitThread();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

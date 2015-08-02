@@ -163,7 +163,7 @@ void CQueryServer::OverallPacket(UDPPacket* packet)
 	}
 	printf("\n");
 	*/
-	printf("[Query] Sending overall packet\n");
+	//printf("[Query] Sending overall packet\n");
 }
 void CQueryServer::PlayerList(UDPPacket* packet)
 {
@@ -196,7 +196,7 @@ void CQueryServer::PlayerList(UDPPacket* packet)
 	queryServer->SendData(messageLength, buff, (sockaddr*)&packet->sender);
 
 
-	printf("[Query] Sending playerlist packet\n");
+	//printf("[Query] Sending playerlist packet\n");
 }
 
 void CQueryServer::PingPacket(UDPPacket* packet)
@@ -206,5 +206,5 @@ void CQueryServer::PingPacket(UDPPacket* packet)
 	*(int*) (buff+5) = rand();
 	//tcpServer->Send(buff, strlen(buff), receiver,false);
 	queryServer->SendData(strlen(buff), buff, (sockaddr*)&packet->sender);
-	printf("[Query] Sending pingpacket\n");
+	//printf("[Query] Sending pingpacket\n");
 }

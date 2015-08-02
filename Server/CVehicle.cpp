@@ -146,20 +146,22 @@ int	 CVehicle::GetSeat(int ID)
 {
 	return this->Seat[ID];
 }
-void CVehicle::PlayerDisconnect(int ID)
+void CVehicle::PlayerDisconnect(int disconnectedplayerID)
 {
-	if (ID == 0)
+	if (this->Seat[0] == disconnectedplayerID)
 	{
 		Vector3D speed;
 		speed.x = 0; speed.y = 0; speed.z = 0;
 		this->SetSpeed(speed);
 		this->onGas = false;
+		this->Seat[0] = -1;
 	}
+	/*
 	for (int i = 0; i < 4; i++)
 	{
 		if (this->Seat[i] == ID)
 			Seat[i] = -1;
-	}
+	}*/
 }
 
 void CVehicle::SetHornState(bool b)

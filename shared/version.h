@@ -6,8 +6,8 @@
 // that means we are running in debug mode
 #define _DEBUG
 
-#define LHMP_VERSION_MAJOR	0
-#define LHMP_VERSION_MINOR	1
+#define LHMP_VERSION_MAJOR	1
+#define LHMP_VERSION_MINOR	0
 #define LHMP_VERSION_TYPE	VERSION_PUBLIC
 
 // when LHMP is compiled as test version
@@ -22,7 +22,7 @@ enum versionTypes
 };
 
 #ifdef _WIN32
-#define LHMP_PLATFORM "Win32"
+#define LHMP_PLATFORM "Windows"
 #else
 #define LHMP_PLATFORM "Linux"
 #endif

@@ -385,6 +385,14 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			CPed* ped = g_CCore->GetPedPool()->Return(ID);
 			if(ped != 0)
 			{
+				if (ped->InCar != -1)
+				{
+					CVehicle* veh = g_CCore->GetVehiclePool()->Return(ped->InCar);
+					if (veh)
+					{
+						veh->SetSpeed(Vector3D(0.0f));
+					}
+				}
 				if (ped->GetEntity() != NULL)
 				{
 					g_CCore->GetEngineStack()->AddMessage(ES_DELETEPLAYER, ped->GetEntity());

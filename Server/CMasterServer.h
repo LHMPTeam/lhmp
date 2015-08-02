@@ -3,6 +3,10 @@
 
 #include "../sdks/UDPWrapper/UDPWrapper.h"
 
+// defines the amount of seconds that have to elapse between reposting
+// information to master server (MILISECONDS)
+#define MASTERSERVER_UPDATE_INTERVAL		600000
+
 enum MasterListResponse
 {
 	MASTERLIST_CONNECTIONFAILED,
@@ -30,6 +34,9 @@ private:
 
 	// start of current request
 	unsigned int timestampStart;
+
+	// timestamp taken when sending a request to master server
+	unsigned int lastMasterPost;
 };
 
 #endif

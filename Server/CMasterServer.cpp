@@ -8,7 +8,7 @@ CMasterList::CMasterList()
 {
 	this->client = NULL;
 	this->isPending = false;
-	
+	this->lastMasterPost = 0;
 }
 
 void CMasterList::AddServerToMaster()
@@ -32,6 +32,7 @@ void CMasterList::AddServerToMaster()
 // Tick - handles master-server communication
 void CMasterList::Pulse()
 {
+	unsigned int time = GetTickCount();
 	if (isPending)
 	{
 		char signature[] = "LHMP";
@@ -69,11 +70,18 @@ void CMasterList::Pulse()
 			this->client->DellocatePacket(pack);
 		}
 
-		unsigned int time = GetTickCount();
+		
 		if ((time - this->timestampStart) > 1000)
 		{
 			this->HandleMasterResponse(MASTERLIST_CONNECTIONFAILED);
 			this->isPending = false;
+		}
+	}
+	else {
+		if (time > (this->lastMasterPost + MASTERSERVER_UPDATE_INTERVAL))
+		{
+			// trigger a new request to server
+			this->AddServerToMaster();
 		}
 	}
 }
@@ -95,4 +103,6 @@ void CMasterList::HandleMasterResponse(int reason)
 		g_CCore->GetLog()->AddNormalLog("[Master] Server's been successfully added to the masterlist !");
 		break;
 	}
+
+	this->lastMasterPost = RakNet::GetTimeMS();
 }

@@ -35,6 +35,7 @@ void CCore::OnSecondElapsed()
 	// update console's title
 	m_cNetworkManager.UpdateConsoleName();
 
+
 }
 
 int CCore::Init(int port,int players, std::string startpos, std::string svrname,std::string mode, int visible,char* website,char* password)
