@@ -2078,8 +2078,32 @@ _declspec(naked) void Hook_Car_EngineChangeStatus03()
 	}
 }
 
+// During the game loads, the game name(title) is loaded from exe
+// This function replaces the loading code with our own title
+// address 005FA715
+char LHMP_TITLE[] = "Lost Heaven Multiplayer";
+
+void CopyTitle(char* dest)
+{
+	strcpy(dest, LHMP_TITLE);
+}
+_declspec(naked) void Hook_LoadGameTitle()
+{
+	_asm {
+		LEA EAX, DWORD PTR SS : [ESP + 0x60]
+		PUSH EAX
+		CALL CopyTitle
+		ADD ESP, 0x4
+		PUSH 0x005FA728
+		RETN
+	}
+}
+
 void SetHooks()
 {
+	//---------------------- change game's title to LHMP-----------------------//
+	Tools::InstallJmpHook(0x005FA715, (DWORD)&Hook_LoadGameTitle);
+
 	//---------------------- Fix deleting car
 
 	Tools::InstallJmpHook(0x005D4AA1, (DWORD)&Fix_CarDeleting);

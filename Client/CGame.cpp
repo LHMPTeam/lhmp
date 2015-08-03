@@ -1485,6 +1485,7 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 
 	g_CCore->GetGame()->ShouldKill = true;
 
+	/*TEST
 	_asm {
 		sub ESP, 0xC	// create null vector
 			mov DWORD PTR DS : [ESP], 0x0
@@ -1497,7 +1498,7 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 			PUSH locPart
 			PUSH 0
 			LEA EAX, DWORD PTR SS : [ESP + 0xC]
-			PUSH 0x41200000
+			PUSH 0x447a0000	// damagee -> 1000.0f
 			PUSH EAX
 			LEA ECX, DWORD PTR SS : [ESP + 0x14]
 			LEA EAX, DWORD PTR SS : [ESP + 0x14]
@@ -1506,6 +1507,31 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 			PUSH locReason
 			MOV ECX, ESI
 			CALL DWORD PTR DS : [EDX + 0x7C];  Game.004CBC10
+			add ESP, 0xC
+	}
+	*/
+	_asm {
+		sub ESP, 0xC	// create null vector
+			mov DWORD PTR DS : [ESP], 0x0
+			mov DWORD PTR DS : [ESP + 0x4], 0x0
+			mov DWORD PTR DS : [ESP + 0x8], 0x0
+			MOV ESI, locPed
+			MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
+			MOV EDX, DWORD PTR DS : [ESI]
+			PUSH 0
+			PUSH locPart
+			PUSH 0
+			LEA EAX, DWORD PTR SS : [ESP + 0xC]
+			PUSH 0x447a0000	// damagee -> 1000.0f
+			PUSH EAX
+			LEA ECX, DWORD PTR SS : [ESP + 0x14]
+			LEA EAX, DWORD PTR SS : [ESP + 0x14]
+			PUSH ECX
+			PUSH EAX
+			PUSH locReason
+			MOV ECX, ESI
+			MOV EAX, 0x00496710
+			CALL EAX; Game.00496710; \Game.00496710
 			add ESP, 0xC
 	}
 	g_CCore->GetGame()->ShouldKill = false;

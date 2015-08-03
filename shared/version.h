@@ -15,6 +15,8 @@
 
 // protocol version (byte) 0-255
 #define LHMP_QUERY_PROTOCOL	0
+
+#define LHMP_TITLE "Lost Heaven Multiplayer"
 enum versionTypes
 {
 	VERSION_TEST,

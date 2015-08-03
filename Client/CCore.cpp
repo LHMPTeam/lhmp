@@ -65,12 +65,18 @@ void CCore::Run()
 	//004CC9F0     /EB 1D         JMP SHORT Game.004CCA0F
 	byte fixLeavingCarWhenEngineIsOn[] = "\xEB\x1D";
 
+	//1006A1F7
+	byte preventALTTABfocusloosing[] = "\xEB\x69";
+//-----------------------------------------------------------------------------
+	// Fix lost of focus when ALT-Tabing game
+	// it just blocks case of switch at WinMessage procedure, which
+	// processes WM_ACTIVATE message
+	PatchBytes(0x1006A1F7, preventALTTABfocusloosing);
 	// Fix player leaving from car when engine's on
-
 	PatchBytes(0x004CC9F0, fixLeavingCarWhenEngineIsOn);
 
 	// TODO - probably unneeded since we are using DirectInput to block input
-	PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
+	//PatchBytes(0x004CBC1B, disableImmortalModeWhenLockedControls);
 
 /*------ Is game loaded -> hook some code in game load, call our naked func IsGameLoaded ---------*/
 	// fix game end - probably

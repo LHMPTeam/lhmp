@@ -9,7 +9,7 @@
 extern CCore* g_CCore;
 void GetAdressAsModule(DWORD addr, char* outbuffer)
 {
-	HMODULE hMods[1024];
+	HMODULE hMods[512];
 	HANDLE hProcess = GetCurrentProcess();
 	DWORD cbNeeded;
 	unsigned int i;
@@ -61,7 +61,7 @@ LONG	HandleIt(struct _EXCEPTION_POINTERS * ExceptionInfo)
 		ExceptionInfo->ContextRecord->Ecx, ExceptionInfo->ContextRecord->Edx, ExceptionInfo->ContextRecord->Ebx,
 		ExceptionInfo->ContextRecord->Esp, ExceptionInfo->ContextRecord->Ebp, ExceptionInfo->ContextRecord->Esi,
 		ExceptionInfo->ContextRecord->Edi,address);
-	g_CCore->GetCrashHandler()->SaveDumpOnDisk(buff);
+	//g_CCore->GetCrashHandler()->SaveDumpOnDisk(buff);
 
 	STARTUPINFOA siStartupInfo;
 	PROCESS_INFORMATION piProcessInfo;
@@ -98,12 +98,12 @@ void	CCrashHandler::Prepare()
 
 void	CCrashHandler::SaveDumpOnDisk(char* str)
 {
-	std::fstream zapis;
-	zapis.open("lhmp/crashdump.txt", std::ios::app);
-	zapis << "---" << std::endl;
-	zapis << "MINI DUMP"<< std::endl;
-	zapis << str << std::endl;
-	zapis.close();
+	FILE* log = fopen("lhmp/crashdump.txt", "a");
+	if (log)
+	{
+		fprintf(log, "---\nMINIDUMP\n%s\n",str);
+		fclose(log);
+	}
 }
 
 void CCrashHandler::SendReport(char* report){

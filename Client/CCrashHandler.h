@@ -16,7 +16,7 @@
 #include "RakNetTypes.h"
 #include "RakSleep.h"
 #include "TCPInterface.h"
-
+#include <mutex>
 using namespace RakNet;
 class CCrashHandler
 {
@@ -25,5 +25,7 @@ public:
 
 	void	SaveDumpOnDisk(char*);
 	void	SendReport(char*);
+	std::mutex	mtx;
+private:
 };
 #endif

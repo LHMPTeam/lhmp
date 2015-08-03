@@ -362,6 +362,8 @@ void CEngineStack::DoMessage()
 					if (ped->GetEntity() != 0)
 					{
 						g_CCore->GetGame()->KillPed(ped->GetEntity());
+
+						ped->SetEntity(NULL);
 					}
 				}
 			}
@@ -383,7 +385,11 @@ void CEngineStack::DoMessage()
 				{
 					if (ped->GetEntity() != 0)
 					{
+						//g_CCore->GetGame()->KillPed(ped->GetEntity());
 						g_CCore->GetGame()->KillPedEx(ped->GetEntity(), pw->reason, pw->part);
+						//*(byte*) (ped->GetEntity() + 0x5D) = 0x0;
+						//g_CCore->GetGame()->FixAfterDeath(ped->GetEntity());
+						//ped->SetEntity(NULL);
 					}
 				}
 			}
