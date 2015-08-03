@@ -3460,6 +3460,16 @@ void CGame::WeatherSetParam(char* str, int value)
 		parameter = 5;
 		usefloated = true;
 	}
+	else if (strcmp(str, "COLORH") == 0)
+	{
+		parameter = 4;
+		usefloated = false;
+	}
+	else if (strcmp(str, "COLORL") == 0)
+	{
+		parameter = 3;
+		usefloated = false;
+	}
 	else if (strcmp(str, "LEN") == 0)
 	{
 		parameter = 6;
