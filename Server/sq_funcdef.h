@@ -101,3 +101,10 @@ SQInteger sq_include(SQVM *vm);
 
 SQInteger sq_callClientFunc(SQVM *vm);
 SQInteger sq_callFunc(SQVM *vm);
+
+SQInteger sq_sqlite3_query(SQVM *vm);
+SQInteger sq_sqlite3_finalize(SQVM *vm);
+SQInteger sq_sqlite3_step(SQVM *vm);
+SQInteger sq_sqlite3_column_count(SQVM *vm);
+SQInteger sq_sqlite3_column_name(SQVM *vm);
+SQInteger sq_sqlite3_column_text(SQVM *vm);

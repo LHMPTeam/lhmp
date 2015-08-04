@@ -28,6 +28,12 @@
     <Filter Include="Source Files\UDPWrapper">
       <UniqueIdentifier>{66552f6c-f653-4f54-8076-178458f82f32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SQLite">
+      <UniqueIdentifier>{d49817b7-c9d7-4c77-aa15-11f64a90bb4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SQLite">
+      <UniqueIdentifier>{c9c600e5-f6d1-4b79-bc21-aece030316e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -449,6 +455,9 @@
     </ClCompile>
     <ClCompile Include="CMasterServer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdks\sqlite\sqlite3.c">
+      <Filter>Source Files\SQLite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1018,6 +1027,15 @@
     </ClInclude>
     <ClInclude Include="CMasterServer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\sqlite\sqlite3.h">
+      <Filter>Header Files\SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\sqlite\sqlite3ext.h">
+      <Filter>Header Files\SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdks\sqlite\SQLiteResultPool.h">
+      <Filter>Header Files\SQLite</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

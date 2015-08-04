@@ -102,6 +102,13 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "iniRemoveFile", (SQFUNCTION)sq_iniRemoveFile, 2, ".s");
 	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s");
 
+	RegisterFunction(vM, "sqlite3_query", (SQFUNCTION)sq_sqlite3_query, 3, ".ss");
+	RegisterFunction(vM, "sqlite3_finalize", (SQFUNCTION)sq_sqlite3_finalize, 2, ".n");
+	RegisterFunction(vM, "sqlite3_column_name", (SQFUNCTION)sq_sqlite3_column_name, 3, ".nn");
+	RegisterFunction(vM, "sqlite3_column_text", (SQFUNCTION)sq_sqlite3_column_text, 3, ".nn");
+	RegisterFunction(vM, "sqlite3_step", (SQFUNCTION)sq_sqlite3_step, 2, ".n");
+	RegisterFunction(vM, "sqlite3_column_count", (SQFUNCTION)sq_sqlite3_column_count, 2, ".n");
+
 	RegisterFunction(vM, "include", (SQFUNCTION)sq_include, 2, ".s");
 
 	RegisterFunction(vM, "callClientFunc", (SQFUNCTION)sq_callClientFunc, 5, ".nss.");
@@ -157,5 +164,35 @@ int Init(SQVM* vM)
 	RegisterVariable(vM, "KEY_ARROWLEFT", 37);
 	RegisterVariable(vM, "KEY_ARROWRIGHT", 38);
 
+	RegisterVariable(vM, "SQLITE_ERROR", 1);
+	RegisterVariable(vM, "SQLITE_INTERNAL", 2);
+	RegisterVariable(vM, "SQLITE_PERM", 3);
+	RegisterVariable(vM, "SQLITE_ABORT", 4);     /* Callback routine requested an abort */
+	RegisterVariable(vM, "SQLITE_BUSY", 5);     /* The database file is locked */
+	RegisterVariable(vM, "SQLITE_LOCKED", 6);     /* A table in the database is locked */
+	RegisterVariable(vM, "SQLITE_NOMEM", 7);     /* A malloc() failed */
+	RegisterVariable(vM, "SQLITE_READONLY", 8);     /* Attempt to write a readonly database */
+	RegisterVariable(vM, "SQLITE_INTERRUPT", 9);     /* Operation terminated by sqlite3_interrupt()*/
+	RegisterVariable(vM, "SQLITE_IOERR", 10);     /* Some kind of disk I/O error occurred */
+	RegisterVariable(vM, "SQLITE_CORRUPT", 11);     /* The database disk image is malformed */
+	RegisterVariable(vM, "SQLITE_NOTFOUND", 12);     /* Unknown opcode in sqlite3_file_control() */
+	RegisterVariable(vM, "SQLITE_FULL", 13);     /* Insertion failed because database is full */
+	RegisterVariable(vM, "SQLITE_CANTOPEN", 14);     /* Unable to open the database file */
+	RegisterVariable(vM, "SQLITE_PROTOCOL", 15);     /* Database lock protocol error */
+	RegisterVariable(vM, "SQLITE_EMPTY", 16);     /* Database is empty */
+	RegisterVariable(vM, "SQLITE_SCHEMA", 17);     /* The database schema changed */
+	RegisterVariable(vM, "SQLITE_TOOBIG", 18);     /* String or BLOB exceeds size limit */
+	RegisterVariable(vM, "SQLITE_CONSTRAINT", 19);     /* Abort due to constraint violation */
+	RegisterVariable(vM, "SQLITE_MISMATCH", 20);     /* Data type mismatch */
+	RegisterVariable(vM, "SQLITE_MISUSE", 21);     /* Library used incorrectly */
+	RegisterVariable(vM, "SQLITE_NOLFS", 22);     /* Uses OS features not supported on host */
+	RegisterVariable(vM, "SQLITE_AUTH", 23);     /* Authorization denied */
+	RegisterVariable(vM, "SQLITE_FORMAT", 24);     /* Auxiliary database format error */
+	RegisterVariable(vM, "SQLITE_RANGE", 25);     /* 2nd parameter to sqlite3_bind out of range */
+	RegisterVariable(vM, "SQLITE_NOTADB", 26);     /* File opened that is not a database file */
+	RegisterVariable(vM, "SQLITE_NOTICE", 27);     /* Notifications from sqlite3_log() */
+	RegisterVariable(vM, "SQLITE_WARNING", 28);     /* Warnings from sqlite3_log() */
+	RegisterVariable(vM, "SQLITE_ROW", 100);    /* sqlite3_step() has another row ready */
+	RegisterVariable(vM, "SQLITE_DONE", 101);    /* sqlite3_step() has finished executing */
 	return 1; 
 }

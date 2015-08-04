@@ -5,6 +5,9 @@
 #include <sstream>
 #include <ios>
 #include "../shared/tools.h"
+#include "../sdks/sqlite/sqlite3.h"
+#include "../sdks/sqlite/SQLiteResultPool.h"
+
 extern CCore* g_CCore;
 
 SQInteger sq_playerSetWeatherParam(SQVM *vm)
@@ -1706,3 +1709,130 @@ SQInteger sq_callFunc(SQVM *vm)
 	return 1;
 }
 
+
+SQInteger sq_sqlite3_query(SQVM *vm)
+{
+	sqlite3 *db;
+	sqlite3_stmt *res;
+	const char *errMSG;
+	const SQChar* database;
+	const SQChar* query;
+
+	sq_getstring(vm, -2, &database);
+	sq_getstring(vm, -1, &query);
+
+	int error = sqlite3_open("test.db", &db);
+
+	if (error)
+	{
+		printf("[SQLITE] Error while openning %s database !\n", database);
+		sqlite3_close(db);
+		sq_pushinteger(vm, -1);
+		return 1;
+	}
+
+	error = sqlite3_prepare_v2(db, query, strlen(query), &res, NULL);
+
+	if (error != SQLITE_OK)
+	{
+		printf("[SQLITE] Error while executing query %s in %s database !\n", query, database);
+		sqlite3_close(db);
+		sq_pushinteger(vm, -1);
+		return 1;
+	}
+
+	SQLiteQueryPool.push_back(res);
+	int idOfResult = SQLiteResultPool_GetResultID(res);
+
+	sq_pushinteger(vm, idOfResult);
+
+	sqlite3_close(db);
+	return 1;
+}
+
+SQInteger sq_sqlite3_step(SQVM *vm)
+{
+	SQInteger resultid;
+	sq_getinteger(vm, -1, &resultid);
+
+	if (resultid != -1)
+	{
+		sqlite3_stmt *res = SQLiteQueryPool[resultid];
+		sq_pushinteger(vm, sqlite3_step(res));
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_sqlite3_column_count(SQVM *vm)
+{
+	SQInteger resultid;
+	sq_getinteger(vm, -1, &resultid);
+
+	if (resultid != -1)
+	{
+		sqlite3_stmt *res = SQLiteQueryPool[resultid];
+		sq_pushinteger(vm, sqlite3_column_count(res));
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_sqlite3_finalize(SQVM *vm)
+{
+	SQInteger resultid;
+	sq_getinteger(vm, -1, &resultid);
+
+	if (resultid != -1)
+	{
+		sqlite3_stmt *res = SQLiteQueryPool[resultid];
+		sqlite3_finalize(res);
+
+		SQLiteQueryPool.erase(SQLiteQueryPool.begin(), SQLiteQueryPool.begin() + resultid);
+		sq_pushbool(vm, true);
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_sqlite3_column_name(SQVM *vm)
+{
+	SQInteger resultid;
+	SQInteger index;
+
+	sq_getinteger(vm, -2, &resultid);
+	sq_getinteger(vm, -1, &index);
+
+	if (resultid != -1 && index != -1)
+	{
+		sqlite3_stmt *res = SQLiteQueryPool[resultid];
+
+		const char* returnValue = sqlite3_column_name(res, index);
+		sq_pushstring(vm, returnValue, strlen(returnValue));
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
+
+SQInteger sq_sqlite3_column_text(SQVM *vm)
+{
+	SQInteger resultid;
+	SQInteger index;
+
+	sq_getinteger(vm, -2, &resultid);
+	sq_getinteger(vm, -1, &index);
+
+	if (resultid != -1 && index != -1)
+	{
+		sqlite3_stmt *res = SQLiteQueryPool[resultid];
+		std::string test = (char*)sqlite3_column_text(res, index);
+		sq_pushstring(vm, test.c_str(), test.length());
+		return 1;
+	}
+	sq_pushnull(vm);
+	return 1;
+}
