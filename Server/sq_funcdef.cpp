@@ -1721,7 +1721,7 @@ SQInteger sq_sqlite3_query(SQVM *vm)
 	sq_getstring(vm, -2, &database);
 	sq_getstring(vm, -1, &query);
 
-	int error = sqlite3_open("test.db", &db);
+	int error = sqlite3_open(database, &db);
 
 	if (error)
 	{
@@ -1736,6 +1736,7 @@ SQInteger sq_sqlite3_query(SQVM *vm)
 	if (error != SQLITE_OK)
 	{
 		printf("[SQLITE] Error while executing query %s in %s database !\n", query, database);
+		printf("[SQLITE] Error: %s\n", sqlite3_errmsg(db));
 		sqlite3_close(db);
 		sq_pushinteger(vm, -1);
 		return 1;
@@ -1789,7 +1790,6 @@ SQInteger sq_sqlite3_finalize(SQVM *vm)
 	{
 		sqlite3_stmt *res = SQLiteQueryPool[resultid];
 		sqlite3_finalize(res);
-
 		SQLiteQueryPool.erase(SQLiteQueryPool.begin(), SQLiteQueryPool.begin() + resultid);
 		sq_pushbool(vm, true);
 		return 1;
