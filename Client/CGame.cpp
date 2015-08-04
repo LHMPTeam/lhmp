@@ -1510,6 +1510,7 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 			add ESP, 0xC
 	}
 	*/
+	PED* localPlayer = g_CCore->GetGame()->GetLocalPED();
 	_asm {
 		sub ESP, 0xC	// create null vector
 			mov DWORD PTR DS : [ESP], 0x0
@@ -1520,7 +1521,8 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 			MOV EDX, DWORD PTR DS : [ESI]
 			PUSH 0
 			PUSH locPart
-			PUSH 0
+			MOV EAX, localPlayer
+			PUSH EAX
 			LEA EAX, DWORD PTR SS : [ESP + 0xC]
 			PUSH 0x447a0000	// damagee -> 1000.0f
 			PUSH EAX

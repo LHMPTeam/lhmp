@@ -2099,8 +2099,25 @@ _declspec(naked) void Hook_LoadGameTitle()
 	}
 }
 
+// this hook is called when WM_CLOSE is triggered
+// -> when user(player) closes the game's window
+//1006A1F0
+_declspec(naked) void Hook_onWindowClose()
+{
+	//g_CCore->ShutdownClient();
+	g_CCore->GetNetwork()->GetPeer()->Shutdown(100, 0, IMMEDIATE_PRIORITY);
+	_asm
+	{
+		PUSH 0
+			MOV EAX, 0x01008A4A0
+			CALL EAX; ls3df.1008A4A0
+	}
+}
+
 void SetHooks()
 {
+	Tools::InstallJmpHook(0x1006A1F0, (DWORD)&Hook_onWindowClose);
+
 	//---------------------- change game's title to LHMP-----------------------//
 	Tools::InstallJmpHook(0x005FA715, (DWORD)&Hook_LoadGameTitle);
 
