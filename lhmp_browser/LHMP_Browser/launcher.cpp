@@ -875,11 +875,7 @@ bool Launcher::JoinGame(QString address, QString password) {
         int loops = 0;
 
         while (hWnd == NULL && loops < 10000) {
-            hWnd = FindWindow(NULL, TEXT("Mafia"));
-
-            if (hWnd == NULL) {
-                hWnd = FindWindow(NULL, TEXT("Mafia ..zzZZ"));
-            }
+            hWnd = FindWindow(NULL, TEXT("Mafia - Lost Heaven Multiplayer"));
 
             Sleep(1);
 

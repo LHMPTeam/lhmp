@@ -2081,7 +2081,7 @@ _declspec(naked) void Hook_Car_EngineChangeStatus03()
 // During the game loads, the game name(title) is loaded from exe
 // This function replaces the loading code with our own title
 // address 005FA715
-char LHMP_TITLE[] = "Lost Heaven Multiplayer";
+char LHMP_TITLE[] = "Mafia - Lost Heaven Multiplayer";
 
 void CopyTitle(char* dest)
 {
