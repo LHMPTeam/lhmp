@@ -37,7 +37,7 @@ int main()
 	g_CCore->GetLog()->AddNormalLog(" _        _   _          _      _    _____			");
 	g_CCore->GetLog()->AddNormalLog("| |      | | | |    _   | |\\  /| |  |     \\				");
 	g_CCore->GetLog()->AddNormalLog("| |      | |_| |   |_|  | | \\/ | |  |  ___/	Ver.:\t%d.%d", LHMP_VERSION_MAJOR, LHMP_VERSION_MINOR);
-	g_CCore->GetLog()->AddNormalLog("| |      | |_| |    _   | |\\__/| |  | |		Build:\t%s(%.5s)",__DATE__,__TIME__);
+	g_CCore->GetLog()->AddNormalLog("| |      | |_| |    _   | |\\__/| |  | |		Build:\t%s (%.5s)",__DATE__,__TIME__);
 	g_CCore->GetLog()->AddNormalLog("| |____  | | | |   |_|  | |    | |  | |		OS:\t%s", LHMP_PLATFORM);
 	g_CCore->GetLog()->AddNormalLog("|______| |_| |_|        |_|    |_|  |_|					");
 	g_CCore->GetLog()->AddNormalLog("");

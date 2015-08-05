@@ -76,7 +76,7 @@ private:
 
     QString nickname, clientVersion, mafiaPath, filesURL, serversURL;
 
-    QString launcherVersion = "1.0.3";
+    QString launcherVersion = "1.0.4";
     QString filesPath = "lhmp/";
     QUrl launcherUpdateJSONURL = QUrl("http://lh-mp.eu/launcher/launcher.json");
 };
