@@ -340,6 +340,8 @@ void Launcher::replyFinished(QNetworkReply *reply)
 
                 if (name == "loader.exe" || name == "Game.exe" || name == "LS3DF.dll" || name == "CrashHandler.exe") {
                     location = QString("%1/%2").arg(mafiaPath).arg(name);
+
+                    qDebug() << location;
                 }
 
                 hashLocal = FileChecksum(location);
@@ -457,7 +459,7 @@ void Launcher::replyFinished(QNetworkReply *reply)
                         needsUpdatingCount--;
                     }
                 }
-            } else if (fileName == "loader.exe") {
+            } else if (fileName == "loader.exe" || fileName == "CrashHandler.exe") {
                 QString path = QString("%1/%2").arg(mafiaPath).arg(fileName);
 
                 QFile *file = new QFile(path);
@@ -1068,4 +1070,16 @@ void Launcher::on_pushButton_7_clicked()
 void Launcher::on_pushButton_clicked()
 {
     if (!image_link.isEmpty()) QDesktopServices::openUrl(QUrl(image_link));
+}
+
+void Launcher::on_lineEdit_textChanged(const QString &arg1)
+{
+
+}
+
+void Launcher::on_lineEdit_textEdited(const QString &arg1)
+{
+    QSettings settings("Lost Heaven Multiplayer", "Launcher");
+
+    settings.setValue("nickname", arg1);
 }

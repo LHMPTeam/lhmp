@@ -54,6 +54,10 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_lineEdit_textChanged(const QString &arg1);
+
+    void on_lineEdit_textEdited(const QString &arg1);
+
 private:
     Ui::Launcher *ui;
 
@@ -76,7 +80,7 @@ private:
 
     QString nickname, clientVersion, mafiaPath, filesURL, serversURL;
 
-    QString launcherVersion = "1.0.4";
+    QString launcherVersion = "1.0.5";
     QString filesPath = "lhmp/";
     QUrl launcherUpdateJSONURL = QUrl("http://lh-mp.eu/launcher/launcher.json");
 };
