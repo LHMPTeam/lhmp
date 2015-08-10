@@ -11,10 +11,14 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <psapi.h>
+#include <string.h>
+#include <iostream>
 
 void ACScanFromPath(WCHAR cPath[MAX_PATH]);
 void ACScanModules();
 void ACMainThread();
+void ACSpeedhack();
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam);
 
 HANDLE hProcessSelf;
 

@@ -1,5 +1,21 @@
 #include "AntiCheat.h"
 
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
+	char title[80];
+	std::string str(title);
+	std::string stk("Cheat Engine");
+
+	GetWindowText(hwnd, title, sizeof(title));
+	str = title;
+
+	std::size_t found = str.find(stk);
+	if (found != std::string::npos) {
+		return false;
+	}
+
+	return true;
+}
+
 void ACScanFromPath(WCHAR cPath[MAX_PATH]) {
 	DWORD dwRead;
 	DWORD dwChecksum;
@@ -102,10 +118,34 @@ void ACScanProcesses() {
 	}
 }
 
+void ACSpeedhack() {
+	int time = GetTickCount();
+
+	Sleep(100);
+
+	int timeElapsed = GetTickCount() - time;
+
+	if (timeElapsed >= 115) {
+		// Speedhacking, kill process
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
+}
+
+void ACCheatEngine() {
+	BOOL result = EnumWindows(EnumWindowsProc, NULL);
+
+	if (result == FALSE) {
+		// CE open
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
+}
+
 void ACMainThread() {
 	while (1) {
 		ACScanProcesses();
 		ACScanModules();
+		ACSpeedhack();
+		ACCheatEngine();
 
 		Sleep(1000);
 	}
