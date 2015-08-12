@@ -4,6 +4,7 @@
 extern CCore *g_CCore;
 CPed::CPed()
 {
+	this->SetEntity(NULL);
 	this->SetActive(true);
 	isActive = true;
 	this->SetIsOnFoot(true);

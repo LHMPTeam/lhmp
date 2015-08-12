@@ -304,7 +304,7 @@ void CGame::Camera_lock(DWORD address)
 void CGame::ChangeSkin(DWORD PED,int skinId)
 {
 	char buff[500];
-	sprintf(buff, "CGame::ChangeSkin %d %d", PED, skinId);
+	sprintf(buff, "CGame::ChangeSkin %u %d", PED, skinId);
 	g_CCore->GetLog()->AddLog(buff);
 
 	skinId = Tools::Clamp(skinId, 0, (int) (sizeof(SKINS) / 200));
@@ -825,9 +825,8 @@ void CGame::PreRespawn()
 		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
 		if (pickup != NULL)
 		{
-			//g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
-			//delete pickup;
-			g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
+			if (pickup->GetEntity() != NULL)
+				g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
 			g_CCore->GetPickupPool()->Delete(i);
 		}
 	}
@@ -1232,7 +1231,7 @@ void CGame::AddWeapon(DWORD PED, DWORD wepCat, DWORD wepID,DWORD wepLoaded,DWORD
 	//obj = strtol (varlist,0,16);
 	_asm {
 		sub esp,0x100
-		mov eax,[wepCat]						;// e.g. 0x9
+		mov eax,wepCat						;// e.g. 0x9
 		mov DWORD PTR DS:[esp],eax				
 		mov eax,wepID							;// e.g. 0x7
 		mov DWORD PTR DS:[esp+0x4],eax
