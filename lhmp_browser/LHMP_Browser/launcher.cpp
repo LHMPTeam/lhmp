@@ -201,6 +201,37 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent), ui(new Ui::Launcher) 
 
         file.close();
     }
+
+    OSVERSIONINFO osvi;
+
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+    GetVersionEx(&osvi);
+
+    if (osvi.dwMajorVersion >= 6) {
+        QSettings settings("Lost Heaven Multiplayer", "Launcher");
+
+        int screen = settings.value("screen", 0).toInt();
+
+        if (screen == 0) {
+            QMessageBox msg;
+            msg.setWindowTitle("Lost Heaven Multiplayer");
+            msg.setText("Mafia's fullscreen mode does not work under Windows 10 and up.");
+            msg.setInformativeText("You can use the compability mode which you can select from the settings menu.<br/><br/>Do you want to open it now?");
+            msg.setIcon(QMessageBox::Information);
+            msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+            msg.setDefaultButton(QMessageBox::Ok);
+
+            int ret = msg.exec();
+
+            if (ret == QMessageBox::Ok) {
+                Settings settings;
+                settings.setModal(true);
+                settings.exec();
+            }
+        }
+    }
 }
 
 Launcher::~Launcher()
@@ -876,7 +907,7 @@ bool Launcher::JoinGame(QString address, QString password) {
 
         int loops = 0;
 
-        while (hWnd == NULL && loops < 10000) {
+        while (hWnd == NULL && loops < 5000) {
             hWnd = FindWindow(NULL, TEXT("Mafia - Lost Heaven Multiplayer"));
 
             Sleep(1);

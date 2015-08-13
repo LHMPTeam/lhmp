@@ -16,6 +16,7 @@
 #include <QFileDialog>
 #include <QTreeView>
 #include <QSettings>
+#include <VersionHelpers.h>
 
 namespace Ui {
 class Launcher;

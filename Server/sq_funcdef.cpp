@@ -749,7 +749,7 @@ SQInteger sq_serverGetName(SQVM *vm)
 }
 SQInteger sq_serverGetGamemodeName(SQVM *vm)
 {
-	sq_pushstring(vm, g_CCore->GetNetworkManager()->GetServerName().c_str(), g_CCore->GetNetworkManager()->GetServerName().length());
+	sq_pushstring(vm, g_CCore->GetNetworkManager()->GetServerMode().c_str(), g_CCore->GetNetworkManager()->GetServerMode().length());
 	return 1;
 }
 SQInteger sq_serverSetGamemodeName(SQVM *vm)
