@@ -25,14 +25,14 @@ void CMasterList::AddServerToMaster()
 	// send request to master
 	client->SendData(7, message);
 
-	this->timestampStart = GetTickCount();
+	this->timestampStart = RakNet::GetTimeMS();
 	this->isPending = true;
 }
 
 // Tick - handles master-server communication
 void CMasterList::Pulse()
 {
-	unsigned int time = GetTickCount();
+	unsigned int time = RakNet::GetTimeMS();
 	if (isPending)
 	{
 		char signature[] = "LHMP";
@@ -49,29 +49,28 @@ void CMasterList::Pulse()
 					case '1':
 						// ok, server is online, now let's wait for task response
 						g_CCore->GetLog()->AddNormalLog("[Master] Connected to master!");
-						this->timestampStart = GetTickCount();
+						this->timestampStart = RakNet::GetTimeMS();
 						break;
 					case '2':
 						// server has already been registered
 						this->HandleMasterResponse(MASTERLIST_OK); 
 						this->isPending = false;
-						return;
-
 						break;
 					case '3':
 						// fail
 						this->HandleMasterResponse(MASTERLIST_FAILED);
 						this->isPending = false;
-						return;
+						break;
 					}
 				}
 			}
 			// dellocates dynamical memory in order to prevent any memory leak
 			this->client->DellocatePacket(pack);
+			return;
 		}
 
 		
-		if ((time - this->timestampStart) > 1000)
+		if (time > this->timestampStart && (time - this->timestampStart) > 5000)
 		{
 			this->HandleMasterResponse(MASTERLIST_CONNECTIONFAILED);
 			this->isPending = false;
@@ -92,12 +91,13 @@ void CMasterList::HandleMasterResponse(int reason)
 	switch (reason)
 	{
 	case MASTERLIST_CONNECTIONFAILED:
-		g_CCore->GetLog()->AddNormalLog("[Error] Master server is down !"); 
+		g_CCore->GetLog()->AddNormalLog("[Error] Master server is down ! Retrying in %u minute(s)",MASTERSERVER_UPDATE_INTERVAL/1000); 
 		g_CCore->GetLog()->AddNormalLog("        This server won't be visible in server list !");
 		break;
 	case MASTERLIST_FAILED:
-		g_CCore->GetLog()->AddNormalLog("[Error] Failed to request master server !");
+		g_CCore->GetLog()->AddNormalLog("[Error] Masterlist cound't connect this server from the internet ");
 		g_CCore->GetLog()->AddNormalLog("        This server won't be visible in server list !");
+		g_CCore->GetLog()->AddNormalLog("        Make sure you have public IP & ports are open and forwarded !");
 		break;
 	case MASTERLIST_OK:
 		g_CCore->GetLog()->AddNormalLog("[Master] Server's been successfully added to the masterlist !");

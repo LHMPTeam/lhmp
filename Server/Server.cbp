@@ -25,6 +25,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="dl" />
 				</Linker>
 			</Target>
 		</Build>
@@ -319,6 +320,9 @@
 		<Unit filename="../sdks/UDPWrapper/clhmpquery.h" />
 		<Unit filename="../sdks/md5/md5.cpp" />
 		<Unit filename="../sdks/md5/md5.h" />
+		<Unit filename="../sdks/sqlite/sqlite3.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../shared/enums.h" />
 		<Unit filename="../shared/gamestructures.h" />
 		<Unit filename="../shared/limits.h" />
@@ -362,6 +366,7 @@
 		<Unit filename="CScript.h" />
 		<Unit filename="CScripts.cpp" />
 		<Unit filename="CScripts.h" />
+		<Unit filename="CTCP.h" />
 		<Unit filename="CTickManager.cpp" />
 		<Unit filename="CTickManager.h" />
 		<Unit filename="CTimer.cpp" />
