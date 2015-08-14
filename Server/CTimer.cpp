@@ -43,7 +43,7 @@ bool CTimer::Tick()
 
 			sq_pushinteger(this->script,param);
 
-			sq_call(this->script,1, true, true);
+			sq_call(this->script,2, true, true);
 
 		}
 
