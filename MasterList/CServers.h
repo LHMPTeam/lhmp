@@ -3,6 +3,7 @@
 
 #include "../sdks/UDPWrapper/CLHMPQuery.h"
 #include <vector>
+#include <mutex>
 
 // Stores a server, provides functions to handle it
 class CServer
@@ -82,12 +83,18 @@ public:
 
 	void Pulse();
 
+	// Locks the mutex, so array should stay consistent and not-changed until UnprotectServers
+	void ProtectServers();
+	// Unlock the mutex
+	void UnprotectServers();
+
 
 private:
 	unsigned int referenceID;
 	CLHMPQuery* query;
 	std::vector <CServer> pool;
-
+	// mutex = C++11 feature
+	std::mutex serversControl;
 	unsigned int lastCheck;
 };
 
