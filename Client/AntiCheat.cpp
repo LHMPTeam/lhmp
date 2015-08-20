@@ -144,7 +144,7 @@ void ACMainThread() {
 	while (1) {
 		ACScanProcesses();
 		ACScanModules();
-		ACSpeedhack();
+		//ACSpeedhack(); // Disable for now because of false positives
 		ACCheatEngine();
 
 		Sleep(1000);

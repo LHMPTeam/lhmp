@@ -16,7 +16,6 @@
 #include <QFileDialog>
 #include <QTreeView>
 #include <QSettings>
-#include <VersionHelpers.h>
 
 namespace Ui {
 class Launcher;
@@ -81,7 +80,7 @@ private:
 
     QString nickname, clientVersion, mafiaPath, filesURL, serversURL;
 
-    QString launcherVersion = "1.0.5";
+    QString launcherVersion = "1.0.6";
     QString filesPath = "lhmp/";
     QUrl launcherUpdateJSONURL = QUrl("http://lh-mp.eu/launcher/launcher.json");
 };
