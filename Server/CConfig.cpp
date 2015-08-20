@@ -1,6 +1,9 @@
+#include "CCore.h"
 #include "CConfig.h"
 #include <cstring>
 #include <cstdlib>
+
+extern CCore *g_CCore;
 
 CConfig::CConfig()
 {
@@ -58,7 +61,7 @@ void	CConfig::LoadConfig()
 		fclose(file);
 	}
 	else {
-		printf("[Error] Cofig file failed to load\n");
+		g_CCore->GetLog()->AddNormalLog("[Error] Cofig file failed to load\n");
 	}
 }
 

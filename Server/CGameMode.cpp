@@ -263,7 +263,7 @@ void CGameMode::SendClientScripts(RakNet::SystemAddress client)
 
 	while (pointer != NULL)
 	{
-		printf("Sending script %s\n",pointer->name);
+		g_CCore->GetLog()->AddNormalLog("Sending script %s\n",pointer->name);
 		bsOut.Write(pointer->name);
 		pointer = pointer->next;
 	}

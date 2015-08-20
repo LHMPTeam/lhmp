@@ -1,10 +1,19 @@
+#include "CCore.h"
 #include "squirrelheads.h"
+
+extern CCore* g_CCore;
 
 void printfunc(HSQUIRRELVM v, const SQChar *s, ...)
 {
+	int len = strlen(s);
+	char* buff = new char[len * 2];
+
 	va_list arglist;
 	va_start(arglist, s);
-	scvprintf(s, arglist);
+	//scvprintf(s, arglist);
+	vsprintf(buff, s, arglist);
 	va_end(arglist);
-	std::cout << std::endl;
+	g_CCore->GetLog()->AddNormalLog(buff, arglist);
+	delete buff;
+	
 }

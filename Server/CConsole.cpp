@@ -130,6 +130,6 @@ void CConsole::Tick()
 			if (player != NULL)
 				pocet++;
 		}
-		std::cout << "Count: " << pocet << std::endl;
+		g_CCore->GetLog()->AddNormalLog("Count: %d",pocet);
 	}
 }

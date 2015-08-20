@@ -181,7 +181,7 @@ void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 		peer->Send(&errStr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 		peer->CloseConnection(packet->systemAddress, true);
 
-		printf("Bad connection attempt. Version hash dismatch. \n");
+		g_CCore->GetLog()->AddNormalLog("Bad connection attempt. Version hash dismatch.");
 		return;
 	}
 	// get network slot for him
@@ -189,7 +189,7 @@ void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 	slot[ID].isUsed = true;
 	slot[ID].sa = packet->systemAddress;
 	// he has a good version
-	printf("A connection is incoming. ID: %d \n", ID);
+	g_CCore->GetLog()->AddNormalLog("A connection is incoming. ID: %d (%s)", ID, packet->systemAddress.ToString());
 	// he has the right version, so let's send him files needed for game / scripts
 	g_CCore->GetFileTransfer()->SendFiles(packet->systemAddress);
 }
@@ -236,9 +236,9 @@ void	CNetworkManager::OnPlayerDisconnect(RakNet::Packet* packet)
 			SendMessageToAll(buff);
 
 			if (packet->data[0] == ID_CONNECTION_LOST)
-				printf("%s[%i] has lost his connection. \n", player->GetNickname(), ID);
+				g_CCore->GetLog()->AddNormalLog("%s[%d] has lost his connection.", player->GetNickname(), ID);
 			else
-				printf("%s[%i] has disconnected.\n", player->GetNickname(), ID);
+				g_CCore->GetLog()->AddNormalLog("%s[%d] has disconnected.", player->GetNickname(), ID);
 
 			g_CCore->GetPlayerPool()->Delete(ID);
 
@@ -270,7 +270,6 @@ void CNetworkManager::Pulse()
 				{
 				case ID_NEW_INCOMING_CONNECTION:
 					{
-						printf("Incoming connection \n");
 					}
 					break;
 				case ID_DISCONNECTION_NOTIFICATION:
@@ -323,7 +322,7 @@ void CNetworkManager::Pulse()
 					char buff[255];
 					sprintf(buff, "#00d717Player #ffffff%s #00d717connected to the server.", player->GetNickname());
 					this->SendMessageToAll(buff);
-					printf("Player %s connected to the server.\n", player->GetNickname());
+					g_CCore->GetLog()->AddNormalLog("Player %s(%s) connected to the server.", player->GetNickname(),packet->systemAddress.ToString());
 
 
 					g_CCore->GetScripts()->onPlayerConnect(ID);
@@ -391,7 +390,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 					bsOut.Write((MessageID)LHMP_PLAYER_CHAT_MESSAGE);
 					bsOut.Write((unsigned short)strlen(output));
 					bsOut.Write(output);
-					printf("[PlayerMessage] ID: %d %s \n", ID, buff);
+					g_CCore->GetLog()->AddNormalLog("[Chat][%s] %s \n", player->GetNickname(), buff);
 
 					for (int i = 0; i < m_pServerMaxPlayers; i++)
 					{
@@ -887,10 +886,10 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			break;
 		case LHMP_SCRIPT_ON_KEY_PRESSED:
 		{
-			int key;
+			unsigned short key;
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
 			bsIn.Read(key);
-			g_CCore->GetScripts()->onPlayerKeyPressed(this->GetIDFromSystemAddress(packet->systemAddress),key);
+			g_CCore->GetScripts()->onPlayerKeyPressed(this->GetIDFromSystemAddress(packet->systemAddress),(int)key);
 		}
 			break;
 		case LHMP_SCRIPT_CALLFUNC:
