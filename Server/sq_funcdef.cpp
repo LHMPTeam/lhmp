@@ -696,7 +696,7 @@ SQInteger sq_playerPutToVehicle(SQVM *vm)
 
 SQInteger sq_playerKickOutVehicle(SQVM *vm)
 {
-	SQInteger	ID, carID, seatID;
+	SQInteger	ID, carID;
 	sq_getinteger(vm, -1, &ID);
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 	if (player != NULL)
@@ -1747,7 +1747,6 @@ SQInteger sq_sqlite3_query(SQVM *vm)
 {
 	sqlite3 *db;
 	sqlite3_stmt *res;
-	const char *errMSG;
 	const SQChar* database;
 	const SQChar* query;
 
