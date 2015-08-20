@@ -693,6 +693,33 @@ SQInteger sq_playerPutToVehicle(SQVM *vm)
 	sq_pushbool(vm, false);
 	return 1;
 }
+
+SQInteger sq_playerKickOutVehicle(SQVM *vm)
+{
+	SQInteger	ID, carID, seatID;
+	sq_getinteger(vm, -1, &ID);
+	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
+	if (player != NULL)
+	{
+		carID = player->GetCurrentCar();
+		CVehicle* veh = g_CCore->GetVehiclePool()->Return(carID);
+		if (veh != NULL)
+		{
+			// todo: to car fast
+			BitStream bsOut;
+			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+			bsOut.Write((MessageID)LHMP_PLAYER_KICK_OUT_VEHICLE);
+			bsOut.Write(ID);
+			bsOut.Write(carID);
+			g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+			sq_pushbool(vm, true);
+			return 1;
+		}
+	}
+	sq_pushbool(vm, false);
+	return 1;
+}
+
 SQInteger sq_playerKick(SQVM *vm)
 {
 	SQInteger	ID;
@@ -1248,6 +1275,12 @@ SQInteger sq_vehicleSetDamage(SQVM *vm)
 	if (veh != NULL)
 	{
 		veh->SetDamage(damage);
+		BitStream bsOut;
+		bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((MessageID)LHMP_VEHICLE_DAMAGE);
+		bsOut.Write(ID);
+		bsOut.Write(damage);
+		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 		return 1;
 	}
 	return 1;

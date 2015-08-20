@@ -642,8 +642,11 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 				else
 				{
 					CPed* ped = g_CCore->GetPedPool()->Return(ID);
-					ped->InCar = carID;
-					ped->SetIsOnFoot(false);
+					if (ped)
+					{
+						ped->InCar = carID;
+						ped->SetIsOnFoot(false);
+					}
 					veh->PlayerEnter(ID, seatID);
 				}
 				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH(ID, seatID, carID);
@@ -652,6 +655,41 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 
 		}
 		break;
+		case LHMP_PLAYER_KICK_OUT_VEHICLE:
+		{
+			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
+			int ID, carID;
+			bsIn.Read(ID);
+			bsIn.Read(carID);
+			char buff[255];
+			sprintf(buff, "[Nm] KICK OUT VEH %d %d", ID, carID);
+			g_CCore->GetLog()->AddLog(buff);
+			CVehicle* veh = g_CCore->GetVehiclePool()->Return(carID);
+			if (veh)
+			{
+				// isLocalPlayer
+				if (ID == g_CCore->GetLocalPlayer()->GetOurID())
+				{
+					g_CCore->GetLocalPlayer()->IDinCar = -1;
+					g_CCore->GetLocalPlayer()->SetIsOnFoot(true);
+					veh->PlayerExit(ID);
+				}
+				else
+				{
+					CPed* ped = g_CCore->GetPedPool()->Return(ID);
+					if (ped)
+					{
+						ped->InCar = -1;
+						ped->SetIsOnFoot(true);
+					}
+					veh->PlayerExit(ID);
+				}
+				ENGINE_STACK::PLAYER_EXIT_VEH* data = new ENGINE_STACK::PLAYER_EXIT_VEH(ID,carID);
+				g_CCore->GetEngineStack()->AddMessage(ES_PLAYER_KICK_OUT_VEHICLE, (DWORD)data);
+			}
+
+		}
+			break;
 		case LHMP_PLAYER_SET_HEALTH:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);

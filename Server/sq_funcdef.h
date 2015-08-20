@@ -23,6 +23,7 @@ SQInteger sq_playerSetMoney(SQVM *vm);
 SQInteger sq_playerEnableMoney(SQVM *vm);
 SQInteger sq_playerGetIP(SQVM *vm);
 SQInteger sq_playerPutToVehicle(SQVM *vm);
+SQInteger sq_playerKickOutVehicle(SQVM *vm);
 SQInteger sq_playerKick(SQVM *vm);
 SQInteger sq_playerGetPing(SQVM *vm);
 SQInteger sq_playerGetName(SQVM *vm);

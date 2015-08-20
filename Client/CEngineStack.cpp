@@ -555,6 +555,30 @@ void CEngineStack::DoMessage()
 			}
 		}
 			break;
+		case CLIENT_ENGINESTACK::ES_PLAYER_KICK_OUT_VEHICLE:
+		{
+			ENGINE_STACK::PLAYER_EXIT_VEH* pw = (ENGINE_STACK::PLAYER_EXIT_VEH*) start->data;
+			if (pw->pID == g_CCore->GetLocalPlayer()->GetOurID())
+			{
+				g_CCore->GetLocalPlayer()->IDinCar = -1;
+				g_CCore->GetLocalPlayer()->SetIsOnFoot(true);
+				g_CCore->GetGame()->KickPlayerFromCarFast(g_CCore->GetLocalPlayer()->GetEntity());
+			}
+			else
+			{
+				CPed* ped = g_CCore->GetPedPool()->Return(pw->pID);
+				if (ped != 0)
+				{
+					if (ped->GetEntity() != 0)
+					{
+						ped->SetIsOnFoot(true);
+						g_CCore->GetGame()->KickPlayerFromCarFast(ped->GetEntity());
+					}
+				}
+			}
+		}
+			break;
+			
 		case CLIENT_ENGINESTACK::ES_PLAYER_EXIT_VEH:
 		{
 			ENGINE_STACK::PLAYER_EXIT_VEH* pw = (ENGINE_STACK::PLAYER_EXIT_VEH*) start->data;

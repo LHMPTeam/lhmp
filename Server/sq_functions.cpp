@@ -27,6 +27,7 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "playerSetRotationVector", (SQFUNCTION)sq_playerSetRotationVector, 5, ".nfff");
 	RegisterFunction(vM, "playerGetIP", (SQFUNCTION)sq_playerGetIP, 2, ".n");
 	RegisterFunction(vM, "playerPutToVehicle", (SQFUNCTION)sq_playerPutToVehicle, 4, ".nnn");
+	RegisterFunction(vM, "playerKickOutVehicle", (SQFUNCTION)sq_playerKickOutVehicle, 2, ".n");
 	RegisterFunction(vM, "playerKick", (SQFUNCTION)sq_playerKick, 2, ".n");
 	RegisterFunction(vM, "playerGetPing", (SQFUNCTION)sq_playerGetPing, 2, ".n");
 	RegisterFunction(vM, "playerGetName", (SQFUNCTION)sq_playerGetName, 2, ".n");
