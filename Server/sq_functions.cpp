@@ -23,7 +23,7 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "playerSetHealth", (SQFUNCTION)sq_playerSetHealth, 3, ".nf");
 	RegisterFunction(vM, "playerSetMoney", (SQFUNCTION)sq_playerSetMoney, 3, ".nn");
 	RegisterFunction(vM, "playerEnableMoney", (SQFUNCTION)sq_playerEnableMoney, 3, ".nn");
-	RegisterFunction(vM, "playerSetRotation", (SQFUNCTION)sq_playerSetRotation, 5, ".nf");
+	RegisterFunction(vM, "playerSetRotation", (SQFUNCTION)sq_playerSetRotation, 3, ".nf");
 	RegisterFunction(vM, "playerSetRotationVector", (SQFUNCTION)sq_playerSetRotationVector, 5, ".nfff");
 	RegisterFunction(vM, "playerGetIP", (SQFUNCTION)sq_playerGetIP, 2, ".n");
 	RegisterFunction(vM, "playerPutToVehicle", (SQFUNCTION)sq_playerPutToVehicle, 4, ".nnn");

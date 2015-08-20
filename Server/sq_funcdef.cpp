@@ -408,8 +408,7 @@ SQInteger sq_playerGetRotation(SQVM *vm)
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 	if (player != NULL)
 	{
-		Vector3D pos = player->GetRotation();
-		sq_pushfloat(vm,Tools::RotationTo360(pos.x, pos.z));
+		sq_pushfloat(vm, player->GetFloatRotation());
 		return 1;
 	}
 	sq_pushnull(vm);
@@ -424,7 +423,8 @@ SQInteger sq_playerGetRotationAsVector(SQVM *vm)
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
 	if (player != NULL)
 	{
-		Vector3D pos = player->GetRotation();
+		float rot = player->GetFloatRotation();
+		Vector3D pos = Tools::ComputeOffsetDegrees(rot);
 		sq_newarray(vm, 0);
 		sq_pushfloat(vm, pos.x);
 		sq_arrayappend(vm, -2);
@@ -610,7 +610,7 @@ SQInteger sq_playerSetRotation(SQVM *vm)
 {
 	SQInteger	ID;
 	SQFloat rotation;
-	sq_getinteger(vm, -4, &ID);
+	sq_getinteger(vm, -2, &ID);
 	sq_getfloat(vm, -1, &rotation);
 
 	CPlayer* player = g_CCore->GetPlayerPool()->Return(ID);
