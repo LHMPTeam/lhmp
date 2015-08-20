@@ -85,6 +85,9 @@ void	CNetwork::OnFail(sockaddr_in client)
 
 void	CNetwork::SendServers(sockaddr_in receiver)
 {
+	// protect data from data-races
+	CCore::getInstance().getServers()->ProtectServers();
+
 	std::vector <CServer>* pool = CCore::getInstance().getServers()->GetPool();
 	unsigned int size = pool->size();
 	unsigned char* data = new unsigned char[(6 * size)+7];
@@ -98,6 +101,8 @@ void	CNetwork::SendServers(sockaddr_in receiver)
 		*(unsigned short*)(7+data + (pointer * 6)+4) = (unsigned short) it->GetPort();
 		pointer++;
 	}
+	// protection is no longer needed
+	CCore::getInstance().getServers()->UnprotectServers();
 
 	unsigned packetSize = (size * 6) + 7;
 
@@ -110,6 +115,9 @@ void	CNetwork::SendServers(sockaddr_in receiver)
 
 void	CNetwork::SendMasterInfo(sockaddr_in receiver)
 {
+	//protect array
+	CCore::getInstance().getServers()->ProtectServers();
+
 	unsigned int players = 0;
 	std::vector <CServer>* pool = CCore::getInstance().getServers()->GetPool();
 	unsigned short servers = pool->size();
@@ -119,6 +127,9 @@ void	CNetwork::SendMasterInfo(sockaddr_in receiver)
 	{
 		players += it->GetPlayers();
 	}
+
+	// end of protection
+	CCore::getInstance().getServers()->UnprotectServers();
 
 	// LHMPs(5) + uint (2) + uint(4) => 11 bytes long packet
 	unsigned char* data = new unsigned char[11];

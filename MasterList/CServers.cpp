@@ -12,6 +12,8 @@ void Callback(unsigned int ID, void* data,unsigned char reason)
 
 void CServers::HandleCallback(unsigned int ID, void* data, unsigned char reason)
 {
+	// place mutex lock here
+	this->ProtectServers();
 	if (this->pool.size() > 0)
 	{
 		std::vector <CServer>::iterator it = this->GetServerWithID(ID);
@@ -39,7 +41,8 @@ void CServers::HandleCallback(unsigned int ID, void* data, unsigned char reason)
 
 		}
 	}
-
+	// place mutex lock here
+	this->UnprotectServers();
 }
 
 void CServers::Prepare()
@@ -54,6 +57,7 @@ void CServers::Prepare()
 
 void CServers::AddServer(sockaddr_in addr, unsigned short port)
 {
+	this->ProtectServers();
 	for (std::vector<CServer>::iterator it = this->pool.begin(); it != this->pool.end(); ++it)
 	{
 #ifdef _WIN32
@@ -68,19 +72,22 @@ void CServers::AddServer(sockaddr_in addr, unsigned short port)
 				if (it->IsPending())
 				{
 					this->query->queryInfo(it->GetIP(), it->GetPort() + 1, it->GetID());
+					this->UnprotectServers();
 					return;
 				}
 				else {
 					// if already in list
 					CCore::getInstance().getNetwork()->GetServerHandle()->SendData(5, "LHMP2", (sockaddr*)&addr);
+					this->UnprotectServers();
 					return;
 				}
 			}
 		}
 	}
 	this->pool.push_back(CServer(this->referenceID++,true, addr, port));
-
 	this->query->queryInfo(this->pool.back().GetIP(), this->pool.back().GetPort()+1, this->pool.back().GetID());
+
+	this->UnprotectServers();
 }
 
 
@@ -109,6 +116,7 @@ void CServers::Pulse()
 	// Query servers every @QUERY_DELAY miliseconds to remove offline from list
 	if ((time - this->lastCheck) > QUERY_DELAY)
 	{
+		this->ProtectServers();
 		if (this->pool.size() > 0)
 		{
 			for (std::vector<CServer>::iterator it = this->pool.begin(); it != this->pool.end(); ++it)
@@ -117,7 +125,19 @@ void CServers::Pulse()
 			}
 		}
 		printf("[Status] Servers count: %d\n", this->pool.size());
+		this->UnprotectServers();
 		this->lastCheck = GetTickCount();
 	}
 
+}
+
+// Locks the mutex, so array should stay consistent and not-changed until UnprotectServers
+void  CServers::ProtectServers()
+{
+	this->serversControl.lock();
+}
+// Unlock the mutex
+void  CServers::UnprotectServers()
+{
+	this->serversControl.unlock();
 }
