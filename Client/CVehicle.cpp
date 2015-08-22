@@ -349,7 +349,7 @@ void CVehicle::PlayerEnter(int ID, int seat)
 void CVehicle::PlayerExit(int ID)
 {
 	for (int i = 0; i < 4;i++)
-		if (Seat[i] == ID)
+		if (this->Seat[i] == ID)
 			this->SetSeat(i, -1);
 			//this->Seat[i] = -1;
 	if (ID == g_CCore->GetLocalPlayer()->GetOurID())
@@ -426,6 +426,11 @@ int		CVehicle::GetSeat(int seatID)
 
 void CVehicle::SetSeat(int seatID, int pID)
 {
+	if (seatID > 3)
+	{
+		g_CCore->GetLog()->AddLog("CVehicle::SetSeat: seatID is out of <0-3> range.");
+		return;
+	}
 	this->Seat[seatID] = pID;
 
 	char buff[100];

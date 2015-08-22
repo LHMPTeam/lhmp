@@ -20,6 +20,7 @@ CPickup* CPickupPool::New(int ID, char* model, Vector3D pos, float size,bool isV
 
 CPickup* CPickupPool::Return(int slot)
 {
+	slot = Tools::Clamp(slot,0, MAX_PICKUPS - 1);
 	return pool[slot];
 }
 

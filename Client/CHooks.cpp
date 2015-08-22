@@ -580,17 +580,24 @@ void PlayerEnteredVehicle(DWORD vehicle, DWORD seatID)
 	}*/
 	char buff[255];
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
-	g_CCore->GetVehiclePool()->Return(vehID)->PlayerEnter(g_CCore->GetLocalPlayer()->GetOurID(), seatID);
-	g_CCore->GetLocalPlayer()->SetIsOnFoot(0);
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_ENTERED_VEHICLE);
-	bsOut.Write(vehID);
-	bsOut.Write(seatID);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+	if (veh)
+	{
+		veh->PlayerEnter(g_CCore->GetLocalPlayer()->GetOurID(), seatID);
+		g_CCore->GetLocalPlayer()->SetIsOnFoot(0);
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_ENTERED_VEHICLE);
+		bsOut.Write(vehID);
+		bsOut.Write(seatID);
+		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 
-	sprintf(buff, "[PEV] vehicle %x, seat id: %d", vehicle, seatID);
-	g_CCore->GetLog()->AddLog(buff);
+		sprintf(buff, "[PEV] vehicle %x, seat id: %d", vehicle, seatID);
+		g_CCore->GetLog()->AddLog(buff);
+	}
+	else {
+		g_CCore->GetGame()->ConsoleAddText("You are entering an unsynced vehicle !", 0xFFFFFFFF);
+	}
 }
 _declspec(naked) void Hook_OnPlayerEnteredVehicle()
 {
@@ -659,17 +666,23 @@ void PlayerExitVehicle(DWORD vehicle)
 	char buff[255];
 
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
-	g_CCore->GetVehiclePool()->Return(vehID)->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());
-	g_CCore->GetLocalPlayer()->SetIsOnFoot(1);
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_EXIT_VEHICLE);
-	bsOut.Write(vehID);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+	if (veh)
+	{
+		veh->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());
+		g_CCore->GetLocalPlayer()->SetIsOnFoot(1);
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_EXIT_VEHICLE);
+		bsOut.Write(vehID);
+		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 
-	sprintf(buff, "[PEV] Exit vehicle %x", vehicle);
-	g_CCore->GetLog()->AddLog(buff);
+		sprintf(buff, "[PEV] Exit vehicle %x", vehicle);
+		g_CCore->GetLog()->AddLog(buff);
+	}
+	else {
 
+	}
 	// fix
 	/*CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
 	if (veh != NULL)

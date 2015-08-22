@@ -1469,12 +1469,17 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 		{
 			//g_CCore->GetChat()->AddMessage("pickup lol");
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			int ID;
+			unsigned short ID;
 			bsIn.Read(ID);
-			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
-			if (pickup)
+
+			// if ID is not invalid
+			if (ID < MAX_PICKUPS)
 			{
-				g_CCore->GetEngineStack()->AddMessage(ES_DELETEPICKUP, (DWORD)ID);
+				CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+				if (pickup)
+				{
+					g_CCore->GetEngineStack()->AddMessage(ES_DELETEPICKUP, (DWORD)ID);
+				}
 			}
 		}
 			break;
@@ -1487,12 +1492,16 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			bool shouldBeVisible;
 			bsIn.Read(ID);
 			bsIn.Read(shouldBeVisible);
-			CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
-			if (pickup)
+			// if ID is not invalid
+			if (ID < MAX_PICKUPS)
 			{
-				pickup->SetVisible(shouldBeVisible);
-				g_CCore->GetEngineStack()->AddMessage(ES_SETPICKUPVISIBLE, (DWORD)ID);
-				
+				CPickup* pickup = g_CCore->GetPickupPool()->Return(ID);
+				if (pickup)
+				{
+					pickup->SetVisible(shouldBeVisible);
+					g_CCore->GetEngineStack()->AddMessage(ES_SETPICKUPVISIBLE, (DWORD)ID);
+
+				}
 			}
 		}
 			break;

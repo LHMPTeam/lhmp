@@ -301,34 +301,46 @@ void CGame::Camera_lock(DWORD address)
 		*/
 //	}
 }
-void CGame::ChangeSkin(DWORD PED,int skinId)
+void CGame::ChangeSkin(DWORD playerObject,int skinId)
 {
-	char buff[500];
-	sprintf(buff, "CGame::ChangeSkin %u %d", PED, skinId);
-	g_CCore->GetLog()->AddLog(buff);
 
-	skinId = Tools::Clamp(skinId, 0, (int) (sizeof(SKINS) / 200));
-	char * actualModel = (char*) (*(DWORD*)(*(DWORD*)(PED+0x68)+0x154)+0x0);
-	char isExact[255];
-	sprintf(isExact,"Models\\%s.i3d",SKINS[skinId]);
-	if(strcmp(isExact,actualModel) == 0)
+	// if pedestrian is not a NULL-object
+	if (playerObject)
 	{
-		//g_CCore->GetChat()->AddMessage("Skins are same");
-		return;
-	}
-	char buffer[255];
-	sprintf(buffer,"%s.i3d",SKINS[skinId]);
-	DWORD funcAdress	= 0x004A7700;
-	_asm
-	{
-		pushad
-			mov ecx,PED
-			push 0
-			lea eax,buffer
-			push eax
-			mov ebx, 0x004A7700
-			call ebx
-		popad
+		PED* character = (PED*)playerObject;
+		if (character->object.frame)
+		{
+			
+			char buff[500];
+			sprintf(buff, "CGame::ChangeSkin %u %d", character, skinId);
+			g_CCore->GetLog()->AddLog(buff);
+
+			skinId = Tools::Clamp(skinId, 0, (int)(sizeof(SKINS) / 200));
+			//char * actualModel = (char*)(*(DWORD*)(*(DWORD*)(PED + 0x68) + 0x154) + 0x0);
+			//TESTING - using struct instead of offsets
+			char * actualModel = character->object.frame->frameModel;
+			char isExact[255];
+			sprintf(isExact, "Models\\%s.i3d", SKINS[skinId]);
+			if (strcmp(isExact, actualModel) == 0)
+			{
+				//g_CCore->GetChat()->AddMessage("Skins are same");
+				return;
+			}
+			char buffer[255];
+			sprintf(buffer, "%s.i3d", SKINS[skinId]);
+			DWORD funcAdress = 0x004A7700;
+			_asm
+			{
+				pushad
+					mov ecx, PED
+					push 0
+					lea eax, buffer
+					push eax
+					mov ebx, 0x004A7700
+					call ebx
+					popad
+			}
+		}
 	}
 }
 
@@ -1323,17 +1335,21 @@ void CGame::PlayerEnteredVehicle()
 	char buff[255];
 
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
-	g_CCore->GetVehiclePool()->Return(vehID)->PlayerEnter(g_CCore->GetLocalPlayer()->GetOurID(),seatID);
-	g_CCore->GetLocalPlayer()->SetIsOnFoot(0);
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_ENTERED_VEHICLE);
-	bsOut.Write(vehID);
-	bsOut.Write(seatID);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
+	if (veh)
+	{
+		veh->PlayerEnter(g_CCore->GetLocalPlayer()->GetOurID(), seatID);
+		g_CCore->GetLocalPlayer()->SetIsOnFoot(0);
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_ENTERED_VEHICLE);
+		bsOut.Write(vehID);
+		bsOut.Write(seatID);
+		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
 
-	sprintf(buff, "CGame::PlayerEnteredVehicle %x, seat id: %d", vehicle, seatID);
-	g_CCore->GetLog()->AddLog(buff);
+		sprintf(buff, "CGame::PlayerEnteredVehicle %x, seat id: %d", vehicle, seatID);
+		g_CCore->GetLog()->AddLog(buff);
+	}
 }
 void CGame::PlayerExitVehicle()
 {
@@ -1347,7 +1363,11 @@ void CGame::PlayerExitVehicle()
 	char buff[255];
 
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
-	g_CCore->GetVehiclePool()->Return(vehID)->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());
+	CVehicle* car = g_CCore->GetVehiclePool()->Return(vehID);
+	if (car)
+	{	
+		car->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());
+	}
 	g_CCore->GetLocalPlayer()->SetIsOnFoot(1);
 	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
@@ -1750,12 +1770,14 @@ void CGame::DeletePed(DWORD PED)
 					CALL EAX; Game.005E3400
 
 					mov eax, ped_frame
+					test eax,eax
+					je CASE_FRAME_IS_NULL
 					push eax
 					mov ecx, [eax]
 					call dword ptr ds : [ecx]
+					CASE_FRAME_IS_NULL:
 			}
 		}
-		//g_CCore->GetGame()->SetFramePos(ped_frame,0,0,0);
 	}
 }
 void CGame::DeleteCar(DWORD PED)
@@ -2529,19 +2551,23 @@ void CGame::GivePlayerToCarFast(DWORD ped, int vehId, int seatId)
 {
 	if (ped == NULL)
 		return;
-	DWORD car = g_CCore->GetVehiclePool()->Return(vehId)->GetEntity();
-	if (car != NULL && seatId != -1)
+	CVehicle* carObject = g_CCore->GetVehiclePool()->Return(vehId);
+	if (carObject != NULL)
 	{
-		_asm
+		DWORD car = carObject->GetEntity();
+		if (car != NULL && seatId != -1)
 		{
-			MOV EAX, seatId
-			PUSH EAX; / Arg2 = 00000000
-			MOV EAX, car
-			PUSH EAX; | Arg1
-			MOV ESI, ped
-			MOV ECX, ESI; |
-			MOV EAX, 0x0049E580
-			CALL EAX;  Game.0049E580; \Game.0049E580
+			_asm
+			{
+				MOV EAX, seatId
+					PUSH EAX; / Arg2 = 00000000
+					MOV EAX, car
+					PUSH EAX; | Arg1
+					MOV ESI, ped
+					MOV ECX, ESI; |
+					MOV EAX, 0x0049E580
+					CALL EAX;  Game.0049E580; \Game.0049E580
+			}
 		}
 	}
 }
@@ -3878,20 +3904,19 @@ int CGame::GetGameVersion()
 
 Vector3D	CGame::GetPEDNeckPosition(PED* ped)
 {
-	Vector3D pos;
 	// if ped exists
 	if (ped)
 	{
 		// then sum up PED's base position (world position) with neck position (model relative position)
 		// Neck position is related from model origin -> doesn't represent world coords and must be sum up 
-		Vector3D neckPos = *(Vector3D*)((DWORD) (ped->frm_neck) + 0x40);
-		/*Vector3D pedPos = ped->object.position;
-		pos.x = neckPos.x + pedPos.x;
-		pos.y = neckPos.y + pedPos.y;
-		pos.z = neckPos.z + pedPos.z;
-		return pos;
-		*/
-		return neckPos;
+		if (ped->frm_neck)
+		{
+			return *(Vector3D*)((DWORD)(ped->frm_neck) + 0x40);
+		}
+		else {
+			// if there's no frame_neck, at least return object's position
+			return ped->object.position;
+		}
 	}
 	// if PED doesn't exist, returns empty Vector3D
 	return Vector3D();

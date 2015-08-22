@@ -158,7 +158,7 @@ void CPickup::SendDelete(int IDorOthers)
 	BitStream bsOut;
 	bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((MessageID)LHMP_PICKUP_DELETE);
-	bsOut.Write(this->GetID());
+	bsOut.Write((unsigned short)this->GetID());
 
 	if (IDorOthers == -1)
 		g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
