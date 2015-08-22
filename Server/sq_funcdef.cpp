@@ -1657,7 +1657,9 @@ SQInteger sq_include(SQVM *vm)
 
 void iniCreateFile(const char* file)
 {
-	std::ofstream of(file);
+	char filepath[256] = "";
+	sprintf(filepath, "gamemodes/%s/%s", g_CCore->GetGameMode()->GetName(), file);
+	std::ofstream of(filepath);
 	of << '\0';
 }
 
