@@ -44,13 +44,13 @@ void CNametags::Tick()
 					playerPosition.y += 0.3f;
 				}
 
-				int alpha = 255 * (1.25 - (distance / maxDistance));
+				int alpha = (int)(255*(1.25f - (distance / maxDistance)));
 
 				// alpha be from interval <0,255>
 				alpha = Tools::Clamp(alpha, 0, 255);
 				char textureAlpha = alpha;
-				int alpha2 = alpha * 0.5;
-				int alpha3 = alpha * 1.2;
+				int alpha2 = (int)(alpha * 0.5f);
+				int alpha3 = (int)(alpha * 1.2f);
 				if (alpha3 > 255) alpha3 = 255;
 				
 				if (ped->nametag == NULL)
@@ -94,7 +94,7 @@ void CNametags::Tick()
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int)(screen.y - barHeight - 1.0f), screen.z, barWidth, barHeight, healthBarColorBg);
 
 						// now render the health bar itself
-						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int)(screen.y - barHeight - 1.0f), screen.z, barWidth*healthPercentage, barHeight, healthBarColor);
+						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2.0f)), (int)(screen.y - barHeight - 1.0f),screen.z, barWidth*healthPercentage, barHeight, healthBarColor);
 
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - barHeight - 1), screen.z, barWidth - 1, 2, healthBarColorTop);
 						g_CCore->GetGraphics()->FillARGB((int)(screen.x - (barWidth / 2)), (int)(screen.y - 2), screen.z, barWidth - 1, 2, healthBarColorBottom);

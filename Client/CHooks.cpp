@@ -2020,7 +2020,7 @@ void Hook_Car_ProcessEngineStateChange(DWORD car, DWORD shouldStartOrSwitchOff)
 			g_CCore->GetChat()->AddMessage(buff);
 			*/
 			// if it's streamed, then allow the changes & call engine function
-			g_CCore->GetGame()->SetCarEngineState(car, (bool)shouldStartOrSwitchOff);
+			g_CCore->GetGame()->SetCarEngineState(car, (shouldStartOrSwitchOff == 1));
 			// network sync
 			RakNet::BitStream bsOut;
 			bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
@@ -2032,7 +2032,7 @@ void Hook_Car_ProcessEngineStateChange(DWORD car, DWORD shouldStartOrSwitchOff)
 		else if (veh->GetEngineState() == shouldStartOrSwitchOff)
 		{
 			// at least call engine func
-			g_CCore->GetGame()->SetCarEngineState(car, (bool)shouldStartOrSwitchOff);
+			g_CCore->GetGame()->SetCarEngineState(car, (shouldStartOrSwitchOff == 1));
 		}
 	}
 }

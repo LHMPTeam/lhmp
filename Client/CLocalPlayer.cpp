@@ -164,7 +164,7 @@ void CLocalPlayer::Pulse()
 			// convert rotation into 360 degree system and then map it into unsigned short 
 			Vector3D rotation = this->GetLocalRot();
 
-			unsigned short shortRot = Tools::RotationTo360(rotation.x, rotation.z)*MAX_USHORT/360;
+			unsigned short shortRot = (unsigned short) (Tools::RotationTo360(rotation.x, rotation.z)*MAX_USHORT/360);
 			
 			// now flow then into struct
 			SYNC::ON_FOOT_SYNC syncData;

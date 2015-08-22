@@ -414,7 +414,7 @@ void CChat::DoCommand(char str[])
 		ourpos.y = (pos.y - ourpos.y);
 		ourpos.z = (pos.z - ourpos.z);
 
-		int ratio = sqrtf(ourpos.x*ourpos.x + ourpos.y*ourpos.y + ourpos.z*ourpos.z);
+		int ratio = (int)sqrtf(ourpos.x*ourpos.x + ourpos.y*ourpos.y + ourpos.z*ourpos.z);
 
 		ourpos.x /= ratio;
 		ourpos.y /= ratio;

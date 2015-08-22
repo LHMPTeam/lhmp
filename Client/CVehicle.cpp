@@ -390,7 +390,7 @@ void CVehicle::ToggleEngine(byte state)
 	if (this->GetEntity() != NULL)
 	{
 		//g_CCore->GetGame()->ToggleVehicleEngine(this->GetEntity(), state);
-		g_CCore->GetGame()->SetCarEngineState(this->GetEntity(), state);
+		g_CCore->GetGame()->SetCarEngineState(this->GetEntity(), (state == 1));
 	}
 	this->engineState = state;
 

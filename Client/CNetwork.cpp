@@ -289,7 +289,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 					//sprintf(buffer,"%i",timestamp);
 					//g_CCore->GetLog()->AddLog(buffer);
 
-					Vector3D rot = Tools::ComputeOffsetDegrees(syncData.rotation*360/MAX_USHORT);
+					Vector3D rot = Tools::ComputeOffsetDegrees(syncData.rotation*360.0f/MAX_USHORT);
 					ped->SetRotation(rot);
 					ped->SetState(syncData.animStatus);
 					ped->SetHealth((float)syncData.health);
