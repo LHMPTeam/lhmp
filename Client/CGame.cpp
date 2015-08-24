@@ -316,7 +316,7 @@ void CGame::ChangeSkin(DWORD playerObject,int skinId)
 			g_CCore->GetLog()->AddLog(buff);
 
 			skinId = Tools::Clamp(skinId, 0, (int)(sizeof(SKINS) / 200));
-			//char * actualModel = (char*)(*(DWORD*)(*(DWORD*)(PED + 0x68) + 0x154) + 0x0);
+			//char * actualModel = (char*)(*(DWORD*)(*(DWORD*)(playerObject + 0x68) + 0x154) + 0x0);
 			//TESTING - using struct instead of offsets
 			char * actualModel = character->object.frame->frameModel;
 			char isExact[255];
@@ -332,7 +332,7 @@ void CGame::ChangeSkin(DWORD playerObject,int skinId)
 			_asm
 			{
 				pushad
-					mov ecx, PED
+					mov ecx, playerObject
 					push 0
 					lea eax, buffer
 					push eax

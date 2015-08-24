@@ -1027,9 +1027,9 @@ SQInteger sq_ColorRGB(SQVM *vm)
 	sq_getinteger(vm, -2, &g);
 	sq_getinteger(vm, -1, &b);
 
-	Tools::Clamp(r, 0, 256);
-	Tools::Clamp(g, 0, 256);
-	Tools::Clamp(b, 0, 256);
+	r = Tools::Clamp(r, 0, 256);
+	g = Tools::Clamp(g, 0, 256);
+	b = Tools::Clamp(b, 0, 256);
 
 	DWORD color = 0xFF000000;
 

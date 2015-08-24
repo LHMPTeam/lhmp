@@ -66,12 +66,10 @@ void ACScanModules() {
 
 	if (hProcessSelf == NULL) {
 		hProcessSelf = GetCurrentProcess();
-	};
-
-	unsigned int i;
+	}
 
 	if (EnumProcessModules(hProcessSelf, hModules, sizeof(hModules), &dwCBNeeded)) {
-		for (i = 0; i < (dwCBNeeded / sizeof(HMODULE)); i++) {
+		for (unsigned int i = 0; i < (dwCBNeeded / sizeof(HMODULE)); i++) {
 			WCHAR cPath[MAX_PATH];
 
 			if (GetModuleFileNameExW(hProcessSelf, hModules[i], cPath, MAX_PATH)) { // Ex?
@@ -88,12 +86,11 @@ void ACScanProcesses() {
 	DWORD dwProcesses[1024];
 	DWORD dwCBNeeded;
 	DWORD dwCProcesses;
-	unsigned int i;
 
 	if (EnumProcesses(dwProcesses, sizeof(dwProcesses), &dwCBNeeded)) {
 		dwCProcesses = dwCBNeeded / sizeof(DWORD);
 
-		for (i = 0; i < dwCProcesses; i++) {
+		for (unsigned int i = 0; i < dwCProcesses; i++) {
 			if (dwProcesses[i] != 0) {
 				WCHAR cPath[MAX_PATH];
 				HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcesses[i]);

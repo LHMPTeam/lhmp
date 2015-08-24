@@ -11,7 +11,7 @@
 #define LHMP_VERSION_TYPE	VERSION_PUBLIC
 
 // when LHMP is compiled as test version
-#define LHMP_VERSION_TEST_HASH "RC1_PREVIEW_0001_05122015"
+#define LHMP_VERSION_TEST_HASH "EXP_PREVIEW_0002_08242015"
 
 // protocol version (byte) 0-255
 #define LHMP_QUERY_PROTOCOL	0

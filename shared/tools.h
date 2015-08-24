@@ -50,13 +50,13 @@ namespace Tools
 	{
 		DWORD oldp;
 		VirtualProtect((PVOID)address,2,PAGE_EXECUTE_READWRITE,&oldp);
-		(address) = value;
+		*(DWORD*) (address) = value;
 	}
 	static void SetValueFloat(DWORD address, float value) 
 	{
 		DWORD oldp;
 		VirtualProtect((PVOID)address,2,PAGE_EXECUTE_READWRITE,&oldp);
-		(address) = (DWORD) value;
+		*(DWORD*)(address) = (DWORD) value;
 	}
 	static void SetValueNew(HANDLE hPro, LPVOID address, int value) 
 	{
@@ -377,7 +377,7 @@ namespace Tools
 	// Example result: 00adef
 	static void GenerateColor(char* input, unsigned int color)
 	{
-		char stamp[9];
+		char stamp[16];
 		sprintf(stamp,"%p",color);
 #ifdef _WIN32
 		memcpy(input, stamp+2, 6);
