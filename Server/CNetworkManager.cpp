@@ -189,7 +189,8 @@ void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 	slot[ID].isUsed = true;
 	slot[ID].sa = packet->systemAddress;
 	// he has a good version
-	g_CCore->GetLog()->AddNormalLog("A connection is incoming. ID: %d (%s)", ID, packet->systemAddress.ToString());
+	//g_CCore->GetLog()->AddNormalLog("A connection is incoming. ID: %d (%s)", ID, packet->systemAddress.ToString());
+	g_CCore->GetLog()->AddNormalLog("A connection is incoming. ID: %d",ID);
 	// he has the right version, so let's send him files needed for game / scripts
 	g_CCore->GetFileTransfer()->SendFiles(packet->systemAddress);
 }

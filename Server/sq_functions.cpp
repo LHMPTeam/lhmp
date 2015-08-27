@@ -63,7 +63,7 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "vehicleSpawn", (SQFUNCTION)sq_vehicleSpawn, 8, ".nffffff");
 	RegisterFunction(vM, "vehicleDelete", (SQFUNCTION)sq_vehicleDelete, 2, ".n");
 	RegisterFunction(vM, "vehicleGetDriverID", (SQFUNCTION)sq_vehicleGetDriverID, 2, ".n");
-	RegisterFunction(vM, "vehicleGetPlayerIDFromSeat", (SQFUNCTION)sq_vehicleGetPlayerIDFromSeat, 2, ".n");
+	RegisterFunction(vM, "vehicleGetPlayerIDFromSeat", (SQFUNCTION)sq_vehicleGetPlayerIDFromSeat, 3, ".nn");
 	RegisterFunction(vM, "vehicleGetPosition", (SQFUNCTION)sq_vehicleGetPosition, 2, ".n");
 	RegisterFunction(vM, "vehicleGetDamage", (SQFUNCTION)sq_vehicleGetDamage, 2, ".n");
 	RegisterFunction(vM, "vehicleGetRotation", (SQFUNCTION)sq_vehicleGetRotation, 2, ".n");
@@ -101,7 +101,7 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "iniGetParam", (SQFUNCTION)sq_iniGetParam, 4, ".sss");
 	RegisterFunction(vM, "iniSetParam", (SQFUNCTION)sq_iniSetParam, 4, ".sss");
 	RegisterFunction(vM, "iniRemoveFile", (SQFUNCTION)sq_iniRemoveFile, 2, ".s");
-	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s");
+	RegisterFunction(vM, "iniCreateFile", (SQFUNCTION)sq_iniCreateFile, 2, ".s"); 
 
 	RegisterFunction(vM, "sqlite3_query", (SQFUNCTION)sq_sqlite3_query, 3, ".ss");
 	RegisterFunction(vM, "sqlite3_finalize", (SQFUNCTION)sq_sqlite3_finalize, 2, ".n");

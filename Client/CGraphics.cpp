@@ -216,6 +216,7 @@ void CGraphics::Render()
 
 	g_CCore->GetGame()->UpdatePeds();
 	g_CCore->GetGame()->UpdateCars();
+	g_CCore->GetGame()->PickupsTick();
 	if (bShowHud == true && g_CCore->GetIngameMenu()->isActive() == false)
 	{
 		if (g_CCore->GetLocalPlayer()->GetEntity() != NULL)

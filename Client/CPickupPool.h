@@ -21,7 +21,7 @@ public:
 	CPickupPool();
 	~CPickupPool();
 	CPickup*	New(int,char* model, Vector3D pos,float size,bool isVisible);
-	CPickup*	Return(int);
+	CPickup*	Return(unsigned int);
 	int			GetObjectIdByBase(DWORD);
 	void		Delete(int);
 };

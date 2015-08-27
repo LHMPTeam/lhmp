@@ -126,12 +126,21 @@ public:
 	void SetLockControls(bool b);
 	//void UpdateControls();
 
+	/* LHMP things*/
 	void Tick();
 	void StopAndWaitForGame();
 	void ContinueGame();
 
 	void UpdateCars();
 	void UpdatePeds();
+
+	// Loop through the pool and delete all its ingame objects(but keep LHMP objects)
+	void LHMP_DeleteAllCars();
+	// Loop through the pool and delete all its ingame objects(but keep LHMP objects)
+	void LHMP_DeleteAllPeds();
+	// Loop through the pool and delete all its ingame objects(but keep LHMP objects)
+	void LHMP_DeleteAllPickups();
+
 
 	static void ChangeSkin(DWORD, int);
 	// vehicles

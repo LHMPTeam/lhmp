@@ -18,9 +18,16 @@ CPickup* CPickupPool::New(int ID, char* model, Vector3D pos, float size,bool isV
 	return pool[ID];
 }
 
-CPickup* CPickupPool::Return(int slot)
+CPickup* CPickupPool::Return(unsigned int slot)
 {
-	slot = Tools::Clamp(slot,0, MAX_PICKUPS - 1);
+	if (slot >= MAX_PICKUPS)
+	{
+		// generate error
+		char buff[250];
+		sprintf(buff, "[Err] SLOT overlaps MAX_PICKUPS - caller [%p] %s:%d", _ReturnAddress(),__FILE__, __LINE__);
+		g_CCore->GetLog()->AddLog(buff);
+		return NULL;
+	}
 	return pool[slot];
 }
 

@@ -1,5 +1,5 @@
-#include "CGame.h"
 #include "CCore.h"
+#include "CGame.h"
 
 
 #define VC_EXTRALEAN
@@ -35,62 +35,6 @@ void CGame::UpdateCars()
 	}
 }
 
-void CGame::ToggleVehicleRoof(DWORD vehbase, BYTE state)
-{
-	__asm
-	{
-		MOV EAX, vehbase
-		MOV ECX, DWORD PTR DS : [EAX + 0x68]
-		MOV DL, state
-		MOV EAX, 0x00472DE0
-		CALL EAX
-	}
-}
-
-void CGame::ToggleVehicleEngine(DWORD vehicle, BYTE state)
-{
-	if (state == 1)
-	{
-		__asm
-		{
-			MOV EAX, vehicle
-				ADD EAX, 0x70
-				MOV    BYTE PTR DS : [EAX + 0xCA8], 1
-				MOV BYTE PTR DS : [EAX + 0x6B4], 1
-		}
-	}
-	else if (state == 0)
-	{
-		__asm
-		{
-			MOV EAX, vehicle
-				ADD EAX, 0x70
-				MOV    BYTE PTR DS : [EAX + 0xCA8], 0
-				MOV BYTE PTR DS : [EAX + 0x6B4], 0
-				MOV BYTE PTR DS : [EAX + 0x66C], 0
-		}
-	}
-}
-
-void CGame::ToggleCityMusic(byte state)
-{
-	g_CCore->GetGame()->SetMusicState(state);
-
-	__asm
-	{
-		XOR EAX,EAX
-		MOV AL, state
-		PUSH EAX;  Case 139 of switch 005BB320
-		MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
-		MOV EAX, 0x00425390
-
-		CALL EAX
-		MOV ECX, EAX
-		MOV EAX, 0x005E9DF0
-		CALL EAX
-	}
-}
-
 void CGame::UpdatePeds()
 {
 	for (int i = 0; i < MAX_PLAYERS; i++)
@@ -101,6 +45,80 @@ void CGame::UpdatePeds()
 		{
 			ped->Interpolate();
 			ped->gCheckWeapons();
+		}
+	}
+}
+
+__declspec(noinline) void CGame::PickupsTick()
+{
+	pickupsAngle += 0.1f;
+	// a bit optimized
+	float rw = cos(pickupsAngle*0.1744f);
+	float ry = sin(pickupsAngle*0.1744f);
+
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
+		if (pickup != NULL)
+		{
+			if (pickup->GetEntity() != NULL)
+			{
+				//g_CCore->GetChat()->AddMessage("WTF");
+				this->SetFrameRot(pickup->GetEntity(), rw, 0.0, ry, 0.0);
+			}
+
+		}
+	}
+	//g_CCore->GetChat()->AddMessage("fuck");
+}
+
+// Loop through the pool and delete all its ingame objects(but keep LHMP objects)
+void CGame::LHMP_DeleteAllCars()
+{
+	for (int i = 0; i < MAX_VEHICLES; i++)
+	{
+		CVehicle* veh = g_CCore->GetVehiclePool()->Return(i);
+		if (veh != NULL)
+		{
+			if (veh->GetEntity())
+			{
+				//g_CCore->GetGame()->DeleteCar(veh->GetEntity());
+				veh->SetEntity(NULL);
+			}
+		}
+	}
+}
+// Loop through the pool and delete all its ingame objects(but keep LHMP objects)
+void CGame::LHMP_DeleteAllPeds()
+{
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		CPed* ped = g_CCore->GetPedPool()->Return(i);
+		if (ped != NULL)
+		{
+			if (ped->GetEntity() != NULL)
+			{
+				g_CCore->GetGame()->DeletePed(ped->GetEntity());
+				ped->SetEntity(NULL);
+			}
+			ped->SetEntity(NULL);
+		}
+	}
+}
+// Loop through the pool and delete all its ingame objects(but keep LHMP objects)
+void CGame::LHMP_DeleteAllPickups()
+{
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
+		if (pickup != NULL)
+		{
+			if (pickup->GetEntity() != NULL)
+			{
+				g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
+				pickup->SetEntity(NULL);
+			}
+			//g_CCore->GetPickupPool()->Delete(i);
 		}
 	}
 }
@@ -159,9 +177,6 @@ void CGame::Tick()
 		}
 	/*		}
 		}*/
-	}
-	else {
-		this->PickupsTick();
 	}
 	
 	g_CCore->GetEngineStack()->DoMessage();
@@ -235,71 +250,6 @@ void CGame::Camera_lock(DWORD address)
 		end:
 		add esp, 0x400
 	}
-
-	/*if(address == NULL)	// we want to restore old camera behind player body
-	{
-		_asm
-		{
-			pushad
-			MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440; Case 77 of switch 005BB320
-			PUSH 0
-			mov eax,0x00425390
-			CALL eax								 ;	Game.00425390
-			MOV ECX,EAX
-			mov eax,0x00425510
-			CALL eax								 ;	Game.00425510
-			MOV ECX,EAX
-			mov eax,0x005DB5D0
-			CALL eax								 ;	Game.005DB5D0
-			MOV ECX,DWORD PTR DS:[65115C]            ;  Game.006F9440
-			mov eax,0x00425390
-			CALL eax								 ;	Game.00425390
-			MOV ECX,EAX
-			mov eax,0x005F19C0
-			CALL eax								 ;	Game.005F19C0
-			popad
-		}
-	} else
-	{
-	*/
-	/*	float angle = -0.5f;
-		_asm
-		{
-			push angle
-			lea eax,address
-			push eax
-			mov eax, 0x2F9464
-			lea eax,[eax]
-			lea ecx,[eax+0x4C]
-			//MOV ECX,EAX
-			mov eax,0x005DB000
-			CALL eax									;Game.005DB000                       ;  entire camera change
-			MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440
-			mov eax, 0x00425390
-			CALL eax									;Game.00425390
-			MOV ECX,EAX
-			mov eax, 0x005C8B50
-			CALL eax									;Game.005C8B50
-			CMP EAX,6
-			jnb next									; JNB SHORT Game.005BF92F
-			MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440
-			mov eax,0x00425390
-			CALL eax									;Game.00425390
-			MOV ECX,EAX
-			mov eax,0x005F5C60
-			CALL eax									;Game.005F5C60
-			jmp end
-			next:
-			MOV ECX,DWORD PTR DS:[0x65115C]            ;  Game.006F9440
-			mov eax, 0x00425390
-			CALL eax									;Game.00425390
-			MOV ECX,EAX
-			mov eax, 0x005F19C0
-			CALL eax									;Game.005F19C0
-			end:
-		}
-		*/
-//	}
 }
 void CGame::ChangeSkin(DWORD playerObject,int skinId)
 {
@@ -332,10 +282,10 @@ void CGame::ChangeSkin(DWORD playerObject,int skinId)
 			_asm
 			{
 				pushad
-					mov ecx, playerObject
 					push 0
 					lea eax, buffer
 					push eax
+					mov ecx, playerObject
 					mov ebx, 0x004A7700
 					call ebx
 					popad
@@ -797,34 +747,10 @@ void CGame::PreRespawn()
 	g_CCore->GetLocalPlayer()->SetIsOnFoot(true);
 	g_CCore->GetLocalPlayer()->IDinCar = -1;
 	g_CCore->GetLog()->AddLog("CCGame::PreRespawn");
-	DWORD PED = NULL, frame = NULL;
-	for(int i = 0; i < MAX_PLAYERS;i++)
-	{
-		//if (i == g_CCore->GetLocalPlayer()->GetOurID()) continue;
-		CPed* ped = g_CCore->GetPedPool()->Return(i);
-		if(ped != NULL)
-		{
-			if (ped->GetEntity() != NULL)
-			{
-				g_CCore->GetGame()->ChangeSkin(ped->GetEntity(), 293);
-				g_CCore->GetGame()->DeletePed(ped->GetEntity());
-				ped->SetEntity(NULL);
-			}
-			ped->SetEntity(NULL);
-		}
-	}
-	for (int i = 0; i < MAX_VEHICLES; i++)
-	{
-		CVehicle* veh = g_CCore->GetVehiclePool()->Return(i);
-		if (veh != NULL)
-		{
-			if (veh->GetEntity())
-			{
-				//g_CCore->GetGame()->DeleteCar(veh->GetEntity());
-				veh->SetEntity(NULL);
-			}
-		}
-	}
+
+	g_CCore->GetGame()->LHMP_DeleteAllPeds();
+	g_CCore->GetGame()->LHMP_DeleteAllCars();
+	g_CCore->GetGame()->LHMP_DeleteAllPickups();
 
 	// Delete all localplayer weapons
 	if (g_CCore->GetGame()->GetLocalPED() != NULL)
@@ -832,16 +758,7 @@ void CGame::PreRespawn()
 		g_CCore->GetGame()->DeleteAllWeapons((DWORD)g_CCore->GetGame()->GetLocalPED());
 	}
 
-	for (int i = 0; i < MAX_PICKUPS; i++)
-	{
-		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
-		if (pickup != NULL)
-		{
-			if (pickup->GetEntity() != NULL)
-				g_CCore->GetGame()->DeleteObj(pickup->GetEntity());
-			g_CCore->GetPickupPool()->Delete(i);
-		}
-	}
+
 }
 void CGame::Respawn()
 {
@@ -851,6 +768,7 @@ void CGame::Respawn()
 // this function is called by hook - in game thread
 void CGame::AfterRespawn()
 {
+	RakNet::TimeMS afterrespawnStart = RakNet::GetTimeMS();
 	g_CCore->GetGame()->SetTrafficVisible(false);
 	//g_CCore->GetGame()->UpdateControls();		--- NO LONGER NEEDED
 	g_CCore->GetGame()->PoliceManager();
@@ -871,15 +789,6 @@ void CGame::AfterRespawn()
 			if (handle != NULL)
 			{
 				g_CCore->GetGame()->ChangeSkin(ped->GetEntity(), ped->GetSkin());
-				/*for(int e = 0; e < 8; e++)
-				{
-					SWeapon* pw = ped->GetWeapon(e);
-					if(pw->wepID == NULL) continue;
-					g_CCore->GetGame()->AddWeapon(ped->GetEntity(), pw->wepID, pw->wepLoaded, pw->wepHidden, 0);
-					g_CCore->GetLog()->AddLog("AfterRespawn AddWeapon");
-				}
-				g_CCore->GetGame()->SwitchWeapon(ped->GetEntity(), ped->GetCurrentWeapon());
-				*/
 			}
 		}
 	}
@@ -907,7 +816,7 @@ void CGame::AfterRespawn()
 							else
 							{
 								// shit
-								g_CCore->GetLog()->AddLog("ES[CreateCar] - no PED entity");
+								g_CCore->GetLog()->AddLog("Error [CreateCar] - no PED entity available for sitting");
 							}
 							ped->InCar = e;
 						}
@@ -922,21 +831,41 @@ void CGame::AfterRespawn()
 			}
 		}
 	}
+
+	for (int i = 0; i < MAX_PICKUPS; i++)
+	{
+		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
+		if (pickup)
+		{
+			if (pickup->IsVisible())
+			{
+
+				pickup->SetEntity(g_CCore->GetGame()->CreateFrame(pickup->GetModel()));
+				g_CCore->GetGame()->SetFrameScale(pickup->GetEntity(), pickup->GetSize(), pickup->GetSize(), pickup->GetSize());
+				g_CCore->GetGame()->SetFramePos(pickup->GetEntity(), pickup->GetPosition().x, pickup->GetPosition().y, pickup->GetPosition().z);
+				g_CCore->GetLog()->AddLog("[Respwn] RESPAWNING PICKUP");
+			}
+		}
+	}
 	
 	g_CCore->GetGame()->ToggleCityMusic(g_CCore->GetGame()->GetMusicState());
 	g_CCore->m_bIsRespawning = false;
-	RakNet::BitStream bsOut;
 
-	// tell all about respawn
+
+	/* Send server message about the fact that we are completely respawned*/
+	RakNet::BitStream bsOut;
 	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
 	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_RESPAWN);
 	bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
 	g_CCore->GetNetwork()->SendServerMessage(&bsOut,IMMEDIATE_PRIORITY,RELIABLE_ORDERED);
 
+	// Fix for changing skin
 	g_CCore->GetEngineStack()->AddMessage(ES_CHANGESKIN, g_CCore->GetLocalPlayer()->GetOurID());
 
 
 	/*// Test
+
+	// pool with named objects
 	DWORD poolStart = *(DWORD*)((*(DWORD*)0x0065115C) + 0x38);
 	DWORD poolEnd = *(DWORD*)((*(DWORD*)0x0065115C) + 0x3C);
 	while (poolStart != poolEnd)
@@ -955,6 +884,10 @@ void CGame::AfterRespawn()
 	*/
 
 	g_CCore->GetSquirrel()->onSpawn();
+
+	char buffer[100];
+	sprintf(buffer, "Respawn ended. Elapsed time: %u", (RakNet::GetTimeMS()-afterrespawnStart));
+	g_CCore->GetLog()->AddLog(buffer);
 }
 
 void CGame::ThrowAwayWeapon()
@@ -3777,7 +3710,7 @@ void CGame::SetCarEngineState(DWORD vehicle, bool shouldBeOn)
 	}
 }
 
-void CGame::SetFrameRot(DWORD frame, float w, float x, float y, float z)
+__declspec(noinline) void CGame::SetFrameRot(DWORD frame, float w, float x, float y, float z)
 {
 	Vector4D rot;
 	rot.x = w;
@@ -3860,30 +3793,6 @@ DWORD CGame::CreateFrame(char* str)
 	return addr;
 }
 
-void CGame::PickupsTick()
-{
-	//DWORD tickCount = (timeGetTime()/30)%360;
-	pickupsAngle += 0.1f;
-	float rw = cos(pickupsAngle / (180.0f / 3.14f));
-	float ry = sin(pickupsAngle / (180.0f / 3.14f));
-	
-	for (int i = 0; i < MAX_PICKUPS; i++)
-	{
-		CPickup* pickup = g_CCore->GetPickupPool()->Return(i);
-		if (pickup)
-		{
-			if (pickup->GetEntity())
-			{
-				SetFrameRot(pickup->GetEntity(),rw, 0.0, ry,0.0);
-				
-				//sprintf(buff, "%f %f", rw, ry);
-				//g_CCore->GetChat()->AddMessage(buff);
-			}
-
-		}
-	}
-}
-
 byte CGame::IsTabMapEnabled()
 {
 	return *(BYTE*)0x00661A14;
@@ -3920,4 +3829,60 @@ Vector3D	CGame::GetPEDNeckPosition(PED* ped)
 	}
 	// if PED doesn't exist, returns empty Vector3D
 	return Vector3D();
+}
+
+void CGame::ToggleVehicleRoof(DWORD vehbase, BYTE state)
+{
+	__asm
+	{
+		MOV EAX, vehbase
+			MOV ECX, DWORD PTR DS : [EAX + 0x68]
+			MOV DL, state
+			MOV EAX, 0x00472DE0
+			CALL EAX
+	}
+}
+
+void CGame::ToggleVehicleEngine(DWORD vehicle, BYTE state)
+{
+	if (state == 1)
+	{
+		__asm
+		{
+			MOV EAX, vehicle
+				ADD EAX, 0x70
+				MOV    BYTE PTR DS : [EAX + 0xCA8], 1
+				MOV BYTE PTR DS : [EAX + 0x6B4], 1
+		}
+	}
+	else if (state == 0)
+	{
+		__asm
+		{
+			MOV EAX, vehicle
+				ADD EAX, 0x70
+				MOV    BYTE PTR DS : [EAX + 0xCA8], 0
+				MOV BYTE PTR DS : [EAX + 0x6B4], 0
+				MOV BYTE PTR DS : [EAX + 0x66C], 0
+		}
+	}
+}
+
+void CGame::ToggleCityMusic(byte state)
+{
+	g_CCore->GetGame()->SetMusicState(state);
+
+	__asm
+	{
+		XOR EAX, EAX
+			MOV AL, state
+			PUSH EAX;  Case 139 of switch 005BB320
+			MOV ECX, DWORD PTR DS : [0x65115C];  Game.006F9440
+			MOV EAX, 0x00425390
+
+			CALL EAX
+			MOV ECX, EAX
+			MOV EAX, 0x005E9DF0
+			CALL EAX
+	}
 }
