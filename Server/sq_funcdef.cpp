@@ -10,6 +10,36 @@
 
 extern CCore* g_CCore;
 
+SQInteger sq_banIP(SQVM *vm)
+{
+	SQInteger	seconds;
+	const SQChar*		IPaddress,*reason;
+	sq_getstring(vm, -3, &IPaddress);
+	sq_getinteger(vm, -2, &seconds);
+	sq_getstring(vm, -1, &reason);
+
+	g_CCore->GetBanSystem()->AddBan((char*)IPaddress, (char*)reason, seconds);
+
+	return 1;
+}
+SQInteger sq_banPlayer(SQVM *vm)
+{
+	SQInteger	seconds, ID;
+	const SQChar*		reason;
+	sq_getinteger(vm, -3, &ID);
+	sq_getinteger(vm, -2, &seconds);
+	sq_getstring(vm, -1, &reason);
+
+	// if player is connected
+	if (g_CCore->GetNetworkManager()->GetSlotID(ID) != NULL)
+	{
+		SystemAddress sa = g_CCore->GetNetworkManager()->GetSystemAddressFromID(ID);
+		const char* address = sa.ToString(false);
+		g_CCore->GetBanSystem()->AddBan((char*)address, (char*)reason, seconds);
+	}
+	return 1;
+}
+
 SQInteger sq_playerSetWeatherParam(SQVM *vm)
 {
 	SQInteger ID, param_val;

@@ -1,9 +1,8 @@
 #include "CCore.h"
-#include <time.h>
 extern CCore* g_CCore;
 CBanSystem::CBanSystem()
 {
-
+	p_banCount = 0;
 }
 
 // Load bans from "banlist.txt"
@@ -37,23 +36,26 @@ void CBanSystem::LoadBanlist()
 		// close file
 		fclose(file);
 	}
-	g_CCore->GetLog()->AddNormalLog("Banlist loaded.");
+	g_CCore->GetLog()->AddNormalLog("[Banlist] %d bans loaded.",this->p_banCount);
 }
 
+// IP address, reason, duration (seconds)
 void CBanSystem::AddBan(char* IPaddres, char* reason, unsigned int duration)
 {
+	g_CCore->GetLog()->AddNormalLog("[BanList] IP[%s] banned for %d secs due to reason: '%s'",IPaddres,duration,reason);
+	//
+	unsigned int milisec = duration * 1000;
 	// Add ban to network bad list
-	g_CCore->GetNetworkManager()->GetPeer()->AddToBanList(IPaddres, duration);
+	g_CCore->GetNetworkManager()->GetPeer()->AddToBanList(IPaddres, milisec);
 	// Write a new ban down into banlist.txt
-	this->AddBanToFile(IPaddres,duration, reason);
+	this->AddBanToFile(IPaddres, milisec, reason);
 }
 
 // ---------------------- PRIVATE ------------------------//
 
 void CBanSystem::ParseLineFromFile(char* line,int lineID)
 {
-	time_t  timev;
-	time(&timev);
+	RakNet::Time timev = RakNet::GetTimeMS();
 	unsigned int banTime;
 	//g_CCore->GetLog()->AddNormalLog("Line: %s", line);
 	// four items with max length 200
@@ -119,7 +121,8 @@ void CBanSystem::ParseLineFromFile(char* line,int lineID)
 		{
 			banTime -= (unsigned int)timev;
 			g_CCore->GetNetworkManager()->GetPeer()->AddToBanList(items[0], banTime);
-			g_CCore->GetLog()->AddNormalLog(">>>Adding ban - %s.",items[0]);
+			this->p_banCount++;
+			//g_CCore->GetLog()->AddNormalLog(">>>Adding ban - %s.",items[0]);
 		}
 	}
 }
@@ -133,8 +136,7 @@ void CBanSystem::AddBanToFile(char* IPaddres, unsigned int duration, char* reaso
 
 		char line[500];
 		char timestamp[20];
-		time_t  timev;
-		time(&timev);
+		RakNet::TimeMS timev = RakNet::GetTimeMS();
 		sprintf(timestamp, "%u", timev + duration);
 		
 		sprintf(line, "\"%s\" \"%s\" \"%s\" \"%s\"\n", IPaddres, timestamp, reason, note);

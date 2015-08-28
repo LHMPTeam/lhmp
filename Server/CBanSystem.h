@@ -12,4 +12,5 @@ public:
 private:
 	void ParseLineFromFile(char line[],int lineID);
 	void AddBanToFile(char* IPaddres, unsigned int duration, char* reason = "", char* note = "");
+	unsigned int p_banCount;
 };

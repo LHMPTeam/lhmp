@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdio.h>
 
+SQInteger sq_banIP(SQVM *vm);
+SQInteger sq_banPlayer(SQVM *vm);
 SQInteger sq_sendPlayerMessage(SQVM *vm);
 SQInteger sq_sendAllMessage(SQVM *vm); 
 SQInteger sq_playerChangeSkin(SQVM *vm);

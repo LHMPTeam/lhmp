@@ -5,6 +5,11 @@
 int Init(SQVM* vM)
 {
 	//RegisterFunction(vM, "testfunc", (SQFUNCTION)sq_dopice, 0, "");
+
+	RegisterFunction(vM, "banIP", (SQFUNCTION)sq_banIP, 4, ".sns");
+	RegisterFunction(vM, "banPlayer", (SQFUNCTION)sq_banPlayer, 4, ".nns");
+
+
 	RegisterFunction(vM, "sendPlayerMessage", (SQFUNCTION)sq_sendPlayerMessage, 3, ".is");
 	RegisterFunction(vM, "sendAllMessage", (SQFUNCTION)sq_sendAllMessage, 2, ".s");
 
