@@ -1,4 +1,5 @@
 #include "CCore.h"
+#include <time.h>
 extern CCore* g_CCore;
 CBanSystem::CBanSystem()
 {
@@ -55,7 +56,8 @@ void CBanSystem::AddBan(char* IPaddres, char* reason, unsigned int duration)
 
 void CBanSystem::ParseLineFromFile(char* line,int lineID)
 {
-	RakNet::Time timev = RakNet::GetTimeMS();
+	time_t  timev;
+	time(&timev);
 	unsigned int banTime;
 	//g_CCore->GetLog()->AddNormalLog("Line: %s", line);
 	// four items with max length 200
@@ -136,7 +138,8 @@ void CBanSystem::AddBanToFile(char* IPaddres, unsigned int duration, char* reaso
 
 		char line[500];
 		char timestamp[20];
-		RakNet::TimeMS timev = RakNet::GetTimeMS();
+		time_t  timev;
+		time(&timev);
 		sprintf(timestamp, "%u", timev + duration);
 		
 		sprintf(line, "\"%s\" \"%s\" \"%s\" \"%s\"\n", IPaddres, timestamp, reason, note);
