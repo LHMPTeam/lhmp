@@ -4,11 +4,11 @@
 
 int main()
 {
-	printf("/***********************/\n");
-	printf("/*  LHMP Masterserver  */\n");
-	printf("/*  coded by Romop5    */\n");
-	printf("/* %s %s 	/*\n",__DATE__,__TIME__);
-	printf("/***********************/\n");
+	printf("/************************/\n");
+	printf("/*  LHMP Masterserver   */\n");
+	printf("/*  coded by Romop5     */\n");
+	printf("/* %s %s */\n",__DATE__,__TIME__);
+	printf("/************************/\n");
 	printf("\n");
 	bool result = CCore::getInstance().StartMaster();
 	// it's has successfully started

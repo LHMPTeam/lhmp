@@ -91,8 +91,8 @@ void		CLHMPQuery::Tick()
 			{
 				this->OnDataArrived(i, (char*) pack->data, pack->messageLength);
 				// dellocates packet (fix memory leak)
-				delete[] packet->data;
-				delete packet;
+				delete[] pack->data;
+				delete pack;
 			} else {
 				// if timeout
 				if ((time - taskPool[i]->timeStamp) > 1000)
