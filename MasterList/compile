@@ -1,1 +1,1 @@
-g++ CNetwork.cpp CServers.cpp Main.cpp ../sdks/UDPWrapper/UDPWrapper.cpp ../sdks/UDPWrapper/clhmpquery.cpp -pthread -lrt -o masterserver
+g++ -g -std=c++11 CNetwork.cpp CServers.cpp Main.cpp ../sdks/UDPWrapper/UDPWrapper.cpp ../sdks/UDPWrapper/clhmpquery.cpp -pthread -lrt -o masterserver

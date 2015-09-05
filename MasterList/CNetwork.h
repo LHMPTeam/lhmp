@@ -2,7 +2,7 @@
 #define _CNETWORK_H
 
 // handles all connections & data receiving
-#include "../sdks/UDPWrapper/CLHMPQuery.h"
+#include "../sdks/UDPWrapper/clhmpquery.h"
 class CNetwork
 {
 public:

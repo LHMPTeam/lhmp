@@ -1,7 +1,7 @@
 #ifndef _CSERVERS_H
 #define _CSERVERS_H
 
-#include "../sdks/UDPWrapper/CLHMPQuery.h"
+#include "../sdks/UDPWrapper/clhmpquery.h"
 #include <vector>
 #include <mutex>
 
