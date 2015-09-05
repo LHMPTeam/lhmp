@@ -85,10 +85,14 @@ void		CLHMPQuery::Tick()
 		unsigned int time = GetTickCount();
         if (taskPool[i] != NULL)
         {
+			// returns a packet (in allocated memory)
 			UDPPacket* pack = taskPool[i]->client->Receive();
 			if (pack)
 			{
 				this->OnDataArrived(i, (char*) pack->data, pack->messageLength);
+				// dellocates packet (fix memory leak)
+				delete[] packet->data;
+				delete packet;
 			} else {
 				// if timeout
 				if ((time - taskPool[i]->timeStamp) > 1000)
@@ -269,6 +273,12 @@ void CLHMPQuery::ProcessOverall(unsigned int taskID, char* data, unsigned int le
 		OverallPacket* packet = new OverallPacket(taskPool[taskID]->ID, serverName, serverMode, players, maxPlayers, ping, serverMap,serverWeb,hasPassword);
 		(*this->p_userCallback)(taskPool[taskID]->ID, packet, (unsigned char)QUERY_OVERALL);
 		delete packet;
+		
+		// memory leak fix -> delete all temporary arrays, used for message passing
+		delete[] serverName;
+		delete[] serverMode;
+		delete[] serverWeb;
+		delete[] serverMap;
 	}
 	taskPool[taskID]->client->CleanUP();
     delete taskPool[taskID];

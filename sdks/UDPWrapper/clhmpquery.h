@@ -124,6 +124,14 @@ struct sTask
 		queryType = inQueryType;
 		timeStamp = inTimestamp;
     }
+	~sTask()
+	{
+		if(client)
+		{
+			client->CleanUP();
+			delete client;
+		}
+	}
 };
 class CLHMPQuery
 {
