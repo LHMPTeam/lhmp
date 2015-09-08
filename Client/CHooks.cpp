@@ -1020,22 +1020,27 @@ _declspec(naked) void Hook_EngineLoad()
 
 void OnDoorStateChange(DWORD doorActor, int state)
 {
-	OBJECT* doors = (OBJECT*)(doorActor);
-	char* actorName = g_CCore->GetGame()->GetFrameName(doors->frame);
-	bool facing = *(bool*)(doorActor + 0x11E);
+	bool isLocked = *(bool*)(doorActor + 0x125);
+	// if doors are not locked (and thus we can open/close them correctly)
+	if (isLocked == false)
+	{
+		OBJECT* doors = (OBJECT*)(doorActor);
+		char* actorName = g_CCore->GetGame()->GetFrameName(doors->frame);
+		bool facing = *(bool*)(doorActor + 0x11E);
 
-	char buff[255];
-	sprintf(buff, "[Hook] DoorChange: %s %d %d", actorName, state, facing);
-	g_CCore->GetLog()->AddLog(buff);
+		char buff[255];
+		sprintf(buff, "[Hook] DoorChange: %s %d %d", actorName, state, facing);
+		g_CCore->GetLog()->AddLog(buff);
 
-	g_CCore->GetLog()->AddLog(actorName);
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_DOOR_SET_STATE);
-	bsOut.Write(actorName);
-	bsOut.Write(state);
-	bsOut.Write(facing);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+		g_CCore->GetLog()->AddLog(actorName);
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
+		bsOut.Write((RakNet::MessageID)LHMP_DOOR_SET_STATE);
+		bsOut.Write(actorName);
+		bsOut.Write(state);
+		bsOut.Write(facing);
+		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	}
 }
 
 __declspec(naked) void Hook_OnDoorStateChange()
