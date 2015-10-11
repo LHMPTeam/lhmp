@@ -1472,18 +1472,20 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 			MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
 			MOV EDX, DWORD PTR DS : [ESI]
 			PUSH 0
-			PUSH locPart
+			PUSH locPart	// hitbox (part of player) that was impaired
+							// 0-head, etc
 			MOV EAX, localPlayer
-			PUSH EAX
+			PUSH EAX		// hitman
 			LEA EAX, DWORD PTR SS : [ESP + 0xC]
-			PUSH 0x447a0000	// damagee -> 1000.0f
-			PUSH EAX
+			PUSH 0x447a0000	// damage that he takes upon the hit -> 1000.0f
+			PUSH EAX		// unk. vector
 			LEA ECX, DWORD PTR SS : [ESP + 0x14]
 			LEA EAX, DWORD PTR SS : [ESP + 0x14]
-			PUSH ECX
-			PUSH EAX
-			PUSH locReason
-			MOV ECX, ESI
+			PUSH ECX		// target position
+			PUSH EAX		// vector direction for force application (roll back on death)
+							// implicit value: it's rotation from hitman to target
+			PUSH locReason	// event type (0 = target got shot, 8 = car collision)
+			MOV ECX, ESI	// ECX = target
 			MOV EAX, 0x00496710
 			CALL EAX; Game.00496710; \Game.00496710
 			add ESP, 0xC
