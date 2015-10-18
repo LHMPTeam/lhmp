@@ -179,6 +179,11 @@ void CCore::Run()
 
 	PatchBytes(0x005BC005, disableCompas);
 
+	// Fix ALT-tabbing (game stops on ALT-TAB) 
+	//1006A1DA   /74 1B           JE SHORT ls3df.1006A1F7
+	Tools::Nop(0x1006A1DA, 2);
+
+	//------------------------------------------------------------------------------------------------------------
 	/* Block script functions*/
 	// NOTE: items in white list must be in ascending order (from the lowest to the highest one)
 

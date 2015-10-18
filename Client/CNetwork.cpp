@@ -602,7 +602,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 			sprintf(buff, "[NM] PlayerDeath %i", ID);
 			g_CCore->GetLog()->AddLog(buff);
 
-			ENGINE_STACK::KILL_PED_EX* pw = new ENGINE_STACK::KILL_PED_EX(ID,part,reason);
+			ENGINE_STACK::KILL_PED_EX* pw = new ENGINE_STACK::KILL_PED_EX(ID,reason, part);
 			g_CCore->GetEngineStack()->AddMessage(ES_PLAYERDEATHEX, (DWORD)pw);
 
 		}

@@ -1393,7 +1393,7 @@ void CGame::KillPed(DWORD PED)
 	_asm {
 		sub ESP, 0x500
 			MOV ESI, PED
-			MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
+			MOV DWORD PTR DS : [ESI + 0x644], 0x40a00000
 			MOV EDX, DWORD PTR DS : [ESI]
 			PUSH 0
 			PUSH 5
@@ -1427,8 +1427,13 @@ void CGame::FixAfterDeath(DWORD ped)
 
 void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 {
+	char buff[100];
+	sprintf(buff, "PED %x Reason %d Part %d", ped, reason, part);
+	g_CCore->GetChat()->AddMessage(buff);
+
 	DWORD locPed = ped;
-	DWORD locReason = reason;
+	//DWORD locReason = reason;
+	DWORD locReason = 0;
 	DWORD locPart = part;
 	/*char buff[500];
 	sprintf(buff, "%x; %x; %x", ped, reason, part);
@@ -1463,32 +1468,42 @@ void CGame::KillPedEx(DWORD ped, DWORD reason, DWORD part)
 	}
 	*/
 	PED* localPlayer = g_CCore->GetGame()->GetLocalPED();
-	_asm {
-		sub ESP, 0xC	// create null vector
-			mov DWORD PTR DS : [ESP], 0x0
-			mov DWORD PTR DS : [ESP + 0x4], 0x0
-			mov DWORD PTR DS : [ESP + 0x8], 0x0
-			MOV ESI, locPed
-			MOV DWORD PTR DS : [ESI + 0x644], 0x3F800000
-			MOV EDX, DWORD PTR DS : [ESI]
-			PUSH 0
-			PUSH locPart
-			MOV EAX, localPlayer
-			PUSH EAX
-			LEA EAX, DWORD PTR SS : [ESP + 0xC]
-			PUSH 0x447a0000	// damagee -> 1000.0f
-			PUSH EAX
-			LEA ECX, DWORD PTR SS : [ESP + 0x14]
-			LEA EAX, DWORD PTR SS : [ESP + 0x14]
-			PUSH ECX
-			PUSH EAX
-			PUSH locReason
-			MOV ECX, ESI
-			MOV EAX, 0x00496710
-			CALL EAX; Game.00496710; \Game.00496710
-			add ESP, 0xC
+	PED* remotePed = (PED*) ped;
+	if (ped != NULL)
+	{
+		DWORD objectPos = (DWORD) &remotePed->object.position;
+		Vector3D oneVector = Vector3D(1.0f, 1.0f, 1.0f);
+			_asm {
+			sub ESP, 0xC	// create null vector
+				mov DWORD PTR DS : [ESP], 0x0
+				mov DWORD PTR DS : [ESP + 0x4], 0x0
+				mov DWORD PTR DS : [ESP + 0x8], 0x0
+				MOV ESI, locPed
+				MOV DWORD PTR DS : [ESI + 0x644], 0x40a00000 // 0.5f
+				MOV EDX, DWORD PTR DS : [ESI]
+				PUSH 0
+				PUSH locPart
+				MOV EAX, localPlayer
+				PUSH EAX
+				LEA EAX, DWORD PTR SS : [ESP + 0xC]
+				PUSH 0x447a0000	// damagee -> 1000.0f
+				PUSH EAX
+				//LEA ECX, DWORD PTR SS : [ESP + 0x14]
+				MOV ECX, objectPos
+				LEA EAX, DWORD PTR SS : [ESP + 0x14]
+				PUSH ECX		// target position
+				LEA EAX, oneVector
+				PUSH EAX		// vector direction for force application (roll back on death)
+											// implicit value: it's rotation from hitman to target
+								// THE MOST IMPORTANT TO CALCULATE DAMAGE
+				PUSH locReason	// event type (0 = target got shot, 8 = car collision)
+				MOV ECX, ESI	// ECX = target
+				MOV EAX, 0x00496710
+				CALL EAX; Game.00496710; \Game.00496710
+				add ESP, 0xC
+		}
+		g_CCore->GetGame()->ShouldKill = false;
 	}
-	g_CCore->GetGame()->ShouldKill = false;
 }
 
 void CGame::SetOn(DWORD PED,bool hide)

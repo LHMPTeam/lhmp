@@ -151,6 +151,7 @@ int CPed::GetPing()
 
 void CPed::UpdateGameObject()
 {
+	//return;
 	PED* ped = (PED*) this->GetEntity();
 	if (ped != NULL)
 	{
@@ -260,7 +261,7 @@ void CPed::Interpolate()
 		//char buff[255];
 		//sprintf(buff, "I: %i %i %i", actualtime, b, c);
 		//g_CCore->GetLog()->AddLog(buff);
-		if (this->fHealth == 0) return;
+		if (this->fHealth < 1.0f) return;
 		DWORD car = *(DWORD*)(this->EntityBase + 0x98);
 		if (this->IsOnFoot() && car == NULL)
 		{
@@ -508,19 +509,22 @@ void CPed::gCheckWeapons()
 	PED* ped = (PED*) this->GetEntity();
 	if (ped)
 	{
-		if (ped->inventary.slot[0].weaponType != this->currentWep)
-		{
-			if (ped->inventary.slot[0].weaponType == 0)
+		//if (ped->health > 0.0f)
+		//{
+			if (ped->inventary.slot[0].weaponType != this->currentWep)
 			{
-				g_CCore->GetGame()->AddWeapon(this->GetEntity(), this->currentWep, 1000, 0, 0);
+				if (ped->inventary.slot[0].weaponType == 0)
+				{
+					g_CCore->GetGame()->AddWeapon(this->GetEntity(), this->currentWep, 1000, 0, 0);
+				}
+				else {
+					g_CCore->GetGame()->DeleteWeapon(this->GetEntity(), ped->inventary.slot[0].weaponType);
+					g_CCore->GetGame()->AddWeapon(this->GetEntity(), this->currentWep, 1000, 0, 0);
+				}
 			}
 			else {
-				g_CCore->GetGame()->DeleteWeapon(this->GetEntity(), ped->inventary.slot[0].weaponType);
-				g_CCore->GetGame()->AddWeapon(this->GetEntity(), this->currentWep, 1000, 0, 0);
+				ped->inventary.slot[0].ammoLoaded = 1000;
 			}
-		}
-		else {
-			ped->inventary.slot[0].ammoLoaded = 1000;
-		}
+		//}
 	}
 }
