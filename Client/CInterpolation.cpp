@@ -97,6 +97,9 @@ Vector3D CInterpolation::Interpolate() {
 	float distance = Tools::GetDistanceBetween3DPoints(this->previousPos, this->actualPos);
 	float treshold = 7.5;
 
+	// If pos is somehow incorrect, block black screen bug
+	if (this->actualPos.x != this->actualPos.x) return (this->InterPosition);
+
 	if (distance < treshold) {
 		this->InterPosition.x = Lerp(this->previousPos.x, this->actualPos.x, t);
 		this->InterPosition.y = Lerp(this->previousPos.y, this->actualPos.y, t);
