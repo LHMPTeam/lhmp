@@ -1,33 +1,24 @@
-# Lost Heaven Mutliplayer Project - [http://lh-mp.eu](http://lh-mp.eu)
+# Lost Heaven Multiplayer
+Lost Heaven Multiplayer (LHMP) is open-source modification for PC game
+ **Mafia:The city of Lost Heaven**(2K Czech), bringing multiplayer experience into the game. 
+The gameplay is similar to other modifications such as SAMP, allowing to customize game features via gamemodes written in Squirrel.
 
-**Project tree**:
+Project is mostly written in **C++**, supported by **inline Assembler** for game interaction. 
 
-1. Client
-2. Server
-3. Loader
-4. Debug
-5. Release
-6. Others
-	* Browser
-	* Client updater
-	* AntiDec
-	* patch1.0
--> Development
--> shared
--> sdks
-
-## Server-Client-Loader ##
-These 3 projects are making the core of LHMP.
-
-## Others ##
-Utilities and support projects + usefull things.
-
-## Development ##
-Contains all documents saved in LHMP dir -> guides how to run server,
-how to compile under Linux, TODO docs.
-
-## Shared ##
-Shared code for both server and client.
-
-## SDKs ##
-3rd libraries used in this project (RakNet, DirectX SDK)
+## Compilation
+LHMP supports both Linux and Windows platforms although client is completely Win-like. 
+Have a look at compile.md to find out how to compile our work.
+## Contributing
+Do you want to become a LHMP contributor ? Excelent ! You can continue here: 
+- [How to contribute](contribution.md)
+- Project structure
+- Code guidelines
+- Roadmap/issues
+## Credits
+The list of all contributors can be found in authors.md. 
+## License
+TODO: Write license - we will probably use GPL3
+lincese.md
+## Links
+- LHMP's official webpage http://lh-mp.eu
+- YouTube channel https://www.youtube.com/user/lhmpmode
