@@ -905,7 +905,7 @@ SQInteger sq_isAnyPlayerInVehicle(SQVM *vm)
 			}
 		}
 	}
-	sq_pushnull(vm);
+	sq_pushbool(vm, false);
 	return 1;
 }
 
