@@ -531,9 +531,11 @@ void CEngineStack::DoMessage()
 		break;
 		case CLIENT_ENGINESTACK::ES_PLAYER_PUT_TO_VEH:
 		{
+			
 			ENGINE_STACK::PLAYER_ENTER_VEH* pw = (ENGINE_STACK::PLAYER_ENTER_VEH*) start->data;
 			if (pw->pID == g_CCore->GetLocalPlayer()->GetOurID())
 			{
+				g_CCore->GetLog()->AddLog("ES_PLAYER_PUT_TO_VEH local");
 				DWORD adr = *(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4);
 				//DWORD adr = *(DWORD*)(*(DWORD*)(0x006F9464) + 0xE4);
 				//g_CCore->GetGame()->SwitchWeapon(adr, pw->wepID);
@@ -543,6 +545,7 @@ void CEngineStack::DoMessage()
 			}
 			else
 			{
+				g_CCore->GetLog()->AddLog("ES_PLAYER_PUT_TO_VEH");
 				CPed* ped = g_CCore->GetPedPool()->Return(pw->pID);
 				if (ped != 0)
 				{

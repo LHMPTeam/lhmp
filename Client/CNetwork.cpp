@@ -649,7 +649,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 					}
 					veh->PlayerEnter(ID, seatID);
 				}
-				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH(ID, seatID, carID);
+				ENGINE_STACK::PLAYER_ENTER_VEH* data = new ENGINE_STACK::PLAYER_ENTER_VEH(ID, carID, seatID);
 				g_CCore->GetEngineStack()->AddMessage(ES_PLAYER_PUT_TO_VEH, (DWORD)data);
 			}
 

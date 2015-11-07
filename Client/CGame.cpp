@@ -1730,6 +1730,7 @@ void CGame::DeletePed(DWORD PED)
 }
 void CGame::DeleteCar(DWORD PED)
 {
+	
 	_PED *localis =(_PED*) g_CCore->GetLocalPlayer()->GetEntity();
 	if (localis->playersCar == (_VEHICLE*)PED || localis->carLeavingOrEntering == (_VEHICLE*)PED)
 	{
@@ -1737,14 +1738,14 @@ void CGame::DeleteCar(DWORD PED)
 	}
 
 	// Testing part
-	_asm {
+	/*_asm {
 		PUSH PED;  object to find(car / ped)
 		MOV EAX, DWORD PTR DS : [0x006F9464]	// static pool pointer
 		MOV ECX, EAX
 		MOV EAX, 0x005E3920
 		CALL EAX 
-	}
-	/*_asm{
+	}*/
+	_asm{
 		MOV ECX, DWORD PTR DS : [0x65115C]; Game.006F9440
 			PUSH PED
 			MOV EAX, 0x00425390
@@ -1762,7 +1763,7 @@ void CGame::DeleteCar(DWORD PED)
 			MOV ECX, EAX
 			MOV EAX, 0x005E3400
 			CALL EAX; Game.005E3400
-	}*/
+	}
 }
 
 DWORD CGame::FindFrame(char* frame)
@@ -2497,6 +2498,9 @@ void CGame::CarUpdate(DWORD carBase, Vector3D position, Vector3D rotation)
 */
 void CGame::GivePlayerToCarFast(DWORD ped, int vehId, int seatId)
 {
+	char buff[255];
+	sprintf(buff, "GivePlayerToCarFast %x %d %d", ped, vehId, seatId);
+	g_CCore->GetLog()->AddLog(buff);
 	if (ped == NULL)
 		return;
 	CVehicle* carObject = g_CCore->GetVehiclePool()->Return(vehId);
