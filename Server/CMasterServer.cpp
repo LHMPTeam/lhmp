@@ -9,14 +9,21 @@ CMasterList::CMasterList()
 	this->client = NULL;
 	this->isPending = false;
 	this->lastMasterPost = 0;
+	this->isVisible = false;
 }
 
 void CMasterList::AddServerToMaster()
 {
+	// we want to be announced in any case, so change to "visible" mode
+	this->isVisible = true;
+	// create a new instance of UDPWrapper if needed
 	if (client == NULL)
 		client = new UDPWrapper;
+	// set connection details to master server 
 	client->StartClient("master.lh-mp.eu", 50000);
 
+	// master server message consists of LHMPcPP where PP is port casted to unsigned short,
+	// thus 2 bytes long
 	char message[] = "LHMPcPP";
 
 	// PP is replaced by our server port
@@ -26,17 +33,24 @@ void CMasterList::AddServerToMaster()
 	client->SendData(7, message);
 
 	this->timestampStart = RakNet::GetTimeMS();
+	// turn on callback checking
 	this->isPending = true;
 }
 
 // Tick - handles master-server communication
 void CMasterList::Pulse()
 {
+	// stop the function if we are hidden for the master
+	if (this->isVisible == false)
+		return;
 	unsigned int time = RakNet::GetTimeMS();
+
+	// if we are awaiting communication from the master
 	if (isPending)
 	{
 		char signature[] = "LHMP";
 		UDPPacket* pack = this->client->Receive();
+		// if there is a packet
 		if (pack)
 		{
 			if (pack->messageLength >= 5)
@@ -105,4 +119,9 @@ void CMasterList::HandleMasterResponse(int reason)
 	}
 
 	this->lastMasterPost = RakNet::GetTimeMS();
+}
+
+void CMasterList::SetVisibility(bool vis)
+{
+	this->isVisible = vis;
 }

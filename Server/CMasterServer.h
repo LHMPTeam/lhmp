@@ -28,6 +28,9 @@ public:
 
 	// Tick - handles master-server communication
 	void Pulse();
+
+	// Sets our visibility, if false, we wont communicate with master
+	void SetVisibility(bool);
 private:
 	UDPWrapper* client;
 	bool isPending;
@@ -37,6 +40,9 @@ private:
 
 	// timestamp taken when sending a request to master server
 	unsigned int lastMasterPost;
+
+	// should we be announced in the master query 
+	bool isVisible;
 };
 
 #endif

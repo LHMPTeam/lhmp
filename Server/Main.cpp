@@ -26,7 +26,7 @@ int main()
 	char*	gamemode	= cfg->GetCString("gamemode", "default");
 	char*	mode		= cfg->GetCString("mode", "Default mode");
 	char*	password	= cfg->GetCString("password", "");
-	bool	visible		= cfg->GetBool("visible", 1);
+	bool	isAnnounced		= cfg->GetBool("visible", 1);
 	char*	websiteurl = cfg->GetCString("website", "(No URL!)");
 	delete cfg;
 	std::string startpos = "-1985.966675 -5.037054 4.284860";
@@ -53,7 +53,7 @@ int main()
 	g_CCore = &CCore;
 	// if server inits correctly
 	int startupResult;
-	if ((startupResult = CCore.Init(server_port, max_players, startpos, server_name, mode, visible, websiteurl, password)) == STARTUP_SUCCESS)
+	if ((startupResult = CCore.Init(server_port, max_players, startpos, server_name, mode, isAnnounced, websiteurl, password)) == STARTUP_SUCCESS)
 	{
 		g_CCore->GetTickManager()->SetTickCount(tick_count);
 		g_CCore->GetLog()->AddNormalLog("Core has been initilaized successfully.");
@@ -64,21 +64,25 @@ int main()
 		{
 			g_CCore->GetLog()->AddNormalLog("Loading of '%s' has failed - no gamemode loaded !",gamemode);
 		}
+		else {
+			// if gamemode has been loaded successfully, init all included scripts -> onServerInit callback
+			g_CCore->GetLog()->AddNormalLog("Initializating scripts...");
+			CCore.GetScripts()->onServerInit();
+		}
 
 		// load banlist
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
 		g_CCore->GetBanSystem()->LoadBanlist();
 		g_CCore->GetLog()->AddNormalLog("===============================================================================");
-
-		// call Squirrel onServerInit callback
-		CCore.GetScripts()->onServerInit();
-
-		g_CCore->GetLog()->AddNormalLog("===============================================================================");
-		g_CCore->GetLog()->AddNormalLog("Server has started...");
-
-		g_CCore->GetMasterServer()->AddServerToMaster();
-
+		//if we are visible for the master list, start up a master list communication
+		if(isAnnounced)
+			g_CCore->GetMasterServer()->AddServerToMaster();
+		else
+		{
+			g_CCore->GetLog()->AddNormalLog("Server visibility is set to false => we won't contact the master server.");
+		}
 		// pulse CCore until server runs
+		g_CCore->GetLog()->AddNormalLog("Server has started...");
 		while(CCore.IsRunning())
 		{
 			CCore.Pulse();
