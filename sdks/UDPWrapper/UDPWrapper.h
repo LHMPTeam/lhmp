@@ -20,7 +20,7 @@ typedef int socklen_t;
 #include <arpa/inet.h>
 #include <fcntl.h>
 typedef int SOCKET;
-#define INVALID_SOCKET (unsigned long) (~0)
+#define INVALID_SOCKET (int) (~0)
 #define SOCKET_ERROR	-1
 #define closesocket close
 #endif
@@ -60,7 +60,7 @@ public:
 	UDPPacket* Receive();
 
 	// a user-friendly way how to delete packet
-	void DellocatePacket(UDPPacket* packet);
+	static void DellocatePacket(UDPPacket* packet);
 
 	// stop connection and free all resources
 	void CleanUP();

@@ -125,21 +125,20 @@ void UDPWrapper::DellocatePacket(UDPPacket* packet)
 
 void UDPWrapper::CleanUP()
 {
-	if(this->p_socket != INVALID_SOCKET)
-	{
+	
+	
 	// Unbind socket (if is binded)
 #ifdef _WIN32
 	BOOL optVal = true;
 	const socklen_t optLen = sizeof(optVal);
-	int rtn = setsockopt(this->p_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optLen);
+	setsockopt(this->p_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optLen);
 #else
 	const int       optVal = 1;
 	const socklen_t optLen = sizeof(optVal);
-	int rtn = setsockopt(this->p_socket, SOL_SOCKET, SO_REUSEADDR, (void*)&optVal, optLen);
+	setsockopt(this->p_socket, SOL_SOCKET, SO_REUSEADDR, (void*)&optVal, optLen);
 #endif
 	closesocket(this->p_socket);
-	this->p_socket = INVALID_SOCKET;
-	}
+	delete this;
 }
 
 //------------------------ PRIVATE ------------------------//

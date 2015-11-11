@@ -11,6 +11,9 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#pragma comment (lib, "Ws2_32.lib")
+#pragma comment (lib, "Mswsock.lib")
+#pragma comment (lib, "AdvApi32.lib")
 #else
 #include <unistd.h>
 #include <time.h>
@@ -36,13 +39,9 @@ unsigned int GetTickCount()
 	return theTick;
 }
 #endif
+
 #include <stdio.h>
-
 #include "clhmpquery.h"
-
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
 
 CLHMPQuery* CLHMPQuery::p_Instance = NULL;
 
@@ -58,6 +57,7 @@ void* threadCallback(void *arg)
         query->Tick();
         Sleep(5);
     }
+	return 0;
 }
 
 void CLHMPQuery::queryInfo(const char* IPaddress, unsigned int port, unsigned int ID)
@@ -85,17 +85,14 @@ void		CLHMPQuery::Tick()
 		unsigned int time = GetTickCount();
         if (taskPool[i] != NULL)
         {
-			// returns a packet (in allocated memory)
 			UDPPacket* pack = taskPool[i]->client->Receive();
 			if (pack)
 			{
 				this->OnDataArrived(i, (char*) pack->data, pack->messageLength);
-				// dellocates packet (fix memory leak)
-				delete[] pack->data;
-				delete pack;
+				taskPool[i]->client->DellocatePacket(pack);
 			} else {
 				// if timeout
-				if ((time - taskPool[i]->timeStamp) > 1000)
+				if ((time - taskPool[i]->timeStamp) > this->GetTimeout())
 				{
 					if (taskPool[i]->ID == MASTERSERVER)
 						this->OnMasterConnnectionFailed(i);
@@ -103,6 +100,7 @@ void		CLHMPQuery::Tick()
 						this->OnConnnectionFailed(i);
 				}
 			}
+		
 		}
     }
 }
@@ -111,6 +109,7 @@ bool CLHMPQuery::Prepare(void* callback, unsigned int timeout)
 {
     // Allocate memory for tasks and zero it
     taskSize = 1000;
+	this->p_uintTimeout = timeout;
     for (unsigned int i = 0; i < taskSize; i++)
         taskPool[i] = NULL;
 
@@ -161,7 +160,7 @@ bool	CLHMPQuery::AddTask(char* IP, int port, unsigned char type, unsigned int ID
 		break;
 	}
 
-	taskPool[freeTask] = new sTask(client, ID, NULL, GetTickCount());
+	taskPool[freeTask] = new sTask(client, ID, GetTickCount());
     return true;
 }
 
@@ -210,6 +209,7 @@ void CLHMPQuery::OnDataArrived(unsigned int taskID, char* data, unsigned int len
     taskPool[taskID] = NULL;
 }
 
+// TODO: we are not using @len to check if there are data available => possible buffer overflow problem
 void CLHMPQuery::ProcessOverall(unsigned int taskID, char* data, unsigned int len)
 {
 	// 5 bytes stands for 'LHMPo'
@@ -272,13 +272,12 @@ void CLHMPQuery::ProcessOverall(unsigned int taskID, char* data, unsigned int le
 		unsigned int ping = GetTickCount() - taskPool[taskID]->timeStamp;
 		OverallPacket* packet = new OverallPacket(taskPool[taskID]->ID, serverName, serverMode, players, maxPlayers, ping, serverMap,serverWeb,hasPassword);
 		(*this->p_userCallback)(taskPool[taskID]->ID, packet, (unsigned char)QUERY_OVERALL);
+		// now delete all dynamic allocations
 		delete packet;
-		
-		// memory leak fix -> delete all temporary arrays, used for message passing
-		delete[] serverName;
-		delete[] serverMode;
-		delete[] serverWeb;
 		delete[] serverMap;
+		delete[] serverWeb;
+		delete[] serverMode;
+		delete[] serverName;
 	}
 	taskPool[taskID]->client->CleanUP();
     delete taskPool[taskID];
@@ -338,4 +337,8 @@ void CLHMPQuery::ProcessMaster(unsigned int taskID, char* data, unsigned int len
 	delete taskPool[taskID];
 	taskPool[taskID] = NULL;
 
+}
+unsigned int CLHMPQuery::GetTimeout()
+{
+	return p_uintTimeout;
 }

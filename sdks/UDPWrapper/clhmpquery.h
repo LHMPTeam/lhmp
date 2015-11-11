@@ -114,23 +114,13 @@ enum TaskStates
 struct sTask
 {
 	UDPWrapper* client;
-    unsigned int ID;
-    unsigned char queryType;
-    unsigned int timeStamp;
-	sTask(UDPWrapper* inClient, unsigned int inID, unsigned char inQueryType, unsigned int inTimestamp)
-    {
+	unsigned int ID;
+	unsigned int timeStamp;
+	sTask(UDPWrapper* inClient, unsigned int inID, unsigned int inTimestamp)
+	{
 		client = inClient;
 		ID = inID;
-		queryType = inQueryType;
 		timeStamp = inTimestamp;
-    }
-	~sTask()
-	{
-		if(client)
-		{
-			client->CleanUP();
-			delete client;
-		}
 	}
 };
 class CLHMPQuery
@@ -160,6 +150,7 @@ public:
 
     // intern function called by worker thread to ensure we are listening from server
     void			Tick();
+	unsigned int		GetTimeout();
 
 private:
     static CLHMPQuery* p_Instance;
@@ -171,7 +162,7 @@ private:
 
     unsigned int	taskSize;
     sTask* taskPool[1000];
-
+	unsigned int p_uintTimeout;
 	void OnConnnectionFailed(unsigned int taskID);
 	void OnMasterConnnectionFailed(unsigned int taskID);
     void OnDataArrived(unsigned int taskID, char* data, unsigned int len);
