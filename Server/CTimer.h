@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose class for scriptable timer
+@author Romop5
+******************************************************************************/
+
 #include "squirrelheads.h"
 #include "RakNetTime.h"
 class CTimer

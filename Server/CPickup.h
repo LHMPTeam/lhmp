@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose pickup class
+@author Romop5
+******************************************************************************/
+
 #ifndef CPICKUP_H
 #define CPICKUP_H
 #include "../shared/structures.h"

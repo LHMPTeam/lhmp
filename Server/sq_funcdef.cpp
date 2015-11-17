@@ -708,16 +708,23 @@ SQInteger sq_playerPutToVehicle(SQVM *vm)
 		CVehicle* veh = g_CCore->GetVehiclePool()->Return(carID);
 		if (veh != NULL)
 		{
-			// todo: to car fast
-			BitStream bsOut;
-			bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
-			bsOut.Write((MessageID)LHMP_PLAYER_PUT_TO_VEHICLE);
-			bsOut.Write(ID);
-			bsOut.Write(carID);
-			bsOut.Write(seatID);
-			g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-			sq_pushbool(vm, true);
-			return 1;
+			// if the seat he want to enter is free
+			if (veh->GetSeat(seatID) == -1)
+			{
+				// todo: to car fast
+				// make sure we mark the seat as RESERVED
+				veh->PlayerEnter(ID, seatID);
+				// broadcast the act of car enter
+				BitStream bsOut;
+				bsOut.Write((MessageID)ID_GAME_LHMP_PACKET);
+				bsOut.Write((MessageID)LHMP_PLAYER_PUT_TO_VEHICLE);
+				bsOut.Write(ID);
+				bsOut.Write(carID);
+				bsOut.Write(seatID);
+				g_CCore->GetNetworkManager()->GetPeer()->Send(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				sq_pushbool(vm, true);
+				return 1;
+			}
 		}
 	}
 	sq_pushbool(vm, false);
@@ -1349,7 +1356,7 @@ SQInteger sq_vehicleExplode(SQVM *vm)
 	CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
 	if (veh != NULL)
 	{
-		veh->SetExplodeTime(g_CCore->GetTickManager()->GetTime());
+		veh->SetExplodeTime(RakNet::GetTimeMS());
 		veh->SetExploded(true);
 
 		BitStream bsOut;

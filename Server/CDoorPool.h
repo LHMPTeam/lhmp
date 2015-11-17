@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: handles all synced doors
-
+@purpose server-side pool for handling synchronized doors
 @author Romop5
-@version 1.0 1/9/14
-*/
+******************************************************************************/
 
 #ifndef CDOORPOOL_H
 #define CDOORPOOL_H

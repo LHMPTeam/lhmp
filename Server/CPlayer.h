@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose player class (extended entity)
+@author Romop5
+******************************************************************************/
+
 #ifndef CPLAYER_H
 #define CPLAYER_H
 #include "../shared/structures.h"

@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose pool of all players
+@author Romop5
+******************************************************************************/
+
 #include "../shared/limits.h"
 #include "CPlayer.h"
 class CPlayerPool

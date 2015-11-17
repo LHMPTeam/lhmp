@@ -853,7 +853,7 @@ void CNetworkManager::LHMPPacket(Packet* packet, RakNet::TimeMS timestamp)
 			{
 				if (veh->IsExploded() == false)
 				{
-					veh->SetExplodeTime(g_CCore->GetTickManager()->GetTime());
+					veh->SetExplodeTime(RakNet::GetTimeMS());
 					veh->SetExploded(true);
 
 					BitStream bsOut;

@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: handles network communication
-
-@author Romop5
-@version 1.0 1/9/14
-*/
+@purpose handles network events
+@author Romop5, ZaKlaus, Davo
+******************************************************************************/
 
 #ifndef CNETWORKMANAGER_H
 #define CNETWORKMANAGER_H

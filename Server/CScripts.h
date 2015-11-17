@@ -1,16 +1,10 @@
-/*#include "CScript.h"
-#include "squirrelheads.h"
-class CScripts
-{
-private:
-	char		szName[255];
-	CScript*	slot[100];
-public:
-	void		LoadScript(char*);
-	void		ReloadScripts();
-	void		Call(const char *, int, SQObject*);
-};*/
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
+@purpose script event-calling, managing script resource
+@author Vice-Players, Romop5
+******************************************************************************/
 
 #pragma once
 /*#include "../vendor/squirrel/squirrel.h"
@@ -35,7 +29,6 @@ public:
 	bool LoadScript(const char * szScriptName);
 	bool UnloadScript(const char * szScriptName);
 	void UnloadAll();
-	//bool LoadFromConfig(CConfig * pConfig);
 
 	CScript * GetScript(int scriptID) {
 		if (!m_pScripts[scriptID]) return NULL;

@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: config.txt 
-
+@purpose bansystem - system for parsing & loading config.txt 
 @author Romop5
-@version 1.0 1/9/14
-*/
+******************************************************************************/
 
 #include <iostream>
 #include <fstream>
