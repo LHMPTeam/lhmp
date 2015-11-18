@@ -19,6 +19,12 @@ void* threadCallbackServer(void* arg)
 	g_CCore->GetQueryServer()->Tick();
 }
 
+CQueryServer::CQueryServer()
+{
+	this->isRunning = false;
+	this->queryServer = NULL;
+}
+
 bool CQueryServer::StartServer(int port)
 {
 	queryServer = new UDPWrapper();

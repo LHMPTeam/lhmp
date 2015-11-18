@@ -7,6 +7,8 @@ CEntity::CEntity()
 	this->isSpawned		= 1;
 	this->shouldUpdate	= true;
 	this->timestamp		= NULL;
+	this->skinID		= 0;
+	this->status		= 0;
 
 }
 

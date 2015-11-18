@@ -151,7 +151,6 @@ void	CTransmission::HandlePacket(RakNet::BitStream* pMsg)
 		{
 			//printf("[In] CFileTransfer Init \n");
 			// assume that the list is ordered (from the smallest to the biggest ID)
-			int lastOne = -1;
 			int filesCount;
 			pMsg->Read(filesCount);
 			std::vector<CFile*> newlist;

@@ -19,8 +19,15 @@ extern CCore *g_CCore;
 DWORD postTime = timeGetTime();
 CNetworkManager::CNetworkManager()
 {
-	peer = NULL;
+	this->peer = NULL;
+	this->packet = NULL;
+	this->sd = NULL;
+	this->m_pServerPort = 27015;
+
 	this->m_pServerMode = "Default+Mode";
+	this->m_bisLocked = false;
+	this->m_pServerMaxPlayers = 100;
+
 }
 CNetworkManager::~CNetworkManager()
 {
@@ -197,7 +204,6 @@ void	CNetworkManager::OnPlayerConnection(RakNet::Packet* packet)
 
 void	CNetworkManager::OnPlayerFileTransferFinished(RakNet::SystemAddress)
 {
-	int ID = GetIDFromSystemAddress(packet->systemAddress);
 	_Server serInfo;
 	serInfo.max_players = this->m_pServerMaxPlayers;
 	serInfo.playerid = GetIDFromSystemAddress(packet->systemAddress);

@@ -25,6 +25,7 @@ See LICENSE in the top level directory
 class CQueryServer 
 {
 public:
+	CQueryServer();
 	// Start query server
 	bool StartServer(int port);
 	

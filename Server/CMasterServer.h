@@ -28,7 +28,7 @@ class CMasterList
 {
 public:
 	CMasterList();
-
+	~CMasterList();
 	// setup new master list request
 	void AddServerToMaster();
 
