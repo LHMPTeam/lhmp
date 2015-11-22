@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose class defining car
+@author Romop5
+******************************************************************************/
+
 #ifndef CVEHICLE_H
 #define CVEHICLE_H
 #include "../shared/structures.h"

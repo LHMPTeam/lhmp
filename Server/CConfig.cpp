@@ -18,11 +18,10 @@ CConfig::CConfig()
 CConfig::~CConfig()
 {
 	// just delete dynamically allocated memory
-	ConfigItem* workwith;
 	ConfigItem* next = start;
 	while (next != 0)
 	{
-		workwith = next;
+		ConfigItem* workwith = next;
 		next = next->next;
 		delete workwith;
 	}
@@ -49,7 +48,6 @@ void	CConfig::LoadConfig()
 		char* pointer;
 		// \r\n\0 should work as universal file-ending 
 		pointer = strtok(fileContent, "\r\n\0");
-		int lineNumber = 0;
 		// while we have lines
 		while (pointer != NULL)
 		{
@@ -57,8 +55,9 @@ void	CConfig::LoadConfig()
 			AddItem(pointer);
 			pointer = strtok(NULL, "\r\n\0");
 		}
-		// close file
+		// close file & free allocated memory
 		fclose(file);
+		delete[] fileContent;
 	}
 	else {
 		g_CCore->GetLog()->AddNormalLog("[Error] Cofig file failed to load\n");
@@ -78,7 +77,8 @@ void	CConfig::AddItem(char* buff)
 			endbuff[pos] = '\0';
 			break;
 		}
-		else if ((buff[i] != '	') && (buff[i] != ' '))
+		// if character is white-space or tab
+		else if ((buff[i] != '\t') && (buff[i] != ' '))
 			endbuff[pos++] = buff[i];
 		else {
 			if (pos)

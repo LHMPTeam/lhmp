@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: server console for server owner
-
+@purpose command console for server-owner
 @author Romop5
-@version 1.0 1/9/14
-*/
+******************************************************************************/
 
 #ifndef CCONSOLE_H
 #define CCONSOLE_H

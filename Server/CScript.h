@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose class handling a script resource (taken from Vice-Players project, thx guys)
+@author Vice-Players
+******************************************************************************/
+
 #include "squirrelheads.h"
 #include <cstring>
 class CScript

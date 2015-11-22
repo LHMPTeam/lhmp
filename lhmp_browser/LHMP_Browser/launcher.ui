@@ -488,7 +488,7 @@ selection-background-color: rgba(0, 0, 0, 100);</string>
         <string>Anonymous</string>
        </property>
        <property name="maxLength">
-        <number>14</number>
+        <number>18</number>
        </property>
        <property name="clearButtonEnabled">
         <bool>false</bool>
@@ -1175,7 +1175,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <string>Name</string>
         </property>
         <property name="textAlignment">
-         <set>AlignLeft|AlignVCenter</set>
+         <set>AlignLeading|AlignVCenter</set>
         </property>
        </column>
        <column>
@@ -1183,7 +1183,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <string>Gamemode</string>
         </property>
         <property name="textAlignment">
-         <set>AlignLeft|AlignVCenter</set>
+         <set>AlignLeading|AlignVCenter</set>
         </property>
        </column>
        <column>
@@ -1191,7 +1191,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <string>Players</string>
         </property>
         <property name="textAlignment">
-         <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+         <set>AlignCenter</set>
         </property>
        </column>
        <column>
@@ -1199,7 +1199,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <string>Ping</string>
         </property>
         <property name="textAlignment">
-         <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+         <set>AlignCenter</set>
         </property>
        </column>
        <column>

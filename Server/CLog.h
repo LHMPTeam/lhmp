@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: log class
-
+@purpose used for logging events
 @author Romop5
-@version 1.0 1/9/14
-*/
+******************************************************************************/
 
 #ifndef LOG_C
 #define LOG_C

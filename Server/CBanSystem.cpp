@@ -36,6 +36,7 @@ void CBanSystem::LoadBanlist()
 		}
 		// close file
 		fclose(file);
+		delete[] fileContent;
 	}
 	g_CCore->GetLog()->AddNormalLog("[Banlist] %d bans loaded.",this->p_banCount);
 }

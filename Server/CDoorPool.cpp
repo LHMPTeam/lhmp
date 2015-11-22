@@ -52,11 +52,10 @@ sDoor* CDoorPool::GetStart()
 void CDoorPool::Reset()
 {
 	sDoor* pointer = this->GetStart();
-	sDoor* current;
 	this->start = NULL;
 	while (pointer != NULL)
 	{
-		current = pointer;
+		sDoor* current = pointer;
 		pointer = pointer->nextDoor;
 		delete current;
 	}

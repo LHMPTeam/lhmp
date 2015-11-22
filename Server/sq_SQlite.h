@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose server-side Sqlite support
+@author Davo
+******************************************************************************/
+
 #include "../sdks/sqlite/sqlite3.h"
 #include "squirrelheads.h"
 

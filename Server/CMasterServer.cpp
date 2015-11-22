@@ -10,6 +10,16 @@ CMasterList::CMasterList()
 	this->isPending = false;
 	this->lastMasterPost = 0;
 	this->isVisible = false;
+	this->timestampStart = NULL;
+}
+
+CMasterList::~CMasterList()
+{
+	if (client)
+	{
+		client->CleanUP();
+		delete client;
+	}
 }
 
 void CMasterList::AddServerToMaster()
@@ -48,13 +58,13 @@ void CMasterList::Pulse()
 	// if we are awaiting communication from the master
 	if (isPending)
 	{
-		char signature[] = "LHMP";
 		UDPPacket* pack = this->client->Receive();
 		// if there is a packet
 		if (pack)
 		{
 			if (pack->messageLength >= 5)
 			{
+				char signature[] = "LHMP";
 				// compare if packet starts with LHMP chars
 				if (*(int*)pack->data == *(int*)signature)
 				{

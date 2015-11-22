@@ -99,7 +99,7 @@ void CVehicle::SendSync()
 {
 	if (this->isExploded)
 	{
-		unsigned int elapsedTime = g_CCore->GetTickManager()->GetTime() - this->GetExplodeTime();
+		unsigned int elapsedTime = RakNet::GetTimeMS() - this->GetExplodeTime();
 		if (elapsedTime > 1000)
 		{
 			this->Respawn();

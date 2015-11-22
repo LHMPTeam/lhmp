@@ -1,12 +1,21 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose interaction with master server (adding our server into the master list)
+@author Romop5
+******************************************************************************/
+
 #ifndef _CMASTERSERVER_H
 #define _CMASTERSERVER_H
 
 #include "../sdks/UDPWrapper/UDPWrapper.h"
 
-// defines the amount of seconds that have to elapse between reposting
+// defines the amount of miliseconds that have to elapse between reposting
 // information to master server (MILISECONDS)
 #define MASTERSERVER_UPDATE_INTERVAL		600000
 
+// Response status
 enum MasterListResponse
 {
 	MASTERLIST_CONNECTIONFAILED,
@@ -19,12 +28,9 @@ class CMasterList
 {
 public:
 	CMasterList();
-
+	~CMasterList();
 	// setup new master list request
 	void AddServerToMaster();
-
-	// handles the results of pending request
-	void HandleMasterResponse(int reason);
 
 	// Tick - handles master-server communication
 	void Pulse();
@@ -43,6 +49,9 @@ private:
 
 	// should we be announced in the master query 
 	bool isVisible;
+
+	// handles the results of pending request
+	void HandleMasterResponse(int reason);
 };
 
 #endif

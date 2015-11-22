@@ -1,11 +1,11 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: server query system
-
+@purpose query system providing information about server instance to anybody\
+		 via UDP and internet
 @author Romop5
-@version 1.0 28/02/15
-*/
+******************************************************************************/
 
 #ifndef _CQUERYSERVER
 #define _CQUERYSERVER
@@ -25,11 +25,16 @@ Purpose: server query system
 class CQueryServer 
 {
 public:
+	CQueryServer();
 	// Start query server
 	bool StartServer(int port);
 	
 	// Receive
 	void Tick();
+
+private:
+	UDPWrapper* queryServer;
+	bool isRunning;
 
 	// 'o' returns basic information about server
 	void OverallPacket(UDPPacket* packet);
@@ -37,10 +42,6 @@ public:
 	void PlayerList(UDPPacket* packet);
 	// 'i' 
 	void PingPacket(UDPPacket* packet);
-
-private:
-	UDPWrapper* queryServer;
-	bool isRunning;
 };
 
 #endif

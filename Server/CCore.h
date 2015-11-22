@@ -1,11 +1,9 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: core of server, main class
-
-@author Romop5
-@version 1.0 1/9/14
-*/
+@purpose main control class
+******************************************************************************/
 
 #ifndef CCORE_H
 #define	CCORE_H

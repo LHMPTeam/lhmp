@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: handles all server-to-client filetransfers
-
+@purpose used for streaming arbitrary files from server to client
 @author Romop5
-@version 1.0 1/9/14
-*/
+******************************************************************************/
 
 #ifndef FILETRANSFER_C
 #define FILETRANSFER_C
@@ -13,7 +12,7 @@ Purpose: handles all server-to-client filetransfers
 #include <fstream>
 #include "RakPeerInterface.h"
 
-// CFile handles data source (file)
+// CFile holds data(file) used during trasmission
 class CFile
 {
 private:
@@ -32,6 +31,9 @@ public:
 	FILE*			GetFileHandle();
 };
 
+/*
+** Intern class: covers per-user trasmission of files
+*/
 class CTransmission
 {
 private:
@@ -50,6 +52,9 @@ public:
 	RakNet::SystemAddress GetReceiver();
 };
 
+/*
+** Control class
+*/
 class CFileTransfer
 {
 private:
@@ -60,15 +65,24 @@ private:
 public:
 	// Init
 	CFileTransfer();
-	// AddFile
+	/*
+	** Adds new file with @sourcename into list of files, streamed by server to clients
+	** File has to be opened and file handled must be provided in @file
+	*/
 	void	AddFile(char* sourcename,FILE* file);
-	void	HandlePacket(RakNet::BitStream* message,RakNet::SystemAddress sa);
-
+	/*
+	** Send all streamed files to @receiver (usually on connection)
+	*/
 	void	SendFiles(RakNet::SystemAddress receiver);
+	/*
+	** Clear the list of streamed files (used during reloading)
+	*/
+	void	Reset();
 
+	/* Intern system functions*/
+	void	HandlePacket(RakNet::BitStream* message,RakNet::SystemAddress sa);
 	void	DeleteTransfer(CTransmission* tf, bool deleteIt = true);
 
-	void	Reset();
 
 };
 #endif

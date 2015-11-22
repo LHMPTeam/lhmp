@@ -1,12 +1,19 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose bansystem - loading banlist, adding bans
+@author Romop5
+******************************************************************************/
 class CBanSystem
 {
 public:
 	CBanSystem();
-	// Loads banlist from file
+	// Loads banlist from ban file (during initialization)
 	void LoadBanlist();
 	// Add ban
-	// @IPaddres in format XXX.XXX.XXX.XXX
-	// @reason why player got ban
+	// @IPaddres in IPv4 format XXX.XXX.XXX.XXX
+	// @reason why ban is given to player
 	// @duration in seconds
 	void AddBan(char* IPaddres,char* reason,unsigned int duration);
 private:

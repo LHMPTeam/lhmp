@@ -1,11 +1,10 @@
-/**
-Lost Heaven Multiplayer
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
 
-Purpose: entity template for game objects (human, cars, objects)
-
+@purpose abstract class which covers elementary object attributes
 @author Romop5
-@version 1.0 1/9/14
-*/
+******************************************************************************/
 
 #ifndef ENTITY_H
 #define ENTITY_H

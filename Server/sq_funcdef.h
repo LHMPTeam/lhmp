@@ -1,3 +1,11 @@
+/******************************************************************************
+Lost Heaven Multiplayer project
+See LICENSE in the top level directory
+
+@purpose server-side script natives definition
+@author Romop5
+******************************************************************************/
+
 #pragma once
 #include "sq_utils.h"
 //#include "sq_utils.h"
