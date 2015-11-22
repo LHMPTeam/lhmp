@@ -862,40 +862,7 @@ void CNetworkManager::ProceedLHMP(RakNet::Packet* packet, RakNet::TimeMS timesta
 	
 		}
 		break;
-		case LHMP_PLAYER_TIMER_ON:
-		{
-			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			int remain, seconds, minutes, hours;
-
-			bsIn.Read(remain);
-			bsIn.Read(seconds);
-			bsIn.Read(minutes);
-			bsIn.Read(hours);
-
-			char buff[255];
-			sprintf(buff, "[Nm] PLAYER TIMER ON %d %d %d %d", remain, seconds, minutes, hours);
-			g_CCore->GetLog()->AddLog(buff);
-
-			g_CCore->GetGame()->TimerOn(remain, seconds, minutes, hours);
-			
-		}
-			break;
-
-		case LHMP_PLAYER_TIMER_OFF:
-		{
-			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);
-			int ID;
-			bsIn.Read(ID);
-
-			char buff[255];
-			sprintf(buff, "[Nm] PLAYER TIMER OFF");
-			g_CCore->GetLog()->AddLog(buff);
-
-			g_CCore->GetGame()->TimerOff();
-			
-		}
-			break;
-
+		
 		case LHMP_PLAYER_SET_WEATHER_PARAM:
 		{
 			RakNet::BitStream bsIn(packet->data + offset + 1, packet->length - offset - 1, false);

@@ -55,11 +55,6 @@ int Init(SQVM* vM)
 	RegisterFunction(vM, "playerSetCameraFov", (SQFUNCTION)sq_playerSetCameraFov, 3, ".nf");
 	RegisterFunction(vM, "playerGetCameraFov", (SQFUNCTION)sq_playerGetCameraFov, 2, ".n");
 
-	RegisterFunction(vM, "playerTimerOn", (SQFUNCTION)sq_playerTimerOn, 6, ".nnnnn");
-	RegisterFunction(vM, "playerTimerOff", (SQFUNCTION)sq_playerTimerOff, 2, ".n");
-	RegisterFunction(vM, "playerSetTimerInterval", (SQFUNCTION)sq_playerSetTimerInterval, 3, ".nf");
-	RegisterFunction(vM, "playerGetTimerInterval", (SQFUNCTION)sq_playerGetTimerInterval, 2, ".n");
-
 	RegisterFunction(vM, "playerSetWeatherParam", (SQFUNCTION)sq_playerSetWeatherParam, 4, ".nsn");
 	RegisterFunction(vM, "playerSetObjective", (SQFUNCTION)sq_playerSetObjective, 3, ".ns");
 	RegisterFunction(vM, "playerClearObjective", (SQFUNCTION)sq_playerClearObjective, 2, ".n");
