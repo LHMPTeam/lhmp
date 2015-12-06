@@ -439,7 +439,6 @@ void CSquirrel::onKeyDown(unsigned int key)
 		}
 	}
 }
-
 void CSquirrel::onSpawn()
 {
 	for (int i = 0; i < 100; i++) {
@@ -1224,18 +1223,11 @@ SQInteger sq_TimerGetInterval(SQVM* vm)
 		sq_pushfloat(vm, interval);
 		return 1;
 	}
-<<<<<<< HEAD
 
 	sq_pushnull(vm);
 	return 1;
 }
 
-=======
-	
-	sq_pushnull(vm);
-	return 1;
-}
->>>>>>> ab7982fe0b1f6b3cea7638f69adb41473abc10aa
 /*------------------------- /Natives ------------------------------- */
 // Register all native functions and constants
 void CSquirrel::PrepareMachine(SQVM* pVM)
@@ -1299,22 +1291,14 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 	RegisterVariable(pVM, "VK_Y", (int)0x59);
 	RegisterVariable(pVM, "VK_Z", (int)0x5A);
 
-	//Timer functions
-	RegisterFunction(pVM, "timerOff", (SQFUNCTION)sq_TimerOff, 1, ".");
+	// functions
 
-	RegisterFunction(pVM, "timerOn", (SQFUNCTION)sq_TimerOn, 5, ".nnnn");
-
-	RegisterFunction(pVM, "timerSetInterval", (SQFUNCTION)sq_TimerSetInterval, 2, ".f");
-
-<<<<<<< HEAD
 	RegisterFunction(pVM, "timerOff", (SQFUNCTION)sq_TimerOff, 1, ".");
 	
 	RegisterFunction(pVM, "timerOn", (SQFUNCTION)sq_TimerOn, 5, ".nnnn");
 	
 	RegisterFunction(pVM, "timerSetInterval", (SQFUNCTION)sq_TimerSetInterval, 2, ".f");
 
-=======
->>>>>>> ab7982fe0b1f6b3cea7638f69adb41473abc10aa
 	RegisterFunction(pVM, "timerGetInterval", (SQFUNCTION)sq_TimerGetInterval, 1, ".");
 
 	// Returns size of screen in 2D vector (x,y)
