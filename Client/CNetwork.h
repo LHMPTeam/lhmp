@@ -62,7 +62,6 @@ public:
 
 
 	void GetConnectInfo();
-	void ProceedLHMP(RakNet::Packet* packet,RakNet::TimeMS timestamp = 0);
 	void ValidateIP();
 	void Pulse();
 	void SendServerMessage(RakNet::BitStream*,PacketPriority ,PacketReliability);

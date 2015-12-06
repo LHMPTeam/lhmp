@@ -302,6 +302,12 @@ CNetworkManager*	CCore::GetNetwork()
 	return &m_cNetwork;
 }
 
+CGameSync*	CCore::GetGameSync()
+{
+	return &m_cGameSync;
+}
+
+
 CLocalPlayer*		CCore::GetLocalPlayer()
 {
 	return &m_cLocalPlayer;

@@ -1186,6 +1186,48 @@ SQInteger sq_EnableMoney(SQVM* vm)
 	return 1;
 }
 
+//Timer functions
+SQInteger sq_TimerOn(SQVM* vm)
+{
+	SQInteger remain, seconds, minutes, hours;
+	sq_getinteger(vm, -1, &hours);
+	sq_getinteger(vm, -2, &minutes);
+	sq_getinteger(vm, -3, &seconds);
+	sq_getinteger(vm, -4, &remain);
+
+	g_CCore->GetGame()->TimerOn((int)remain, (int)seconds, (int)minutes, (int)hours);
+	return 1;
+}
+
+SQInteger sq_TimerOff(SQVM* vm)
+{
+	g_CCore->GetGame()->TimerOff();
+	return 1;
+}
+
+SQInteger sq_TimerSetInterval(SQVM* vm)
+{
+	SQFloat test;
+	sq_getfloat(vm, -1, &test);
+
+	g_CCore->GetGame()->TimerSetInterval((float)test);
+	return 1;
+}
+
+SQInteger sq_TimerGetInterval(SQVM* vm)
+{
+	float interval = g_CCore->GetGame()->TimerGetInterval();
+
+	if (interval)
+	{
+		sq_pushfloat(vm, interval);
+		return 1;
+	}
+
+	sq_pushnull(vm);
+	return 1;
+}
+
 /*------------------------- /Natives ------------------------------- */
 // Register all native functions and constants
 void CSquirrel::PrepareMachine(SQVM* pVM)
@@ -1251,6 +1293,13 @@ void CSquirrel::PrepareMachine(SQVM* pVM)
 
 	// functions
 
+	RegisterFunction(pVM, "timerOff", (SQFUNCTION)sq_TimerOff, 1, ".");
+	
+	RegisterFunction(pVM, "timerOn", (SQFUNCTION)sq_TimerOn, 5, ".nnnn");
+	
+	RegisterFunction(pVM, "timerSetInterval", (SQFUNCTION)sq_TimerSetInterval, 2, ".f");
+
+	RegisterFunction(pVM, "timerGetInterval", (SQFUNCTION)sq_TimerGetInterval, 1, ".");
 
 	// Returns size of screen in 2D vector (x,y)
 	RegisterFunction(pVM, "getScreenSize", (SQFUNCTION)sq_getScreenSize, 1, ".");

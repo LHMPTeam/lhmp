@@ -11,8 +11,10 @@
 #define __CORE_H
 
 #include <stdio.h>
+#include "CGameSync.h"
 #include "CNetwork.h"
 #include "CLocalPlayer.h"
+
 #include <d3d8.h>				
 #include "CChat.h"
 #include "CGame.h"
@@ -47,6 +49,7 @@ private:
 	CFileSystem				m_cFileSystem;
 
 	CNetworkManager			m_cNetwork;
+	CGameSync				m_cGameSync;
 	CLocalPlayer			m_cLocalPlayer;
 	CChat					m_cChat;
 	CGame					m_cGame;
@@ -80,6 +83,7 @@ public:
 	void					OnLostConnection();
 	CChat*					GetChat();
 	CNetworkManager*		GetNetwork();
+	CGameSync*				GetGameSync();
 	CLocalPlayer*			GetLocalPlayer();
 	CGame*					GetGame();
 	CGraphics*				GetGraphics();
