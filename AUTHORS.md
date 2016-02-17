@@ -3,13 +3,13 @@ Here is the complete list of all people that have ever contributed with anything
 
 ## Lost Heaven Multiplayer's core members
 
-- Roman Dobiá (**romop5**) (founder)
+- Roman Dobiáš (**romop5**) (founder)
 
 - Aleksi Hulkkonen (**qbt**)
 
-- Dominik Madarasz (**ZaKlaus**) (ex-member)
+- Dominik Madarász (**ZaKlaus**) (ex-member)
 
-- David Svitana (**Davo**) (ex-member)
+- Dávid Svitana (**Davo**) (ex-member)
 
 
 ## Contributors
