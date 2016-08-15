@@ -1,0 +1,66 @@
+-------
+-------
+TODOS in Client:
+Client\CChat.cpp:1169:					// TODO - buffer overflow warning
+Client\CColoredText.cpp:214:					// TODO: split block, create new instance, push blocks to new instance
+Client\CCore.cpp:80:	// TODO - probably unneeded since we are using DirectInput to block input
+Client\CCore.cpp:85:	// TODO: seems to be useless as we have disabled ESC menu and any way to 
+Client\CFont.cpp:58:		//TODO remove
+Client\CGame.cpp:983:// TODO - clean comment
+Client\CGame.cpp:1030:// TODO - clean this comment
+Client\CGame.cpp:1640:		// TODO - test
+Client\CGame.cpp:2979:		TODO - check whether it's neccessary to keep this code, maybe it's useless to run it again
+Client\CGameSync.cpp:88:		// TODO: report error
+Client\CGameSync.cpp:106:		// TODO: report error
+Client\CGameSync.cpp:126:		// TODO: report error
+Client\CGameSync.cpp:217://TODO: skip health in regular updates, sync it via hit events
+Client\CGameSync.cpp:252:// TODO: use CGame structs to apply values instead of direct memory access
+Client\CGameSync.cpp:268:				//TODO: use structs
+Client\CGameSync.cpp:304:		// TODO: report error (couldn't create a new instace - WTF)
+Client\CGameSync.cpp:308:// TODO: replace all InCar with member get-func
+Client\CGameSync.cpp:321:				// TODO: create func onPlayerDisconnect at Vehicle
+Client\CGameSync.cpp:374:			// TODO: incar
+Client\CGameSync.cpp:386:				// TODO incar set
+Client\CGameSync.cpp:602:			//TODO InCar
+Client\CGameSync.cpp:612:				//TODO InCar
+Client\CGameSync.cpp:847:		// TODO: handle error
+Client\CGameSync.cpp:1089:			// TODO: struct
+Client\CGameSync.cpp:1114:			// TODO: struct
+Client\CGameSync.cpp:1302:	// TODO: it has been replaced with PLAYANIM_STRING (for custom anims)
+Client\CGameSync.cpp:1455:	//TODO - move to CNetwork
+Client\CGraphics.cpp:167:	/*// TODO - remove this debug bullshits
+Client\CHooks.cpp:678:	// TODO: move following sequence into GameSync class
+Client\CHooks.cpp:1288:				// TODO: add here some documentation - WTF is this engine function good for ?
+Client\CHooks.cpp:1317:// TODO: NOT USED Hook_DoorUnlock
+Client\CHooks.cpp:1680:/* TODO
+Client\CHooks.cpp:1855:	/*TODO - remove debug text
+Client\CHooks.cpp:1864:			/*TODO - remove debug strings
+Client\CHooks.cpp:1985:	/*TODO - delete old vehicle hooks*/
+Client\CHooks.cpp:1996:	/*TODO - remove radar rendering hooks*/
+Client\CHooks.cpp:2071:	// TODO - useless
+Client\CHooks.cpp:2105:	Tools::InstallJmpHook(0x00522FB4, (DWORD)&Hook_CollisionDamage);			// TODO: NW
+Client\CHooks.cpp:2106:	Tools::InstallJmpHook(0x0046ADA0, (DWORD)&Hook_CarShot);					// TODO: NW
+Client\CNametags.cpp:36:				// now check whether his nametag texture exists - TODO
+Client\CNetwork.cpp:141:				// TODO - change map if it differs
+Client\CPed.cpp:411:				// TODO: reload podla poctu nabojov v zasobniku
+Client\CPed.h:33:	LPDIRECT3DTEXTURE8		nametag;		// TODO move to private
+Client\CSQImages.cpp:16:	// TODO delete texture
+Client\CSquirrel.cpp:717:		// TODO
+Client\CSquirrel.cpp:735:		// TODO
+Client\CSquirrel.cpp:1237:	// TODO - put here all natives - functions, consts
+Client\CVehicle.cpp:137:		// TODO - test if it's neccessary
+
+TODOS in Loader:
+
+TODOS in Server:
+Server\CGameMode.h:30:	// TODO: eventually not used 
+Server\CLog.cpp:64:	// TODO
+Server\CNetworkManager.cpp:305:					//TODO - process info from player
+Server\CPlayer.cpp:165:				// TODO: reload podla poctu nabojov v zasobniku
+Server\sq_funcdef.cpp:648:				// todo: to car fast
+Server\sq_funcdef.cpp:679:			// todo: to car fast
+Server\sq_functions.h:3://TODO remove
+
+TODOS in MasterServer:
+-------
+-------
