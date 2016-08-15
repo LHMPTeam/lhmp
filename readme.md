@@ -6,16 +6,16 @@ The gameplay is similar to other modifications such as SAMP, allowing to customi
 Project is mostly written in **C++**, supported by **inline Assembler** for game interaction. 
 
 ## Compilation
-LHMP supports both Linux and Windows platforms although client is completely Win-like. 
-Have a look at COMPILE.md to find out how to compile our work.
+* LHMP supports both Linux and Windows platforms although client is completely Win-like. 
+* Have a look at COMPILE.md to find out how to compile our work.
 
 ## Credits
-The list of all contributors can be found in authors.md. 
+* The list of all contributors can be found in authors.md. 
 * Embeds RakNet by Jenkins Software. (BSD License)
 * Embeds MD5 by Colin Plumb.
 * Embeds Direct3D 8.1 SDK by Microsoft.
 * Embeds Squirrel 3 by Alberto Demichelis.
-Please remind us if we've forgot to mention additional embeddings.
+* Please remind us if we've forgot to mention additional embeddings.
 
 ## License
 * Apache 2 licensed, see LICENSE for more information.
