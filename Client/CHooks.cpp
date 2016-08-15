@@ -19,8 +19,6 @@ bool ignore = true;
 
 __declspec(naked) void SpawnManager()
 {
-	//00601259    ^0F84 EBFDFFFF  JE Game.0060104A
-	// jmp 00601259 looks better
 	_asm
 	{
 		cmp ebx, 1
@@ -30,15 +28,12 @@ __declspec(naked) void SpawnManager()
 		good :
 			 pushad
 	}
-	//Sleep(50000);
 	if (g_CCore->GetGame()->GameSpawnManager() == 0)
 	{
 		_asm
 		{
 			popad
 				jmp DWORD PTR SS : [returnBack]
-				//push 0x0060127C
-				//ret
 		}
 	}
 	else
@@ -55,15 +50,8 @@ __declspec(naked) void SpawnManager()
 
 __declspec(naked) void MainThreadTick()
 {
-	//_asm pushad;
 	if (g_CCore != NULL)
 		g_CCore->GetGame()->Tick();
-	/*		while(g_StopMainThread == true)
-	{
-	g_MainThreadReach = true;
-	*/			//Sleep(10);
-	//	}
-	//_asm popad;
 
 	_asm mov eax, dword ptr ds : [0x6F9528];
 	_asm ret;
@@ -82,26 +70,13 @@ __declspec(naked) void SetIsLoaded(){
 	_asm ret;
 }
 __declspec(naked) void Freeride_ChangeCarSpawn(){
-	//float PosX = 0.0f,PosY = 0.0f,PosZ = 0.0f;
 	_asm {
-		/*MOV DWORD PTR SS:[ESP+0x9C],0xc4f7a000	// coordinates x
-		MOV DWORD PTR SS:[ESP+0x90],0xc09ccccd	// y
-		MOV DWORD PTR SS:[ESP+0xA0],0x41bb3333	// z
-		*/
-		/*mov DWORD PTR DS:[eax], 0xc4f7a000			//posX
-		mov DWORD PTR DS:[eax+0x4], 0xc09ccccd		//posY
-		mov DWORD PTR DS:[eax+0x8],0x41bb3333		//posZ
-		*/
 		mov DWORD PTR DS : [eax], 0x0			//posX
 			mov DWORD PTR DS : [eax + 0x4], 0x0		//posY
 			mov DWORD PTR DS : [eax + 0x8], 0x0		//posZ
 
-			//mov eax,0x00560AC5
-
 			ret
-			//JMP DWORD PTR DS:[0x00560AC5]
 	}
-	//_asm ret;
 }
 __declspec(naked) void Hook_respawn()
 {
@@ -121,8 +96,6 @@ _declspec(naked) void Respawn()
 	_asm
 	{
 		popad
-			//PUSH 0x00651018			//GameDoneStart or what
-			//push 0x005DF89F			// return there
 			PUSH 0x005F97F2
 			ret
 	}
@@ -344,14 +317,6 @@ void OnShoot(DWORD testPed, float x, float y, float z)
 
 _declspec(naked) void Hook_OnShoot()
 {
-	// old conditions
-	/*_asm {
-	MOV EAX, 0x004A4B70
-	CALL EAX					;Game.004A4B70;  samotny vystrel
-	cmp eax, 0x0
-	jz end						// if EAX was 0, then shoot wasn't correct
-	pushad
-	}*/
 	_asm {
 		MOV EAX, 0x004A4B70
 			CALL EAX; Game.004A4B70;  samotny vystrel
@@ -428,10 +393,6 @@ _declspec(naked) void Hook_PreventHit()
 			ret
 		}
 	}
-	/*Tools::Nop(0x00497394,6);
-	Tools::Nop(0x00496BA9,6);
-	Tools::Nop(0x00497118,6); // molotov
-	Tools::Nop(0x00497024,6); // granade*/
 }
 
 void OnDeath(DWORD killerBase,unsigned char hitbox)
@@ -540,16 +501,6 @@ _declspec(naked) void Hook_OnDeath4()
 }
 void PlayerEnteredVehicle(DWORD vehicle, DWORD seatID)
 {
-	//DWORD vehicle, seatID;
-	/*_asm
-	{
-		// seatID = 0018F884 - 0018F618
-		mov EAX, DWORD PTR DS : [ESP + 0x26C]
-			mov seatID, EAX;
-		// vehicle id 0018F870
-		mov EAX, DWORD PTR DS : [ESP + 0x254]
-			mov vehicle, EAX;
-	}*/
 	char buff[255];
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
 	CVehicle* veh = g_CCore->GetVehiclePool()->Return(vehID);
@@ -623,13 +574,6 @@ _declspec(naked) void Hook_OnPlayerEnteredVehicle2()
 
 void PlayerExitVehicle(DWORD vehicle)
 {
-	/*DWORD vehicle;
-	_asm
-	{
-		// vehicle id 0018F870
-		mov EAX, DWORD PTR DS : [ESP + 0x25C]
-			mov vehicle, EAX;
-	}*/
 	char buff[255];
 
 	int vehID = g_CCore->GetVehiclePool()->GetVehicleIdByBase(vehicle);
@@ -648,7 +592,6 @@ _declspec(naked) void Hook_OnPlayerExitVehicle()
 {
 	_asm
 	{
-			//MOV EBX, ECX
 			PUSH ECX	
 
 			PUSH EBX
@@ -727,14 +670,6 @@ _declspec(naked) void Hook_VehicleDisableMove()
 void OnCarJack(int carBase, int seatId)
 {
 	int carId = -1;
-	/*int carId = 0, seatId = 0;
-	_asm
-	{
-		MOV EDI, DWORD PTR SS : [ESP + 0x258]
-			MOV carId, EDI
-			MOV EDI, DWORD PTR SS : [ESP + 0x248]
-			MOV seatId, EDI
-	}*/
 	carId = g_CCore->GetVehiclePool()->GetVehicleIdByBase(carBase);
 	char buff[255];
 	sprintf(buff, "Car jack ID: %i Seat: %i", carId, seatId);
@@ -934,7 +869,6 @@ _declspec(naked) void Hook_ThrowGranade()
 
 HMODULE WINAPI NEWLoadLibrary(LPCTSTR lpFileName)
 {
-	//g_CCore->GetChat()->AddMessage("LoadLibrary call");
 	SetLastError(ERROR_ACCESS_DENIED);
 	return NULL;
 }
@@ -946,9 +880,6 @@ void OnEngineLoad()
 		mov eax, LoadLibrary
 			mov loadlib, eax
 	}
-
-	//DetourFunction(loadlib, (PBYTE)NEWLoadLibrary);
-	//g_CCore->GetChat()->AddMessage("Hooked");
 }
 
 _declspec(naked) void Hook_EngineLoad()
@@ -1042,11 +973,6 @@ char* OnScriptLoad(char* input)
 
 	g_CCore->GetLog()->AddLog("Loading script ORIGINAL !");
 	return input;
-	// otherwise do not change anything
-
-	/*//if (strcmp(g_CCore->GetGame()->GetActualMapName(),"")
-	//return input;
-	return endofmissionScript;*/
 }
 
 // this is called afte OnScriptLoad
@@ -1388,7 +1314,7 @@ _declspec(naked) void Hook_ExplodeCar()
 	}
 }
 
-// NOT USED
+// TODO: NOT USED Hook_DoorUnlock
 _declspec(naked) void Hook_DoorUnlock()
 {
 	_asm
@@ -1412,7 +1338,6 @@ _declspec(naked) void Hook_DoorUnlock()
 void NewMessage(MSG message)
 {
 	_asm pushad;
-	//g_CCore->GetChat()->AddMessage("message arrived");
 	char buff[250];
 	sprintf(buff,"ID: %u", message.message);
 	if (message.message > 0)
@@ -1460,10 +1385,8 @@ void	OnPhysicsTick(int deltatime)
 				VEHICLE* entity = (VEHICLE*)veh->GetEntity();
 				if (veh->GetSeat(0) != g_CCore->GetLocalPlayer()->GetOurID())
 				{
-					//*(INT16*)(veh->GetEntity() + 0x6A6) = 0;
 					entity->position = veh->GetPosition();
 					entity->rotation = veh->GetRotation();
-					//entity->rotationSecond = veh->GetSecondRot();
 					entity->speed = veh->GetSpeed();
 				}
 				_asm{

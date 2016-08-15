@@ -35,7 +35,6 @@ bool CIngameMenu::isActive()
 void CIngameMenu::setActive(bool b)
 {
 	this->m_bIsActive = b;
-	//g_CCore->GetGame()->UpdateControls();		--- NO LONGER NEEDED
 }
 void CIngameMenu::Tick()
 {
@@ -49,7 +48,6 @@ void CIngameMenu::Render()
 {
 	Vector2D screen = g_CCore->GetGraphics()->GetResolution();
 	g_CCore->GetGraphics()->FillARGB(0, 0, screen.x, screen.y, D3DCOLOR_ARGB(200, 0, 0, 0));
-	//g_CCore->GetGraphics()->Clear(0, 0, screen.x, screen.y, D3DCOLOR_ARGB(200, 0, 0, 0));
 	g_CCore->GetGraphics()->DrawTextA("LH", 50, screen.y - 260, 0xffffffff, false, ahojmoj);
 	g_CCore->GetGraphics()->DrawTextA("MP", 140, screen.y - 260, 0xffff0000, false, ahojmoj);
 
@@ -79,21 +77,14 @@ void CIngameMenu::Render()
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 	char buff[200];
-	//sprintf(buff, "%d:%d", timeinfo->tm_hour, timeinfo->tm_min);
 	char sec[20];
 	sprintf(sec, "%s'", this->ZeroFormat(timeinfo->tm_sec, buff));
-
-	//g_CCore->GetGraphics()->DrawTextA(buff, screen.x - 250, 20, 0xffffffff, false, menuitem);
-
 
 	g_CCore->GetGraphics()->DrawTextA(this->ZeroFormat(timeinfo->tm_hour, buff), screen.x - 150, 20, 0xffffffff, false, menuitem);
 	g_CCore->GetGraphics()->DrawTextA(":", screen.x - 110, 20, 0xffff0000, false, menuitem);
 	g_CCore->GetGraphics()->DrawTextA(this->ZeroFormat(timeinfo->tm_min, buff), screen.x - 100, 20, 0xffffffff, false, menuitem);
 	g_CCore->GetGraphics()->DrawTextA(sec, screen.x - 60, 32, 0xffffffff, false, clock);
-	//g_CCore->GetGraphics()->DrawTextA(sec, screen.x - 160, 32, 0xffffffff, false, clock);
 
-	// news
-	//char buff[200];
 	char* pch,*start = newsBuff;
 	int count = 0;
 	while (1 == 1)
@@ -136,8 +127,6 @@ void	CIngameMenu::OnPressEnter()
 			this->setActive(false);
 		else
 		{
-			//g_CCore->GetNetwork()->GetPeer()->Shutdown(100, 0, IMMEDIATE_PRIORITY);
-			//TerminateProcess(GetCurrentProcess(), 0);
 			g_CCore->ShutdownClient();
 		}
 	}
