@@ -7,7 +7,7 @@ Project is mostly written in **C++**, supported by **inline Assembler** for game
 
 ## Compilation
 LHMP supports both Linux and Windows platforms although client is completely Win-like. 
-Have a look at compile.md to find out how to compile our work.
+Have a look at COMPILE.md to find out how to compile our work.
 
 ## Credits
 The list of all contributors can be found in authors.md. 
