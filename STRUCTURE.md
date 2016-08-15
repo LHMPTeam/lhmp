@@ -17,6 +17,7 @@ Project is divided into several parts which represent multiplayer's components.
 
 * **masterserver** handles the list of all running public LHMP servers
 
+* **_Old** contains old files that might be useful for someone.
 
 ## 3rd party libraries 
 
