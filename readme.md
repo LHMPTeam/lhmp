@@ -5,6 +5,15 @@ The gameplay is similar to other modifications such as SAMP, allowing to customi
 
 Project is mostly written in **C++**, supported by **inline Assembler** for game interaction. 
 
+## Disclaimer
+* Please note that this project has been started with little knowledge about how MP works. This reflects the quality of the code and possible mistakes that were made during development. Everyone starts somewhere and this was the place where we've learned a lot of useful information, which improved our coding knowledge and skills.
+* This code might be a mess, it could look horrible for your eyes, but what you see are the baby steps we've had to accomplish to make ourselves better in general.
+* So please, if you feel to discuss coding style of this project, you'd better not. We know what has to be or not be changed, but it's too late to do so.
+* If you're willing to improve this code, just PR and we will gladly accept your changes.
+* This project is **NO LONGER MAINTAINED** by its core developers, due to lack of time and interest. We won't fix your issues (except for issues related to repository structure) and/or improve your playing experience!
+* This project has been open-sourced so you can see MP in amateurs' eyes. It does not represent ideal solution for MP. There is no ideal solution for such complex project.
+* You are free to manipulate with project under Apache 2 license. PRs are welcomed.
+
 ## Compilation
 * LHMP supports both Linux and Windows platforms although client is completely Win-like. 
 * Have a look at COMPILE.md to find out how to compile our work.
