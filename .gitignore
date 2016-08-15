@@ -4,3 +4,4 @@ Client/Release/
 Client/Debug/
 *.o
 Release/
+*.VC.db
