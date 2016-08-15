@@ -2,12 +2,12 @@
 
 Project is divided into several parts which represent multiplayer's components.
 
-#### Core components
+## Core components
 
 * **Server** is multiplatform dedicated server application
 
 * **Client** is Win32 dynamically loaded library (DLL), serving as a multiplayer client
-#### Additional software
+## Additional software
 
 * **Loader** is Win32 console injecting client's dll into Mafia's process
 
