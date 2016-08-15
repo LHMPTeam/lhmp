@@ -21,7 +21,8 @@ Please remind us if we've forgot to mention additional embeddings.
 * Apache 2 licensed, see LICENSE for more information.
 
 ## Notice
-* LHMP and all contents within this repository and/or organisation, are not affiliated with 2K Czech, 2K Games or Take-Two Interactive Software Inc. Mafia is registered trademark of Take-Two Interactive Software Inc.
+* LHMP and all contents within this repository and/or organisation, are not affiliated with 2K Czech, 2K Games or Take-Two Interactive Software Inc. 
+* Mafia is registered trademark of Take-Two Interactive Software Inc.
 
 ## Links
 * YouTube channel https://www.youtube.com/user/lhmpmode
