@@ -11,7 +11,7 @@ Project is mostly written in **C++**, supported by **inline Assembler** for game
 
 ## Credits
 * The list of all contributors can be found in authors.md. 
-* Embeds RakNet by Jenkins Software. (BSD License)
+* Embeds RakNet by Oculus VR. (BSD License)
 * Embeds MD5 by Colin Plumb.
 * Embeds Direct3D 8.1 SDK by Microsoft.
 * Embeds Squirrel 3 by Alberto Demichelis.
