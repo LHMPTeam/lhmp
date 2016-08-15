@@ -1,12 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: logging class -> into chat or file
-
-	@author Romop5
-	@version 1.0 1/9/14
-	@todo clean code, AddLog with unlimited params
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __CLOG_H
 #define __CLOG_H

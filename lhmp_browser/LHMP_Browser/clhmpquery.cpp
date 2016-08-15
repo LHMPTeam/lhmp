@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 

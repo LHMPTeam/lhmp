@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #include "inject.h"
 #define _WIN32_WINNT _WIN32_WINNT_WINXP
 HMODULE InjectDLL(DWORD ProcessID, char* dllName)

@@ -16,9 +16,13 @@ Do you want to become a LHMP contributor ? Excelent ! You can continue here:
 - Roadmap/issues
 ## Credits
 The list of all contributors can be found in authors.md. 
+- Embeds RakNet by Jenkins Software. (BSD License)
+- Embeds MD5 by Colin Plumb.
+- Embeds Direct3D 8.1 SDK by Microsoft.
+- Embeds Squirrel 3 by Alberto Demichelis.
+- Please remind us if we've forgot to mention additional embeddings.
 ## License
-TODO: Write license - we will probably use GPL3
-lincese.md
+- Apache 2 licensed, see LICENSE for more information.
 ## Links
 - LHMP's official webpage http://lh-mp.eu
 - YouTube channel https://www.youtube.com/user/lhmpmode

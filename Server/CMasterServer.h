@@ -1,10 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose interaction with master server (adding our server into the master list)
-@author Romop5
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef _CMASTERSERVER_H
 #define _CMASTERSERVER_H

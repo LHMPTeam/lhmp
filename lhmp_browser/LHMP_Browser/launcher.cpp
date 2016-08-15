@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #include "launcher.h"
 #include "ui_launcher.h"
 #include "CLHMPQuery.h"

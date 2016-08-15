@@ -1,4 +1,4 @@
-// Romop5's implementation of dynamic array
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 struct CDynamicArrayStruct
 {

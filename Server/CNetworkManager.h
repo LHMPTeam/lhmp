@@ -1,10 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose handles network events
-@author Romop5, ZaKlaus, Davo
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef CNETWORKMANAGER_H
 #define CNETWORKMANAGER_H

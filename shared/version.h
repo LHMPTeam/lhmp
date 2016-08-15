@@ -1,9 +1,5 @@
-/**
-	Lost Heaven Multiplayer - shared
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
-	Purpose: global version information 
-*/
-// that means we are running in debug mode
 #define _DEBUG
 
 #define LHMP_VERSION_MAJOR	0

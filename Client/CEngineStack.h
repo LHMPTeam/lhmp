@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: a FIFO message buffer used instead of MafiaScript
-
-	@author Romop5
-	@version 1.0 1/9/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __ENGINESTACK_H
 #define __ENGINESTACK_H

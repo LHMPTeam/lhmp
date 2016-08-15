@@ -1,12 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: vehicle pool (array)
-
-	@author Romop5
-	@version 1.0 1/9/14
-	@todo clean code
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __VEHICLEPOOL_H
 #define	__VEHICLEPOOL_H

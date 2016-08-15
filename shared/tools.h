@@ -1,12 +1,5 @@
-/**
-	Lost Heaven Multiplayer - shared
-	tools.h
-	Purpose: namespace containing miscellaneous functions
-	* for direct memory writing or working with colors
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
-	@author Romop5
-	@version 1.0 1/9/14
-*/
 #pragma once
 #include <stdio.h>
 #include <iostream>

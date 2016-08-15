@@ -1,12 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: graphics center, handles all callbacks (init, device reset&lost),
-	* contains usefull graphic utils 
-
-	@author Romop5
-	@version 1.0 1/9/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __CGRAPHIC_H
 #define __CGRAPHIC_H

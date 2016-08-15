@@ -1,13 +1,7 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef _CSQUIRREL_H
 #define _CSQUIRREL_H
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: client-side implementation of scripts
-
-	@author Romop5
-	@version 1.0 27/04/15
-*/
 
 #include <stdarg.h>
 #include <stdio.h>

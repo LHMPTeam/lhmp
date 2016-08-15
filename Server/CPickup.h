@@ -1,10 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose pickup class
-@author Romop5
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef CPICKUP_H
 #define CPICKUP_H

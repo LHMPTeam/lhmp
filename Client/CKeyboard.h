@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: proccess all input from keyboard
-
-	@author Romop5
-	@version 13/4/15
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __C_KEYBOARD
 #define __C_KEYBOARD

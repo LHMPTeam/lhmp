@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: DirectX 8.1 proxy class used for DX hook
-
-	@author internet, Romop5
-	@version 1.0 1/9/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #include "d3d8.h"
 #include "CDirect3DDevice8Proxy.h"

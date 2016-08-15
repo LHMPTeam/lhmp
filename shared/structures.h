@@ -1,8 +1,5 @@
-/**
-	Lost Heaven Multiplayer - shared
-	structures.h
-	Purpose: often used structures (e.g. vectors)
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef __STRUCTURES_H
 #define	__STRUCTURES_H
 

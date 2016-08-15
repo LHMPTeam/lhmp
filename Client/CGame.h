@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: class which handles all engine functions and callbacks
-
-	@author Romop5, DavoSK, ZaKlaus
-	@version 1.0 1/9/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __CGAME_H
 #define __CGAME_H

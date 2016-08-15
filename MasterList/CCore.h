@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 // puts all classes together using singleton
 #ifndef _CCORE_H
 #define _CCORE_H

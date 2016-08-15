@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: a class which handle crash reports
-
-	@author Romop5, ZaKlaus
-	@version 1.0 1/9/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __CCRASH_HANDLER
 #define __CCRASH_HANDLER

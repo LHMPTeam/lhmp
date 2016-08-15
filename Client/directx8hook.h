@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef DIRECTX8HOOK_H
 #define	DIRECTX8HOOK_H
 

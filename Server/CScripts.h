@@ -1,10 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose script event-calling, managing script resource
-@author Vice-Players, Romop5
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #pragma once
 /*#include "../vendor/squirrel/squirrel.h"

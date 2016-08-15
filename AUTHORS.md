@@ -1,18 +1,14 @@
 # Authors
-Here is the complete list of all people that have ever contributed with anything to LHMP and make it able to live.
+Here is the complete list of all people that have ever contributed with anything to LHMP and made it able to live.
 
 ## Lost Heaven Multiplayer's core members
 
-- Roman Dobiáš (**romop5**) (founder)
-
-- Aleksi Hulkkonen (**qbt**)
-
-- Dominik Madarász (**ZaKlaus**) (ex-member)
-
-- Dávid Svitana (**Davo**) (ex-member)
-
+- Roman "**romop5**" Dobiáš
+- Aleksi "**qbt**" Hulkkonen
+- Dominik "**ZaKlaus**" Madarász
+- Dávid "**Davo**" Svitana
 
 ## Contributors
-Name Surname (nickname)
+Name "**nickname**" Surname
 
 - **Slade**

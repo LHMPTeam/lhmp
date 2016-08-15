@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: Anti-cheat
-
-	@author qbt
-	@version 1.0 14/01/15
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #include <windows.h>
 #include <tchar.h>

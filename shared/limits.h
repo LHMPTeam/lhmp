@@ -1,8 +1,4 @@
-/**
-	Lost Heaven Multiplayer - shared
-	limits.h
-	Purpose: shared server-client limits
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #define MAX_PLAYERS				100
 #define MAX_VEHICLES			100

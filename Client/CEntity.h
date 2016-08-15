@@ -1,12 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: parent class for all entities (players, cars)
-
-	@author Romop5
-	@version 1.0 1/9/14
-	@todo clean function names / unusefull code
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __ENTITY_H
 #define	__ENTITY_H

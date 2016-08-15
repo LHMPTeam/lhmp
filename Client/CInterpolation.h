@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: used for entity's movement interpolation / smoothing
-
-	@author Original: Romop5, Overhaul: qbt
-	@version 1.1 12/14/2015
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __C_INTERPOLATION
 #define __C_INTERPOLATION

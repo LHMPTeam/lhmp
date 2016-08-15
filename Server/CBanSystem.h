@@ -1,10 +1,5 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
-@purpose bansystem - loading banlist, adding bans
-@author Romop5
-******************************************************************************/
 class CBanSystem
 {
 public:

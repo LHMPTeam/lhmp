@@ -1,10 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose class handling a script resource (taken from Vice-Players project, thx guys)
-@author Vice-Players
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #include "squirrelheads.h"
 #include <cstring>

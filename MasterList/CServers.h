@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef _CSERVERS_H
 #define _CSERVERS_H
 

@@ -1,10 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose handles interaction with gamemodes (loading, unloading, reloading)
-@author Romop5
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef CGAMEMODE_H
 #define CGAMEMODE_H

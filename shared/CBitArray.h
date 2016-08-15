@@ -1,8 +1,4 @@
-/*
-	Simple class for 8 bools in one byte
-	CBitArray.h
-	@author Romop5
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 class CBitArray
 {

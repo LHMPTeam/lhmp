@@ -1,13 +1,8 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef _CSQUIRREL_FONTS_H
 #define _CSQUIRREL_FONTS_H
-/**
-Lost Heaven Multiplayer
 
-Purpose: class that handles all fonts loaded and used by client-side scripts
-
-@author Romop5
-@version 1.0 1/9/15
-*/
 #include "d3dx8.h"
 #include "CFont.h"
 

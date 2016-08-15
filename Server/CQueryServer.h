@@ -1,11 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose query system providing information about server instance to anybody\
-		 via UDP and internet
-@author Romop5
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef _CQUERYSERVER
 #define _CQUERYSERVER

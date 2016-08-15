@@ -1,12 +1,5 @@
-/**
-	Lost Heaven Multiplayer
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
-	Purpose: chat system (message adding & rendering)
-
-	@author Romop5
-	@version 1.0 1/9/14
-	@todo clean code / make it more formal
-*/
 #pragma once
 #ifndef __CHAT_H
 #define __CHAT_H

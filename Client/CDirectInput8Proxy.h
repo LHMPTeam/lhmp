@@ -1,13 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: DirectInput Device proxy class used for keyboard/mouse hook
-
-	@author internet, Romop5
-	@version 1.0 1/9/14
-	@todo probably no longer needed as we use Windows Messages & RAW Input
-	* to get keyboard/mouse messages
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __CDIRECT_INPUT_PROXY_H
 #define __CDIRECT_INPUT_PROXY_H

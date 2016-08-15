@@ -1,12 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: a class used in chat to precalculate colored
-	* text and cache it and thus save performace during its rendering
-
-	@author Romop5
-	@version 1.0 25/7/15
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __CCOLOREDTEXT_H
 #define __CCOLOREDTEXT_H

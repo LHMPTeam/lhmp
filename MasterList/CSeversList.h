@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 // this class hols all LHMP servers
 #ifndef _CSERVERSLIST_H
 #define _CSERVERSLIST_H

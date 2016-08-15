@@ -1,10 +1,4 @@
-/**
-	Lost Heaven Multiplayer - shared
-	gamestructures.h
-	Purpose: server-client shared definitions
-	@author	Romop5, DavoSK, ZaKlaus
-	@version 1.0 1/09/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef __GAMESTRUCTURES_H
 #define __GAMESTRUCTURES_H

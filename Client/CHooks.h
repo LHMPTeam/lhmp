@@ -1,12 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: game hooks
-
-	@author Romop5
-	@version 1.0 1/9/14
-	@todo clean code
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef CHOOKS_H
 #define CHOOKS_H

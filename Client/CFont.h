@@ -1,11 +1,4 @@
-/**
-	Lost Heaven Multiplayer
-
-	Purpose: a CD3DFont proxy class with some extra drawing functions
-
-	@author Romop5
-	@version 1.0 1/9/14
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #include "CColoredText.h"
 #include "../sdks/cd3dfont/d3dfont.h"

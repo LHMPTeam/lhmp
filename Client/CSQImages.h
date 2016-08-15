@@ -1,13 +1,7 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef _CSQUIRREL_IMAGES_H
 #define _CSQUIRREL_IMAGES_H
-/**
-Lost Heaven Multiplayer
-
-Purpose: class that handles all images loaded and used by client-side scripts
-
-@author Romop5
-@version 1.0 1/9/15
-*/
 #include "d3dx8.h"
 
 #define MAX_TEXTURES 100

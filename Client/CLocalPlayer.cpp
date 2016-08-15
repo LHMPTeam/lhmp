@@ -1,5 +1,6 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #include "CLocalPlayer.h"
-//#include "structures.h"
 #include "../shared/structures.h"
 #include "../shared/CBitArray.h"
 #include "CNetwork.h"

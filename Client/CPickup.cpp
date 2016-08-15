@@ -1,3 +1,5 @@
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #include "CPickup.h"
 
 CPickup::CPickup(char* model, Vector3D pos, float size, bool isVisible)

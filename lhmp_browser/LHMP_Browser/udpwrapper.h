@@ -1,6 +1,5 @@
-/* Simple UDP Wrapper for LHMP
-        by Romop5
-*/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
+
 #ifndef _UDPWRAPPER_H
 #define _UDPWRAPPER_H
 

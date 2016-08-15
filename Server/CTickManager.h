@@ -1,11 +1,4 @@
-/******************************************************************************
-Lost Heaven Multiplayer project
-See LICENSE in the top level directory
-
-@purpose ensures ticks are called on stable frequency (1/tickcount)
-		 E.g. 30 tickcount means that the pulse function is called every 33ms
-@author Romop5
-******************************************************************************/
+// (C) LHMP Team 2013-2016; Licensed under Apache 2; See LICENSE;;
 
 #ifndef CTICKMANAGER_H
 #define CTICKMANAGER_H
