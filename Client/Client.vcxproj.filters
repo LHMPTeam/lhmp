@@ -462,6 +462,9 @@
     <ClCompile Include="CSQFonts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CGameSync.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directx8hook.h">

@@ -5,3 +5,5 @@ Client/Debug/
 *.o
 Release/
 *.VC.db
+LHMP.opensdf
+LHMP.sdf

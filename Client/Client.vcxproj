@@ -226,6 +226,7 @@
     <ClCompile Include="CFileTransfer.cpp" />
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGame.cpp" />
+    <ClCompile Include="CGameSync.cpp" />
     <ClCompile Include="CGraphics.cpp" />
     <ClCompile Include="CHooks.cpp" />
     <ClCompile Include="CIngameMenu.cpp" />

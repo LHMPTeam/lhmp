@@ -57,7 +57,11 @@ void* threadCallback(void *arg)
         query->Tick();
         Sleep(5);
     }
+#ifdef _WIN32
+	return;
+#else
 	return 0;
+#endif
 }
 
 void CLHMPQuery::queryInfo(const char* IPaddress, unsigned int port, unsigned int ID)
