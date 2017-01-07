@@ -17,9 +17,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	PROCESS_INFORMATION processInformation = { 0 };
 	STARTUPINFOA startupInfo = { 0 };
 	if (CreateProcessA(gameExecutablePath,
-		NULL,
-		NULL,
-		NULL,
+		0, 0, 0,
 		false,
 		CREATE_SUSPENDED,
 		NULL,
