@@ -1,6 +1,6 @@
-[submodule "vendor/raknet"]
-	path = vendor/raknet
-	url = https://github.com/OculusVR/RakNet
 [submodule "vendor/mafia-sdk"]
 	path = vendor/mafia-sdk
 	url = https://github.com/LHMPTeam/mafia-sdk
+[submodule "vendor/raknet"]
+	path = vendor/raknet
+	url = https://github.com/LHMPTeam/RakNet
