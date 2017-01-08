@@ -13,5 +13,5 @@ Player::~Player()
 
 void Player::SetPosition(Vector3D position)
 {
-
+	mPosition = position;
 }

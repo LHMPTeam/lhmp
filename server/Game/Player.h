@@ -9,5 +9,8 @@ public:
 	~Player();
 
 	void SetPosition(Vector3D position) override;
+
+private:
+	Vector3D mPosition;
 };
 
