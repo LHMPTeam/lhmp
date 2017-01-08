@@ -26,6 +26,19 @@ void Network::Tick()
 				OnConnectionAccepted(packet);
 			}
 			break;
+
+			case MessageIDs::ID_CONNECTION_REFUSED_LHMP:
+			{
+				// TODO(zaklaus): Actually do something to tell the client about the issue.
+				exit(-1);
+			}
+			break;
+
+			case MessageIDs::ID_CONNECTION_ACCEPTED_LHMP:
+			{
+
+			}
+			break;
 		}
 	}
 }

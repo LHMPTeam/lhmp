@@ -1,8 +1,13 @@
 #pragma once
-class Player
+
+#include <PlayerInterface.h>
+
+class Player : PlayerInterface
 {
 public:
 	Player();
 	~Player();
+
+	void SetPosition(Vector3D position) override;
 };
 

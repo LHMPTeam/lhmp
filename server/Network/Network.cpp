@@ -66,7 +66,8 @@ void Network::OnClientConnect(RakNet::Packet * packet)
 
 	if (clientVersion != BUILD_VERSION)
 	{
-		outStream.Write((RakNet::MessageID)MessageIDs::ID_CONNECTION_REFUSED_VERSION_LHMP);
+		outStream.Write((RakNet::MessageID)MessageIDs::ID_CONNECTION_REFUSED_LHMP);
+		outStream.Write((RakNet::MessageID)MessageIDs::REFUSED_CLIENT_VERSION);
 		outStream.Write(BUILD_VERSION);
 
 		mPeer->Send(&outStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);

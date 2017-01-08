@@ -10,3 +10,8 @@ Player::Player()
 Player::~Player()
 {
 }
+
+void Player::SetPosition(Vector3D position)
+{
+
+}
