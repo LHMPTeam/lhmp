@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Network\Handlers\ServerConnectionHandler.cpp" />
     <ClCompile Include="Network\Client.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="Game\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Network\Handlers\ServerConnectionHandler.h" />
     <ClInclude Include="Network\Client.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Network\Network.h" />

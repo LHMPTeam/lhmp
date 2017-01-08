@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MessageIdentifiers.h"
+
 namespace MessageIDs
 {
 	enum MessageIDs

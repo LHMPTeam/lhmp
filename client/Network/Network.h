@@ -13,13 +13,10 @@ public:
 	~Network();
 	void Init();
 	void Tick();
-	void OnConnectionAccepted(RakNet::Packet* packet);
-	bool Connect(const char* ipAddress, int port, std::string serverPassword = "");
+	bool Connect(const char* ipAddress, int port, std::string serverPassword = "") const;
 
-	RakNet::RakPeerInterface* GetPeer()
-	{
-		return mPeer;
-	}
+	RakNet::RakPeerInterface* GetPeer() const { return mPeer; }
+	std::string GetUserName() const { return mUserName; }
 private:
 	std::string mUserName;
 	RakNet::RakPeerInterface* mPeer;

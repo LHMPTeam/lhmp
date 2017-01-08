@@ -36,11 +36,12 @@ public:
 		return mServerProperties;
 	}
 
+	bool IsRunning();
 	static Core* GetCore();
 private:
 	Network* mNetwork;
 	ServerProperties mServerProperties;
-
+	bool mRunning;
 	static Core* CoreInstance;
 };
 

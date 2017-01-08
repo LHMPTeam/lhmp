@@ -154,11 +154,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Network\Handlers\ClientConnectionHandler.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\Network.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Network\Handlers\ClientConnectionHandler.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Network\Network.h" />
   </ItemGroup>

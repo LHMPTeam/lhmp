@@ -72,6 +72,8 @@ void Core::Init()
 	
 	mNetwork = new Network();
 	mNetwork->Init();
+
+	mRunning = true;
 }
 
 void Core::Tick()
@@ -80,6 +82,12 @@ void Core::Tick()
 }
 
 Core* Core::CoreInstance;
+
+bool Core::IsRunning()
+{
+	return mRunning;
+}
+
 Core* Core::GetCore()
 {
 	return CoreInstance;

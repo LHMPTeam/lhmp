@@ -1,6 +1,7 @@
 #pragma once
 #include "../Core.h"
 #include "Client.h"
+#include "MessageHandler.h"
 
 #include <MessageIdentifiers.h>
 #include <RakPeerInterface.h>
@@ -15,16 +16,11 @@ public:
 	~Network();
 	void Init();
 	void Tick();
-	void OnClientConnect(RakNet::Packet* packet);
-	void OnClientDisconnect(RakNet::Packet* packet);
 
-	RakNet::RakPeerInterface* GetPeer()
-	{
-		return mPeer;
-	}
+	RakNet::RakPeerInterface* GetPeer() { return mPeer; }
 private:
 	std::map<RakNet::RakNetGUID, Client> mClients;
 	RakNet::RakPeerInterface* mPeer;
-	RakNet::SocketDescriptor* mSocketDescriptor;
+	RakNet::SocketDescriptor mSocketDescriptor;
 };
 
