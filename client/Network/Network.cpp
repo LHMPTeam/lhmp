@@ -1,5 +1,4 @@
-#include "Network.h"
-#include "Handlers/ClientConnectionHandler.h"
+#include <stdinc.h>
 
 Network::Network()
 {

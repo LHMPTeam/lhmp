@@ -1,10 +1,4 @@
-#include "ClientConnectionHandler.h"
-#include <MessageIDs.h>
-#include <BuildVersion.h>
-
-#include "MessageIdentifiers.h"
-#include "BitStream.h"
-#include "..\Network.h"
+#include <stdinc.h>
 
 ClientConnectionHandler::ClientConnectionHandler()
 {

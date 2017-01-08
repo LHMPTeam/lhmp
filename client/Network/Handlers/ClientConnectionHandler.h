@@ -1,6 +1,4 @@
 #pragma once
-#include <MessageHandler.h>
-class Network;
 
 class ClientConnectionHandler : MessageHandler
 {

@@ -1,10 +1,4 @@
 #pragma once
-#include <RakPeerInterface.h>
-#include <BitStream.h>
-#include <MessageIdentifiers.h>
-#include <MessageIDs.h>
-#include <string>
-#include <BuildVersion.h>
 
 class Network
 {

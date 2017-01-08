@@ -1,5 +1,4 @@
 #pragma once
-#include "Network/Network.h"
 
 class Core
 {
@@ -14,5 +13,6 @@ public:
 	}
 private:
 	Network* mNetwork;
+	Game* mGame;
 };
 

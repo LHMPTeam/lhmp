@@ -1,6 +1,4 @@
-#define _WINSOCKAPI_
-#include <windows.h>
-#include "Core.h"
+#include <stdinc.h>
 
 void Start()
 {

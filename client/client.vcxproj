@@ -92,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,7 +124,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,15 +154,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\MemoryPatcher.cpp" />
+    <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Network\Handlers\ClientConnectionHandler.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\Network.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\MemoryPatcher.h" />
+    <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Network\Handlers\ClientConnectionHandler.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Network\Network.h" />
+    <ClInclude Include="stdinc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
