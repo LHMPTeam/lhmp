@@ -11,6 +11,7 @@ Core::~Core()
 
 void Core::Init()
 {
+
 	mNetwork = new Network();
 	mNetwork->Init();
 }

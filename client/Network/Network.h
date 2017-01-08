@@ -14,7 +14,8 @@ public:
 	void Init();
 	void Tick();
 	void OnConnectionAccepted(RakNet::Packet* packet);
-	bool ConnectToServer(char* ipAddress, int port, char* password);
+	bool Connect(const char* ipAddress, int port, std::string serverPassword = "");
+
 	RakNet::RakPeerInterface* GetPeer()
 	{
 		return mPeer;
@@ -22,6 +23,6 @@ public:
 private:
 	std::string mUserName;
 	RakNet::RakPeerInterface* mPeer;
-	RakNet::SocketDescriptor* mSocketDescriptor;
+	RakNet::SocketDescriptor mSocketDescriptor;
 };
 
