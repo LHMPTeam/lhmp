@@ -11,6 +11,8 @@ public:
 	Client(std::string nickName, RakNet::SystemAddress systemAddress);
 	~Client();
 
+	Player* GetPlayer() { return mPlayer; }
+
 private:
 	RakNet::SystemAddress mSystemAddress;
 	std::string mNickName;

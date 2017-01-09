@@ -2,6 +2,7 @@
 #include <MessageIDs.h>
 #include <BuildVersion.h>
 #include "Handlers/ServerConnectionHandler.h"
+#include "Handlers/ServerSyncHandler.h"
 
 Network::Network()
 {
@@ -19,7 +20,7 @@ void Network::Init()
 	mSocketDescriptor = RakNet::SocketDescriptor(serverProperies.mServerPort, 0);
 	mPeer = RakNet::RakPeerInterface::GetInstance();
 
-	if (mPeer->Startup(1, &mSocketDescriptor, 1) != RakNet::RAKNET_STARTED)
+	if (mPeer->Startup(12, &mSocketDescriptor, 1) != RakNet::RAKNET_STARTED)
 	{
 		Core::GetCore()->Log("Unable to startup server !\n Port might be already being used by another process !");
 	}
@@ -43,6 +44,12 @@ void Network::Tick()
 			case MessageIDs::ID_CONNECTION_INIT_LHMP:
 			{
 				ServerConnectionHandler Handler(&mClients);
+				Handler.ProcessMessage(this, packet);
+			}
+			break;
+			case MessageIDs::ID_SYNC_LHMP:
+			{
+				ServerSyncHandler Handler(&mClients);
 				Handler.ProcessMessage(this, packet);
 			}
 			break;

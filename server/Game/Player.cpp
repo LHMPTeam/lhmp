@@ -2,7 +2,8 @@
 
 
 
-Player::Player()
+Player::Player(std::string modelName)
+	: mModelName(modelName)
 {
 }
 

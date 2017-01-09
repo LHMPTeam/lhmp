@@ -1,4 +1,4 @@
-#include <stdinc.h>
+#include <stdinc.h> 
 
 void Start()
 {
@@ -11,6 +11,8 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
+		AllocConsole();
+		freopen("CONOUT$", "w", stdout);
 		Start();
 		break;
 	case DLL_PROCESS_DETACH:

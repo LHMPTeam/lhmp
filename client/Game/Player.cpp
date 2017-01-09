@@ -1,0 +1,76 @@
+#include <stdinc.h>
+
+Player::Player(std::string modelName)
+	: mModelName(modelName)
+{
+
+}
+
+Player::~Player()
+{
+}
+
+void Player::Spawn()
+{
+	MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame;
+	mPlayer = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Enemy));
+
+	playerFrame->LoadModel(mModelName.c_str());
+	mPlayer->Init(playerFrame);
+	//mPlayer->SetActive(false);
+
+	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
+
+	mPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
+}
+
+void Player::SetPosition(Vector3D position)
+{
+	mPlayer->GetInterface()->entity.position = position;
+}
+
+Vector3D Player::GetPosition()
+{
+	return mPlayer->GetInterface()->entity.position;
+}
+
+void Player::SetRotation(Vector3D rotation)
+{
+	mPlayer->GetInterface()->entity.rotation = rotation;
+}
+
+Vector3D Player::GetRotation()
+{
+	return mPlayer->GetInterface()->entity.rotation;
+}
+
+void Player::SetModel(const std::string & modelName)
+{
+	mPlayer->Intern_ChangeModel(modelName.c_str());
+	mModelName = modelName;
+}
+
+std::string Player::GetModel()
+{
+	return mModelName;
+}
+
+void Player::SetHealth(float health)
+{
+	mPlayer->GetInterface()->health = health;
+}
+
+float Player::GetHealth()
+{
+	return mPlayer->GetInterface()->health;
+}
+
+void Player::SetAnimationState(char state)
+{
+	mPlayer->GetInterface()->animState = state;
+}
+
+char Player::GetAnimationState()
+{
+	return mPlayer->GetInterface()->animState;
+}

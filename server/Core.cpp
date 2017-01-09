@@ -83,11 +83,6 @@ void Core::Tick()
 
 Core* Core::CoreInstance;
 
-bool Core::IsRunning()
-{
-	return mRunning;
-}
-
 Core* Core::GetCore()
 {
 	return CoreInstance;

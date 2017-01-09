@@ -5,7 +5,7 @@ Client::Client(std::string nickName, RakNet::SystemAddress systemAddress)
 	mNickName(nickName),
 	mSystemAddress(systemAddress)
 {
-	mPlayer = new Player;
+	mPlayer = new Player("Tommy.i3d");
 }
 
 Client::~Client()

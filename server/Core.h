@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Utils.h>
 #include <ini.hpp>
 
@@ -36,7 +37,10 @@ public:
 		return mServerProperties;
 	}
 
-	bool IsRunning();
+	bool IsRunning()
+	{
+		return mRunning;
+	}
 	static Core* GetCore();
 private:
 	Network* mNetwork;

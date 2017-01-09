@@ -11,6 +11,14 @@ namespace MessageIDs
 		ID_CONNECTION_ACCEPTED_LHMP,
 		
 		ID_PACKET_LHMP,
+		ID_SYNC_LHMP,
+		ID_CREATE_PLAYER
+	};
+
+	enum LHMPSyncIDs
+	{
+		LHMP_PLAYER_ONFOOTSYNC
+
 	};
 
 	enum LHMPMessageIDs

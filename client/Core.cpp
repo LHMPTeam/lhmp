@@ -2,6 +2,7 @@
 
 Core::Core()
 {
+	CoreInstance = this;
 }
 
 
@@ -11,13 +12,24 @@ Core::~Core()
 
 void Core::Init()
 {
-	/*mNetwork = new Network();
-	mNetwork->Init();*/
+	mNetwork = new Network();
 	mGame = new Game();
 	mGame->Init();
+	mIsRunning = true;
 }
 
 void Core::Tick()
 {
-	mNetwork->Tick();
+	mGame->Tick();
+	if (mNetwork->IsRunning())
+	{
+		mNetwork->Tick();
+	}
+}
+
+Core* Core::CoreInstance;
+
+Core* Core::GetCore()
+{
+	return CoreInstance;
 }
