@@ -1,6 +1,4 @@
-#include "ServerConnectionHandler.h"
-#include <MessageIDs.h>
-#include <BuildVersion.h>
+#include <stdinc.h>
 
 ServerConnectionHandler::ServerConnectionHandler(std::map<RakNet::RakNetGUID, Client*>* Clients)
 	: mClients(Clients)
@@ -14,26 +12,20 @@ ServerConnectionHandler::~ServerConnectionHandler()
 
 void ServerConnectionHandler::ProcessMessage(Network* network, RakNet::Packet* packet)
 {
-	switch(packet->data[0])
+	switch(packet->data[1])
 	{
-		case MessageIDs::ID_CONNECTION_INIT_LHMP:
+		case MessageIDs::LHMPID_CONNECTION_INIT:
 		{
-			OnClientConnected(network->GetPeer(), packet);
-		}
-		break;
-
-		case ID_DISCONNECTION_NOTIFICATION:
-		case ID_CONNECTION_LOST:
-		{
-			OnClientDisconnected(network->GetPeer(), packet);
+			OnClientInit(network->GetPeer(), packet);
 		}
 		break;
 	}
 }
 
-void ServerConnectionHandler::OnClientConnected(RakNet::RakPeerInterface *peer, RakNet::Packet* packet) const
+void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNet::Packet* packet) const
 {
 	RakNet::BitStream inStream(packet->data, packet->length, false);
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 
 	int clientVersion = -1;
@@ -45,8 +37,9 @@ void ServerConnectionHandler::OnClientConnected(RakNet::RakPeerInterface *peer, 
 	{
 		Core::GetCore()->Log("asksal");
 
-		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::ID_CONNECTION_REFUSED_LHMP));
-		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::REFUSED_CLIENT_VERSION));
+		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
+		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_REFUSED));
+		//outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::REFUSED_CLIENT_VERSION));
 		outStream.Write((int)BUILD_VERSION);
 
 		peer->Send(&outStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -59,14 +52,16 @@ void ServerConnectionHandler::OnClientConnected(RakNet::RakPeerInterface *peer, 
 	inStream.Reset();
 
 	RakNet::BitStream utist;
-	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::ID_CREATE_PLAYER));
+	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_CREATE));
 	utist.Write(packet->guid);
 	utist.Write("Tommy.i3d");
 	peer->Send(&utist, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 
 	Client* client = new Client(nickName.C_String(), packet->systemAddress);
 
-	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::ID_CONNECTION_ACCEPTED_LHMP));
+	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
+	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_ACCEPTED));
 	outStream.Write(client->GetPlayer()->GetModel().c_str());
 	outStream.Write(mClients->size());
 	
@@ -80,12 +75,4 @@ void ServerConnectionHandler::OnClientConnected(RakNet::RakPeerInterface *peer, 
 
 	//outStream.Write(client->GetPlayer()->GetModel().c_str());
 	peer->Send(&outStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-}
-
-void ServerConnectionHandler::OnClientDisconnected(RakNet::RakPeerInterface* peer, RakNet::Packet* packet)
-{
-	delete mClients->at(packet->guid);
-	mClients->erase(packet->guid);
-
-	// TODO(zaklaus): Tell the gamemode client has been disconnected!
 }

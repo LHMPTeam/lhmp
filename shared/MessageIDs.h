@@ -4,7 +4,7 @@
 
 namespace MessageIDs
 {
-	enum MessageIDs
+	/*enum MessageIDs
 	{
 		ID_CONNECTION_INIT_LHMP = ID_USER_PACKET_ENUM + 1,
 		ID_CONNECTION_REFUSED_LHMP,
@@ -18,7 +18,6 @@ namespace MessageIDs
 	enum LHMPSyncIDs
 	{
 		LHMP_PLAYER_ONFOOTSYNC
-
 	};
 
 	enum LHMPMessageIDs
@@ -29,5 +28,30 @@ namespace MessageIDs
 	enum RefusedMessageIDs
 	{
 		REFUSED_CLIENT_VERSION
+	};*/
+
+	enum MainCategoryIDs
+	{
+		LHMPID_CONNECTION = ID_USER_PACKET_ENUM + 1,
+		LHMPID_SYNC,
+		LHMPID_PLAYER,
 	};
-}
+
+	enum ConnectionCategoryIDs
+	{
+		LHMPID_CONNECTION_INIT,
+		LHMPID_CONNECTION_REFUSED,
+		LHMPID_CONNECTION_ACCEPTED,
+		LHMPID_CONNECTION_DISCONNECTED,
+	};
+
+	enum SyncCategoryIDs
+	{
+		LHMPID_SYNC_ONFOOT,
+	};
+
+	enum PlayerCategoryIDs
+	{
+		LHMPID_PLAYER_CREATE,
+	};
+};

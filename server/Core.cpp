@@ -1,5 +1,4 @@
-#include "Core.h"
-#include "Network\Network.h"
+#include <stdinc.h>
 
 Core::Core()
 {
@@ -18,7 +17,7 @@ void Core::Log(const char* format, ...)
 	va_start(ap, format);
 	vsprintf(message, format, ap);
 	va_end(ap);
-	printf("[SERVER] [%s] - %s\n", currentDateTime().c_str(), message);
+	printf("[SERVER] [%s] - %s\n", Utils::currentDateTime().c_str(), message);
 }
 
 void Core::Init()

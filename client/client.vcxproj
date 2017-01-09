@@ -73,6 +73,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)vendor\dx8sdk\include</IncludePath>
     <SourcePath>$(VC_SourcePath);$(SolutionDir)vendor\raknet\Source\</SourcePath>
+    <TargetName>$(SolutionName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -81,6 +82,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)vendor\dx8sdk\include</IncludePath>
     <SourcePath>$(VC_SourcePath);$(SolutionDir)vendor\raknet\Source\</SourcePath>
+    <TargetName>$(SolutionName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -160,6 +162,8 @@
     <ClCompile Include="Network\Handlers\ClientConnectionHandler.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\Handlers\ClientPlayerHandler.cpp" />
+    <ClCompile Include="Network\Handlers\ClientRakNetHandler.cpp" />
     <ClCompile Include="Network\Handlers\ClientSyncHandler.cpp" />
     <ClCompile Include="Network\Network.cpp" />
   </ItemGroup>
@@ -169,6 +173,8 @@
     <ClInclude Include="Game\Player.h" />
     <ClInclude Include="Network\Handlers\ClientConnectionHandler.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Network\Handlers\ClientPlayerHandler.h" />
+    <ClInclude Include="Network\Handlers\ClientRakNetHandler.h" />
     <ClInclude Include="Network\Handlers\ClientSyncHandler.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="stdinc.h" />

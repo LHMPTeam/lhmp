@@ -1,7 +1,4 @@
 #pragma once
-#include <MessageHandler.h>
-#include <SyncStructs/OnFootSync.h>
-#include "../Network.h"
 
 class ServerSyncHandler : MessageHandler
 {

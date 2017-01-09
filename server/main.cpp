@@ -1,6 +1,4 @@
-#include "Core.h"
-#include <thread>
-#include <chrono>
+#include <stdinc.h>
 
 int main(int argc, char * argv[])
 {

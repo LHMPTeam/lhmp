@@ -95,9 +95,7 @@ void Game::OnGameStart()
 {
 	MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Mission Loaded Bitch", 0xFF0000);
-	//printf("Init network\n");
 	Core::GetCore()->GetNetwork()->Init();
-	//printf("Connecting\n");
 	Core::GetCore()->GetNetwork()->Connect("91.127.193.115", 27015);
 }
 

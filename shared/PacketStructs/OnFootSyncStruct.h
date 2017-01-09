@@ -3,10 +3,10 @@
 #include <LinearMath.h>
 #include <Utils.h>
 
-struct OnFootSync
+struct OnFootSyncStruct
 {
 	Vector3D Position;
-	Vector3D Rotation;
+	unsigned short Rotation;
 	char animationState;
 	bool isCrouching;
 };

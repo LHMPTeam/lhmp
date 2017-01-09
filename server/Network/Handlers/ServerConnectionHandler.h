@@ -1,7 +1,4 @@
 #pragma once
-#include <MessageHandler.h>
-#include "../Network.h"
-#include <SyncStructs/OnConnectionStruct.h>
 
 class ServerConnectionHandler : MessageHandler
 {
@@ -12,8 +9,7 @@ public:
 	void ProcessMessage(Network* network, RakNet::Packet* packet) override;
 
 private:
-	void OnClientConnected(RakNet::RakPeerInterface *peer, RakNet::Packet* packet) const;
-	void OnClientDisconnected(RakNet::RakPeerInterface *peer, RakNet::Packet* packet);
+	void OnClientInit(RakNet::RakPeerInterface *peer, RakNet::Packet* packet) const;
 
 	std::map<RakNet::RakNetGUID, Client*> *mClients;
 };

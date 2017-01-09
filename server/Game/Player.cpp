@@ -22,12 +22,12 @@ Vector3D Player::GetPosition()
 	return mPosition;
 }
 
-void Player::SetRotation(Vector3D rotation)
+void Player::SetRotation(unsigned short rotation)
 {
 	mRotation = rotation;
 }
 
-Vector3D Player::GetRotation()
+unsigned short Player::GetRotation()
 {
 	return mRotation;
 }
@@ -60,4 +60,14 @@ void Player::SetAnimationState(char state)
 char Player::GetAnimationState()
 {
 	return mAnimationState;
+}
+
+void Player::SetIsCrouching(bool isCrouching)
+{
+	mIsCrouching = isCrouching;
+}
+
+bool Player::GetIsCrouching()
+{
+	return mIsCrouching;
 }

@@ -1,13 +1,4 @@
 #pragma once
-#include "../Core.h"
-#include "Client.h"
-#include "MessageHandler.h"
-
-#include <MessageIdentifiers.h>
-#include <RakPeerInterface.h>
-#include <BitStream.h>
-
-#include <map>
 
 class Network
 {

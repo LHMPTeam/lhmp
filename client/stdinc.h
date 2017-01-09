@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4996)
 #define _WINSOCKAPI_
 #define CLIENT
 #include <string>
@@ -11,11 +12,12 @@
 #include <RakPeerInterface.h>
 #include <BitStream.h>
 #include <MessageIdentifiers.h>
+#include <GetTime.h>
 #include <MessageIDs.h>
 #include <BuildVersion.h>
 #include <MessageHandler.h>
-#include <SyncStructs/OnFootSync.h>
-#include <SyncStructs/OnConnectionStruct.h>
+#include <PacketStructs/OnFootSyncStruct.h>
+#include <PacketStructs/OnConnectionStruct.h>
 
 #include "Game/Player.h"
 #include "Game/LocalPlayer.h"
@@ -24,5 +26,7 @@
 
 #include "Network/Handlers/ClientSyncHandler.h"
 #include "Network/Handlers/ClientConnectionHandler.h"
+#include "Network/Handlers/ClientRakNetHandler.h"
+#include "Network/Handlers/ClientPlayerHandler.h"
 
 #include "Core.h"

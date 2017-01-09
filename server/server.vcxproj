@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\raknet\Source\;$(SolutionDir)vendor\ini-parser\;$(SolutionDir)shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\raknet\Source\;$(SolutionDir)vendor\ini-parser\;$(ProjectDir);$(SolutionDir)shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +119,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\raknet\Source\;$(SolutionDir)vendor\ini-parser\;$(SolutionDir)shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\raknet\Source\;$(SolutionDir)vendor\ini-parser\;$(ProjectDir);$(SolutionDir)shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +152,7 @@
     <ClCompile Include="Network\Client.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\Handlers\ServerRakNetHandler.cpp" />
     <ClCompile Include="Network\Handlers\ServerSyncHandler.cpp" />
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Game\Player.cpp" />
@@ -160,9 +161,11 @@
     <ClInclude Include="Network\Handlers\ServerConnectionHandler.h" />
     <ClInclude Include="Network\Client.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Network\Handlers\ServerRakNetHandler.h" />
     <ClInclude Include="Network\Handlers\ServerSyncHandler.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="stdinc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

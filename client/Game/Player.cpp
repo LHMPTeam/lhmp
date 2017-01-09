@@ -17,9 +17,10 @@ void Player::Spawn()
 
 	playerFrame->LoadModel(mModelName.c_str());
 	mPlayer->Init(playerFrame);
-	//mPlayer->SetActive(false);
-
+	mPlayer->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
+	mPlayer->SetActive(true);
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
+	
 
 	mPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
 }
@@ -34,14 +35,14 @@ Vector3D Player::GetPosition()
 	return mPlayer->GetInterface()->entity.position;
 }
 
-void Player::SetRotation(Vector3D rotation)
+void Player::SetRotation(unsigned short rotation)
 {
-	mPlayer->GetInterface()->entity.rotation = rotation;
+	mPlayer->GetInterface()->entity.rotation = Utils::DegreeToRotation(Utils::DegreeShortToMap(rotation));
 }
 
-Vector3D Player::GetRotation()
+unsigned short Player::GetRotation()
 {
-	return mPlayer->GetInterface()->entity.rotation;
+	return Utils::DegreeMapToShort(Utils::RotationToDegree(mPlayer->GetInterface()->entity.rotation));
 }
 
 void Player::SetModel(const std::string & modelName)
@@ -73,4 +74,14 @@ void Player::SetAnimationState(char state)
 char Player::GetAnimationState()
 {
 	return mPlayer->GetInterface()->animState;
+}
+
+void Player::SetIsCrouching(bool isCrouching)
+{
+	mPlayer->GetInterface()->isDucking = isCrouching;
+}
+
+bool Player::GetIsCrouching()
+{
+	return mPlayer->GetInterface()->isDucking;
 }

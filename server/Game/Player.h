@@ -12,8 +12,8 @@ public:
 	void SetPosition(Vector3D position) override;
 	Vector3D GetPosition() override;
 
-	void SetRotation(Vector3D rotation) override;
-	Vector3D GetRotation() override;
+	void SetRotation(unsigned short rotation) override;
+	unsigned short GetRotation() override;
 	
 	void SetModel(const std::string& modelName) override;
 	std::string GetModel() override;
@@ -23,12 +23,16 @@ public:
 	
 	void SetAnimationState(char state) override;
 	char GetAnimationState() override;
+
+	void SetIsCrouching(bool isCrouching) override;
+	bool GetIsCrouching() override;
 	
 private:
 	Vector3D mPosition;
-	Vector3D mRotation;
+	unsigned short mRotation;
 	std::string mModelName;
 	float mHealth;
 	char mAnimationState;
+	bool mIsCrouching;
 };
 

@@ -1,8 +1,4 @@
-#include "Network.h"
-#include <MessageIDs.h>
-#include <BuildVersion.h>
-#include "Handlers/ServerConnectionHandler.h"
-#include "Handlers/ServerSyncHandler.h"
+#include <stdinc.h>
 
 Network::Network()
 {
@@ -20,7 +16,7 @@ void Network::Init()
 	mSocketDescriptor = RakNet::SocketDescriptor(serverProperies.mServerPort, 0);
 	mPeer = RakNet::RakPeerInterface::GetInstance();
 
-	if (mPeer->Startup(12, &mSocketDescriptor, 1) != RakNet::RAKNET_STARTED)
+	if (mPeer->Startup(serverProperies.mMaxPlayers, &mSocketDescriptor, 1) != RakNet::RAKNET_STARTED)
 	{
 		Core::GetCore()->Log("Unable to startup server !\n Port might be already being used by another process !");
 	}
@@ -31,6 +27,7 @@ void Network::Init()
 	}
 	
 	mPeer->SetMaximumIncomingConnections(serverProperies.mMaxPlayers);
+	mPeer->SetTimeoutTime(2000, RakNet::UNASSIGNED_SYSTEM_ADDRESS);
 }
 
 void Network::Tick()
@@ -39,17 +36,20 @@ void Network::Tick()
 	{
 		switch (packet->data[0])
 		{
-			case ID_DISCONNECTION_NOTIFICATION:
-			case ID_CONNECTION_LOST:
-			case MessageIDs::ID_CONNECTION_INIT_LHMP:
+			case MessageIDs::LHMPID_CONNECTION:
 			{
 				ServerConnectionHandler Handler(&mClients);
 				Handler.ProcessMessage(this, packet);
 			}
 			break;
-			case MessageIDs::ID_SYNC_LHMP:
+			case MessageIDs::LHMPID_SYNC:
 			{
 				ServerSyncHandler Handler(&mClients);
+				Handler.ProcessMessage(this, packet);
+			}
+			default:
+			{
+				ServerRakNetHandler Handler(&mClients);
 				Handler.ProcessMessage(this, packet);
 			}
 			break;

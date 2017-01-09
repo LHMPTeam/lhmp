@@ -1,6 +1,4 @@
-#include "ServerSyncHandler.h"
-#include <MessageIDs.h>
-#include <BuildVersion.h>
+#include <stdinc.h>
 
 ServerSyncHandler::ServerSyncHandler(std::map<RakNet::RakNetGUID, Client*>* Clients)
 	: mClients(Clients)
@@ -15,7 +13,7 @@ void ServerSyncHandler::ProcessMessage(Network * network, RakNet::Packet * packe
 {
 	switch (packet->data[1])
 	{
-	case MessageIDs::LHMP_PLAYER_ONFOOTSYNC:
+	case MessageIDs::LHMPID_SYNC_ONFOOT:
 	{
 		OnClientFootSync(network->GetPeer(), packet);
 	}
@@ -26,25 +24,21 @@ void ServerSyncHandler::ProcessMessage(Network * network, RakNet::Packet * packe
 void ServerSyncHandler::OnClientFootSync(RakNet::RakPeerInterface *peer, RakNet::Packet * packet)
 {
 	auto player = mClients->at(packet->guid)->GetPlayer();
-	OnFootSync footSync;
+	OnFootSyncStruct footSync;
 	RakNet::BitStream inStream(packet->data, packet->length, false);
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 
-
-
 	inStream.Read(footSync);
-	printf("Sync: %f %f %f\n", footSync.Position.x, footSync.Position.y, footSync.Position.z);
 
 	player->SetPosition(footSync.Position);
 	player->SetRotation(footSync.Rotation);
 	player->SetAnimationState(footSync.animationState);
 
-	
 	RakNet::BitStream outStream;
 
-	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::ID_SYNC_LHMP));
-	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMP_PLAYER_ONFOOTSYNC));
+	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC));
+	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC_ONFOOT));
 	outStream.Write(packet->guid);
 	outStream.Write(footSync);
 

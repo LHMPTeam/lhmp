@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Utils.h>
-#include <ini.hpp>
-
-
 constexpr const char* DEFAULT_SERVER_NAME = "Default Lost Heaven Multiplayer Server";
 constexpr const char* DEFAULT_SERVER_PASS = "";
 constexpr int DEFAULT_SERVER_PORT = 27015;

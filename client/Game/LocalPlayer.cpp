@@ -38,16 +38,15 @@ Vector3D LocalPlayer::GetPosition()
 	return mPlayer->GetInterface()->humanObject.entity.position;
 }
 
-void LocalPlayer::SetRotation(Vector3D rotation)
+void LocalPlayer::SetRotation(unsigned short rotation)
 {
-	mPlayer->GetInterface()->humanObject.entity.rotation = rotation;
+	mPlayer->GetInterface()->humanObject.entity.rotation = Utils::DegreeToRotation(Utils::DegreeShortToMap(rotation));
 }
 
-Vector3D LocalPlayer::GetRotation()
+unsigned short LocalPlayer::GetRotation()
 {
-	return mPlayer->GetInterface()->humanObject.entity.rotation;
+	return Utils::DegreeMapToShort(Utils::RotationToDegree(mPlayer->GetInterface()->humanObject.entity.rotation));
 }
-
 void LocalPlayer::SetModel(const std::string & modelName)
 {
 	mPlayer->Intern_ChangeModel(modelName.c_str());
@@ -79,17 +78,30 @@ char LocalPlayer::GetAnimationState()
 	return mPlayer->GetInterface()->humanObject.animState;
 }
 
+void LocalPlayer::SetIsCrouching(bool isCrouching)
+{
+	mPlayer->GetInterface()->humanObject.isDucking = isCrouching;
+}
+
+bool LocalPlayer::GetIsCrouching()
+{
+	return mPlayer->GetInterface()->humanObject.isDucking;
+}
+
+
 void LocalPlayer::Tick()
 {
 	if (mIsSpawned)
 	{
-		//if (mPlayer->GetInterface()->humanObject.playersCar == nullptr)
-		//{
-			OnFootSync footSync;
-			footSync.animationState = GetAnimationState();
-			footSync.Position = GetPosition();
-			footSync.Rotation = GetRotation();
-			Core::GetCore()->GetNetwork()->SendPlayerOnFoot(footSync);
-		//}
+		OnFootSyncStruct footSync;
+		footSync.animationState = GetAnimationState();
+		footSync.Position = GetPosition();
+		footSync.Rotation = GetRotation();
+		footSync.isCrouching = GetIsCrouching();
+		RakNet::BitStream bitStream;
+		bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC));
+		bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC_ONFOOT));
+		bitStream.Write(footSync);
+		Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
 	}
 }
