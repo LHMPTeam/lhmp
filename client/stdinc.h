@@ -19,6 +19,7 @@
 #include <PacketStructs/OnFootSyncStruct.h>
 #include <PacketStructs/OnConnectionStruct.h>
 
+#include "Network/TickManager.h"
 #include "Game/Player.h"
 #include "Game/LocalPlayer.h"
 #include "Game/Game.h"

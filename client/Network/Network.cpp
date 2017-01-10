@@ -1,7 +1,7 @@
 #include <stdinc.h>
 
 Network::Network()
-	: mIsRunning(false), mUserName("Player")
+	: mIsRunning(false), mUserName("Player"), mTickRate(64)
 {
 	
 }

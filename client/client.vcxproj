@@ -166,6 +166,7 @@
     <ClCompile Include="Network\Handlers\ClientRakNetHandler.cpp" />
     <ClCompile Include="Network\Handlers\ClientSyncHandler.cpp" />
     <ClCompile Include="Network\Network.cpp" />
+    <ClCompile Include="Network\TickManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Network\Handlers\ClientRakNetHandler.h" />
     <ClInclude Include="Network\Handlers\ClientSyncHandler.h" />
     <ClInclude Include="Network\Network.h" />
+    <ClInclude Include="Network\TickManager.h" />
     <ClInclude Include="stdinc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

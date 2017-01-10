@@ -2,8 +2,9 @@
 #include <stdinc.h>
 
 Game::Game()
-	: mLocalPlayer(nullptr)
+	: mLocalPlayer(nullptr), mTickManager(nullptr)
 {
+	mTickManager = new TickManager();
 }
 
 Game::~Game()
@@ -96,7 +97,7 @@ void Game::OnGameStart()
 	MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Mission Loaded Bitch", 0xFF0000);
 	Core::GetCore()->GetNetwork()->Init();
-	Core::GetCore()->GetNetwork()->Connect("91.127.193.115", 27015);
+	Core::GetCore()->GetNetwork()->Connect("78.98.209.243", 27015);
 }
 
 void Game::OnGameInit()
@@ -114,8 +115,9 @@ void Game::Tick()
 		}
 		mShouldStart = false;
 	}
-	if (mLocalPlayer != nullptr)
+	mTickManager->GameTick();
+	/*if (mLocalPlayer != nullptr)
 	{
 		mLocalPlayer->Tick();
-	}
+	}*/
 }
