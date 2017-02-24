@@ -21,6 +21,7 @@ void Core::Init()
 void Core::Tick()
 {
 	mGame->Tick();
+
 	if (mNetwork->IsRunning())
 	{
 		mNetwork->Tick();

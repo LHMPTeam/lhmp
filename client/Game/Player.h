@@ -27,8 +27,9 @@ public:
 	void SetIsCrouching(bool isCrouching) override;
 	bool GetIsCrouching() override;
 
+	Interpolator* GetInterpolator() { return &mInterpolator; }
 	MafiaSDK::C_Human* GetActor() { return mPlayer; }
-
+	void UpdateGameObject();
 private:
 	MafiaSDK::C_Human* mPlayer;
 	Vector3D mPosition;
@@ -36,4 +37,5 @@ private:
 	std::string mModelName;
 	float mHealth;
 	char mAnimationState;
+	Interpolator mInterpolator;
 };

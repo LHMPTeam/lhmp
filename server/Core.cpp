@@ -1,6 +1,8 @@
 #include <stdinc.h>
 
-Core::Core()
+Core::Core() : 
+	mTickManager(nullptr),
+	mNetwork(nullptr)
 {
 	CoreInstance = this;
 }
@@ -69,15 +71,20 @@ void Core::Init()
 	printf("Server Port: %d\n", mServerProperties.mServerPort);
 	printf("Server Max Players: %d\n", mServerProperties.mMaxPlayers);
 	
+	mTickManager = new TickManager();
 	mNetwork = new Network();
 	mNetwork->Init();
 
 	mRunning = true;
+
+	
 }
 
 void Core::Tick()
 {
-	mNetwork->Tick();
+	mTickManager->GameTick();
+	Core::GetCore()->GetNetwork()->Tick();
+	
 }
 
 Core* Core::CoreInstance;

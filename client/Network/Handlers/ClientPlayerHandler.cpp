@@ -35,5 +35,7 @@ void ClientPlayerHandler::CreatePlayer(Network * network, RakNet::Packet * packe
 	Player* newPlayer = new Player(modelName.C_String());
 	newPlayer->Spawn();
 
+	printf("Spawned player !\n");
+
 	mPlayers->insert(std::make_pair(playerGuid, newPlayer));
 }

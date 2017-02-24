@@ -40,6 +40,7 @@ public:
 	static Core* GetCore();
 private:
 	Network* mNetwork;
+	TickManager* mTickManager;
 	ServerProperties mServerProperties;
 	bool mRunning;
 	static Core* CoreInstance;

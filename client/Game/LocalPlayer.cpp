@@ -8,6 +8,7 @@ LocalPlayer::LocalPlayer(std::string modelName)
 
 LocalPlayer::~LocalPlayer()
 {
+
 }
 
 void LocalPlayer::Spawn()
@@ -22,7 +23,6 @@ void LocalPlayer::Spawn()
 	MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(mPlayer);
 	MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(mPlayer);
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
-
 
 	mPlayer->GetInterface()->humanObject.entity.position = { -1984.884277f, -5.032383f, 23.144674f };
 	mIsSpawned = true;
@@ -47,6 +47,7 @@ unsigned short LocalPlayer::GetRotation()
 {
 	return Utils::DegreeMapToShort(Utils::RotationToDegree(mPlayer->GetInterface()->humanObject.entity.rotation));
 }
+
 void LocalPlayer::SetModel(const std::string & modelName)
 {
 	mPlayer->Intern_ChangeModel(modelName.c_str());
@@ -87,7 +88,6 @@ bool LocalPlayer::GetIsCrouching()
 {
 	return mPlayer->GetInterface()->humanObject.isDucking;
 }
-
 
 void LocalPlayer::Tick()
 {

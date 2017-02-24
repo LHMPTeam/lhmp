@@ -27,8 +27,8 @@ void Game::Init()
 	// Skip to the freeride
 	MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C
 	MemoryPatcher::PatchAddress(0x5BEE7A, 105961); // E9 9D0100000
-
-												   // Never loading the FreeRide setup player
+	
+	// Never loading the FreeRide setup player
 	MemoryPatcher::InstallNopPatch(0x5BF06E, 5);
 
 	// Disable - game menu
@@ -82,22 +82,20 @@ void Game::Init()
 	});
 
 	MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
+
 		if (Core::GetCore()->IsRunning())
 		{
 			Core::GetCore()->Tick();
 		}
-		
 	});
 }
-
-
 
 void Game::OnGameStart()
 {
 	MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Mission Loaded Bitch", 0xFF0000);
 	Core::GetCore()->GetNetwork()->Init();
-	Core::GetCore()->GetNetwork()->Connect("78.98.209.243", 27015);
+	Core::GetCore()->GetNetwork()->Connect("84.16.39.2", 27015);
 }
 
 void Game::OnGameInit()
@@ -113,11 +111,15 @@ void Game::Tick()
 		{
 			OnGameStart();
 		}
+
 		mShouldStart = false;
 	}
+
 	mTickManager->GameTick();
-	/*if (mLocalPlayer != nullptr)
+
+	//Update Game Objects 
+	for (auto player : Core::GetCore()->GetNetwork()->GetPlayers())
 	{
-		mLocalPlayer->Tick();
-	}*/
+		player.second->UpdateGameObject();
+	}
 }

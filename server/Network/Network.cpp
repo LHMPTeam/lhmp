@@ -1,13 +1,12 @@
 #include <stdinc.h>
 
-Network::Network()
+Network::Network() : 
+	mTickRate(64)
 {
 }
 
-
 Network::~Network()
 {
-
 }
 
 void Network::Init()
@@ -16,6 +15,7 @@ void Network::Init()
 	mSocketDescriptor = RakNet::SocketDescriptor(serverProperies.mServerPort, 0);
 	mPeer = RakNet::RakPeerInterface::GetInstance();
 
+	//TODO(DAVOSK): Add tick rate into config and also there 
 	if (mPeer->Startup(serverProperies.mMaxPlayers, &mSocketDescriptor, 1) != RakNet::RAKNET_STARTED)
 	{
 		Core::GetCore()->Log("Unable to startup server !\n Port might be already being used by another process !");

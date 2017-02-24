@@ -1,28 +1,30 @@
 #include <stdinc.h>
 
 Player::Player(std::string modelName)
-	: mModelName(modelName)
-{
+	: mModelName(modelName),
+	mPlayer(nullptr)
 
+{
 }
 
 Player::~Player()
 {
+
 }
 
 void Player::Spawn()
 {
-	MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame;
-	mPlayer = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Enemy));
-
+	MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame();
 	playerFrame->LoadModel(mModelName.c_str());
+
+	mPlayer = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Enemy));
 	mPlayer->Init(playerFrame);
 	mPlayer->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
 	mPlayer->SetActive(true);
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
-	
 
 	mPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
+	mInterpolator.Set({ -1985.884277f, -5.032383f, 23.144674f });
 }
 
 void Player::SetPosition(Vector3D position)
@@ -84,4 +86,9 @@ void Player::SetIsCrouching(bool isCrouching)
 bool Player::GetIsCrouching()
 {
 	return mPlayer->GetInterface()->isDucking;
+}
+
+void Player::UpdateGameObject()
+{
+	mPlayer->GetInterface()->entity.position = mInterpolator.LinearInterpolate(mPlayer->GetInterface()->entity.position);
 }

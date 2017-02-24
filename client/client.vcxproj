@@ -159,6 +159,7 @@
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\LocalPlayer.cpp" />
     <ClCompile Include="Game\Player.cpp" />
+    <ClCompile Include="Interpolator.cpp" />
     <ClCompile Include="Network\Handlers\ClientConnectionHandler.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\LocalPlayer.h" />
     <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="Interpolator.h" />
     <ClInclude Include="Network\Handlers\ClientConnectionHandler.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Network\Handlers\ClientPlayerHandler.h" />

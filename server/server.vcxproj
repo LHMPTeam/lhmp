@@ -156,6 +156,7 @@
     <ClCompile Include="Network\Handlers\ServerSyncHandler.cpp" />
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Game\Player.cpp" />
+    <ClCompile Include="Network\TickManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Handlers\ServerConnectionHandler.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Network\Handlers\ServerSyncHandler.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="Network\TickManager.h" />
     <ClInclude Include="stdinc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

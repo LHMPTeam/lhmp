@@ -19,6 +19,7 @@
 #include <PacketStructs/OnFootSyncStruct.h>
 #include <PacketStructs/OnConnectionStruct.h>
 
+#include "Interpolator.h"
 #include "Network/TickManager.h"
 #include "Game/Player.h"
 #include "Game/LocalPlayer.h"

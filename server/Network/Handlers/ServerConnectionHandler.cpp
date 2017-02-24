@@ -35,7 +35,7 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 
 	if (clientVersion != BUILD_VERSION)
 	{
-		Core::GetCore()->Log("asksal");
+		Core::GetCore()->Log("[SERVER] Player connection refused (Wrong Version)");
 
 		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
 		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_REFUSED));
@@ -70,6 +70,8 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 		outStream.Write(client.first);
 		outStream.Write(client.second->GetPlayer()->GetModel().c_str());
 	}
+
+	Core::GetCore()->Log("Player <%s> connected ID: %s", nickName.C_String(), packet->guid.ToString());
 
 	mClients->insert(std::make_pair(packet->guid, client));
 

@@ -17,10 +17,12 @@
 #include <PacketStructs/OnFootSyncStruct.h>
 
 #include <MessageIDs.h>
+#include <GetTime.h>
 #include <BuildVersion.h>
 
 #include "Network/Client.h"
 #include "Network/Network.h"
+#include "Network/TickManager.h"
 
 #include "Network/Handlers/ServerConnectionHandler.h"
 #include "Network/Handlers/ServerSyncHandler.h"
