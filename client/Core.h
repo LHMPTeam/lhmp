@@ -7,9 +7,9 @@ public:
 	~Core();
 	void Init();
 	void Tick();
-	Network* GetNetwork() { return mNetwork; };
 	Game* GetGame() { return mGame; };
 	bool IsRunning() { return mIsRunning; };
+	Network* GetNetwork() { return mNetwork; };
 	static Core* GetCore();
 private:
 	Network* mNetwork;

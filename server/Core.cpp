@@ -76,8 +76,6 @@ void Core::Init()
 	mNetwork->Init();
 
 	mRunning = true;
-
-	
 }
 
 void Core::Tick()

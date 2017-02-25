@@ -25,11 +25,12 @@ void ServerRakNetHandler::ProcessMessage(Network* network, RakNet::Packet* packe
 
 void ServerRakNetHandler::OnClientConnected(RakNet::RakPeerInterface *peer, RakNet::Packet* packet) const
 {
-	
 }
 
 void ServerRakNetHandler::OnClientDisconnected(RakNet::RakPeerInterface* peer, RakNet::Packet* packet)
 {
+	Core::GetCore()->Log("Player <%s> disconnected ID: %s", mClients->at(packet->guid)->GetNickName().c_str(), packet->guid.ToString());
+
 	delete mClients->at(packet->guid);
 	mClients->erase(packet->guid);
 

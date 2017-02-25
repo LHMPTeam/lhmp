@@ -5,7 +5,6 @@ Core::Core()
 	CoreInstance = this;
 }
 
-
 Core::~Core()
 {
 }
@@ -15,6 +14,7 @@ void Core::Init()
 	mNetwork = new Network();
 	mGame = new Game();
 	mGame->Init();
+
 	mIsRunning = true;
 }
 

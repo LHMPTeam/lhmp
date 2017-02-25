@@ -1,7 +1,8 @@
 #include <stdinc.h>
 
 LocalPlayer::LocalPlayer(std::string modelName)
-	: mModelName(modelName), mIsSpawned(false)
+	: mModelName(modelName), 
+	mIsSpawned(false)
 {
 	
 }
@@ -98,6 +99,7 @@ void LocalPlayer::Tick()
 		footSync.Position = GetPosition();
 		footSync.Rotation = GetRotation();
 		footSync.isCrouching = GetIsCrouching();
+
 		RakNet::BitStream bitStream;
 		bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC));
 		bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC_ONFOOT));

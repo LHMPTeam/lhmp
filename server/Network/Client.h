@@ -12,7 +12,7 @@ public:
 	~Client();
 
 	Player* GetPlayer() { return mPlayer; }
-
+	std::string GetNickName() const { return mNickName; }
 private:
 	RakNet::SystemAddress mSystemAddress;
 	std::string mNickName;

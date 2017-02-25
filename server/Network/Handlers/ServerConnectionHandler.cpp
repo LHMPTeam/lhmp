@@ -39,7 +39,6 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 
 		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
 		outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_REFUSED));
-		//outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::REFUSED_CLIENT_VERSION));
 		outStream.Write((int)BUILD_VERSION);
 
 		peer->Send(&outStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -65,8 +64,8 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 	outStream.Write(client->GetPlayer()->GetModel().c_str());
 	outStream.Write(mClients->size());
 	
-	for (auto client : *mClients) {
-
+	for (auto client : *mClients) 
+	{
 		outStream.Write(client.first);
 		outStream.Write(client.second->GetPlayer()->GetModel().c_str());
 	}
