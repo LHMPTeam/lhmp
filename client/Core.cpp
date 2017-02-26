@@ -12,9 +12,20 @@ Core::~Core()
 void Core::Init()
 {
 	mNetwork = new Network();
+	mGraphics = new Graphics();
 	mGame = new Game();
-	mGame->Init();
 
+	//Wait for directx to hook
+	while ( mGraphics->GetDevice() == NULL)
+	{
+		Sleep(10);
+	}
+
+	mGraphics->HookDirectX();
+	RawHook::Hook();
+	
+	mGame->Init();
+	mGraphics->GetLoadingScreen()->SetLoading(true);
 	mIsRunning = true;
 }
 

@@ -5,13 +5,14 @@
 #include <chrono>
 #include <string>
 #include <map>
+#include <ini.hpp>
 
+#include <Utils.h>
+#include <Singleton.hpp>
 #include <MessageIdentifiers.h>
 #include <RakPeerInterface.h>
 #include <BitStream.h>
 
-#include <Utils.h>
-#include <ini.hpp>
 #include "MessageHandler.h"
 #include <PacketStructs/OnConnectionStruct.h>
 #include <PacketStructs/OnFootSyncStruct.h>

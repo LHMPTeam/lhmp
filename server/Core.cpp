@@ -7,7 +7,6 @@ Core::Core() :
 	CoreInstance = this;
 }
 
-
 Core::~Core()
 {
 }
@@ -81,8 +80,7 @@ void Core::Init()
 void Core::Tick()
 {
 	mTickManager->GameTick();
-	Core::GetCore()->GetNetwork()->Tick();
-	
+	Core::GetCore()->GetNetwork()->Tick();	
 }
 
 Core* Core::CoreInstance;

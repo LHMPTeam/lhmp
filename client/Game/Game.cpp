@@ -2,9 +2,9 @@
 #include <stdinc.h>
 
 Game::Game()
-	: mLocalPlayer(nullptr), mTickManager(nullptr)
+	: mLocalPlayer(nullptr), 
+	mTickManager(new TickManager())
 {
-	mTickManager = new TickManager();
 }
 
 Game::~Game()
@@ -18,14 +18,14 @@ void Game::Init()
 	MemoryPatcher::InstallNopPatch(0x5BFDDC, 60);
 
 	// Disable - Please Wait text
-	//MemoryPatcher::InstallNopPatch(0x60D391, 15);
+	MemoryPatcher::InstallNopPatch(0x60D391, 15);
 
 	// 0x5BEDC2 - hInstance of GM_MainMenu ?
 	// Disable - GM_Menu::Create
 	MemoryPatcher::PatchAddress(0x5EA2E0, 0xC3);
 
 	// Skip to the freeride
-	MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C
+	MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C 
 	MemoryPatcher::PatchAddress(0x5BEE7A, 105961); // E9 9D0100000
 	
 	// Never loading the FreeRide setup player
@@ -92,10 +92,11 @@ void Game::Init()
 
 void Game::OnGameStart()
 {
+	Core::GetCore()->GetGraphics()->GetLoadingScreen()->SetLoading(false);
 	MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Mission Loaded Bitch", 0xFF0000);
 	Core::GetCore()->GetNetwork()->Init();
-	Core::GetCore()->GetNetwork()->Connect("84.16.39.2", 27015);
+	//Core::GetCore()->GetNetwork()->Connect("84.16.39.2", 27015);
 }
 
 void Game::OnGameInit()

@@ -11,9 +11,11 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
+		DisableThreadLibraryCalls(hinstDLL);
+
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
-		Start();
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&Start, 0, 0, 0);
 		break;
 	case DLL_PROCESS_DETACH:
 		ExitProcess(0);

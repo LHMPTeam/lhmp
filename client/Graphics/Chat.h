@@ -1,0 +1,56 @@
+#pragma once
+
+constexpr int VK_T = 0x54;
+
+struct ChatCMDStruct
+{
+	std::function<void(std::vector<std::wstring>)> mFunctionPointer;
+	std::wstring mCommandName;
+};
+
+inline std::vector<std::wstring> WStringSplit(std::wstring toSplit)
+{
+	std::vector<std::wstring> returnVec;
+	wchar_t * pwc;
+	pwc = wcstok(&toSplit[0], L" ");
+
+	while (pwc != NULL)
+	{
+		returnVec.push_back(pwc);
+		pwc = wcstok(NULL, L" ");
+	}
+
+	return returnVec;
+}
+
+class Chat
+{
+public:
+	Chat();
+	~Chat();
+	void Init(IDirect3DDevice8* newDevice);
+	void Render();
+	void OnDeviceReset();
+	void OnDeviceLost();
+	void AddMessage(std::wstring newMessage);
+	void ProcessKeyboard(USHORT VKey, UINT Message);
+	bool IsTyping() { return mIsTyping; }
+	void RegisterChatCMD(std::wstring cmdName, std::function<void(std::vector<std::wstring>)> args);
+private:
+	void DrawTextShadow(const wchar_t* text, int x, int y, D3DCOLOR color, bool ifShadow, LPD3DXFONT font);
+	void UpdateChatTexture();
+	void CreateTextures();
+	void RegisterInternalCommands();
+	void ProcessMessage(std::wstring messageToProcess);
+	bool mShouldUpdateTexture;
+	bool mIsTyping;
+	float mAnimationTranslation;
+	int mChatWidth, mChatHeight;
+	int mFontWeight;
+	LPDIRECT3DTEXTURE8 mChatTexture;
+	LPD3DXFONT mChatFont;
+	std::vector<std::wstring> mChatMessages;
+	std::vector<ChatCMDStruct> mChatRegisteredCommands;
+	std::wstring mTypingLine;
+};
+

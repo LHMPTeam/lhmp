@@ -13,16 +13,16 @@ struct ServerProperties
 	int mMaxPlayers;
 };
 
-class Network;
-
 class Core
 {
 public:
 	Core();
 	~Core();
+	
 	void Init();
 	void Tick();
 	void Log(const char* message, ...);
+
 	Network* GetNetwork()
 	{
 		return mNetwork;
@@ -37,12 +37,13 @@ public:
 	{
 		return mRunning;
 	}
+
 	static Core* GetCore();
 private:
 	Network* mNetwork;
+	static Core* CoreInstance;
 	TickManager* mTickManager;
 	ServerProperties mServerProperties;
 	bool mRunning;
-	static Core* CoreInstance;
 };
 

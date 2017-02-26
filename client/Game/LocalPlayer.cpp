@@ -16,8 +16,8 @@ void LocalPlayer::Spawn()
 {
 	MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame;
 	mPlayer = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Player));
-
 	playerFrame->LoadModel(mModelName.c_str());
+
 	mPlayer->Init(playerFrame);
 	mPlayer->SetActive(true);
 

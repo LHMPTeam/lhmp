@@ -5,9 +5,16 @@
 #include <string>
 #include <thread>
 #include <map>
+#include <vector>
 #include <Windows.h>
+#include <wchar.h>
+
+#include <d3d8.h>
+#include <d3dx8.h>
+#include <detours.h>
 
 #include <MafiaSDK/MafiaSDK.h> 
+#include <Singleton.hpp>
 
 #include <RakPeerInterface.h>
 #include <BitStream.h>
@@ -20,7 +27,11 @@
 #include <PacketStructs/OnConnectionStruct.h>
 
 #include "Interpolator.h"
+#include "Graphics/Chat.h"
+#include "Graphics/LoadingScreen.h"
+#include "Graphics/Graphics.h"
 #include "Network/TickManager.h"
+
 #include "Game/Player.h"
 #include "Game/LocalPlayer.h"
 #include "Game/Game.h"
@@ -32,3 +43,5 @@
 #include "Network/Handlers/ClientPlayerHandler.h"
 
 #include "Core.h"
+#include "RawInput.h"
+#include "Graphics/Direct3DDevice8Proxy.h"

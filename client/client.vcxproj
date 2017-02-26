@@ -94,13 +94,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;$(ProjectDir);$(SolutionDir)vendor\DirectXSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vendor\detours\lib;$(SolutionDir)vendor\dx8sdk\lib;$(SolutionDir)vendor\raknet\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;RakNetStaticLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\detours\lib;$(SolutionDir)vendor\DirectXSDK\Lib\x86;$(SolutionDir)vendor\raknet\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d8.lib;d3dx8.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;RakNetStaticLibrary.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -126,15 +127,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mafia-sdk\;$(SolutionDir)vendor\detours\include;$(SolutionDir)vendor\raknet\Source;$(SolutionDir)shared;$(ProjectDir);$(SolutionDir)vendor\DirectXSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vendor\detours\lib;$(SolutionDir)vendor\dx8sdk\lib;$(SolutionDir)vendor\raknet\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;RakNetStaticLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\detours\lib;$(SolutionDir)vendor\DirectXSDK\Lib\x86;$(SolutionDir)vendor\raknet\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d8.lib;d3dx8.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;RakNetStaticLibrary.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,10 +158,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Graphics\Chat.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\LocalPlayer.cpp" />
     <ClCompile Include="Game\Player.cpp" />
+    <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Interpolator.cpp" />
+    <ClCompile Include="Graphics\LoadingScreen.cpp" />
     <ClCompile Include="Network\Handlers\ClientConnectionHandler.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
@@ -168,12 +173,17 @@
     <ClCompile Include="Network\Handlers\ClientSyncHandler.cpp" />
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Network\TickManager.cpp" />
+    <ClCompile Include="RawInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\Chat.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\LocalPlayer.h" />
     <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="Graphics\Direct3DDevice8Proxy.h" />
+    <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Interpolator.h" />
+    <ClInclude Include="Graphics\LoadingScreen.h" />
     <ClInclude Include="Network\Handlers\ClientConnectionHandler.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Network\Handlers\ClientPlayerHandler.h" />
@@ -181,6 +191,7 @@
     <ClInclude Include="Network\Handlers\ClientSyncHandler.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Network\TickManager.h" />
+    <ClInclude Include="RawInput.h" />
     <ClInclude Include="stdinc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,14 +7,19 @@ public:
 	~Core();
 	void Init();
 	void Tick();
-	Game* GetGame() { return mGame; };
 	bool IsRunning() { return mIsRunning; };
+
+	Game* GetGame() { return mGame; };
 	Network* GetNetwork() { return mNetwork; };
+	Graphics* GetGraphics() { return mGraphics; }
+
 	static Core* GetCore();
 private:
+	static Core* CoreInstance;
 	Network* mNetwork;
 	Game* mGame;
+	Graphics* mGraphics;
 	bool mIsRunning;
-	static Core* CoreInstance;
+	
 };
 
