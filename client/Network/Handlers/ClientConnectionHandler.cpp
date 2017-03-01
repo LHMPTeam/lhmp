@@ -36,6 +36,9 @@ void ClientConnectionHandler::ProcessMessage(Network* network, RakNet::Packet* p
 void ClientConnectionHandler::OnConnectionAccepted(Network * network, RakNet::Packet * packet)
 {
 	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Connection accepted", 0xFF0000);
+
+	network->SetIsConnected(true);
+
 	RakNet::BitStream bitStream(packet->data, packet->length, false);
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
@@ -50,8 +53,8 @@ void ClientConnectionHandler::OnConnectionAccepted(Network * network, RakNet::Pa
 	bitStream.Read(playerCount);
 
 	printf("Players count: %d\n", playerCount);
-	for (int i = 0; i < playerCount; i++) {
-
+	for (int i = 0; i < playerCount; i++) 
+	{
 		RakNet::RakString modelName;
 		RakNet::RakNetGUID playerGuid;
 

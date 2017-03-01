@@ -27,6 +27,9 @@ void LoadingScreen::Render()
 
 			D3DXVECTOR2 scaling = { res.x / desc.Width, res.y / desc.Height };
 			Core::GetCore()->GetGraphics()->GetSprite()->Draw(mLoadingTexture, NULL, &scaling, NULL, 0.0f, NULL, D3DCOLOR_ARGB(255, 255, 255, 255));
+			float loadValue = *(float*)(0x647B1C);
+
+			Core::GetCore()->GetGraphics()->Clear(0, res.y - 12, res.x * loadValue, 10, D3DCOLOR_ARGB(255, 255, 255, 255));			
 			Core::GetCore()->GetGraphics()->GetSprite()->End();
 		}
 	}

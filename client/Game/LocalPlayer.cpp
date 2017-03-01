@@ -21,6 +21,7 @@ void LocalPlayer::Spawn()
 	mPlayer->Init(playerFrame);
 	mPlayer->SetActive(true);
 
+	MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
 	MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(mPlayer);
 	MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(mPlayer);
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);

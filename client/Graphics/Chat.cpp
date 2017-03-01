@@ -7,14 +7,14 @@ Chat::Chat() :
 	mFontWeight(20),
 	mShouldUpdateTexture(true),
 	mIsTyping(false),
-	mAnimationTranslation(0)
-{
-	
+	mAnimationTranslation(0),
+	mIsControlPressed(false),
+	mIsAltPressed(false)
+{	
 }
 
 Chat::~Chat()
 {
-
 }
 
 void Chat::Init(IDirect3DDevice8* newDevice)
@@ -22,9 +22,7 @@ void Chat::Init(IDirect3DDevice8* newDevice)
 	auto screenRatio = Core::GetCore()->GetGraphics()->GetRatio();
 	mChatWidth = screenRatio.x * 350;
 	mChatHeight = screenRatio.y * 300;
-
 	CreateTextures();
-
 	RegisterInternalCommands();
 }
 
@@ -102,35 +100,76 @@ void Chat::ProcessMessage(std::wstring messageToProcess)
 	}
 	else
 	{
-		std::string nickName = Core::GetCore()->GetNetwork()->GetNickName();
-		AddMessage(L"<" + std::wstring(nickName.begin(), nickName.end()) + L"> " + mTypingLine);
+		std::wstring nickName = Core::GetCore()->GetNetwork()->GetNickName();
+		AddMessage(L"<" + nickName + L"> " + mTypingLine);
+
+		//Send it 
+		if (Core::GetCore()->GetNetwork()->IsConnected())
+		{
+			RakNet::BitStream bitStream;
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_CHATMSG));
+			bitStream.Write(mTypingLine.size());
+			bitStream.Write(mTypingLine.c_str());
+			Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+		}
 	}
 }
 
 void Chat::ProcessKeyboard(USHORT VKey, UINT Message)
 {
-	if (Message == WM_KEYDOWN)
+	if (VKey == VK_CONTROL)	
+		mIsControlPressed = (Message == WM_KEYDOWN);
+
+	if(VKey == VK_RMENU)
+		mIsAltPressed = (Message == WM_KEYDOWN);
+
+	if (Message == WM_KEYDOWN || Message == WM_SYSKEYDOWN)
 	{
 		if (VKey == VK_T && !mIsTyping)
 		{
-			mIsTyping = true;
 			mTypingLine = L"";
+			mIsTyping = true;
 			mShouldUpdateTexture = true;
+		}
+		else if (VKey == VK_V && mIsTyping && mIsControlPressed)
+		{
+			if (OpenClipboard(NULL)) 
+			{
+				HANDLE handleClipboardData = GetClipboardData(CF_UNICODETEXT);
+				std::wstring clipBoardData = std::wstring((wchar_t*)GlobalLock(handleClipboardData));
+				
+				if (clipBoardData.size() > 0)
+					mTypingLine += clipBoardData;
+
+				GlobalUnlock(handleClipboardData);
+				CloseClipboard();
+				mShouldUpdateTexture = true;
+			}
 		}
 		else if (VKey == VK_RETURN && mIsTyping)
 		{
 			if (mTypingLine.size() > 0)
-			{
-				mIsTyping = false;
 				ProcessMessage(mTypingLine);
-				mShouldUpdateTexture = true;
-			}	
+			
+			mIsTyping = false;
+			mShouldUpdateTexture = true;
+		}
+		else if (VKey == VK_TAB && mIsTyping)
+		{
+			mTypingLine += L"	";	
+			mShouldUpdateTexture = true;
 		}
 		else if (VKey == VK_BACK && mIsTyping)
 		{
 			if (mTypingLine.size() > 0)
 				mTypingLine.pop_back();
 
+			mShouldUpdateTexture = true;
+		}
+		else if (VKey == VK_ESCAPE && mIsTyping)
+		{
+			mIsTyping = false;
 			mShouldUpdateTexture = true;
 		}
 		else if (mIsTyping)
@@ -145,18 +184,22 @@ void Chat::ProcessKeyboard(USHORT VKey, UINT Message)
 
 			if (iResult > 0)
 			{
-				if (iResult > 2)
-					iResult = 2;
+				if (iResult > 2) iResult = 2;
 
 				wChars[iResult] = 0;
 
-				if ((Core::GetCore()->GetGraphics()->GetFontWidth(mTypingLine.c_str(), mChatFont) + (iResult - 1)) <= mChatWidth - 20)
+				std::wstring toAddToLine;
+				for (int i = 0; i < iResult; i++)
 				{
-					for (int i = 0; i < iResult; i++)
-					{
-						mTypingLine += wChars[i];
-					}
+					toAddToLine += wChars[i];
+				}
+				
+				int	lineWidth = Core::GetCore()->GetGraphics()->GetFontWidth(mTypingLine.c_str(), mChatFont);
+				int toAddWidth = Core::GetCore()->GetGraphics()->GetFontWidth(toAddToLine.c_str(), mChatFont);
 
+				if (lineWidth + toAddWidth < (mChatWidth - 34))
+				{
+					mTypingLine += toAddToLine;
 					mShouldUpdateTexture = true;
 				}
 			}
@@ -255,15 +298,11 @@ void Chat::RegisterInternalCommands()
 		exit(0);
 	});
 
-	RegisterChatCMD(L"makemehorny", [&](std::vector<std::wstring> args) {
-
-		*(byte*)(0x006C3A24) = 1;
-	});
-
 	RegisterChatCMD(L"connect", [&](std::vector<std::wstring> args) {
 
 		if (args.size() > 0)
 		{
+			Core::GetCore()->GetNetwork()->Init();
 			Core::GetCore()->GetNetwork()->Connect(std::string(args[0].begin(), args[0].end()).c_str(), 2715);
 		}
 		else AddMessage(L"You need to specify IP Address !");

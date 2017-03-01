@@ -22,6 +22,7 @@ public:
 	void Init();
 	void Tick();
 	void Log(const char* message, ...);
+	void Core::LogW(const wchar_t* format, ...);
 
 	Network* GetNetwork()
 	{

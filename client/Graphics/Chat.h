@@ -1,6 +1,10 @@
 #pragma once
 
-constexpr int VK_T = 0x54;
+enum ChatVK : int
+{
+	VK_T = 0x54,
+	VK_V = 0x56
+};
 
 struct ChatCMDStruct
 {
@@ -44,6 +48,7 @@ private:
 	void ProcessMessage(std::wstring messageToProcess);
 	bool mShouldUpdateTexture;
 	bool mIsTyping;
+	bool mIsControlPressed, mIsAltPressed;
 	float mAnimationTranslation;
 	int mChatWidth, mChatHeight;
 	int mFontWeight;

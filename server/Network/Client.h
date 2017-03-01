@@ -8,14 +8,14 @@
 class Client
 {
 public:
-	Client(std::string nickName, RakNet::SystemAddress systemAddress);
+	Client(std::wstring nickName, RakNet::SystemAddress systemAddress);
 	~Client();
 
 	Player* GetPlayer() { return mPlayer; }
-	std::string GetNickName() const { return mNickName; }
+	std::wstring GetNickName() const { return mNickName; }
 private:
 	RakNet::SystemAddress mSystemAddress;
-	std::string mNickName;
+	std::wstring mNickName;
 	Player* mPlayer;
 };
 

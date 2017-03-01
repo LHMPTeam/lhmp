@@ -3,6 +3,8 @@
 
 Game::Game()
 	: mLocalPlayer(nullptr), 
+	mConnectingCameraNumber(0),
+	mCameraTimer(RakNet::GetTimeMS()),
 	mTickManager(new TickManager())
 {
 }
@@ -92,11 +94,9 @@ void Game::Init()
 
 void Game::OnGameStart()
 {
-	Core::GetCore()->GetGraphics()->GetLoadingScreen()->SetLoading(false);
 	MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Mission Loaded Bitch", 0xFF0000);
-	Core::GetCore()->GetNetwork()->Init();
-	//Core::GetCore()->GetNetwork()->Connect("84.16.39.2", 27015);
+	Core::GetCore()->GetGraphics()->GetLoadingScreen()->SetLoading(false);
+	UpdateConnectingCamera();
 }
 
 void Game::OnGameInit()
@@ -118,9 +118,40 @@ void Game::Tick()
 
 	mTickManager->GameTick();
 
+	if (!Core::GetCore()->GetNetwork()->IsConnected())
+	{
+		if (RakNet::GetTimeMS() - mCameraTimer > 5000)
+		{
+			UpdateConnectingCamera();
+			mCameraTimer = RakNet::GetTimeMS();
+		}
+	}
+
 	//Update Game Objects 
 	for (auto player : Core::GetCore()->GetNetwork()->GetPlayers())
 	{
 		player.second->UpdateGameObject();
 	}
+}
+
+void Game::UpdateConnectingCamera()
+{
+	char frameNameBuffer[20];
+	sprintf(frameNameBuffer, "camera%d", mConnectingCameraNumber);
+	MafiaSDK::I3D_Frame* cameraFrame = MafiaSDK::FindFrame(frameNameBuffer);
+
+	if (mConnectingCameraNumber > 41) 
+		mConnectingCameraNumber = 0;
+
+	if (cameraFrame != nullptr)
+	{
+		//TODO(DavoSK): Update I3D_Frame to support Getting pos and rotation
+	
+		Vector3D cameraPos = *(Vector3D*)(cameraFrame + 0x40);
+	
+		MafiaSDK::GetMission()->GetGame()->GetCamera()->LockAt(cameraPos, Vector3D(1.0f, 1.0f, 1.0f));
+		MafiaSDK::GetMission()->GetGame()->SetCameraRotRepair();
+	}
+
+	mConnectingCameraNumber++;
 }

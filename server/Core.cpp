@@ -21,6 +21,18 @@ void Core::Log(const char* format, ...)
 	printf("[SERVER] [%s] - %s\n", Utils::currentDateTime().c_str(), message);
 }
 
+void Core::LogW(const wchar_t* format, ...)
+{
+	va_list ap;
+	wchar_t message[1024] = { 0 };
+	va_start(ap, format);
+	vswprintf(message, format, ap);
+	va_end(ap);
+
+	std::string toConvert = Utils::currentDateTime();
+	wprintf(L"[SERVER] [%s] - %s\n", std::wstring(toConvert.begin(), toConvert.end()).c_str(), message);
+}
+
 void Core::Init()
 {
 	std::ifstream configFile("config.ini", std::ios::in);

@@ -152,6 +152,7 @@
     <ClCompile Include="Network\Client.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\Handlers\ServerPlayerHandler.cpp" />
     <ClCompile Include="Network\Handlers\ServerRakNetHandler.cpp" />
     <ClCompile Include="Network\Handlers\ServerSyncHandler.cpp" />
     <ClCompile Include="Network\Network.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Network\Handlers\ServerConnectionHandler.h" />
     <ClInclude Include="Network\Client.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Network\Handlers\ServerPlayerHandler.h" />
     <ClInclude Include="Network\Handlers\ServerRakNetHandler.h" />
     <ClInclude Include="Network\Handlers\ServerSyncHandler.h" />
     <ClInclude Include="Network\Network.h" />

@@ -47,6 +47,11 @@ void Network::Tick()
 				ServerSyncHandler Handler(&mClients);
 				Handler.ProcessMessage(this, packet);
 			}
+			case MessageIDs::LHMPID_PLAYER:
+			{
+				ServerPlayerHandler Handler(&mClients);
+				Handler.ProcessMessage(this, packet);
+			}
 			default:
 			{
 				ServerRakNetHandler Handler(&mClients);

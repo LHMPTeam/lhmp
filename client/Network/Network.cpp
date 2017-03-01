@@ -3,7 +3,7 @@
 Network::Network()
 	: mIsRunning(false),
 	mIsConnected(false),
-	mUserName("Player"),
+	mUserName(L"Player"),
 	mTickRate(64),
 	mLastMessageTime(RakNet::GetTimeMS())
 {

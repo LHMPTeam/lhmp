@@ -53,5 +53,6 @@ namespace MessageIDs
 	enum PlayerCategoryIDs
 	{
 		LHMPID_PLAYER_CREATE,
+		LHMPID_PLAYER_CHATMSG,
 	};
 };

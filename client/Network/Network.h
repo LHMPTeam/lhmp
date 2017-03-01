@@ -9,9 +9,10 @@ public:
 	void Tick();
 	bool Connect(const char* ipAddress, int port, std::string serverPassword = "");
 	std::string GetServerConnectIP() const { return mConnectingServerAddress; };
-	std::string GetNickName() const { return mUserName; }
+	std::wstring GetNickName() const { return mUserName; }
 	bool IsRunning() const { return mIsRunning; }
 	bool IsConnected() const { return mIsConnected; }
+	void SetIsConnected(bool connected) { mIsConnected = connected;  }
 	short GetTickRate() const { return mTickRate; }
 	RakNet::TimeMS GetLastMessageTime() const { return mLastMessageTime; }
 	void SetServerAddress(RakNet::SystemAddress systemAddress) { mServerAddress = systemAddress; }
@@ -24,7 +25,7 @@ private:
 	RakNet::SocketDescriptor mSocketDescriptor;
 	RakNet::SystemAddress mServerAddress;
 	std::map<RakNet::RakNetGUID, Player*> mPlayers;
-	std::string mUserName;
+	std::wstring mUserName;
 	std::string mConnectingServerAddress;
 
 	RakNet::TimeMS mLastMessageTime;

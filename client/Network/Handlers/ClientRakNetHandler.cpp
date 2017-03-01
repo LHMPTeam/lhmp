@@ -41,6 +41,7 @@ void ClientRakNetHandler::OnRequestAccepted(Network *network, RakNet::Packet* pa
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_INIT));
 	bitStream.Write((int)BUILD_VERSION);
-	bitStream.Write(RakNet::RakString(network->GetNickName().c_str()));
+	bitStream.Write(network->GetNickName().size());
+	bitStream.Write(network->GetNickName().c_str());
 	network->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 }

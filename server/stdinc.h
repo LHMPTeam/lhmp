@@ -26,6 +26,7 @@
 #include "Network/TickManager.h"
 
 #include "Network/Handlers/ServerConnectionHandler.h"
+#include "Network/Handlers/ServerPlayerHandler.h"
 #include "Network/Handlers/ServerSyncHandler.h"
 #include "Network/Handlers/ServerRakNetHandler.h"
 

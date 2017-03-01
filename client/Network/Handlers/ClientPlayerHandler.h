@@ -8,6 +8,6 @@ public:
 	void ProcessMessage(Network* network, RakNet::Packet* packet) override;
 private:
 	void CreatePlayer(Network* network, RakNet::Packet* packet);
-
+	void OnChatMessage(RakNet::RakPeerInterface *peer, RakNet::Packet* packet);
 	std::map<RakNet::RakNetGUID, Player*>* mPlayers;
 };
