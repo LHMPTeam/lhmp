@@ -43,28 +43,37 @@ void ClientConnectionHandler::OnConnectionAccepted(Network * network, RakNet::Pa
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
 
+
 	RakNet::RakString localModelName;
 	bitStream.Read(localModelName);
 
 	Core::GetCore()->GetGame()->SetLocalPlayer(new LocalPlayer(localModelName.C_String()));
 	Core::GetCore()->GetGame()->GetLocalPlayer()->Spawn();
-
+	
 	int playerCount;
 	bitStream.Read(playerCount);
 
 	printf("Players count: %d\n", playerCount);
 	for (int i = 0; i < playerCount; i++) 
 	{
-		RakNet::RakString modelName;
 		RakNet::RakNetGUID playerGuid;
-
 		bitStream.Read(playerGuid);
+
+		size_t nickNameLenght;
+		bitStream.Read(nickNameLenght);
+		wchar_t* allocatedNickName = new wchar_t[nickNameLenght];
+		bitStream.Read(allocatedNickName);
+		
+		std::wstring nickNameString = std::wstring(allocatedNickName);
+
+		RakNet::RakString modelName;
 		bitStream.Read(modelName);
 
 		printf("Spawning %s, %s\n", playerGuid.ToString(), modelName.C_String());
 
 		Player* newPlayer = new Player(modelName.C_String());
 		newPlayer->Spawn();
+		newPlayer->SetNickName(nickNameString);
 
 		mPlayers->insert(std::make_pair(playerGuid, newPlayer));
 	}

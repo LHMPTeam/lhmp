@@ -48,16 +48,20 @@ void ClientPlayerHandler::OnChatMessage(RakNet::RakPeerInterface * peer, RakNet:
 	RakNet::BitStream bitStream(packet->data, packet->length, false);
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
-		
-	size_t playerNameSize;
-	bitStream.Read(playerNameSize);
-	wchar_t* playerNameBuff = new wchar_t[playerNameSize];
-	bitStream.Read(playerNameBuff);
+	
+	RakNet::RakNetGUID playerGUID;
+	bitStream.Read(playerGUID);
 
-	size_t playerMessageSize;
-	bitStream.Read(playerMessageSize);
-	wchar_t* playerMessageBuff = new wchar_t[playerMessageSize];
-	bitStream.Read(playerMessageBuff);
+	auto player = mPlayers->at(playerGUID);
 
-	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"<" + std::wstring(playerNameBuff) + L"> " + std::wstring(playerMessageBuff));
+	if (player != nullptr)
+	{
+		size_t playerMessageSize;
+		bitStream.Read(playerMessageSize);
+		wchar_t* playerMessageBuff = new wchar_t[playerMessageSize];
+		bitStream.Read(playerMessageBuff);
+
+		Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"<" + player->GetNickName() + L"> " + std::wstring(playerMessageBuff));
+	}
+	
 }

@@ -16,7 +16,7 @@ void Core::Init()
 	mGame = new Game();
 
 	//Wait for directx to hook
-	while ( mGraphics->GetDevice() == NULL)
+	while ( !mGraphics->IsDirectModuleLoaded())
 	{
 		Sleep(10);
 	}

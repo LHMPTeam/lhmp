@@ -102,8 +102,7 @@ void Chat::ProcessMessage(std::wstring messageToProcess)
 	{
 		std::wstring nickName = Core::GetCore()->GetNetwork()->GetNickName();
 		AddMessage(L"<" + nickName + L"> " + mTypingLine);
-
-		//Send it 
+ 
 		if (Core::GetCore()->GetNetwork()->IsConnected())
 		{
 			RakNet::BitStream bitStream;

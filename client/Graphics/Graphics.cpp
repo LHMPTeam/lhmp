@@ -22,6 +22,11 @@ IDirect3DDevice8* Graphics::GetDevice()
 	return *(IDirect3DDevice8**)(IDirect3DDevice8_ADDRESS);
 }
 
+bool Graphics::IsDirectModuleLoaded()
+{
+	return *(DWORD*)(IDirect3DDevice8_ADDRESS) != NULL;
+}
+
 void Graphics::Init(IDirect3DDevice8* newDevice)
 {
 	mDevice = newDevice;

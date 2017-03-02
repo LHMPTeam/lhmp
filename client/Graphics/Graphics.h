@@ -9,7 +9,7 @@ public:
 	void HookDirectX();
 	IDirect3DDevice8* Graphics::GetDevice();
 	ID3DXSprite* GetSprite() { return mSprite; }
-	
+	bool IsDirectModuleLoaded();
 	void Init(IDirect3DDevice8* newDevice);
 	void OnSceneBegin();
 	void OnSceneEnd();

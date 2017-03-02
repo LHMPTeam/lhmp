@@ -29,6 +29,7 @@ void ServerPlayerHandler::OnChatMessage(RakNet::RakPeerInterface *peer, RakNet::
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 
+
 	size_t messageLenght;
 	inStream.Read(messageLenght);
 	wchar_t* playerMessage = new wchar_t[messageLenght];
@@ -42,9 +43,8 @@ void ServerPlayerHandler::OnChatMessage(RakNet::RakPeerInterface *peer, RakNet::
 	
 	Core::GetCore()->LogW(L"<%s> %s", nickName.c_str(), playerMessage);
 
-	//Nick
-	outStream.Write(nickName.size());
-	outStream.Write(nickName.c_str());
+	//GUID
+	outStream.Write(packet->guid);
 
 	//Message
 	outStream.Write(sendMessage.size());

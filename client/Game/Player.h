@@ -29,12 +29,17 @@ public:
 
 	Interpolator* GetInterpolator() { return &mInterpolator; }
 	MafiaSDK::C_Human* GetActor() { return mPlayer; }
+
+	void SetNickName(std::wstring newName) { mNickName = newName; }
+	std::wstring GetNickName() const { return mNickName; }
+
 	void UpdateGameObject();
 private:
 	MafiaSDK::C_Human* mPlayer;
 	Vector3D mPosition;
 	unsigned short mRotation;
 	std::string mModelName;
+	std::wstring mNickName;
 	float mHealth;
 	char mAnimationState;
 	Interpolator mInterpolator;

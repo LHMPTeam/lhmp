@@ -49,7 +49,7 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 	inStream.Read(stringLenght);
 	wchar_t* allocatedNickName = new wchar_t[stringLenght];
 	inStream.Read(allocatedNickName);
-
+	std::wstring nickNameString = std::wstring(allocatedNickName);
 
 	inStream.Reset();
 
@@ -57,26 +57,28 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
 	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_CREATE));
 	utist.Write(packet->guid);
+	utist.Write(nickNameString.c_str());
 	utist.Write("Tommy.i3d");
 	peer->Send(&utist, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 
-	Client* client = new Client(allocatedNickName, packet->systemAddress);
+	Client* client = new Client(nickNameString.c_str(), packet->systemAddress);
 
 	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
 	outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_ACCEPTED));
+
 	outStream.Write(client->GetPlayer()->GetModel().c_str());
+
 	outStream.Write(mClients->size());
-	
 	for (auto client : *mClients) 
 	{
 		outStream.Write(client.first);
+		outStream.Write(client.second->GetNickName().size());
+		outStream.Write(client.second->GetNickName().c_str());
 		outStream.Write(client.second->GetPlayer()->GetModel().c_str());
 	}
 
 	Core::GetCore()->LogW(L"Player <%s> connected ID: %ul", allocatedNickName, packet->guid);
 
 	mClients->insert(std::make_pair(packet->guid, client));
-
-	//outStream.Write(client->GetPlayer()->GetModel().c_str());
 	peer->Send(&outStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 }
