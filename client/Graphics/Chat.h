@@ -41,7 +41,6 @@ public:
 	bool IsTyping() { return mIsTyping; }
 	void RegisterChatCMD(std::wstring cmdName, std::function<void(std::vector<std::wstring>)> args);
 private:
-	void DrawTextShadow(const wchar_t* text, int x, int y, D3DCOLOR color, bool ifShadow, LPD3DXFONT font);
 	void UpdateChatTexture();
 	void CreateTextures();
 	void RegisterInternalCommands();

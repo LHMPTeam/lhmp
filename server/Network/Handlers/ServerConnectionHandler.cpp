@@ -57,6 +57,7 @@ void ServerConnectionHandler::OnClientInit(RakNet::RakPeerInterface *peer, RakNe
 	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
 	utist.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_CREATE));
 	utist.Write(packet->guid);
+	utist.Write(nickNameString.size());
 	utist.Write(nickNameString.c_str());
 	utist.Write("Tommy.i3d");
 	peer->Send(&utist, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);

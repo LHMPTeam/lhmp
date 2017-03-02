@@ -35,10 +35,17 @@ void ClientPlayerHandler::CreatePlayer(Network * network, RakNet::Packet * packe
 	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	RakNet::RakNetGUID playerGuid;
 	bitStream.Read(playerGuid);
+
+	size_t nickNameLenght;
+	bitStream.Read(nickNameLenght);
+	wchar_t* allocatedNickName = new wchar_t[nickNameLenght];
+	bitStream.Read(allocatedNickName);
+
 	RakNet::RakString modelName;
 	bitStream.Read(modelName);
 	Player* newPlayer = new Player(modelName.C_String());
 	newPlayer->Spawn();
+	newPlayer->SetNickName(allocatedNickName);
 
 	mPlayers->insert(std::make_pair(playerGuid, newPlayer));
 }

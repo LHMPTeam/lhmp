@@ -232,7 +232,7 @@ void Chat::UpdateChatTexture()
 	int currentY = 15;
 	for (auto currentMessage : mChatMessages)
 	{
-		DrawTextShadow(currentMessage.c_str(), 15, currentY, 0xFFFFFFFF, true, mChatFont);
+		Core::GetCore()->GetGraphics()->DrawTextShadow(currentMessage.c_str(), 15, currentY, 0xFFFFFFFF, true, mChatFont);
 		currentY += (mFontWeight + 3);
 	}
 
@@ -240,36 +240,13 @@ void Chat::UpdateChatTexture()
 
 	if (IsTyping())
 	{
-		DrawTextShadow((L"> " + mTypingLine).c_str(), 15, currentY, 0xFFFFFFFF, true, mChatFont);
+		Core::GetCore()->GetGraphics()->DrawTextShadow((L"> " + mTypingLine).c_str(), 15, currentY, 0xFFFFFFFF, true, mChatFont);
 	}
 
 	currentDevice->SetRenderTarget(oldDeviceTarget, oldDeviceStencil);
 	textureSurface->Release();
 	oldDeviceTarget->Release();
 	oldDeviceStencil->Release();
-}
-
-void Chat::DrawTextShadow(const wchar_t* text, int x, int y, D3DCOLOR color, bool ifShadow, LPD3DXFONT font)
-{
-	RECT rect;
-	const int padding = 1;
-
-	SetRect(&rect, x, y, x + 1000, y + 1000);
-
-	if (ifShadow)
-	{
-		SetRect(&rect, x + padding, y, x + 1000, y + 1000);
-		font->DrawTextW(text, wcslen(text), &rect, DT_NOCLIP | DT_SINGLELINE, D3DCOLOR_XRGB(0, 0, 0));
-		SetRect(&rect, x - padding, y, x + 1000, y + 1000);
-		font->DrawTextW(text, wcslen(text), &rect, DT_NOCLIP | DT_SINGLELINE, D3DCOLOR_XRGB(0, 0, 0));
-		SetRect(&rect, x, y + padding, x + 1000, y + 1000);
-		font->DrawTextW(text, wcslen(text), &rect, DT_NOCLIP | DT_SINGLELINE, D3DCOLOR_XRGB(0, 0, 0));
-		SetRect(&rect, x, y - padding, x + 1000, y + 1000);
-		font->DrawTextW(text, wcslen(text), &rect, DT_NOCLIP | DT_SINGLELINE, D3DCOLOR_XRGB(0, 0, 0));
-		SetRect(&rect, x, y, x + 1000, y + 1000);
-	}
-
-	font->DrawTextW(text, wcslen(text), &rect, DT_NOCLIP | DT_SINGLELINE, color);
 }
 
 void Chat::CreateTextures()
