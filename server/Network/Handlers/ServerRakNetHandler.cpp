@@ -29,7 +29,7 @@ void ServerRakNetHandler::OnClientConnected(RakNet::RakPeerInterface *peer, RakN
 
 void ServerRakNetHandler::OnClientDisconnected(RakNet::RakPeerInterface* peer, RakNet::Packet* packet)
 {
-	Core::GetCore()->Log("Player <%s> disconnected ID: %s", mClients->at(packet->guid)->GetNickName().c_str(), packet->guid.ToString());
+	Core::GetCore()->LogW(L"Player <%s> disconnected ID: %s", mClients->at(packet->guid)->GetNickName().c_str(), packet->guid.ToString());
 
 	delete mClients->at(packet->guid);
 	mClients->erase(packet->guid);
@@ -39,5 +39,6 @@ void ServerRakNetHandler::OnClientDisconnected(RakNet::RakPeerInterface* peer, R
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_DISCONNECTED));
 	bitStream.Write(packet->guid);
 	peer->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+
 	// TODO(zaklaus): Tell the gamemode client has been disconnected!
 }

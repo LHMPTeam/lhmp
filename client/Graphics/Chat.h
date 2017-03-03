@@ -27,6 +27,12 @@ inline std::vector<std::wstring> WStringSplit(std::wstring toSplit)
 	return returnVec;
 }
 
+struct ColoredText
+{
+	std::wstring mTextString;
+	long mTextColor;
+};
+
 class Chat
 {
 public:
@@ -43,6 +49,7 @@ public:
 private:
 	void UpdateChatTexture();
 	void CreateTextures();
+	std::vector<ColoredText> WStringFindColors(const std::wstring textString, const unsigned long defaultColor);
 	void RegisterInternalCommands();
 	void ProcessMessage(std::wstring messageToProcess);
 	bool mShouldUpdateTexture;

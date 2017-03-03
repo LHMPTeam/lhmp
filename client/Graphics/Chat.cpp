@@ -26,6 +26,7 @@ void Chat::Init(IDirect3DDevice8* newDevice)
 	RegisterInternalCommands();
 }
 
+
 void Chat::Render()
 {
 	if (mShouldUpdateTexture)
@@ -211,6 +212,66 @@ void Chat::RegisterChatCMD(std::wstring cmdName, std::function<void(std::vector<
 	mChatRegisteredCommands.push_back({ args, cmdName });
 }
 
+std::vector<ColoredText> Chat::WStringFindColors(const std::wstring textString, const unsigned long defaultColor)
+{
+	bool isGettingColor = false;
+	std::vector<ColoredText> returnVec;
+	std::wstring currentColorBuffer;
+	std::wstring currentTextBuffer;
+	ColoredText PushText = { L"", defaultColor };
+
+	for (auto currentChar : textString)
+	{
+		if (currentChar == '{' && !isGettingColor)
+		{
+			if (!currentTextBuffer.empty())
+			{
+				PushText.mTextString = currentTextBuffer;
+				returnVec.push_back(PushText);
+			}
+
+			currentColorBuffer.clear();
+			currentTextBuffer.clear();
+			PushText.mTextColor = defaultColor;
+			isGettingColor = true;
+			continue;
+		}
+
+		if (isGettingColor && currentChar == '}')
+		{
+			isGettingColor = false;
+			PushText.mTextColor = std::stoul(currentColorBuffer, NULL, 16);
+			currentColorBuffer.clear();
+			currentTextBuffer.clear();
+			continue;
+		}
+
+		if (isGettingColor)
+		{
+			currentColorBuffer += currentChar;
+		}
+		else
+		{
+			currentTextBuffer += currentChar;
+		}
+	}
+
+	if (!currentColorBuffer.empty())
+	{
+		PushText.mTextColor = std::stoul(currentColorBuffer, NULL, 16);
+		currentColorBuffer.empty();
+	}
+
+	if (!currentTextBuffer.empty())
+	{
+		PushText.mTextString = currentTextBuffer;
+		returnVec.push_back(PushText);
+		currentTextBuffer.empty();
+	}
+
+	return returnVec;
+}
+
 void Chat::UpdateChatTexture()
 {
 	IDirect3DSurface8* textureSurface, *oldDeviceTarget, *oldDeviceStencil;
@@ -230,10 +291,18 @@ void Chat::UpdateChatTexture()
 	Core::GetCore()->GetGraphics()->Clear(0, 0, mChatWidth, mChatHeight, D3DCOLOR_ARGB(0, 0, 0, 0));
 
 	int currentY = 15;
+	int lastX = 15;
 	for (auto currentMessage : mChatMessages)
 	{
-		Core::GetCore()->GetGraphics()->DrawTextShadow(currentMessage.c_str(), 15, currentY, 0xFFFFFFFF, true, mChatFont);
+		auto parsedColors = WStringFindColors(currentMessage, 0xFFFFFFFF);
+		for (auto parsedColor : parsedColors)
+		{
+			Core::GetCore()->GetGraphics()->DrawTextShadow(parsedColor.mTextString.c_str(), lastX, currentY, parsedColor.mTextColor, true, mChatFont);
+			lastX += Core::GetCore()->GetGraphics()->GetFontWidth(parsedColor.mTextString.c_str(), mChatFont);
+		}
+
 		currentY += (mFontWeight + 3);
+		lastX = 15;
 	}
 
 	currentY += (mFontWeight + 3);
