@@ -3,7 +3,8 @@
 
 
 Player::Player(std::string modelName)
-	: mModelName(modelName)
+	: mModelName(modelName),
+	mHealth(200)
 {
 }
 

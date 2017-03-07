@@ -4,8 +4,9 @@ Network::Network()
 	: mIsRunning(false),
 	mIsConnected(false),
 	mUserName(L"Player"),
-	mTickRate(128),
-	mLastMessageTime(RakNet::GetTimeMS())
+	mTickRate(64),
+	mLastMessageTime(RakNet::GetTimeMS()),
+	mPreviousMessageTime(RakNet::GetTimeMS())
 {
 	
 }
@@ -39,6 +40,7 @@ void Network::Tick()
 				ClientSyncHandler clientHandler(&mPlayers);
 				clientHandler.ProcessMessage(this, packet);
 
+				mPreviousMessageTime = mLastMessageTime;
 				mLastMessageTime = RakNet::GetTimeMS();
 			}
 			break;
@@ -60,7 +62,7 @@ void Network::Tick()
 
 bool Network::Connect(const char* ipAddress, int port, std::string serverPassword)
 {
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Trying to connect", 0xFF0000);
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7}Trying to connect !");
 	mConnectingServerAddress = ipAddress;
 
 	auto result = 0;
@@ -70,4 +72,17 @@ bool Network::Connect(const char* ipAddress, int port, std::string serverPasswor
 		result = mPeer->Connect(ipAddress, port, serverPassword.c_str(), serverPassword.size());
 
 	return (result == RakNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED);
+}
+
+RakNet::RakNetGUID Network::GetPlayerGUIDByActor(MafiaSDK::C_Actor * toFind)
+{
+	RakNet::RakNetGUID returnID;
+
+	for (auto currentPlayer : Core::GetCore()->GetNetwork()->GetPlayers())
+	{
+		if (currentPlayer.second->GetActor() == toFind)
+			returnID = currentPlayer.first;
+	}
+
+	return returnID;
 }

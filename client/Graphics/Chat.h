@@ -46,6 +46,9 @@ public:
 	void ProcessKeyboard(USHORT VKey, UINT Message);
 	bool IsTyping() { return mIsTyping; }
 	void RegisterChatCMD(std::wstring cmdName, std::function<void(std::vector<std::wstring>)> args);
+
+
+	float GetDeltaLerp() const { return mDeltaLerpCvar;  }
 private:
 	void UpdateChatTexture();
 	void CreateTextures();
@@ -63,5 +66,7 @@ private:
 	std::vector<std::wstring> mChatMessages;
 	std::vector<ChatCMDStruct> mChatRegisteredCommands;
 	std::wstring mTypingLine;
+	std::mutex mChatMessagesMutex;
+	float mDeltaLerpCvar;
 };
 

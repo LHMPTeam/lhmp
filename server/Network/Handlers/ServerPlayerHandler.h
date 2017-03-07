@@ -8,5 +8,7 @@ public:
 	void ProcessMessage(Network* network, RakNet::Packet* packet) override;
 private:
 	void OnChatMessage(RakNet::RakPeerInterface *peer, RakNet::Packet* packet);
+	void OnHit(RakNet::RakPeerInterface *peer, RakNet::Packet* packet);
+	void OnRespawn(RakNet::RakPeerInterface *peer, RakNet::Packet* packet);
 	std::map<RakNet::RakNetGUID, Client*> *mClients;
 };

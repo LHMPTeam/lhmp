@@ -16,6 +16,8 @@ void Core::Init()
 	mGame = new Game();
 
 	//Wait for directx to hook
+	Sleep(200);
+
 	while ( !mGraphics->IsDirectModuleLoaded())
 	{
 		Sleep(10);

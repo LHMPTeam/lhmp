@@ -8,6 +8,7 @@ public:
 	~Player();
 
 	void Spawn();
+	void Respawn();
 
 	void SetPosition(Vector3D position) override;
 	Vector3D GetPosition() override;

@@ -15,11 +15,14 @@ public:
 	void SetIsConnected(bool connected) { mIsConnected = connected;  }
 	short GetTickRate() const { return mTickRate; }
 	RakNet::TimeMS GetLastMessageTime() const { return mLastMessageTime; }
+	RakNet::TimeMS GetPreviousMessageTime() const { return mPreviousMessageTime; }
+
 	void SetServerAddress(RakNet::SystemAddress systemAddress) { mServerAddress = systemAddress; }
 
 	RakNet::SystemAddress GetServerAddress() const { return mServerAddress; }
 	RakNet::RakPeerInterface* GetPeer() const { return mPeer; }
 	std::map<RakNet::RakNetGUID, Player*> GetPlayers() { return mPlayers; }
+	RakNet::RakNetGUID GetPlayerGUIDByActor(MafiaSDK::C_Actor * toFind);
 private:
 	RakNet::RakPeerInterface* mPeer;
 	RakNet::SocketDescriptor mSocketDescriptor;
@@ -29,6 +32,8 @@ private:
 	std::string mConnectingServerAddress;
 
 	RakNet::TimeMS mLastMessageTime;
+	RakNet::TimeMS mPreviousMessageTime;
+
 	bool mIsRunning;
 	bool mIsConnected;
 	short mTickRate;

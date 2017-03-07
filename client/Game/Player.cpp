@@ -16,7 +16,6 @@ void Player::Spawn()
 {
 	MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame();
 	playerFrame->LoadModel(mModelName.c_str());
-
 	mPlayer = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Enemy));
 	mPlayer->Init(playerFrame);
 	mPlayer->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
@@ -25,6 +24,26 @@ void Player::Spawn()
 
 	mPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
 	mInterpolator.Set({ -1985.884277f, -5.032383f, 23.144674f });
+}
+
+void Player::Respawn()
+{
+	MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame();
+	playerFrame->LoadModel(mModelName.c_str());
+
+	MafiaSDK::C_Human* newPlayer = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Enemy));
+	newPlayer->Init(playerFrame);
+	newPlayer->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
+	newPlayer->SetActive(true);
+	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(newPlayer);
+
+	if (mPlayer != nullptr)
+		MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(mPlayer);
+
+	newPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
+	mInterpolator.Set({ -1985.884277f, -5.032383f, 23.144674f });
+
+	mPlayer = newPlayer;
 }
 
 void Player::SetPosition(Vector3D position)

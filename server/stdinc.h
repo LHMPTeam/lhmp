@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 #include <string>
+#include <vector>
 #include <map>
 #include <ini.hpp>
 

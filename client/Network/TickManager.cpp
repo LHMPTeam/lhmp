@@ -10,6 +10,7 @@ TickManager::TickManager()
 
 TickManager::~TickManager()
 {
+
 }
 
 void TickManager::GameTick()
@@ -43,6 +44,7 @@ void TickManager::Tick()
 {
 	int deltaTime = RakNet::GetTimeMS() - mStartSyncTime;
 	//printf("Delta: %i, TicksToSend: %i\n", deltaTime, mTicksToSend);
+
 	if (Core::GetCore()->GetGame()->GetLocalPlayer() != nullptr)
 	{
 		Core::GetCore()->GetGame()->GetLocalPlayer()->Tick();

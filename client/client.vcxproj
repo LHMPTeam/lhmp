@@ -79,7 +79,7 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)vendor\dx8sdk\include</IncludePath>
     <SourcePath>$(VC_SourcePath);$(SolutionDir)vendor\raknet\Source\</SourcePath>
     <TargetName>$(SolutionName)</TargetName>

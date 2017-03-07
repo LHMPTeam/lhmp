@@ -25,6 +25,12 @@ void ClientPlayerHandler::ProcessMessage(Network* network, RakNet::Packet* packe
 		OnChatMessage(network->GetPeer(), packet);
 	}
 	break;
+
+	case MessageIDs::LHMPID_PLAYER_RESPAWN:
+	{
+		OnRespawn(network->GetPeer(), packet);
+	}
+	break;
 	}
 }
 
@@ -47,6 +53,8 @@ void ClientPlayerHandler::CreatePlayer(Network * network, RakNet::Packet * packe
 	newPlayer->Spawn();
 	newPlayer->SetNickName(allocatedNickName);
 
+
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7}<" + std::wstring(allocatedNickName) + L"> Connected.");
 	mPlayers->insert(std::make_pair(playerGuid, newPlayer));
 }
 
@@ -71,4 +79,61 @@ void ClientPlayerHandler::OnChatMessage(RakNet::RakPeerInterface * peer, RakNet:
 		Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"<" + player->GetNickName() + L"> " + std::wstring(playerMessageBuff));
 	}
 	
+}
+
+void ClientPlayerHandler::OnHit(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream bitStream(packet->data, packet->length, false);
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	RakNet::RakNetGUID playerGUID;
+	bitStream.Read(playerGUID);
+
+	auto player = mPlayers->at(playerGUID);
+
+	if (player != nullptr)
+	{
+		int hitType;
+		const Vector3D unk1, unk2, unk3;
+		float damage;
+		RakNet::RakNetGUID atackerGUID;
+		unsigned long hittedPart;
+
+		bitStream.Read(hitType);
+		bitStream.Read(unk1);
+		bitStream.Read(unk2);
+		bitStream.Read(unk3);
+		bitStream.Read(damage);
+		bitStream.Read(atackerGUID);
+		bitStream.Read(hittedPart);
+
+		MafiaSDK::C_Human* getPointer = NULL;
+
+		for (auto player : Core::GetCore()->GetNetwork()->GetPlayers())
+		{
+			if (player.first == atackerGUID)
+				getPointer = player.second->GetActor();
+		}
+
+		player->GetActor()->Hit(hitType, unk1, unk2, unk3, damage, getPointer, hittedPart, NULL);
+	}
+
+}
+
+void ClientPlayerHandler::OnRespawn(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream bitStream(packet->data, packet->length, false);
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	RakNet::RakNetGUID playerGUID;
+	bitStream.Read(playerGUID);
+
+	auto player = mPlayers->at(playerGUID);
+
+	if (player != nullptr)
+	{
+		player->Respawn();
+	}
 }

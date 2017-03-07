@@ -1,6 +1,7 @@
 #pragma once
 constexpr unsigned long IDirect3DDevice8_ADDRESS = 0x101C597C;
 
+
 class Graphics
 {
 public:

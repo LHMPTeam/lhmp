@@ -9,6 +9,7 @@ Core::Core() :
 
 Core::~Core()
 {
+
 }
 
 void Core::Log(const char* format, ...)
@@ -77,15 +78,14 @@ void Core::Init()
 		mServerProperties.mServerPort = DEFAULT_SERVER_PORT;
 	}
 
-	printf("Server Name: %s\n", mServerProperties.mServerName.c_str());
-	printf("Server Pass: %s\n", (mServerProperties.mPassword.size()) ? mServerProperties.mPassword.c_str() : "<none>");
-	printf("Server Port: %d\n", mServerProperties.mServerPort);
-	printf("Server Max Players: %d\n", mServerProperties.mMaxPlayers);
+	Log("Server Name: %s", mServerProperties.mServerName.c_str());
+	Log("Server Pass: %s", (mServerProperties.mPassword.size()) ? mServerProperties.mPassword.c_str() : "<none>");
+	Log("Server Port: %d", mServerProperties.mServerPort);
+	Log("Server Max Players: %d\n", mServerProperties.mMaxPlayers);
 	
 	mTickManager = new TickManager();
 	mNetwork = new Network();
 	mNetwork->Init();
-
 	mRunning = true;
 }
 

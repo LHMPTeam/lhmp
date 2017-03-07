@@ -91,13 +91,13 @@ void Graphics::DrawNickNames()
 {
 	for (auto player : Core::GetCore()->GetNetwork()->GetPlayers())
 	{
-		auto playerPos = player.second->GetPosition();
+		auto playerNeckPos = player.second->GetActor()->GetInterface()->neckFrame->GetInterface()->mPosition;
 
-		if (playerPos.Distance(Core::GetCore()->GetGame()->GetLocalPlayer()->GetPosition(), 50.0f) <= 1)
+		if (playerNeckPos.Distance(Core::GetCore()->GetGame()->GetLocalPlayer()->GetPosition(), 50.0f) <= 1 )
 		{
-			D3DXVECTOR3 playerPosEx = { playerPos.x,  playerPos.y + 2.1f, playerPos.z };
+			D3DXVECTOR3 playerPosEx = { playerNeckPos.x,  playerNeckPos.y + 0.4f, playerNeckPos.z };
 			D3DXVECTOR3 screenPos;
-	
+
 			Core::GetCore()->GetGraphics()->WorldToScreen(playerPosEx, &screenPos);
 			int fontWidth = Core::GetCore()->GetGraphics()->GetFontWidth(player.second->GetNickName().c_str(), mNickNameFont);
 			DrawTextShadow(player.second->GetNickName().c_str(), screenPos.x - (fontWidth / 2), screenPos.y, D3DCOLOR_ARGB(255, 255, 255, 255), true, mNickNameFont);

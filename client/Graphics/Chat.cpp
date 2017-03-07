@@ -9,7 +9,8 @@ Chat::Chat() :
 	mIsTyping(false),
 	mAnimationTranslation(0),
 	mIsControlPressed(false),
-	mIsAltPressed(false)
+	mIsAltPressed(false),
+	mDeltaLerpCvar(0.4f)
 {	
 }
 
@@ -67,6 +68,7 @@ void Chat::OnDeviceLost()
 
 void Chat::AddMessage(std::wstring newMessage)
 {
+	std::lock_guard<std::mutex> lg(mChatMessagesMutex);
 	mChatMessages.push_back(newMessage);
 	
 	if (((mChatMessages.size() + 4) * (mFontWeight + 3)) >= mChatHeight)
@@ -240,7 +242,9 @@ std::vector<ColoredText> Chat::WStringFindColors(const std::wstring textString, 
 		if (isGettingColor && currentChar == '}')
 		{
 			isGettingColor = false;
-			PushText.mTextColor = std::stoul(currentColorBuffer, NULL, 16);
+			if(!currentColorBuffer.empty())
+				PushText.mTextColor = std::stoul(currentColorBuffer, NULL, 16);
+
 			currentColorBuffer.clear();
 			currentTextBuffer.clear();
 			continue;
@@ -292,6 +296,7 @@ void Chat::UpdateChatTexture()
 
 	int currentY = 15;
 	int lastX = 15;
+	std::lock_guard<std::mutex> lg(mChatMessagesMutex);
 	for (auto currentMessage : mChatMessages)
 	{
 		auto parsedColors = WStringFindColors(currentMessage, 0xFFFFFFFF);
@@ -343,18 +348,26 @@ void Chat::RegisterInternalCommands()
 		exit(0);
 	});
 
+	RegisterChatCMD(L"q", [&](std::vector<std::wstring> args) {
+
+		exit(0);
+	});
+
 	RegisterChatCMD(L"connect", [&](std::vector<std::wstring> args) {
 
 		if (args.size() > 0)
 		{
 			Core::GetCore()->GetNetwork()->Init();
-			Core::GetCore()->GetNetwork()->Connect(std::string(args[0].begin(), args[0].end()).c_str(), 2715);
+			Core::GetCore()->GetNetwork()->Connect(std::string(args[0].begin(), args[0].end()).c_str(), 27015);
 		}
 		else AddMessage(L"You need to specify IP Address !");
 	});
 
-	RegisterChatCMD(L"hello", [&](std::vector<std::wstring> args) {
-
-		AddMessage(L"Hello !");
+	RegisterChatCMD(L"lerp", [&](auto args) {
+		
+		if (args.size() > 0)
+		{
+			mDeltaLerpCvar = _wtof(args[0].c_str());
+		}
 	});
 }

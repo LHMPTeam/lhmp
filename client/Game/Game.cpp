@@ -14,13 +14,14 @@ Game::~Game()
 }
 
 int counter = 0;
+
 void Game::Init()
 {
 	// Disable logos
 	MemoryPatcher::InstallNopPatch(0x5BFDDC, 60);
 
 	// Disable - Please Wait text
-	MemoryPatcher::InstallNopPatch(0x60D391, 15);
+	//MemoryPatcher::InstallNopPatch(0x60D391, 15);
 
 	// 0x5BEDC2 - hInstance of GM_MainMenu ?
 	// Disable - GM_Menu::Create
@@ -29,7 +30,7 @@ void Game::Init()
 	// Skip to the freeride
 	MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C 
 	MemoryPatcher::PatchAddress(0x5BEE7A, 105961); // E9 9D0100000
-	
+
 	// Never loading the FreeRide setup player
 	MemoryPatcher::InstallNopPatch(0x5BF06E, 5);
 
@@ -57,12 +58,15 @@ void Game::Init()
 	//BYTE respawnPlayer[] = "\xC2\x0C\x00\x90";
 	//MemoryPatcher::PatchAddress( 0x005FA370, respawnPlayer, sizeof( respawnPlayer ) );
 
-	//BYTE respawnPlayer2[] = "\xE9\xAD\x82\x00\x00";
-	//MemoryPatcher::PatchAddress(0x004716ED, respawnPlayer2, sizeof(respawnPlayer2));
+	BYTE respawnPlayer2[] = "\xE9\xAD\x82\x00\x00";
+	MemoryPatcher::PatchAddress(0x004716ED, respawnPlayer2, sizeof(respawnPlayer2));
 
 	// Water sink respawn
 	BYTE respawnWater[] = "\xE9\xC2\x00\x00\x00";
 	MemoryPatcher::PatchAddress(0x005A5290, respawnWater, sizeof(respawnWater));
+
+	BYTE noEndMissionJmp[] = "\xE9\xAD\x82\x00";
+	MemoryPatcher::PatchAddress(0x004716ED, noEndMissionJmp, sizeof(noEndMissionJmp));
 
 	//No change model when blow in car
 	MemoryPatcher::InstallNopPatch(0x0058A5DA, 14);
@@ -79,7 +83,7 @@ void Game::Init()
 	//Setup hooks
 	MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
 
-		if(++counter == 2)
+		if (++counter == 2)
 			this->mShouldStart = true;
 	});
 
@@ -90,6 +94,67 @@ void Game::Init()
 			Core::GetCore()->Tick();
 		}
 	});
+
+	MafiaSDK::C_Human_Hooks::HookOnHumanHit([&](MafiaSDK::C_Human* thisInstance, int hitType, const Vector3D & unk1, const Vector3D & unk2, const Vector3D & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame) {
+
+		//If we are target damage done is sended to server and broadcasted later
+		if (Core::GetCore()->GetCore()->GetNetwork()->IsConnected())
+		{
+			if (thisInstance == MafiaSDK::GetMission()->GetGame()->GetLocalPlayer())
+			{
+				damage = 20.0f;
+
+				//Get Atacker
+				auto atackerGUID = Core::GetCore()->GetNetwork()->GetPlayerGUIDByActor(thisInstance);
+				
+				RakNet::BitStream bitStream;
+				//Lets send all sheet from hit 
+				bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+				bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_ONHIT));
+				bitStream.Write(hitType);
+				bitStream.Write(unk1);
+				bitStream.Write(unk2);
+				bitStream.Write(unk3);
+				bitStream.Write(damage);
+				bitStream.Write(atackerGUID);
+				bitStream.Write(hittedPart);
+				Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+
+
+				//Check if im dead if yep start respawning 
+				bool isAlreadyDead = thisInstance->GetInterface()->entity.isActive == 0;
+
+				//Call and do damage to me 
+				thisInstance->Hit(hitType, unk1, unk2, unk3, damage, atacker, hittedPart, NULL);
+
+				if (!isAlreadyDead)
+				{
+					//Player is dead now !
+					if (!thisInstance->GetInterface()->entity.isActive)
+					{
+						//Respawn it now !
+						Core::GetCore()->GetGame()->GetLocalPlayer()->Respawn();
+					}
+				}
+			}
+		}
+			
+		//If ped is damaged ignore hits 
+		//Server will send proper hits 
+
+		return 0;
+	});
+
+	MafiaSDK::C_Game_Hooks::HookLocalPlayerFallDown([&]() {
+	
+		if (!Core::GetCore()->GetGame()->GetLocalPlayer()->IsRespawning())
+			Core::GetCore()->GetGame()->GetLocalPlayer()->Respawn();
+	});
+
+	MafiaSDK::C_Human_Hooks::HookOnHumanShoot([&](const Vector3D & position) {
+
+		printf("Player shoot: %f %f %f\n", position.x, position.y, position.z);
+	});
 }
 
 void Game::OnGameStart()
@@ -97,6 +162,9 @@ void Game::OnGameStart()
 	MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 	Core::GetCore()->GetGraphics()->GetLoadingScreen()->SetLoading(false);
 	UpdateConnectingCamera();
+
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7} Initialzed (Pre Alpha 0.1) !");
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7} Type /connect <IP> For joining server !");
 }
 
 void Game::OnGameInit()
@@ -136,22 +204,10 @@ void Game::Tick()
 
 void Game::UpdateConnectingCamera()
 {
-	char frameNameBuffer[20];
-	sprintf(frameNameBuffer, "camera%d", mConnectingCameraNumber);
-	MafiaSDK::I3D_Frame* cameraFrame = MafiaSDK::FindFrame(frameNameBuffer);
-
-	if (mConnectingCameraNumber > 41) 
+	if (mConnectingCameraNumber >= mConnectingCameras.size())
 		mConnectingCameraNumber = 0;
 
-	if (cameraFrame != nullptr)
-	{
-		//TODO(DavoSK): Update I3D_Frame to support Getting pos and rotation
-	
-		Vector3D cameraPos = *(Vector3D*)(cameraFrame + 0x40);
-	
-		MafiaSDK::GetMission()->GetGame()->GetCamera()->LockAt(cameraPos, Vector3D(1.0f, 1.0f, 1.0f));
-		MafiaSDK::GetMission()->GetGame()->SetCameraRotRepair();
-	}
+	MafiaSDK::GetMission()->GetGame()->GetCamera()->LockAt(mConnectingCameras.at(mConnectingCameraNumber).first, mConnectingCameras.at(mConnectingCameraNumber).second);
 
 	mConnectingCameraNumber++;
 }

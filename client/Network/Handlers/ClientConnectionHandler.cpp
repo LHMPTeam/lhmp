@@ -35,8 +35,7 @@ void ClientConnectionHandler::ProcessMessage(Network* network, RakNet::Packet* p
 
 void ClientConnectionHandler::OnConnectionAccepted(Network * network, RakNet::Packet * packet)
 {
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Connection accepted", 0xFF0000);
-
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7}Connection accepted.");
 	network->SetIsConnected(true);
 
 	RakNet::BitStream bitStream(packet->data, packet->length, false);
@@ -81,7 +80,7 @@ void ClientConnectionHandler::OnConnectionAccepted(Network * network, RakNet::Pa
 
 void ClientConnectionHandler::OnConnectionRefused(RakNet::Packet * packet) const
 {
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Connection refused", 0xFF0000);
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7}Connection refused !");
 
 	/*RakNet::BitStream inStream(packet->data, packet->length, true);
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
@@ -102,13 +101,13 @@ void ClientConnectionHandler::OnConnectionRefused(RakNet::Packet * packet) const
 
 void ClientConnectionHandler::OnConnectionDisconnected(Network * network, RakNet::Packet * packet) const
 {
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Someone disconnected", 0xFF0000);
+
 	RakNet::BitStream inStream(packet->data, packet->length, true);
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
 	RakNet::RakNetGUID guid;
 	inStream.Read(guid);
-
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7}<" + mPlayers->at(guid)->GetNickName() + L"> Disconnected !");
 	MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(mPlayers->at(guid)->GetActor());
 	delete mPlayers->at(guid);
 	mPlayers->erase(guid);

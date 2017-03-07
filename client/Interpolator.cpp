@@ -15,14 +15,12 @@ void Interpolator::Set(const Vector3D & newValue)
 }
 
 Vector3D Interpolator::LinearInterpolate(const Vector3D & oldPosition)
-{
-	float amount = static_cast<float>(RakNet::GetTimeMS() / static_cast<float>(mLastUpdate));
-
-	if (amount >= 1.0f) 
-	{
-		mLastUpdate = RakNet::GetTimeMS() + (RakNet::GetTimeMS() - Core::GetCore()->GetNetwork()->GetLastMessageTime());
-		amount = 1.0f;
-	}
-
-	return oldPosition.Lerp(mToBeInterpolated, amount);
+{	
+	float deltaTickTime = static_cast<float>(RakNet::GetTimeMS() - mLastUpdate);
+	float packetDeltaTime = static_cast<float>(Core::GetCore()->GetNetwork()->GetLastMessageTime() - Core::GetCore()->GetNetwork()->GetPreviousMessageTime());
+	float packetDifferenceTime = static_cast<float>(RakNet::GetTimeMS() - Core::GetCore()->GetNetwork()->GetLastMessageTime());
+	
+	Vector3D returnLerped = oldPosition.Lerp(mToBeInterpolated, Core::GetCore()->GetGraphics()->GetChat()->GetDeltaLerp());
+	mLastUpdate = RakNet::GetTimeMS();
+	return returnLerped;
 }

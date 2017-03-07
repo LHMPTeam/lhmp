@@ -29,14 +29,14 @@ void ClientRakNetHandler::ProcessMessage(Network * network, RakNet::Packet * pac
 
 void ClientRakNetHandler::OnConnectionAttemptFailed(Network *network, RakNet::Packet* packet) const
 {
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Unable to connect !", 0xFF0000);
+	Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"{FFCC2002}[LHMP] {FFf9f8f7}Unable to connect !");
 	Core::GetCore()->GetNetwork()->Connect(Core::GetCore()->GetNetwork()->GetServerConnectIP().c_str(), 27015);
 }
 
 void ClientRakNetHandler::OnRequestAccepted(Network *network, RakNet::Packet* packet) const
 {
 	network->SetServerAddress(packet->systemAddress);
-	MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Request accepted", 0xFF0000);
+	
 	RakNet::BitStream bitStream;
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION));
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_CONNECTION_INIT));

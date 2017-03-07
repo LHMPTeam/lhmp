@@ -2,7 +2,7 @@
 
 LocalPlayer::LocalPlayer(std::string modelName)
 	: mModelName(modelName), 
-	mIsSpawned(false)
+	mIsRespawning(false)
 {
 	
 }
@@ -27,7 +27,14 @@ void LocalPlayer::Spawn()
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
 
 	mPlayer->GetInterface()->humanObject.entity.position = { -1984.884277f, -5.032383f, 23.144674f };
-	mIsSpawned = true;
+
+}
+
+void LocalPlayer::Respawn()
+{
+	mIsRespawning = true;
+	mRespawnStage = RespawnStages::RESPAWN_INIT;
+	mRespawnTimer = RakNet::GetTimeMS();
 }
 
 void LocalPlayer::SetPosition(Vector3D position)
@@ -93,7 +100,7 @@ bool LocalPlayer::GetIsCrouching()
 
 void LocalPlayer::Tick()
 {
-	if (mIsSpawned)
+	if (Core::GetCore()->GetNetwork()->IsConnected())
 	{
 		OnFootSyncStruct footSync;
 		footSync.animationState = GetAnimationState();
@@ -106,5 +113,71 @@ void LocalPlayer::Tick()
 		bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_SYNC_ONFOOT));
 		bitStream.Write(footSync);
 		Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+	}
+
+	if (mIsRespawning)
+	{
+		if (RakNet::GetTimeMS() - mRespawnTimer > 2000)
+		{
+			switch (mRespawnStage)
+			{
+				case RespawnStages::RESPAWN_INIT:
+				{
+					MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(true, 2000, 0x000000);
+					//TODO(DavoSK): Add freeze here
+					mRespawnStage = RespawnStages::RESPAWN_PLAYER;
+				}
+				break;
+
+				case RespawnStages::RESPAWN_PLAYER:
+				{
+					//Unlock camera
+					MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
+
+					//Create new player 
+					MafiaSDK::I3D_Frame* playerFrame = new MafiaSDK::I3D_Frame;
+					MafiaSDK::C_Player* newPlayer = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::Player));
+					playerFrame->LoadModel(mModelName.c_str());
+					newPlayer->Init(playerFrame);
+					newPlayer->SetActive(true);
+					MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
+					MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(newPlayer);
+					MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(newPlayer);
+					newPlayer->GetInterface()->humanObject.entity.position = { -1984.884277f, -5.032383f, 23.144674f };
+
+					//Remove old player from world
+					if (mPlayer != nullptr)
+						MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(mPlayer);
+
+					MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(newPlayer);
+					MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
+					MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives(100);
+					mPlayer = newPlayer;
+
+					//Send respawn :)
+					if (Core::GetCore()->GetNetwork()->IsConnected())
+					{
+						RakNet::BitStream outStream;
+						outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+						outStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_RESPAWN));
+						Core::GetCore()->GetNetwork()->GetPeer()->Send(&outStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+					}
+
+					MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 2000, 0x000000);
+					mRespawnStage = RespawnStages::RESPAWN_DONE;
+				}
+				break;
+
+				case RespawnStages::RESPAWN_DONE:
+				{
+					//TODO(DavoSK): Add unfreeze here 
+					mIsRespawning = false;
+					break;
+				}
+			}
+
+			mRespawnTimer = RakNet::GetTimeMS();
+		}
+		
 	}
 }

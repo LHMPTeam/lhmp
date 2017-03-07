@@ -6,6 +6,7 @@
 #include <thread>
 #include <map>
 #include <vector>
+#include <mutex>
 #include <Windows.h>
 #include <wchar.h>
 

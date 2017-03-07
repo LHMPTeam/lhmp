@@ -9,5 +9,7 @@ public:
 private:
 	void CreatePlayer(Network* network, RakNet::Packet* packet);
 	void OnChatMessage(RakNet::RakPeerInterface *peer, RakNet::Packet* packet);
+	void OnHit(RakNet::RakPeerInterface * peer, RakNet::Packet * packet);
+	void OnRespawn(RakNet::RakPeerInterface * peer, RakNet::Packet * packet);
 	std::map<RakNet::RakNetGUID, Player*>* mPlayers;
 };
