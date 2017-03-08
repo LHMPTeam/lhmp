@@ -41,5 +41,6 @@ void ClientSyncHandler::OnClientFootSync(Network * network, RakNet::Packet * pac
 		mPlayers->at(playerGuid)->SetRotation(footSync.Rotation);
 		mPlayers->at(playerGuid)->SetAnimationState(footSync.animationState);
 		mPlayers->at(playerGuid)->SetIsCrouching(footSync.isCrouching);
+		mPlayers->at(playerGuid)->SetIsAiming(footSync.isAiming);
 	}
 }

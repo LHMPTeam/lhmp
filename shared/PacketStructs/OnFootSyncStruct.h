@@ -9,4 +9,5 @@ struct OnFootSyncStruct
 	unsigned short Rotation;
 	char animationState;
 	bool isCrouching;
+	bool isAiming;
 };

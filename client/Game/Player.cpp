@@ -2,8 +2,8 @@
 
 Player::Player(std::string modelName)
 	: mModelName(modelName),
-	mPlayer(nullptr)
-
+	mPlayer(nullptr),
+	mIsShooting(false)
 {
 }
 
@@ -20,6 +20,7 @@ void Player::Spawn()
 	mPlayer->Init(playerFrame);
 	mPlayer->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
 	mPlayer->SetActive(true);
+	mPlayer->SetShooting(1.0f);
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
 
 	mPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
@@ -107,7 +108,26 @@ bool Player::GetIsCrouching()
 	return mPlayer->GetInterface()->isDucking;
 }
 
+void Player::SetIsAiming(bool aiming)
+{
+	mPlayer->GetInterface()->isAiming = aiming;
+}
+
+bool Player::GetIsAiming()
+{
+	return mPlayer->GetInterface()->isAiming;
+}
+
 void Player::UpdateGameObject()
 {
 	mPlayer->GetInterface()->entity.position = mInterpolator.LinearInterpolate(mPlayer->GetInterface()->entity.position);
+
+	if (IsShooting())
+	{
+		Vector3D* shootVec = &GetShootVec();
+		mPlayer->Do_Shoot(true, shootVec);
+		mPlayer->Do_Shoot(true, NULL);
+		printf("Shoot At %f %f %f\n", GetShootVec().x, GetShootVec().y, GetShootVec().z);
+		SetIsShooting(false);
+	}
 }

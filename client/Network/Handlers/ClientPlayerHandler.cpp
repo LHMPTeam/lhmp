@@ -31,6 +31,24 @@ void ClientPlayerHandler::ProcessMessage(Network* network, RakNet::Packet* packe
 		OnRespawn(network->GetPeer(), packet);
 	}
 	break;
+
+	case MessageIDs::LHMPID_PLAYER_ONSHOOT:
+	{
+		OnShoot(network->GetPeer(), packet);
+	}
+	break;
+
+	case MessageIDs::LHMPID_PLAYER_WEAPON_SWITCH:
+	{
+		OnWeaponSwitch(network->GetPeer(), packet);
+	}
+	break;
+
+	case MessageIDs::LHMPID_PLAYER_WEAPON_ADD:
+	{
+		OnWeaponAdd(network->GetPeer(), packet);
+	}
+	break;
 	}
 }
 
@@ -78,7 +96,6 @@ void ClientPlayerHandler::OnChatMessage(RakNet::RakPeerInterface * peer, RakNet:
 
 		Core::GetCore()->GetGraphics()->GetChat()->AddMessage(L"<" + player->GetNickName() + L"> " + std::wstring(playerMessageBuff));
 	}
-	
 }
 
 void ClientPlayerHandler::OnHit(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
@@ -119,6 +136,73 @@ void ClientPlayerHandler::OnHit(RakNet::RakPeerInterface * peer, RakNet::Packet 
 		player->GetActor()->Hit(hitType, unk1, unk2, unk3, damage, getPointer, hittedPart, NULL);
 	}
 
+}
+
+
+void ClientPlayerHandler::OnShoot(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream bitStream(packet->data, packet->length, false);
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	RakNet::RakNetGUID playerGUID;
+	bitStream.Read(playerGUID);
+	Vector3D vPos;
+	bitStream.Read(vPos);
+
+	auto player = mPlayers->at(playerGUID);
+
+	if (player != nullptr)
+	{
+		player->GetActor()->Do_Shoot(true, &vPos);
+		player->GetActor()->Do_Shoot(false, NULL);
+	}
+}
+
+void ClientPlayerHandler::OnWeaponSwitch(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream bitStream(packet->data, packet->length, false);
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	RakNet::RakNetGUID playerGUID;
+	bitStream.Read(playerGUID);
+
+	auto player = mPlayers->at(playerGUID);
+
+	if (player != nullptr)
+	{
+		byte weaponIdToChange;
+		bitStream.Read(weaponIdToChange);
+
+		MafiaSDK::C_Actor* playerActor = player->GetActor();
+		*(byte*)((unsigned long)playerActor + 0x4A0) = weaponIdToChange;
+		player->GetActor()->Do_ChangeWeapon(0, 0);
+	}
+}
+
+void ClientPlayerHandler::OnWeaponAdd(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream bitStream(packet->data, packet->length, false);
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	bitStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	RakNet::RakNetGUID playerGUID;
+	bitStream.Read(playerGUID);
+
+	auto player = mPlayers->at(playerGUID);
+
+	if (player != nullptr)
+	{
+		byte weaponId;
+		int ammoInClip, ammoHidden;
+
+		bitStream.Read(weaponId);
+		bitStream.Read(ammoInClip);
+		bitStream.Read(ammoHidden);
+
+		player->GetActor()->G_Inventory_AddWeapon((int)weaponId, ammoInClip, ammoHidden);
+	}
 }
 
 void ClientPlayerHandler::OnRespawn(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)

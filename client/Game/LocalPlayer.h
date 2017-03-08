@@ -35,6 +35,9 @@ public:
 	void SetIsCrouching(bool isCrouching) override;
 	bool GetIsCrouching() override;
 
+	void SetIsAiming(bool isCrouching) override;
+	bool GetIsAiming() override;
+
 	bool IsRespawning() const { return mIsRespawning; }
 	void Tick();
 

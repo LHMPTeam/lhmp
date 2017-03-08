@@ -72,3 +72,15 @@ bool Player::GetIsCrouching()
 {
 	return mIsCrouching;
 }
+
+
+void Player::SetIsAiming(bool aiming)
+{
+	mIsAiming = aiming;
+}
+
+bool Player::GetIsAiming()
+{
+	return mIsAiming;
+}
+

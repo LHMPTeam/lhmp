@@ -120,7 +120,6 @@ void Game::Init()
 				bitStream.Write(hittedPart);
 				Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
 
-
 				//Check if im dead if yep start respawning 
 				bool isAlreadyDead = thisInstance->GetInterface()->entity.isActive == 0;
 
@@ -153,7 +152,28 @@ void Game::Init()
 
 	MafiaSDK::C_Human_Hooks::HookOnHumanShoot([&](const Vector3D & position) {
 
-		printf("Player shoot: %f %f %f\n", position.x, position.y, position.z);
+		if (Core::GetCore()->GetCore()->GetNetwork()->IsConnected())
+		{
+			RakNet::BitStream bitStream;
+			//Lets send all sheet from hit 
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_ONSHOOT));
+			bitStream.Write(position);
+			Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+		}
+	});
+
+	MafiaSDK::C_Human_Hooks::HookHumanDoWeaponChange([&](MafiaSDK::C_Human* thisInstance, byte weaponId) {
+	
+		if (thisInstance == MafiaSDK::GetMission()->GetGame()->GetLocalPlayer())
+		{
+			RakNet::BitStream bitStream;
+			
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_WEAPON_SWITCH));
+			bitStream.Write(weaponId);
+			Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+		}
 	});
 }
 

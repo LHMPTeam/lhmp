@@ -17,4 +17,6 @@ class PlayerInterface
 	virtual char GetAnimationState() = 0;
 	virtual void SetIsCrouching(bool isCrouching) = 0;
 	virtual bool GetIsCrouching() = 0;
+	virtual void SetIsAiming(bool isAiming) = 0;
+	virtual bool GetIsAiming() = 0;
 };

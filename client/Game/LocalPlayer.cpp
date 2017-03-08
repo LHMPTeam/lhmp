@@ -98,11 +98,23 @@ bool LocalPlayer::GetIsCrouching()
 	return mPlayer->GetInterface()->humanObject.isDucking;
 }
 
+void LocalPlayer::SetIsAiming(bool isCrouching)
+{
+	mPlayer->GetInterface()->humanObject.isAiming = isCrouching;
+}
+
+bool LocalPlayer::GetIsAiming()
+{
+	return mPlayer->GetInterface()->humanObject.isAiming;
+}
+
 void LocalPlayer::Tick()
 {
 	if (Core::GetCore()->GetNetwork()->IsConnected())
 	{
 		OnFootSyncStruct footSync;
+
+		footSync.isAiming = GetIsAiming();
 		footSync.animationState = GetAnimationState();
 		footSync.Position = GetPosition();
 		footSync.Rotation = GetRotation();

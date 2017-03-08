@@ -28,6 +28,15 @@ public:
 	void SetIsCrouching(bool isCrouching) override;
 	bool GetIsCrouching() override;
 
+	void SetIsAiming(bool isCrouching) override;
+	bool GetIsAiming() override;
+
+	bool IsShooting() const { return mIsShooting; }
+	void SetIsShooting(bool shooting) { mIsShooting = shooting; }
+
+	Vector3D GetShootVec() const { return mShootPos; }
+	void SetShootVec(const Vector3D shooting) { mShootPos = shooting; }
+
 	Interpolator* GetInterpolator() { return &mInterpolator; }
 	MafiaSDK::C_Human* GetActor() { return mPlayer; }
 
@@ -38,6 +47,8 @@ public:
 private:
 	MafiaSDK::C_Human* mPlayer;
 	Vector3D mPosition;
+	Vector3D mShootPos;
+	bool mIsShooting;
 	unsigned short mRotation;
 	std::string mModelName;
 	std::wstring mNickName;

@@ -34,6 +34,7 @@ void ServerSyncHandler::OnClientFootSync(RakNet::RakPeerInterface *peer, RakNet:
 	player->SetPosition(footSync.Position);
 	player->SetRotation(footSync.Rotation);
 	player->SetAnimationState(footSync.animationState);
+	player->SetIsAiming(footSync.isAiming);
 
 	RakNet::BitStream outStream;
 

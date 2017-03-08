@@ -27,6 +27,7 @@ void Chat::Init(IDirect3DDevice8* newDevice)
 	RegisterInternalCommands();
 }
 
+MafiaSDK::C_Human* remoteTester = nullptr;
 
 void Chat::Render()
 {
@@ -353,6 +354,27 @@ void Chat::RegisterInternalCommands()
 		exit(0);
 	});
 
+	RegisterChatCMD(L"addwep", [&](std::vector<std::wstring> args) {
+
+
+		if (args.size() > 0)
+		{
+			byte weaponId = (byte)_wtoi(args[0].c_str());
+			int ammoInClipp = 100;
+			int ammoHidden = 100;
+
+			RakNet::BitStream bitStream;
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+			bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_WEAPON_ADD));
+			bitStream.Write(weaponId);
+			bitStream.Write(ammoInClipp);
+			bitStream.Write(ammoHidden);
+
+			MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->G_Inventory_AddWeapon(weaponId, ammoInClipp, ammoHidden);
+			Core::GetCore()->GetNetwork()->GetPeer()->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, Core::GetCore()->GetNetwork()->GetServerAddress(), false);
+		}
+	});
+
 	RegisterChatCMD(L"connect", [&](std::vector<std::wstring> args) {
 
 		if (args.size() > 0)
@@ -365,9 +387,8 @@ void Chat::RegisterInternalCommands()
 
 	RegisterChatCMD(L"lerp", [&](auto args) {
 		
-		if (args.size() > 0)
-		{
-			mDeltaLerpCvar = _wtof(args[0].c_str());
-		}
+		Vector3D daco ={ -1985.884277f, -5.032383f, 23.144674f };
+	
+		//Core::GetCore()->GetGame()->GetEngineStack()->AddEngineCall(STACK_INVOKE(MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->Do_Shoot, true, daco));
 	});
 }

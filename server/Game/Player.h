@@ -3,7 +3,7 @@
 #include <Interfaces/PlayerInterface.h>
 #include <string>
 
-class Player : PlayerInterface
+class Player : public PlayerInterface
 {
 public:
 	Player(std::string modelName);
@@ -27,12 +27,19 @@ public:
 	void SetIsCrouching(bool isCrouching) override;
 	bool GetIsCrouching() override;
 	
+	void SetIsAiming(bool isCrouching) override;
+	bool GetIsAiming() override;
+
+	//void SetCurrentWeaponId(byte newId) { mCurrentWeaponId = newId; }
+	//byte GetCurrentWeaponId() { return mCurrentWeaponId; }
 private:
 	Vector3D mPosition;
+	//byte mCurrentWeaponId;
 	unsigned short mRotation;
 	std::string mModelName;
 	float mHealth;
 	char mAnimationState;
 	bool mIsCrouching;
+	bool mIsAiming;
 };
 

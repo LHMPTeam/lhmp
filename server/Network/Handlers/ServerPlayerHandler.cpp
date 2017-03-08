@@ -30,6 +30,24 @@ void ServerPlayerHandler::ProcessMessage(Network * network, RakNet::Packet * pac
 		OnRespawn(network->GetPeer(), packet);
 	}
 	break;
+
+	case MessageIDs::LHMPID_PLAYER_ONSHOOT:
+	{
+		OnShoot(network->GetPeer(), packet);
+	}
+	break;
+
+	case MessageIDs::LHMPID_PLAYER_WEAPON_SWITCH:
+	{
+		OnWeaponSwitch(network->GetPeer(), packet);
+	}
+	break;
+
+	case MessageIDs::LHMPID_PLAYER_WEAPON_ADD:
+	{
+		OnWeaponAdd(network->GetPeer(), packet);
+	}
+	break;
 	}
 }
 
@@ -109,6 +127,27 @@ void ServerPlayerHandler::OnHit(RakNet::RakPeerInterface *peer, RakNet::Packet* 
 	peer->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 }
 
+void ServerPlayerHandler::OnShoot(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream inStream(packet->data, packet->length, false);
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	//Get player 
+	auto clientPtr = mClients->at(packet->guid);
+	Vector3D vPosition;
+	inStream.Read(vPosition);
+
+	Core::GetCore()->LogW(L"<%s> shoot <%f %f %f>", clientPtr->GetNickName().c_str(), vPosition.x, vPosition.y, vPosition.z);
+
+	RakNet::BitStream bitStream;
+	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_ONSHOOT));
+	bitStream.Write(packet->guid);
+	bitStream.Write(vPosition);
+	peer->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+}
+
 void ServerPlayerHandler::OnRespawn(RakNet::RakPeerInterface *peer, RakNet::Packet* packet)
 {
 	RakNet::BitStream inStream(packet->data, packet->length, false);
@@ -123,5 +162,54 @@ void ServerPlayerHandler::OnRespawn(RakNet::RakPeerInterface *peer, RakNet::Pack
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
 	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_RESPAWN));
 	bitStream.Write(packet->guid);
+	peer->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+}
+
+void ServerPlayerHandler::OnWeaponSwitch(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream inStream(packet->data, packet->length, false);
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	byte changedWeaponId;
+	inStream.Read(changedWeaponId);
+
+	//Get player 
+	auto clientPtr = mClients->at(packet->guid);
+	Core::GetCore()->LogW(L"<%s> weapon change %d", clientPtr->GetNickName().c_str(), changedWeaponId);
+
+	RakNet::BitStream bitStream;
+	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_WEAPON_SWITCH));
+	bitStream.Write(packet->guid);
+	bitStream.Write(changedWeaponId);
+	peer->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+}
+
+void ServerPlayerHandler::OnWeaponAdd(RakNet::RakPeerInterface * peer, RakNet::Packet * packet)
+{
+	RakNet::BitStream inStream(packet->data, packet->length, false);
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
+	inStream.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	byte weaponId;
+	inStream.Read(weaponId);
+
+	int ammoInClip, ammoHidden;
+	inStream.Read(ammoInClip);
+	inStream.Read(ammoHidden);
+
+	//Get player 
+	auto clientPtr = mClients->at(packet->guid);
+	Core::GetCore()->LogW(L"<%s> weapon add %d %d %d", clientPtr->GetNickName().c_str(), weaponId, ammoInClip, ammoHidden);
+
+	RakNet::BitStream bitStream;
+	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER));
+	bitStream.Write(static_cast<RakNet::MessageID>(MessageIDs::LHMPID_PLAYER_WEAPON_SWITCH));
+	bitStream.Write(packet->guid);
+	bitStream.Write(weaponId);
+	bitStream.Write(ammoInClip);
+	bitStream.Write(ammoHidden);
+
 	peer->Send(&bitStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 }
