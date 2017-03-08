@@ -11,6 +11,7 @@ Core::~Core()
 
 void Core::Init()
 {
+	mSandbox = new Sandbox();
 	mNetwork = new Network();
 	mGraphics = new Graphics();
 	mGame = new Game();
@@ -39,6 +40,8 @@ void Core::Tick()
 	{
 		mNetwork->Tick();
 	}
+
+	mSandbox->Tick();
 }
 
 Core* Core::CoreInstance;

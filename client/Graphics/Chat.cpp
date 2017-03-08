@@ -391,4 +391,6 @@ void Chat::RegisterInternalCommands()
 	
 		//Core::GetCore()->GetGame()->GetEngineStack()->AddEngineCall(STACK_INVOKE(MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->Do_Shoot, true, daco));
 	});
+
+	Core::GetCore()->GetSandbox()->RegisterCommands();
 }

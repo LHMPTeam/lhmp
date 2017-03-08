@@ -12,6 +12,7 @@ public:
 	Game* GetGame() { return mGame; };
 	Network* GetNetwork() { return mNetwork; };
 	Graphics* GetGraphics() { return mGraphics; }
+	Sandbox* GetSandbox() { return mSandbox; }
 
 	static Core* GetCore();
 private:
@@ -19,6 +20,7 @@ private:
 	Network* mNetwork;
 	Game* mGame;
 	Graphics* mGraphics;
+	Sandbox* mSandbox;
 	bool mIsRunning;
 	
 };

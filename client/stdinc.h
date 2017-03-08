@@ -38,6 +38,7 @@
 #include "Game/LocalPlayer.h"
 #include "Game/Game.h"
 #include "Network/Network.h"
+#include "Testing/Sandbox.h"
 
 #include "Network/Handlers/ClientSyncHandler.h"
 #include "Network/Handlers/ClientConnectionHandler.h"
