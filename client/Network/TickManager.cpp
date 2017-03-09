@@ -6,6 +6,7 @@ TickManager::TickManager()
 	mLastTickBeginTime = 0;
 	mLastTickDuration = 0;
 	mTicksToSend = 0;
+	mNextTickTime = 0;
 }
 
 TickManager::~TickManager()
@@ -15,7 +16,7 @@ TickManager::~TickManager()
 
 void TickManager::GameTick()
 {
-	mLastTickDuration = RakNet::GetTimeMS() - mLastTickBeginTime;
+	/*mLastTickDuration = RakNet::GetTimeMS() - mLastTickBeginTime;
 	mLastTickBeginTime = RakNet::GetTimeMS();
 	if (mLastTickDuration == 0)
 	{
@@ -37,7 +38,13 @@ void TickManager::GameTick()
 	}
 	//sleepTime = (deltaTime - (mLastTickDuration * mTicksToSend)) / mTicksToSend
 	int sleepTime = round((float)(deltaTime - (mLastTickDuration * mTicksToSend)) / (float)mTicksToSend);
-	mNextTickTime = RakNet::GetTimeMS() + sleepTime;
+	mNextTickTime = RakNet::GetTimeMS() + sleepTime;*/
+	if (RakNet::GetTimeMS() >= mNextTickTime)
+	{
+		mStartSyncTime = RakNet::GetTimeMS();
+		Tick();
+		mNextTickTime = RakNet::GetTimeMS() + round(1000 / static_cast<double>(Core::GetCore()->GetNetwork()->GetTickRate()));
+	}
 }
 
 void TickManager::Tick()

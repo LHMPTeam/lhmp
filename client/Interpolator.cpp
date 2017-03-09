@@ -27,7 +27,7 @@ float * Interpolator::Interpolate()
 		interpolatedValues[i] = Utils::Lerp(mInitialValues[i], mTargetValues[i], lerpValue);
 	}
 	//printf("Lerp(%f, %f, %f);\n", mInitialValues[0], mTargetValues[0], lerpValue);
-	//printf("LIT: %f, Delta: %f, Value: %f, %f, %f, %f\n", lastInterpolationTime, timeDelta, lerpValue, mInitialValues[0], interpolatedValues[0], mTargetValues[0]);
+	printf("LIT: %f, Delta: %f, Value: %f, %f, %f, %f\n", lastInterpolationTime, timeDelta, lerpValue, mInitialValues[0], interpolatedValues[0], mTargetValues[0]);
 	return interpolatedValues;
 }
 
@@ -35,6 +35,6 @@ void Interpolator::NewValues()
 {
 	mPreviousUpdate = mLastUpdate;
 	mLastUpdate = RakNet::GetTimeMS();
-	printf("%d, %d\n", mPreviousUpdate, mLastUpdate);
+	//printf("%d, %d\n", mPreviousUpdate, mLastUpdate);
 }
 
