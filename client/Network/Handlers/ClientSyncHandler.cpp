@@ -37,7 +37,13 @@ void ClientSyncHandler::OnClientFootSync(Network * network, RakNet::Packet * pac
 
 	if (mPlayers->at(playerGuid) != nullptr)
 	{
-		mPlayers->at(playerGuid)->GetInterpolator()->Set(footSync.Position);
+		mPlayers->at(playerGuid)->GetInterpolator()->NewValues();
+		mPlayers->at(playerGuid)->GetInterpolator()->SetInitialValue(0, mPlayers->at(playerGuid)->GetPosition().x);
+		mPlayers->at(playerGuid)->GetInterpolator()->SetInitialValue(1, mPlayers->at(playerGuid)->GetPosition().y);
+		mPlayers->at(playerGuid)->GetInterpolator()->SetInitialValue(2, mPlayers->at(playerGuid)->GetPosition().z);
+		mPlayers->at(playerGuid)->GetInterpolator()->SetTargetValue(0, footSync.Position.x);
+		mPlayers->at(playerGuid)->GetInterpolator()->SetTargetValue(1, footSync.Position.y);
+		mPlayers->at(playerGuid)->GetInterpolator()->SetTargetValue(2, footSync.Position.z);
 		mPlayers->at(playerGuid)->SetRotation(footSync.Rotation);
 		mPlayers->at(playerGuid)->SetAnimationState(footSync.animationState);
 		mPlayers->at(playerGuid)->SetIsCrouching(footSync.isCrouching);

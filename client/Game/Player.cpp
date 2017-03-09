@@ -3,7 +3,8 @@
 Player::Player(std::string modelName)
 	: mModelName(modelName),
 	mPlayer(nullptr),
-	mIsShooting(false)
+	mIsShooting(false),
+	mInterpolator(3)
 {
 }
 
@@ -24,7 +25,14 @@ void Player::Spawn()
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(mPlayer);
 
 	mPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
-	mInterpolator.Set({ -1985.884277f, -5.032383f, 23.144674f });
+	mInterpolator.SetInitialValue(0, -1985.884277f);
+	mInterpolator.SetInitialValue(1, -5.032383f);
+	mInterpolator.SetInitialValue(2, 23.144674f);
+
+	mInterpolator.SetTargetValue(0, -1985.884277f);
+	mInterpolator.SetTargetValue(1, -5.032383f);
+	mInterpolator.SetTargetValue(2, 23.144674f);
+	printf("spawn");
 }
 
 void Player::Respawn()
@@ -41,8 +49,15 @@ void Player::Respawn()
 	if (mPlayer != nullptr)
 		MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(mPlayer);
 
+	printf("respawn\n");
 	newPlayer->GetInterface()->entity.position = { -1985.884277f, -5.032383f, 23.144674f };
-	mInterpolator.Set({ -1985.884277f, -5.032383f, 23.144674f });
+	mInterpolator.SetInitialValue(0, -1985.884277f);
+	mInterpolator.SetInitialValue(1, -5.032383f);
+	mInterpolator.SetInitialValue(2, 23.144674f);
+
+	mInterpolator.SetTargetValue(0, -1985.884277f);
+	mInterpolator.SetTargetValue(1, -5.032383f);
+	mInterpolator.SetTargetValue(2, 23.144674f);
 
 	mPlayer = newPlayer;
 }
@@ -120,7 +135,8 @@ bool Player::GetIsAiming()
 
 void Player::UpdateGameObject()
 {
-	mPlayer->GetInterface()->entity.position = mInterpolator.LinearInterpolate(mPlayer->GetInterface()->entity.position);
+	float* positions = mInterpolator.Interpolate();
+	mPlayer->GetInterface()->entity.position = { positions[0], positions[1], positions[2] };
 
 	if (IsShooting())
 	{

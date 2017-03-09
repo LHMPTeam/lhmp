@@ -53,9 +53,7 @@ namespace Utils
 		return ang;
 	}
 
-	static float inline Lerp(float v0, float v1, float t) {
-		if (t > 1) t = 1;
-
-		return (1 - t) * v0 + t * v1;
+	static float inline Lerp(float initialValue, float targetValue, float delta) {
+		return initialValue + delta * (targetValue - initialValue);
 	}
 }

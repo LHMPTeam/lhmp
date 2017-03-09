@@ -2,15 +2,17 @@
 class Interpolator
 {
 public:
-	Interpolator();
+	Interpolator(int valuesCount);
 	~Interpolator();
-
-	void Set(const Vector3D & newValue);
-	Vector3D LinearInterpolate(const Vector3D & oldPosition);
-
-
+	void SetInitialValue(int index, float value) { mInitialValues[index] = value; };
+	void SetTargetValue(int index, float value) { mTargetValues[index] = value; };
+	float* Interpolate();
+	void NewValues();
 private:
-	Vector3D mToBeInterpolated;
+	float* mInitialValues;
+	float* mTargetValues;
+	int mValuesCount;
 	RakNet::TimeMS mLastUpdate;
+	RakNet::TimeMS mPreviousUpdate;
 };
 

@@ -194,6 +194,12 @@ void Game::OnGameInit()
 
 void Game::Tick()
 {
+	//Update Game Objects 
+	for (auto player : Core::GetCore()->GetNetwork()->GetPlayers())
+	{
+		player.second->UpdateGameObject();
+	}
+
 	if (mShouldStart)
 	{
 		if (MafiaSDK::GetMission()->GetGame() != nullptr)
@@ -215,11 +221,7 @@ void Game::Tick()
 		}
 	}
 
-	//Update Game Objects 
-	for (auto player : Core::GetCore()->GetNetwork()->GetPlayers())
-	{
-		player.second->UpdateGameObject();
-	}
+	
 }
 
 void Game::UpdateConnectingCamera()
